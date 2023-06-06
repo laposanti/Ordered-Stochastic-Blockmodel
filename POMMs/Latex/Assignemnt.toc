@@ -1,0 +1,18 @@
+\contentsline {section}{\tocsection {}{1}{Posets and Dags}}{2}{}%
+\contentsline {subsection}{\tocsubsection {}{1.1}{Partially ordered Markov models:}}{3}{}%
+\contentsline {section}{\tocsection {}{2}{Application to the SST matrix}}{5}{}%
+\contentsline {subsection}{\tocsubsection {}{2.1}{Defining a Poset over $P$}}{6}{}%
+\contentsline {subsection}{\tocsubsection {}{2.2}{Partially ordered Markov Models applied to P}}{7}{}%
+\contentsline {section}{\tocsection {}{3}{Stick-Breaking prior process}}{8}{}%
+\contentsline {subsection}{\tocsubsection {}{3.1}{General definition of the Stick-Breaking prior process}}{8}{}%
+\contentsline {subsection}{\tocsubsection {}{3.2}{Application to the SST case}}{8}{}%
+\contentsline {section}{\tocsection {}{4}{Full model specification}}{10}{}%
+\contentsline {subsection}{\tocsubsection {}{4.1}{Model specification}}{11}{}%
+\contentsline {section}{\tocsection {}{5}{Simulating synthetic data: code description}}{14}{}%
+\contentsline {subsection}{\tocsubsection {}{5.1}{Simulating $K$}}{14}{}%
+\contentsline {subsection}{\tocsubsection {}{5.2}{Simulating $z|K$}}{14}{}%
+\contentsline {subsection}{\tocsubsection {}{5.3}{Simulating $\operatorname {POMM}(c,\beta ^0_{\qopname \relax m{max}},K)$}}{15}{}%
+\contentsline {subsection}{\tocsubsection {}{5.4}{Sampling the matches}}{16}{}%
+\contentsline {section}{\tocsection {}{6}{ATP tennis dataset}}{16}{}%
+\contentsline {section}{\tocsection {}{7}{Descriptive statistics comparing simulated vs ATP data}}{19}{}%
+\contentsline {section}{\tocsection {}{8}{Possible applications}}{19}{}%
