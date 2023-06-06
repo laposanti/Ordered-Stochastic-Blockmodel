@@ -170,6 +170,7 @@ l_like_p_ij_normal = function(K, P_matrix, truncations, diag0.5 = T) {
   log_lik <- 0
   for (i in (1 + lbindex):(K + 1)) {
     level_set_i <- level_sets[i]
+    
     lb <- truncations[i - lbindex]
     ub <- truncations[i + 1 - lbindex]
     
@@ -178,7 +179,7 @@ l_like_p_ij_normal = function(K, P_matrix, truncations, diag0.5 = T) {
     sigma <- (ub - lb) / 6  # Standard deviation of the truncated distribution
     
     # Calculate the log-likelihood using the truncated distribution
-    log_lik <- log_lik + sum(log(dtruncnorm(unlist(level_set_i), a = lb, b = ub, mean = mu, sd = sigma)))/(mu*2)
+    log_lik <- log_lik + sum(log(dtruncnorm(unlist(level_set_i), a = lb, b = ub, mean = mu, sd = sigma)))/length(level_set_i)
   }
   
   return(log_lik)

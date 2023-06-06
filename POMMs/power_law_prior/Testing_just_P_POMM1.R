@@ -10,33 +10,33 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorS
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_pomm.R")
 
-N_iter=20000
+N_iter=90000
 set.seed(34)
 
 N=100
 M= 10000
-K=9
+K=4
 alpha=1
 
 beta_max= .85
 
 
 
-gamma_vec = vector()
-for(i in 1:K){
-  gamma_vec = append(gamma_vec, i/(K**2))
-}
 
+gamma_vec=c(1/9, 2/9, 3/9, 3/9)
+gamma_vec[1]/sum(gamma_vec)
+gamma_vec[2]/sum(gamma_vec)
+gamma_vec[3]/sum(gamma_vec)
 
 
 
 
 synth = simulating_tournament_new_norm(N = N, alpha = alpha,
-                                       beta_max = beta_max,
-                                       K=K, M = M,
-                                       gamma_vec = gamma_vec,
-                                       n_ij_max = 6,model = 'POMM',diag0.5 = T 
-)
+                                  beta_max = beta_max,
+                                  K=K, M = M,
+                                  gamma_vec = gamma_vec,
+                                  n_ij_max = 6,model = 'POMM',diag0.5 = T 
+                                  )
 
 n_ij_matrix=synth$n_ij_true
 y_ij_matrix=synth$y_ij_true
@@ -76,7 +76,8 @@ z_container= matrix(0, nrow=N, ncol=N_iter)
 
 #initializing quantities
 sigma_prime=.15
-alpha_current = 1
+
+alpha_current = 1.8
 truncations_current <- improper_prior5(K,beta_max,alpha = alpha_current)
 
 #generating a proposal matrix
@@ -135,60 +136,86 @@ j=2
 
 #READY TO BOMB!
 z_current=z_true
-
+p_current = synth$P_matrix
 
 while (j < N_iter + 1) {
   setTxtProgressBar(pb, j)
   
   
   
-  p_update= P_POMM_update2( z_current = z_current,
-                               p_current = p_current,
-                               K = K,n_ij = n_ij,
-                               y_ij = y_ij,
-                               A_current = A_current, C_current = C_current,
-                               upper.tri.non.zero = upper.tri.non.zero,
-                               alpha_current = alpha_current,
-                               beta_max = beta_max)
+  p_update= P_POMM_update1(z_current = z_current,
+                          p_current = p_current,
+                          K = K,n_ij = n_ij,
+                          y_ij = y_ij,
+                          A_current = A_current, C_current = C_current,
+                          upper.tri.non.zero = upper.tri.non.zero,
+                          alpha_current = alpha_current,
+                          truncations_current = truncations_current,
+                          beta_max = beta_max)
   
   acc.count_p = acc.count_p + p_update$acc.moves
   #updating quantities
-  p_current = p_update$p_current
-  C_current = p_update$C_current
+  p_current=  p_update$p_current
   A_current = p_update$A_current
+  C_current = p_update$C_current
   alpha_current = p_update$alpha_current
+  truncations_current= p_update$truncations_current
   if(j %% 1000 == 0){
     print( paste("iteration",j,"acceptance", acc.count_p))
   }
   
   #storing results for inference
+  A_container[j] = A_current
+  B_container[j] = B_current
   C_container[j]= C_current
-  alpha_container[j] = alpha_current
   p_container[,,j] = p_current
+  alpha_container[j] = alpha_current
+  
   j=j+1
 }
 
+
+
+
+ts.plot(A_container[-c(1:20)])
+acf((A_container[-c(1:10)]))
 
 
 ts.plot(C_container[-c(1:100)])
 acf((C_container[-c(1:100)]))
 
 
+posterior_prop = A_container+C_container
+ts.plot(posterior_prop[-c(1:100)])
+MAP = z_container[, which(posterior_prop == max(posterior_prop))[1]]
 
+acceptance_rate= acc.count_z/(N*N_iter)*100
+print(acceptance_rate)
+
+#mixing
+# ts.plot(A_seq[-c(1:N_iter*0.5)], main="Traceplot of p(y_ij|z,P) p(z) p(P)",
+#         xlab = "Iterations", ylab ="p(y_ij|z,P) p(z) p(P)")
+# dev.off()
+# acf(A_seq[-c(1:N_iter*0.5)],main="Autocorrelation plot",
+#     xlab = "Lag", ylab ="ACF")
+# dev.off()
 
 
 
 burnin_p = p_container[,,-(N_iter*0.5)]
+burnin_posterior = A_container[-c(1:5000)]
 
+
+ts.plot(burnin_posterior)
+
+
+
+summary(burnin_posterior)
 ts.plot(t(alpha_container))
-mean(alpha_container)
-
+mean(alpha_container[-c(1:20000)])
 alpha_container[which(C_container == max(C_container))]
 #acceptance rate
-acc.count_p/(K * N_iter)
-
-burnin_p = p_container[,,-(N_iter*0.5)]
-
+acc.count_p/(K**2 * N_iter)
 
 
 plots = list()
@@ -209,12 +236,113 @@ for(i in 1:K) {
 p_combined = patchwork::wrap_plots(plots, ncol = K, nrow = K)
 p_combined
 
-
-
 mse_table = matrix(0,K,K)
 for(i in 1:K){
   for(j in 1:K){
     mse_table[i,j]= (mean(burnin_p[i,j,]) - P_true[i,j])
   }
 }
+
+
+pander::pander(mse_table)
+P_est = matrix(0,K,K)
+for(i in 1:K){
+  for(j in 1:K){
+    P_est[i,j]= mean(burnin_p[i,j,]) 
+  }
+}
+
+
+# ------------------------------------
+# LOUVAIN ALGORITHM
+# ------------------------------------
+
+# transform the adjacency matrix into an igraph object
+net <- graph.adjacency(y_ij_matrix, mode=c("directed"),diag = FALSE)
+cluster_optimal(net)
+# point estimate
+Louv <- cluster_edge_betweenness(net)
+# estimated H
+length(table(Louv$membership))
+# VI distance between estimated and true partition
+mcclust::vi.dist(z_true,t(Louv))
+
+# ------------------------------------
+# Regularised SPECTRAL CLUSTERING
+# ------------------------------------
+
+reg_sp <- randnet::reg.SP(A = y_ij_matrix,K = 3,iter.max = 1000000000)$cluster
+mcclust::vi.dist(z_true,reg_sp)
+adj.rand.index(reg_sp, z_true)
+
+# ------------------------------------
+# DBSCAN ALGORITHM
+# ------------------------------------
+
+dbscan::dbscan(y_ij_matrix)
+
+# ------------------------------------
+# K-MEANS ALGORITHM
+# ------------------------------------
+
+
+
+adj.rand.index(kmeans(y_ij_matrix,3)$cluster,z_true) 
+
+
+
+#measures
+loo(x = t(A_container))
+
+
+
+plot(x=c(1:N_iter),y=A_container)
+
+
+
+
+# --------------------------------------------
+# New incoming nodes: Misclassification Error
+# --------------------------------------------
+
+N_new = 100
+z_new = c(rep(1,30),rep(2,30),rep(3,40))
+
+# create empty matrix of edges between the 300 new nodes and those in the original network
+Yij_new <- matrix(0,N_new,N)
+
+
+
+# simulate the new edges
+for (i in 1:N_new){
+  for (j in 1:N){
+    Yij_new[i,j] <-rbinom(1,1,prob= p_true[z_new[i],z_true[j]])
+  }
+}
+
+
+
+z_proportion = table(point_est)/N
+
+
+z_predicted_prob = matrix(0, N_new, K)
+for(k in labels_available){
+  for(i in 1:N_new){
+    lik_i  <- 0 
+    for(j in 1:N){
+      lik_i  <- lik_i + dbinom(Yij_new[i,j],1, P_est[k, point_est[j]],log = T)
+    }
+    lik_i <- lik_i + log(z_proportion[k])
+    z_predicted_prob[i,k] = lik_i 
+  }
+}
+
+
+
+misclassification_rate <- (N_new-sum(diag(table(z_new,apply(z_predicted_prob,1,which.max)))))/N_new
+
+print(misclassification_rate)
+
+
+
 
