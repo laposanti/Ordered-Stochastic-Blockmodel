@@ -482,7 +482,7 @@ Overall, the Stick-Breaking prior process provides a rigorous and coherent metho
 
 
 
-\end{comment}
+
 
 
 
@@ -502,12 +502,12 @@ p(\mathbf{P}{(i,j) \in U}) = \prod{k=1}^K \prod_{j-i=k}^{|L^{(k)}|} \frac{1}{y^{
 
 where $|L^{(k)}|$ is the cardinality of the level set $L^{(k)}$, and $y^{(k)}$ is the truncation point of the beta distribution that corresponds to level set $k$.
 
-The truncation generating process starts with the function $f(x) = x^\alpha + 0.5 \in [0.5, \beta^0_{\max}]$, which is a monotonically increasing function that is linear for $\alpha = 1$, concave for $\alpha \in (0,1)$, and convex for $\alpha > 1$. The function is used to provide truncation points for the beta distributions.
+The truncation generating process starts with the function $y = x^\alpha + 0.5 \in [0.5, \beta^0_{\max}]$, which is a monotonically increasing function that is linear for $\alpha = 1$, concave for $\alpha \in (0,1)$, and convex for $\alpha > 1$. The function is used to provide truncation points for the beta distributions.
 
-To generate truncations, we take the inverse function of $f(x)$, denoted as $f(y)^{\leftarrow} = (y - 0.5)^{(1/\alpha)}$. The support of $f(x)$ is then found to be $[f(0.5)^{\leftarrow}, f(\beta^0_{\max})^{\leftarrow}] = [0, (\beta^0_{\max} - 0.5)^{(1/\alpha)}]$, which is then divided into $K$ segments of equal length $\Delta = ((\beta^0_{\max} - 0.5)^{(1/\alpha)} - 0) / K$. The segment endpoints are defined as $x_k = \Delta \times (k-1)$ for $k=1,\ldots,K+1$. The cumulative sum of the segment endpoints is then mapped back to $f(x)$, resulting in $K$ truncation points $y^{(k)}$, which are defined as:
+To generate truncations, we take the inverse function of $y$, denoted as $f(y)^{\leftarrow} = (y - 0.5)^{(1/\alpha)}$. The support of $y$ is then found to be $[f(0.5)^{\leftarrow}, f(\beta^0_{\max})^{\leftarrow}] = [0, (\beta^0_{\max} - 0.5)^{(1/\alpha)}]$, which is then divided into $K$ segments of equal length $\Delta = ((\beta^0_{\max} - 0.5)^{(1/\alpha)} - 0) / K$. The segment endpoints are defined as $x_k = \Delta \times (k-1)$ for $k=1,\ldots,K+1$. The cumulative sum of the segment endpoints is then mapped back to $y$, resulting in $K$ truncation points $y^{(k)}$, which are defined as:
 
 \begin{equation}
-y^{(k)} = f(x_k) = \left( \frac{(\beta^0_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k-1) \right)^\alpha + 0.5
+y^{(k)} = y^{(k)} = \left( \frac{(\beta^0_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k-1) \right)^\alpha + 0.5
 \end{equation}
 
 
@@ -527,8 +527,8 @@ p_Y(y^{(k)}|\mu, \sigma^2) &= \left| \frac{d L^{-1}(y^{(k)})}{d(y^{(k)})} \right
  & \mathbb{I}\left(\frac{\ln \left( y - 0.5 \right) -  \ln \left(  (\beta^0_{\max} - 0.5) \right)}{\ln \left( \frac{(k-1)}{K} \right) } > 0 \right) \nonumber
 \end{align} 
 
-\begin{comment}
-$L$ is a deterministic transformation. Substituting $f(x)$ and $\Delta$ one can find:
+
+$L$ is a deterministic transformation. Substituting $y$ and $\Delta$ one can find:
 \begin{equation}
 L^k(\alpha) = \left( \frac{(\beta^0_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k-1) \right)^\alpha  + 0.5
 \end{equation}
@@ -565,7 +565,7 @@ Now we can take the derivative with respect to $y$:
 \dfrac{2}{\ln\left(\frac{(k-1)}{K}\right)\left(2y-1\right)}
 \end{equation}
 
-\begin{comment}
+
 Now we have all the ingredients to derive the density of $L(\alpha)^k$ by transforming the probability density of $\alpha$, namely $p^\alpha(\alpha) = Normal(\mu,1)\mathbb{I}(\alpha>0)$.
 
 Let us define once again $Y = L(\alpha)^k$. Then let us denote with $p^Y$ the pdf of $Y$ and with $p^\alpha$ the pdf of $\alpha$. We have that:
@@ -597,7 +597,7 @@ p(p_{ij}|L^k, \mu) &= Beta(1,1) \mathbb{I} \left( p_{ij} : j-i= k \in (L^{k-1},L
 \label{ }
 \end{center}
 \end{figure}
-\end{comment}
+
 
 
 \begin{figure}[htbp]
@@ -623,6 +623,7 @@ p(p_{ij}|L^k, \mu) &= Beta(1,1) \mathbb{I} \left( p_{ij} : j-i= k \in (L^{k-1},L
     \end{minipage}
  \end{figure}
 
+\end{comment}
 \newpage
 
 
@@ -634,8 +635,158 @@ The following Bayesian model is used to describe and analyze pairwise data, with
 The model uses a Poisson distribution to model the number of blocks, a Dirichlet-multinomial distribution to model the distribution of nodes' assignment across blocks, and a binomial distribution to model the distribution of edges within blocks. Additionally, the model includes a POMM process to model the probability of edge formation between nodes within blocks.
 
 The goal of the model is to estimate the number of blocks, the distribution of nodes across blocks, and the probability of edge formation between nodes within blocks, given observed network data. The Bayesian approach allows for uncertainty in these estimates and provides a framework for incorporating prior knowledge and updating beliefs as new data becomes available.
-\subsection{Model specification}
-\bigskip
+
+\subsection{Simple Model specification}
+This is a model for pairwise count data. We explicitly model the results of the interactions between two individuals $i$ and $j$. Given $N$ observations, the likelihood is 
+\begin{align}
+p(y| z, P, K) &= \prod_{i =2 }^{N-1} \prod_{j =i}^{N} p(y_{ij} | z, P, K) \\ 
+&= \prod_{i =2 }^{N-1} \prod_{j =i}^{N}  {n_{ij} \choose y_{ij}} p_{z_i, z_j}^{y_{ij}}(1- p_{z_i, z_j})^{n_{ij}-y_{ij}}
+\end{align}
+
+where $n_{ij}$ denotes the total number of interactions between the two individuals $i$ and $j$ and $y_{ij}$ is the number of successes of the individual $i$ in interacting with $j$. The probability of success is given by $p_{z_i, z_j}$ which consists of two parameters. The $K\times K$ matrix $P$ and the $N \times 1$ vector $z$.
+
+The vector $z$ takes values over the discrete and finite set $\{ 1 , \ldots, K\}$, and it is an indicator variable such that if $z_i = k$ individual $i$ belongs to block $k$. 
+
+The matrix $P$ contains the probabilities of success for individuals belonging to each possible blocks combination. For this reason $P$ is $K\times K$. Therefore, the parameter $p_{z_i, z_j}$ consists in the probability of success in an interaction between one individual belonging to block $z_i$ and another of block $z_j$. 
+
+\subsection{Prior Specification}
+
+This model has three parameters, and we put a prior on each of them.
+
+Starting with $P$, we assume that its entries, namely $p_{k,k^\prime}$, are independent and identically $Beta(a,b)$ distributed random variable. By setting $a=b=1$ they collapse to a uniform distribution.
+\begin{equation}
+p_{k,k^\prime} \sim Beta(1,1) \quad \text{for } k,k^\prime = 1, \ldots,K
+\end{equation}
+Second, we assume that the $z_i$s are independent and identically drawn from a multinomial distribution with one trial and probability vector $(\theta_1, \dots, \theta_K)$. We can write then:
+\begin{equation}
+z_i| \boldsymbol{\theta} \sim \operatorname{Multinomial}(1,\boldsymbol{\theta}) \quad \text{for } i = 1, \ldots,N
+\end{equation}
+
+
+To have more flexibility in the blocks sizes, we put an hyper-prior on the $\theta_1, \dots, \theta_K$, assuming that they are drawn from a Dirichlet distribution with parameter the $K\times1$ vector $\boldsymbol{\gamma}$.
+
+
+By marginalizing out $\theta$, following the common practice in the literature, we can express the marginal distribution of $z$ as:
+
+\begin{equation} p(\mathbf{z}|\boldsymbol{\gamma}) = \frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n_k+\gamma_k)}
+\end{equation}
+
+where $n_k$ is the number of players assigned to block $k$.
+
+Finally, we assume that the number of clusters $K$ follow a Poisson distribution $\operatorname{Poisson}(\lambda=1)$, subject to the condition $K>0$.
+
+
+
+
+\subsection{POMM Prior}
+
+In order to induce an ordering or ranking among the blocks, we introduce a hierarchical structure. Without loss of generality, we assume that block 1 has the highest probability of success when interacting with any other block, while block $K$ has the lowest probability of success. We require this ranking to be transitive, meaning that if block A has a higher probability of success when interacting with block B, and block B has a higher probability of success when interacting with block C, then block A must still be the preferred choice when interacting with block C. Mathematically, this can be expressed as $p_{k,h} > p_{k',h}$ when $k < k'$ for $h \notin { k, k' }$.
+
+To achieve this effect, we impose three conditions: probabilities should increase in the columns, decrease in the rows, and be greater than or equal to 0.5 in the upper triangular matrix. To satisfy these conditions, we construct the following scheme.
+
+\subsubsection{Level Sets}
+
+We define the level sets, denoted by $L^{(k)}$, as the diagonals of the upper triangular matrix P. The main diagonal is referred to as level set 0, denoted by $L^{(0)}$. The diagonal above it is denoted by $L^{(1)}$, and so on up to $L^{(K-1)}$. Each level set $L^{(k)}$ is formally defined as:
+
+\begin{equation}
+L^{(k)} := { p_{ij} \mid j-i = k } \quad \text{for } k = 0, \ldots, K-1
+\end{equation}
+
+It is worth noting that the cardinality of each level set is given by $|L^{(k)}| = K - k$ for $k = 0, \ldots, K-1$.
+
+\subsubsection{Truncation Process}
+
+Requiring that probabilities increase in the rows and decrease in the columns is equivalent to ensuring that the level sets satisfy the condition:
+
+\begin{equation}
+\max(L^{(k)}) < \min(L^{(k+1)}) \quad \text{for } k = 0, \ldots, K-1
+\end{equation}
+
+To enforce this behavior, we employ an increasing truncation process controlled by a parameter $\alpha$, with an upper bound given by $\beta_{\max}$.
+
+We consider a generic power-law function $y = x^\alpha + 0.5$, which governs the rate of increase in the truncation process. Setting $f(0) = 0.5$ ensures that $L^{(0)}$ is greater than or equal to 0.5, satisfying the transitivity condition. The function $y$ is monotonically increasing for $x > 0$. To generate the truncations, we partition $y$ effectively by dividing the interval into $K$ equal-sized segments. The segment endpoints are computed as $x_k = \Delta \times k$ for $k = 0, \ldots, K$, where $\Delta = \left( \left(\beta_{\max} - 0.5\right)^{(1/\alpha)} - 0 \right) / K$. Mapping the cumulative sum of the segment endpoints back to $y$ yields $K$ truncation points denoted by $y^{(k)}$, which are defined as:
+
+\begin{equation}
+\label{eq:truncations}
+y^{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 \quad \text{for } k = 0, \ldots, K
+\end{equation}
+
+Notice that $f(0) = 0.5$ and $f(K) = \beta_{\max}$ by construction.
+
+These truncation points provide the upper and lower bounds for the entries within the corresponding level sets, thereby ensuring the desired hierarchy and transitivity in the ranking.
+
+Mathematically we have that:
+\begin{equation}
+y^{(k)} < p_ij \in L^{(k)} < y^{(k+1)}\quad  k = 0, \ldots, K-1 
+\end{equation}
+
+\subsubsection{The POMM Prior}
+
+Finally, we put a prior on the matrix $P$ with this new structure in place.
+We assume that entries $p_{ij} \in L^{(k)} \mid (y^{(k)} + y^{(k+1)}$ are identically and independently distributed according to a $\operatorname{Uniform}(y^{(k)},y^{(k+1)}$. We also put a log-normal hyper-prior on $\alpha$ such that 
+\begin{equation}
+\alpha \sim \operatorname{lognormal}(\mu_\alpha, \sigma^2_\alpha)
+\end{equation}
+where $\mu_\alpha, \sigma^2_\alpha$ are specified according to the normal parametrisation of the lognormal and are fixed to 1 and 2 respectively.
+Altogether, the POMM prior on P is the following:
+\begin{align}
+p_{ij} \in L^{(k)} \mid y^{(k)},y^{(k+1)} &\sim (y^{(k)},y^{(k+1)} \\
+\alpha &\sim \operatorname{Lognormal}\left(\mu_\alpha, \sigma^2_\alpha\right)
+\end{align}
+and where the truncations $y^{(k)}$ are derived as in \eqref{eq:truncations}.
+
+
+
+\subsubsection{The POMM Prior 2}
+
+
+Finally, we put a prior on the matrix $P$ with this new structure in place.
+We assume that entries $p_{ij} \in L^{(k)} \mid (y^{(k)} + y^{(k+1)}$ are identically and independently distributed according to a $\operatorname{Normal}(\mu^{(k)},\sigma^{2(k)})$, where $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$ which corresponds to the midpoint of the level set $L^{(k)}$, and $\sigma^{2(k)} = \left( y^{(k)}+y^{(k+1)} \right) \times S$, where $S$ is a parameter denoted as \textit{overlap}, which intuitively is proportional to the overlap in the distribution support of the level sets.   We also put a log-normal hyper-prior on $\alpha$ such that 
+\begin{equation}
+\alpha \sim \operatorname{lognormal}(\mu_\alpha, \sigma^2_\alpha)
+\end{equation}
+where $\mu_\alpha, \sigma^2_\alpha$ are specified according to the normal parametrisation of the lognormal and are fixed to 1 and 2 respectively.
+Altogether, the POMM prior on P is the following:
+\begin{align}
+p_{ij} \in L^{(k)} \mid y^{(k)},y^{(k+1)} &\sim \operatorname{Normal}\left(\mu^{(k)},\sigma^{2(k)}\right) \mathbb{I}(0.5, \beta_{\max}) \\
+\alpha &\sim \operatorname{Lognormal}\left(\mu_\alpha, \sigma^2_\alpha\right)\\
+S \sim &\sim \operatorname{Lognormal}\left(\mu_S, \sigma^2_S \right)
+\end{align}
+and where the truncations $y^{(k)}$ are derived as in \eqref{eq:truncations}.
+
+
+Insert here the plot for 3 different overlap values
+
+
+
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[$\alpha=1, S=0.2$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.2__diag__0.5.png}%
+        \label{fig:overlap0.2}%
+    }\hfill
+    \subfigure[$\alpha=1, S=0.5$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=568]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.5__diag__0.5.png}%
+        \label{fig:overlap0.5}%
+    }\hfill
+    \subfigure[$\alpha=1, S=0.8$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=568]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.5.png}%
+        \label{fig:overlap0.8}%
+    }
+    \caption{Densities for $K=5$ Level Sets, for different $S$ values and $\alpha=1$; the main diagonal is set to 0.5, and its collapsed density is not reported.}
+    \label{fig:all_images}
+\end{figure} 
+
+
+
+
+
+
+
+\begin{comment}
+
 We denote the nodes in this setting as $1, \dots, n$. We define the model as follows:
 
 \begin{itemize}
@@ -691,8 +842,6 @@ Finally, we specify the prior distribution for the parameter $K$ as:
 p(K| \lambda =1) = \frac{1^K e^{-1}}{K!} =  \frac{1}{e\cdot K!} \propto \frac{1}{ K!}
 \end{equation}
 
-\begin{comment}
-\newpage
 \section{Simulating synthetic data: code description}
 
 
@@ -706,7 +855,7 @@ More specifically, the function takes the following arguments:
 \item $\beta_{\max}$: a parameter which controls the probability of victory of the strongest player.
 \item \texttt{min\_clust} and \texttt{max\_clust}: the minimum and the maximum number of clusters that can be created using a truncated Poisson distribution.
 \item \texttt{M}: the number of matches to be simulated.
-\item \texttt{n\_ij\_max}: the maximum number of games that can be played between any two players within the tournament.
+\item \texttt{n\_ij\_max}: the maximum number of games that can be played between any two players withi the tournament.
 \end{itemize}
 
 \subsection{Simulating $K$}\bigskip
@@ -823,7 +972,7 @@ The final dataframe will look like as in Table (2).
 \label{Final dataset}
 \end{table}
 
-\newpage
+\clearpage
 
 \section{Descriptive statistics comparing simulated vs ATP data}
 
@@ -880,13 +1029,49 @@ The interesting aspect of this methodology is that we could compute the discrepa
     \end{minipage}
 \end{figure}
 
-\newpage
+
 
 \end{comment}
+
+\newpage 
+
 \section{Estimation}
- 
+
+For the moment, we want to infer just $\theta = \{ z, P, \alpha, S \}$, meaning that we treat $K$ as a known constant. The estimation strategy is a Hybrid MCMC algorithm. Since simulating from the conditional distribution $p(\theta_i| \theta_j, j\neq i)$ is unfeasible or computationally expensive, we substitute the simulation from the full conditional distribution with a simulation from a proposal distribution $q_i$. Referencing Muller's (1991) work, the Hybrid modification is as follows:
+
+
+z
+\begin{algorithm}
+\begin{algorithmic}[h]
+\For{$i = 1,\ldots, p \quad \texttt{given} \quad \left( \theta_1^{(t+1)}, \dots,\theta_{i-1}^{(t+1)},\theta_i^{(t)}, \dots,\theta_{p}^{(t)}\right)  $}
+\State \texttt{Simulate} \begin{equation}\label{eqn_general_proposal}
+\theta_i^{\prime} \sim q_i \left(\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)} \right)
+\end{equation}
+\State \texttt{Take} \begin{equation}
+theta_i^{(t+1)} = 
+\begin{cases}
+&\theta_{i}^{(t)} \quad \texttt{with probability} \quad 1 - r, \\
+&\theta_{i}^{\prime} \quad \texttt{with probability} \quad 1 - r,
+\end{cases}
+\end{equation}
+\State where
+
+\EndFor
+\end{algorithmic}
+\label{alg_general_algortm}
+\caption{Metropolis-within-Gibbs MCMC}
+\end{algorithm}
+
+
+\subsubsection{Adaptive algorithm}
+The proposal distributions mentioned above are $\operatorname{Normals}\left( \theta^{(t-1)}, \sigma_{\theta}^2 \right)$. The proposal is accepted or rejected by evaluating the Metropolis ratio (to be precise, the logarithm of the Metropolis ratio). Th
+To answer these questions, an adaptive algorithm can be used. We proceed as follows. For each of the variables \(i\) \((1 \leq i \leq K + 3)\), we create an associated variable \(ls_i\) giving the logarithm of the standard deviation to be used when proposing a normal increment to variable \(i\). We begin with \(ls_i = 0\) for all \(i\) (corresponding to unit proposal variance). After the \(n\)-th "batch" of 50 iterations, we update each \(ls_i\) by adding or subtracting an adaption amount \(\delta(n)\). The adapting attempts to make the acceptance rate of proposals for variable \(i\) as close as possible to 0.44 (which is optimal for one-dimensional proposals in certain settings; cf. Roberts, Gelman, and Gilks 1997; Roberts and Rosenthal 2001). Specifically, we increase \(ls_i\) by \(\delta(n)\) if the fraction of acceptances of variable \(i\) was more than 0.44 on the \(n\)-th batch, or decrease \(ls_i\) by \(\delta(n)\) if it was less.
+
+Condition (1.1) is satisfied provided \(\delta(n) \rightarrow 0\); we take \(\delta(n) = \min(0.01, n^{-1/2})\). Our approach is to specify a global maximal parameter value \(M < \infty\), and restrict each \(ls_i\) to the interval \([-M, M]\). For a large class of target densities (which includes all those which are log-concave outside an arbitrary bounded region), this ensures (1.2) holds. In practice, the \(ls_i\) stabilize nicely, so the bound on \(M\) is not actually needed.
+
 \subsection{Updating z}
 
+To update $z$ we propose a new label for each node, we evaluate the accept/reject move by computing the ratio $r$ as follows:
 \begin{align}
 r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (1 - p_{z^{\prime}_i z^{\prime}_j})^{n_{ij} - y_{ij}} \cdot \frac{\Gamma(\gamma_0) \Gamma(n+1)}{\Gamma(n + \gamma_0)} \cdot \prod_{k=1}^K \frac{\Gamma(n^{\prime}_k + \gamma_k)}{\Gamma(\gamma_k)  \Gamma(n^{\prime}_k + 1)}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_iz_j}^{y_{ij}} \cdot (1 - p_{z_iz_j})^{n_{ij} - y_{ij}}\cdot \frac{\Gamma(\gamma_0) \Gamma(n+1)}{\Gamma(n + \gamma_0)} \cdot \prod_{k=1}^K \frac{\Gamma(n_k + \gamma_k)}{\Gamma(\gamma_k)  \Gamma(n_k + 1)}} \\
  &= \frac{\prod_{i<j}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (1 - p_{z^{\prime}_i z^{\prime}_j})^{n_{ij} - y_{ij}} \cdot  \prod_{k=1}^K \frac{\Gamma(n^{\prime}_k + \gamma_k)}{\Gamma(\gamma_k)  \Gamma(n^{\prime}_k + 1)}}{\prod_{i<j}p_{z_iz_j}^{y_{ij}} \cdot (1 - p_{z_iz_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K \frac{\Gamma(n_k + \gamma_k)}{\Gamma(\gamma_k)  \Gamma(n_k + 1)}} 
@@ -922,6 +1107,7 @@ log(r) &= \log{ \left( \prod_{i<j}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (
 \State Store $z_{current}$ in $z.container$
 \EndFor
 \end{algorithmic}
+\label{alg:z_update}
 \caption{Updating $z$ step}
 \end{algorithm}
 
@@ -929,6 +1115,7 @@ log(r) &= \log{ \left( \prod_{i<j}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (
 \subsection{Updating $\mathbf{P}$}
 
 
+To update $P$ and $\alpha$ we propose a new label for each node, we evaluate the accept/reject move by computing the ratio $r$ as follows:
 
 \begin{align}
 r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{\prime y_{ij}} \cdot (1 - p^{\prime}_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{\prime (k+1)} - y^{\prime(k)}}\right)^{|L^{\prime(k)}|}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{y_{ij}} \cdot (1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{(k+1)} - y^{(k)}}\right)^{|L^{(k)}|}} \\
@@ -970,27 +1157,31 @@ log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij}
 \State $j \gets j+1$
 \EndWhile
 \end{algorithmic}
+\label{alg:P_update}
 \caption{Updating $P$ step}
 \end{algorithm}
 
 
+\clearpage
+
 \section{Point Estimate, Model Selection,  and inference}
 
-While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. 
+While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. We are comparing the results from the simulation study via the following three main measures:
 
 \begin{itemize}
-\item Variation of Inforamation (VI):  fully utilize this posterior and engage in inference directly within the partition space, we adopt the decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modeling. This involves summarizing posterior distributions using the variation of information (vi) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The vi metric ranges from 0 to log2 V, where V represents the number of nodes. Intuitively, the vi metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. Refer to Wade and Ghahramani (2018) for a detailed exploration of the key properties of the vi metric. Within this framework, a formal Bayesian point estimate for z is obtained by selecting the partition with the lowest averaged vi distance from the other clusterings
-\item WAIC 
-\item Posterior predictive
+\item Variation of Inforamation (VI): to fully utilise this posterior and engage in inference directly within the partition space, we adopt the decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modeling. This involves summarizing posterior distributions using the variation of information (vi) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The vi metric ranges from 0 to log2 V, where V represents the number of nodes. Intuitively, the vi metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. Refer to Wade and Ghahramani (2018) for a detailed exploration of the key properties of the vi metric. Within this framework, a formal Bayesian point estimate for z is obtained by selecting the partition with the lowest averaged vi distance from the other clusterings
+\item WAIC: While the WAIC yields practical and theoretical advantages  and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:$
+\log p(y_{ij} | z, P, \alpha) = y_{ij} \log p_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - p_{z_i, z_j}), \quad i = 2, \ldots, N,  j = 1, \ldots, i - 1$.
+
+\item Misclassification error: predicting the group membership $z_{N+1}$ of a new player may also be of interest. We can derive the estimate of the block probabilities for new players based on their early matches with some of the existing players.
+\begin{align}
+p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z}) &\propto p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z}) \nonumber \\
+&= p(y_{N+1} | \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z})
+\end{align}
+where $p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z})$ is the posterior probability of the new node $N+1$ to belong to the block $k$, given the previously observed data $Y$, the new node's data $y_{N+1}$ and the estimated labels $\hat{z}$. On the right hand side of the expression above, $p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k )$ represents the likelihood of observing $y_{N+1}$ given the previously observed data $Y$ and the estimated labels $\hat{z}$, which, due to conditional independence, is the same as conditioning just on $\hat{z}$. Finally, $p(z_{N+1} = k | \hat{z})$ represents the prior probability of label $k$ for the new node $N+1$ given $\hat{z}$, which we can approximate with the relative size of the blocks $n_k$.
 \end{itemize}
-
-Posterior predictive distribution. 
-Once we have obtained the MCMC samples, we can retrieve the posterior predictive distribution.
-
-While the WAIC yields practical and theoretical advantages  and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:
-\begin{equation}
-\log p(y_{ij} | z, \Theta) = y_{ij} \log \theta_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - \theta_{z_i, z_j}), \quad i = 2, \ldots, N, \quad j = 1, \ldots, i - 1.
-\end{equation}
+\begin{comment}
+\item Prediction error: making prediction on the match score between two players is also possible within this framework. Once we have obtained the MCMC samples, we can retrieve the posterior predictive distribution.
 
 Let us assume $i^\star$ is a new player . The posterior predictive is:
 \begin{align}
@@ -999,131 +1190,282 @@ p(y_{i^\star j}| \textbf{Y}) &= \int p(z| \{ \textbf{Y}\setminus y_{i^\star} \})
 &=  \frac{1}{T} \sum_{t = 1}^{T} \sum_{z_{i^\star} =1}^{K}  p_{z_{i^\star}, z_j^{(t)}}^{y_{i^\star j} } \cdot (1-p_{z_{i^\star}, z_j^{(t)}})^{n_{i^\star j} -  y_{i^\star j}} \quad \quad \text{for }y_{i^\star j} = 0,\ldots, n_{i^\star j} \\
 \end{align} 
 where $z_j^{(t)} \sim p(z|Y)$
-\section{Simulation Study}
+\end{itemize}
+\end{comment}
 
-In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players. Each tournament had a different number of games played among the participants. This quantity, denoted as $M$, essentially represents our sample size. We divided the players into three groups (K = 3) and used semi-symmetric block probabilities in the simulations. In Figure (), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games decreases.
+\clearpage
+
+\section{Simulation Study from the Simple Model}
+
+In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. We want to compare how it performs compared to the POMM extension and other state-of-the-art alternatives. Each tournament had a different number of blocks in the underlying structure. We set the total number of games $M := 0.5* \sum_{i,j}^N n_{ij}= \sum_{i,j}^N y_{ij} = 4000$, which is the average number of matches played in one year of tennis tournaments. We divided the players into three, five and nine blocks ($K = 3,5,9$ respectively). In Figure (\ref{fig:all_images}), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games increases with the number of blocks.
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[M4000.png]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=560]{/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/WritingReport_plots/Adjacency_M4000.png}%
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk3m4000simple.png}%
         \label{fig:M4000}%
     }\hfill
-    \subfigure[M7000.png]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=560]{/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/WritingReport_plots/Adjacency_M7000.png}%
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk5m4000simple.png}%
         \label{fig:M7000}%
     }\hfill
-    \subfigure[M10000.png]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=560]{/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/WritingReport_plots/Adjacency_M_10000.png}%
+    \subfigure[K=9, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk9m4000simple.png}%
         \label{fig:M10000}%
     }
-    \caption{Images}
+    \caption{Adjacency Matrices simulated via the Simple Model}
     \label{fig:all_images}
 \end{figure}
 
+We compare the performance of the Simple model with the POMM one. We fixed arbitrarily $\beta_{\max} = .75$.
+In table (\ref{table:simulations_from_simple}) we report the results of the simulation. In the three cases, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained by considering 100 new incoming players which get to play just with 10 players each. We also compare the labels estimated against the regularised spectral clustering algorithm and the Louvain algorithm. The Simple model is the best performing relative to the other three alternatives.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000simplesimple.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000simplesimple.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000simplesimple.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000simplePOMM.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000simplePOMM.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000simplePOMM.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:adjacency_all_simple}
+\end{figure}
 
 
-
-
-
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from a simple model}
-\begin{tabular}{ccccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{Macro Columns} & \multicolumn{3}{c}{Row Names} \\
-\cmidrule{2-4} \cmidrule{5-7}
-& $M=3000$ & $M=10000$ & $M=30000$ & Waic & VI distance & Predictive performance \\
-\midrule
-\multirow{3}{*}{Simple model} & - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-\midrule
-\multirow{3}{*}{POMM model} & - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-\midrule
-\multirow{3}{*}{Spectral Clustering} & - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-\midrule
-\multirow{3}{*}{K-means} & - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-\midrule
-\multirow{3}{*}{DBscan algorithm} & - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-& - & - & - & - & - & - \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from a simple model}
-\begin{tabular}{cccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{4}{c}{Macro Columns} \\
-\cmidrule{2-4}
-&Measures& $M=3000$ & $M=10000$ & $M=30000$ \\
-\midrule
-\multirow{3}{*}{\shortstack{Simple \\ model}} & Waic & - & - & - \\
-&VI distance & -& - & - \\
-& Predictive performance & -& - & - \\
-\midrule
-\multirow{3}{*}{\shortstack{POMM \\ model}} & Waic& - & - & - \\
-& VI distance& - & - & - \\
-& Predictive performance & -& - & - \\
-\midrule
-\multirow{3}{*}{\shortstack{Spectral \\ Clustering}} & Waic & -& - & - \\
-& VI distance& - & - & - \\
-& Predictive performance& - & - & - \\
-\midrule
-\multirow{3}{*}{K-means} & Waic& - & - & - \\
-& VI distance & -& - & - \\
-& Predictive performance & -& - & - \\
-\midrule
-\multirow{3}{*}{DBscan algorithm} & Waic & -& - & - \\
-& VI distance & -& - & - \\
-& Predictive performance & -& - & - \\
-\bottomrule
-\end{tabular}
-\end{table}
+In figure (\ref{fig:adjacency_all_simple}) we report the estimated co-clustering matrices resulting from the simulation process.
 
 
 
 
 
 
-
-
-
-
-
-
-
-\begin{landscape}
 \begin{table}[htbp]
 \centering
 \caption{$Y_{ij}$ drawn from a simple model}
 \begin{tabular}{cccccccccc}
 \toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{$M=3000$} & \multicolumn{3}{c}{$M=10000$} & \multicolumn{3}{c}{$M=30000$} \\
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& Waic & VI distance & Pred. perf. & Waic & VI distance & Pred. perf. & Waic & VI distance & Pred. perf. \\
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-Simple model & - & - & - & - & - & - & - & - & - \\
-POMM model & - & - & - & - & - & - & - & - & - \\
-Spectral Clustering & - & - & - & - & - & - & - & - & - \\
-K-means & - & - & - & - & - & - & - & - & - \\
-DBscan algorithm & - & - & - & - & - & - & - & - & - \\
+Simple model & 1805.5 & 1805.8 & 1336.5 & 0 & 0.12 & 1.18 & 0.18 & 0.61 & 0.76 \\
+POMM model & 1590.0 & 1454.3 & 954.7 & 0.51 & 0.65 & 2.97 & 1 & 0.85 & 0.92 \\
+Spectral Clustering & - & - & - & 1.37 & 0.58 & 2.82 & - & - & - \\
+Louvain algorithm & - & - & - & 4.06 & 2.78 & 3.79 &  & - & - \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+
+\clearpage
+
+\section{Simulation Study from the POMM Model}
+
+In this section we reverse the exercise performed in previous one. Before we were simulating from the Simple model, now we are doing the same, with similar parameters ($K=3,5,9, M=4000 \text{ and } \beta_{\max} = .75)$. Here are the results.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk3m4000POMM.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk5m4000POMM.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk9m4000POMM.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Adjacency Matrices simulated via the POMM Model}
+    \label{fig:all_images}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000POMMsimple.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000POMMsimple.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000POMMsimple.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000POMMPOMM.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000POMMPOMM.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000POMMPOMM.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+
+
+In table (\ref{table:simulations_from_simple}) we report the results of the simulation. As before, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained $N_new = 100$. Also here we compare clustering performance against that of the regularised spectral clustering algorithm and the Louvain algorithm. The POMM model is the best performing relative to the other three alternatives.
+
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{$Y_{ij}$ drawn from the POMM model}
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+Simple model & 2353.7 & 2019.1 & 1692.0 & 0.83 & 2.37 & 3.93 & 0.90 & 0.81& 0.69  \\
+POMM model & 2438.5 & 1992.7 & 1560.9 & 0.56 & 2.00 & 3.21 & 0.26 & 0.39 & 0.6 \\
+Spectral Clustering & - & - & - & 0.95 & 1.85 & - & - & - & - \\
+Louvain algorithm & - & - & - & 3.94 & 4.26 & - & - & - & - \\
 \bottomrule
 \end{tabular}
 \end{table}
-\end{landscape}
 
+\clearpage
+\subsection{Diagnostic Checks}
+
+In a Bayesian framework, especially when dealing with MCMC methods, it is important to check whether there has been convergence of the distribution to the stationary one and to check the overall performance of the method.
+
+Here we report several measures to assess the convergence of the estimation procedure.
+
+We simulated according to the same procedure as before a tournament from the POMM prior model, with $N=100$,$K=4$, $M=4000$, $\alpha=1$, and $\beta_{\max}=0.8$.In this estimation procedure we run four different MCMC chains for $N_iter = 20000$ according to the POMM prior model($K=4,\beta_{\max}=0.8$,; to fasten the computations, the code is parallelised on 4 different cores. The results that we get are therefore regarding the 4 different MCMC chains.
+
+
+\subsubsection{Posterior Predictive Check}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=4, Chain1]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_firstchain.png}%
+        \label{fig:posteriorpredictive1}%
+    }\hfill
+    \subfigure[K=4, Chain2]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_secondchain.png}%
+        \label{fig:posteriorpredictive2}%
+    }\\[2ex]\subfigure[K=4, Chain3]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_thirdchain.png}%
+        \label{fig:posteriorpredictive3}%
+    }\hfill
+    \subfigure[K=4, Chain4]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_fourthchain.png}%
+        \label{fig:posteriorpredictive4}%
+    }
+    \caption{Posterior predictive check: simulating from the estimated parameters}
+    \label{fig:predictive_checks}
+\end{figure}
+
+
+\subsubsection{Density Plot}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=4, Chain1-4, $P_{1,2}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_2.png}%
+        \label{fig:posteriorpredictive1}%
+    }\hfill
+    \subfigure[K=4, Chain1-4, $P_{1,3}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_3.png}%
+        \label{fig:posteriorpredictive2}%
+    }\\[2ex]\subfigure[K=4, Chain1-4, $P_{1,4}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_4.png}%
+        \label{fig:posteriorpredictive3}%
+    }\hfill
+    \subfigure[K=4, Chain1-4, $P_{2,3}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_3.png}%
+        \label{fig:posteriorpredictive4}%
+    }\\[2ex]\subfigure[K=4, Chain1-4, $P_{2,4}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_4.png}%
+        \label{fig:posteriorpredictive3}%
+    }\hfill
+    \subfigure[K=4, Chain1-4, $P_{3,4}$]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_3_4.png}%
+        \label{fig:posteriorpredictive4}%
+    }
+
+    \caption{Density plot for each P entry: in red the true P value. Different lines correspond to different chains}
+    \label{fig:predictive_checks}
+\end{figure}
+
+
+\subsubsection{Traceplot}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=4, Chain1]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain1.png}%
+        \label{fig:posteriorpredictive1}%
+    }\hfill
+    \subfigure[K=4, Chain2]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain2.png}%
+        \label{fig:posteriorpredictive2}%
+    }\\[2ex]\subfigure[K=4, Chain3]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain3.png}%
+        \label{fig:posteriorpredictive3}%
+    }\hfill
+    \subfigure[K=4, Chain4]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain4.png}%
+        \label{fig:posteriorpredictive4}%
+    }
+    \caption{Traceplot of the likelihood at each iteration for the 4 chains, namely $\sum_{ij} \log \left( p \left( y_ij |\hat{z}^{(t)}, \hat{P}^{(t)} \right) \right) $}
+    \label{fig:predictive_checks}
+\end{figure}
+
+
+\subsubsection{Autocorrelation Plot}
+\clearpage
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=4, Chain1]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain1.png}%
+        \label{fig:posteriorpredictive1}%
+    }\hfill
+    \subfigure[K=4, Chain2]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain2.png}%
+        \label{fig:posteriorpredictive2}%
+    }\\[2ex]\subfigure[K=4, Chain3]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain3.png}%
+        \label{fig:posteriorpredictive3}%
+    }\hfill
+    \subfigure[K=4, Chain4]{%
+        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain4.png}%
+        \label{fig:posteriorpredictive4}%
+    }
+    \caption{Autocorrplot of the likelihood at each iteration for the 4 chains, namely}
+    \label{fig:predictive_checks}
+\end{figure}
 
 \begin{comment}
 

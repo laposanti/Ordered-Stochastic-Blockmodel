@@ -8,7 +8,7 @@ library(dplyr)
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_Z1.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_pomm.R")
+source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_alpha.R")
 
 N_iter=20000
 set.seed(34)
@@ -16,7 +16,7 @@ set.seed(34)
 N=100
 M= 10000
 K=7
-alpha=1
+alpha=.5
 
 beta_max= .85
 
@@ -82,7 +82,7 @@ truncations_current <- improper_prior5(K,beta_max,alpha = alpha_current)
 #generating a proposal matrix
 alpha_container = matrix(0, nrow=1, ncol=N_iter)
 p_container = array(0, dim=c(K,K,N_iter))
-p_current = simulating_POMM_powerlaw2(K,alpha_current,truncations_current,beta_max)
+p_current = simulating_POMM_powerlaw_norm(K,alpha_current,truncations_current,beta_max)
 
 
 

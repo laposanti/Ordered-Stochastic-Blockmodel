@@ -1,4 +1,18 @@
 
+generalized_levels <- function(concave_matrix, K, N,diag0.5) {
+  excluding_level0 = ifelse(diag0.5,1 ,0)
+  level_list <- vector("list", K-excluding_level0)
+  
+  for (i in 1:N) {
+    split_matrices <- diag_split_matrix(concave_matrix[,,i])
+    
+    for (j in 1:(K-excluding_level0)) {
+      level_list[[j]] <- append(level_list[[j]], split_matrices[[j+excluding_level0]])
+    }
+  }
+  
+  return(level_list)
+}
 
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_Z1.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
@@ -6,19 +20,19 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_pomm.R")
 
 library(pander)
-
+library(truncnorm)
 
 N_iter=40000
 set.seed(34)
 
 N=100
-M= 10000
-K=
-alpha=1
-beta_max= .85
+M= 60000
+K=3
+alpha=.5
+beta_max= .75
 gamma_vec=c(1/5, 2/5, 3/5)
 
-synth = simulating_tournament_new(N = N, alpha = alpha,
+synth = simulating_tournament_new_norm(N = N, alpha = alpha,
                                   beta_max = beta_max,
                                   K=K, M = M,
                                   gamma_vec = gamma_vec,
@@ -35,8 +49,10 @@ P_true= synth$P_matrix
 
 similarity_plot(y_ij_matrix, z_true,z_true)
 
+try = y_ij_matrix/n_ij_matrix
+try[which(is.na(try), arr.ind = T)] = 0
 
-
+similarity_plot(try, z_true,z_true)
 
 barplot(rowSums(y_ij_matrix)/rowSums(n_ij_matrix))
 barplot(colSums(y_ij_matrix)/colSums(n_ij_matrix))
@@ -160,7 +176,7 @@ simulating_POMM_powerlaw_norm = function(K,  alpha = 1,truncations, beta_max, di
 
 
 l_like_p_ij_normal = function(K, P_matrix, truncations, diag0.5 = T) {
-  K <- ifelse(diag0.5, K - 1, K)
+  K<- K-1
   level_sets <- diag_split_matrix(P_matrix)
   
   # Consider or exclude the main diagonal

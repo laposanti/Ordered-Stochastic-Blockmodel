@@ -6,12 +6,11 @@ source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_cod
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_P1.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-source("/Users/lapo_santi/Desktop/Nial/project/simplified model/functions_byLapoSanti.R")
 
-N_iter=50000
+N_iter=20000
 set.seed(30)
 N=100
-M= 40000
+M= 10000
 K=3
 alpha=1
 

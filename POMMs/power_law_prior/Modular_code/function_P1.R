@@ -1,12 +1,13 @@
 
-P_simple_update1 = function(z_current, P_matrix, K, n_ij,y_ij,A_current, C_current, upper.tri.non.zero){
+P_simple_update1 = function(z_current, P_matrix, K, n_ij,y_ij,A_current, C_current, upper.tri.non.zero, beta_max){
   z_mat_current <- vec2mat(z_current)
   acc.count_p=0
-  for(i in 1:K){
-    for(j in 1:K){
+  for(i in 1:(K-1)){
+    for(j in i:K){
       p_prime = p_proposal(p = P_matrix,sigma_p = .025,K = K)
       p_scanning = P_matrix
       p_scanning[i,j] = p_prime[i,j]
+      diag(p_scanning) = 0.5
       p_scanning[j,i] = 1 - p_prime[i,j]
       #Updating p_ij_prime with the last membership
       
@@ -15,7 +16,7 @@ P_simple_update1 = function(z_current, P_matrix, K, n_ij,y_ij,A_current, C_curre
       p_ij_scanning =  p_n_scanning[upper.tri.non.zero]
       
       A_prime = sum(dbinom(y_ij, n_ij, p_ij_scanning, log=T))
-      C_prime = get_B(p_scanning, 1)
+      C_prime = sum(dunif(p_scanning[upper.tri(p_scanning)],min = 1-beta_max, max = beta_max, log = T))
                     
       r = A_prime + C_prime - A_current - C_current
       

@@ -14,7 +14,7 @@ z_update_1 = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,labels_a
     # new clustering setup Z prime with only one node changed
     # reassign Z_[ii] randomly from a discrete uniform
     
-    k_prime=sample(labels_available,size = 1)
+    k_prime=sample(x=setdiff(labels_available,k_cur),size = 1)
     z_scanning[ii]=k_prime
     #computing p_ij_probabilities
     z_scanning_mat=vec2mat(z_scanning)

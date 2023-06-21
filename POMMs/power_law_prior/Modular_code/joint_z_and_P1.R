@@ -1,5 +1,5 @@
 
-
+library(mcclust.ext)
 library(loo)
 library(dbscan)
 library(randnet)
@@ -10,32 +10,31 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorS
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_P1.R")
 
-N_iter=10000
+N_iter=40000
 set.seed(34)
 
 N=100
 M= 10000
-K=3
+K=5
 alpha=1
 
+beta_max= .85
 
 
 
+gamma_vec = vector()
+for(i in 1:K){
+  gamma_vec = append(gamma_vec, i/(K**2))
+}
 
 
-gamma_vec=c(1/5, 2/5, 3/5)
-gamma_vec[1]/sum(gamma_vec)
-gamma_vec[2]/sum(gamma_vec)
-gamma_vec[3]/sum(gamma_vec)
+synth = simulating_tournament_new_overlap_norm(N = N, alpha = alpha,
+                                       beta_max = beta_max,
+                                       K=K, M = M,
+                                       gamma_vec = gamma_vec,
+                                       n_ij_max = 6,model = 'POMM',diag0.5 = T, overlap = overlap
+)
 
-
-
-beta_max=.75
-synth = simulating_tournament_new(N = N, alpha = alpha,
-                                  beta_max = beta_max,
-                                  K=K, M = M,
-                                  gamma_vec = gamma_vec,
-                                  n_ij_max = 6,model = 'Simple')
 
 n_ij_matrix=synth$n_ij_true
 y_ij_matrix=synth$y_ij_true
@@ -62,54 +61,42 @@ p_ij = p_ij_true[upper.tri.non.zero]
 # p_ij = p_ij_true
 
 
-similarity_plot(y_ij_matrix,z_true,z_true)
 
-#setting containers
+#------
+# setting containers
+
 z_container= matrix(0, nrow=N, ncol=N_iter)
+p_container = array(0, dim=c(K,K,N_iter))
+A_container = matrix(0, nrow=1, ncol=N_iter)
+B_container = matrix(0, nrow=1, ncol=N_iter)
+C_container = matrix(0, nrow=1, ncol=N_iter)
 
-
+#--------
 #initializing quantities
+
 p_current= matrix(rbeta(K**2,1,1),K,K)
 p_current = semi_symmetric(p_current)
 
-
-
-
-
-A_container = matrix(0, nrow=1, ncol=N_iter)
-B_container = matrix(0, nrow=1, ncol=N_iter)
-C_container[1] = C_current
-acc.count_p = 0
-
-#initializing_containers
-init<-kmeans(x = y_ij_matrix,centers = K)$cluster
-z_current= init
-adj.rand.index(init,z_true)
-
-
-
-
+z_current= kmeans(x = y_ij_matrix,centers = K)$cluster
 n_k_current = as.vector(table(z_current))
 z_mat_current = vec2mat(z_current)
-#p_ij_function = calculate_victory_probabilities(z_mat_current,P_true)
+
 aux = p_current%*%t(z_mat_current)
 p_nbyn_current = z_mat_current%*%aux
 p_ij_current = p_nbyn_current[upper.tri.non.zero]
-
-
-similarity_plot(p_nbyn_current, z_current,z_current)
-
-
-
-labels_available = 1:K
 
 A_current= sum(dbinom(y_ij, n_ij, p_ij_current, log = T))
 B_current=ddirichlet_multinomial(N,K,n_k = n_k_current ,my_alpha = gamma_vec)
 C_current =  get_B(p_current,1)
 
+
+labels_available = 1:K
+
+#---------
+
+#updating containers
 z_container[,1] = z_current
 p_container[,,1] = p_current
-
 A_container[1]=A_current
 B_container[1]=B_current
 C_container[1]=C_current
@@ -117,6 +104,7 @@ C_container[1]=C_current
 acc.count_z = 0
 acc.count_p = 0
 
+#-----------
 
 #setting time tracker
 pb=txtProgressBar(min=1,max=N_iter)
@@ -167,8 +155,6 @@ while (j < N_iter + 1) {
 }
 
 
-
-
 ts.plot(A_container[-c(1:20)])
 acf((A_container[-c(1:10)]))
 
@@ -178,8 +164,11 @@ acf((B_container[-c(1:100)]))
 
 
 posterior_prop = A_container+B_container
+
 ts.plot(posterior_prop[-c(1:100)])
 MAP = z_container[, which(posterior_prop == max(posterior_prop))[1]]
+
+
 
 acceptance_rate= acc.count_z/(N*N_iter)*100
 print(acceptance_rate)
@@ -196,6 +185,8 @@ print(acceptance_rate)
 #estimates
 similarity_matrix = pr_cc(z_container[,-c(1:N_iter*0.25)])
 point_est = minVI(similarity_matrix)$cl
+
+adj.rand.index(MAP, z_true)
 adj.rand.index(point_est, z_true)
 
 
@@ -203,11 +194,12 @@ similarity_plot(y_ij_matrix,synth$z_true,synth$z_true)
 similarity_plot(similarity_matrix,synth$z_true,synth$z_true)
 
 
-burnin_p = p_container[,,-(N_iter*0.5)]
+burnin_p = p_container[,,-(N_iter*0.25)]
 burnin_posterior = A_container[-c(1:5000)]
 
 ts.plot(burnin_posterior)
 summary(burnin_posterior)
+
 
 
 
@@ -223,7 +215,7 @@ for(i in 1:K) {
     p1 = ggplot(y_try, aes(y)) +
       geom_density(fill = "dodgerblue", alpha = 0.5) +
       scale_x_log10() +
-      geom_vline(xintercept = p_true[i, j], color = "red")+
+      geom_vline(xintercept = synth$P_matrix[i, j], color = "red")+
       xlab("probability") +
       ylab("Density") +
       ggtitle(paste("Density plot of entry ", i, ",", j, sep = ""))
@@ -237,9 +229,12 @@ p_combined
 mse_table = matrix(0,K,K)
 for(i in 1:K){
   for(j in 1:K){
-    mse_table[i,j]= (mean(burnin_p[i,j,]) - p_true[i,j])
+    mse_table[i,j]= (mean(burnin_p[i,j,]) - synth$P_matrix[i,j])
   }
 }
+pander::pander(mse_table)
+
+
 P_est = matrix(0,K,K)
   for(i in 1:K){
     for(j in 1:K){
@@ -248,20 +243,23 @@ P_est = matrix(0,K,K)
   }
 pander::pander(P_est)
 
+vi.dist(point_est,z_true)
+
+vi.dist(MAP,z_true)
 
 # ------------------------------------
 # LOUVAIN ALGORITHM
 # ------------------------------------
-
+library(igraph)
 # transform the adjacency matrix into an igraph object
 net <- graph.adjacency(y_ij_matrix, mode=c("directed"),diag = FALSE)
-cluster_optimal(net)
+
 # point estimate
 Louv <- cluster_edge_betweenness(net)
 # estimated H
 length(table(Louv$membership))
 # VI distance between estimated and true partition
-mcclust::vi.dist(z_true,t(Louv))
+vi.dist(z_true,t(Louv$membership))
 
 # ------------------------------------
 # Regularised SPECTRAL CLUSTERING
@@ -271,28 +269,40 @@ reg_sp <- randnet::reg.SP(A = y_ij_matrix,K = 3,iter.max = 1000000000)$cluster
 mcclust::vi.dist(z_true,reg_sp)
 adj.rand.index(reg_sp, z_true)
 
+
 # ------------------------------------
 # DBSCAN ALGORITHM
 # ------------------------------------
 
-dbscan::dbscan(y_ij_matrix)
+
 
 # ------------------------------------
 # K-MEANS ALGORITHM
 # ------------------------------------
 
-
+# ------------------------------------
+# ADJ Rand Index estimate
+# ------------------------------------
 
 adj.rand.index(kmeans(y_ij_matrix,3)$cluster,z_true) 
+vi.dist(point_est,z_true)
 
+# ------------------------------------
+# WAIC estimate
+# ------------------------------------
 
+upper.tri.non.zero.waic = which(upper.tri(n_ij_matrix) & n_ij_matrix>0, arr.ind = T)
+waic_matrix_container  = matrix(0, nrow=N_iter, ncol=length(upper.tri.non.zero.waic))
 
+for(ii in 1:N_iter){
+  z_mat_waic = vec2mat(z_container[,ii])
+  p_ij_waic= calculate_victory_probabilities(z_mat_waic, p_container[,,ii])
+  waic_matrix_container[ii,]= dbinom(y_ij_matrix[upper.tri.non.zero.waic], size = n_ij_matrix[upper.tri.non.zero.waic], p_ij_waic[upper.tri.non.zero.waic])
+}
 #measures
-loo(x = t(A_container))
+waic.matrix(waic_matrix_container)
 
 
-
-plot(x=c(1:N_iter),y=A_container)
 
 
 
@@ -301,7 +311,7 @@ plot(x=c(1:N_iter),y=A_container)
 # New incoming nodes: Misclassification Error
 # --------------------------------------------
 
-N_new = 100
+N_new = 100 
 z_new = c(rep(1,30),rep(2,30),rep(3,40))
 
 # create empty matrix of edges between the 300 new nodes and those in the original network
@@ -310,12 +320,19 @@ Yij_new <- matrix(0,N_new,N)
 
 
 # simulate the new edges
+# for (i in 1:N_new){
+#   for (j in 1:N){
+#     Yij_new[i,j] <-rbinom(1,1,prob= synth$P_matrix[z_new[i],z_true[j]])
+#   }
+# }
+
+sampled_games = sample(1:N, 100, F)
+
 for (i in 1:N_new){
-  for (j in 1:N){
-    Yij_new[i,j] <-rbinom(1,1,prob= p_true[z_new[i],z_true[j]])
+  for (j in sampled_games){
+    Yij_new[i,j] <-rbinom(1,1,prob= synth$P_matrix[z_new[i],z_true[j]])
   }
 }
-
 
 
 z_proportion = table(point_est)/N
@@ -325,8 +342,8 @@ z_predicted_prob = matrix(0, N_new, K)
 for(k in labels_available){
   for(i in 1:N_new){
     lik_i  <- 0 
-    for(j in 1:N){
-      lik_i  <- lik_i + dbinom(Yij_new[i,j],1, P_est[k, point_est[j]],log = T)
+    for(j in sampled_games){
+      lik_i  <- lik_i + dbinom(Yij_new[i,j],1, P_est[k, z_MAP[j]],log = T)
     }
     lik_i <- lik_i + log(z_proportion[k])
     z_predicted_prob[i,k] = lik_i 

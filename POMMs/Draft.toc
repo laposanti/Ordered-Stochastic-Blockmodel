@@ -5,11 +5,23 @@
 \contentsline {subsection}{\tocsubsection {}{3.1}{Defining matrix P (SST matrix)}}{7}{}%
 \contentsline {subsection}{\tocsubsection {}{3.2}{Defining a Poset over $P$}}{8}{}%
 \contentsline {subsection}{\tocsubsection {}{3.3}{Partially ordered Markov Models applied to P}}{9}{}%
-\contentsline {section}{\tocsection {}{4}{Power Law prior process}}{11}{}%
-\contentsline {section}{\tocsection {}{5}{Full model specification}}{14}{}%
-\contentsline {subsection}{\tocsubsection {}{5.1}{Model specification}}{14}{}%
-\contentsline {section}{\tocsection {}{6}{Estimation}}{15}{}%
-\contentsline {subsection}{\tocsubsection {}{6.1}{Updating z}}{15}{}%
-\contentsline {subsection}{\tocsubsection {}{6.2}{Updating $\mathbf {P}$}}{17}{}%
-\contentsline {section}{\tocsection {}{7}{Point Estimate, Model Selection, and inference}}{17}{}%
-\contentsline {section}{\tocsection {}{8}{Simulation Study}}{18}{}%
+\contentsline {section}{\tocsection {}{4}{Full model specification}}{11}{}%
+\contentsline {subsection}{\tocsubsection {}{4.1}{Simple Model specification}}{11}{}%
+\contentsline {subsection}{\tocsubsection {}{4.2}{Prior Specification}}{11}{}%
+\contentsline {subsection}{\tocsubsection {}{4.3}{POMM Prior}}{12}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{4.3.1}{Level Sets}}{12}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{4.3.2}{Truncation Process}}{12}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{4.3.3}{The POMM Prior}}{13}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{4.3.4}{The POMM Prior 2}}{13}{}%
+\contentsline {section}{\tocsection {}{5}{Estimation}}{15}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{5.0.1}{Adaptive algorithm}}{15}{}%
+\contentsline {subsection}{\tocsubsection {}{5.1}{Updating z}}{16}{}%
+\contentsline {subsection}{\tocsubsection {}{5.2}{Updating $\mathbf {P}$}}{16}{}%
+\contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{19}{}%
+\contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model}}{20}{}%
+\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model}}{22}{}%
+\contentsline {subsection}{\tocsubsection {}{8.1}{Diagnostic Checks}}{24}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{8.1.1}{Posterior Predictive Check}}{24}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{8.1.2}{Density Plot}}{24}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{8.1.3}{Traceplot}}{26}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{8.1.4}{Autocorrelation Plot}}{26}{}%

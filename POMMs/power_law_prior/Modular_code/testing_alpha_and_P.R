@@ -12,13 +12,13 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorS
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_pomm.R")
 
-N_iter=20000
-set.seed(34)
+N_iter=60000
+
 
 N=100
-M= 10000
-K=9
-alpha=1
+M= 30000
+K=3
+alpha=.5
 
 beta_max= .85
 
@@ -29,13 +29,17 @@ for(i in 1:K){
   gamma_vec = append(gamma_vec, i/(K**2))
 }
 
-
+set.seed(34)
 synth = simulating_tournament_new_norm(N = N, alpha = alpha,
                                        beta_max = beta_max,
                                        K=K, M = M,
                                        gamma_vec = gamma_vec,
                                        n_ij_max = 6,model = 'POMM',diag0.5 = T 
 )
+
+improper_prior5(K,beta_max = beta_max,alpha = alpha)
+
+
 
 n_ij_matrix=synth$n_ij_true
 y_ij_matrix=synth$y_ij_true
@@ -81,7 +85,7 @@ truncations_current <- improper_prior5(K,beta_max,alpha = alpha_current)
 #generating a proposal matrix
 alpha_container = matrix(0, nrow=1, ncol=N_iter)
 p_container = array(0, dim=c(K,K,N_iter))
-p_current = simulating_POMM_powerlaw2(K,alpha_current,truncations_current,beta_max)
+p_current = simulating_POMM_powerlaw_norm(K,alpha_current,truncations_current,beta_max)
 
 
 
@@ -169,24 +173,24 @@ while (j < N_iter + 1) {
 
 
 
-ts.plot(C_container[-c(1:100)])
-acf((C_container[-c(1:100)]))
+ts.plot(C_container[-c(1:20000)])
+
+acf((C_container[-c(1:40000)]))
 
 
 
 
 
 
-burnin_p = p_container[,,-(N_iter*0.5)]
-
-ts.plot(t(alpha_container))
-mean(alpha_container)
+burnin_p = p_container[,,-c(1:N_iter*0.5)]
+burnin_alpha = alpha_container[-c(1:N_iter*0.5)]
+ts.plot(burnin_alpha)
+mean(burnin_alpha)
 
 alpha_container[which(C_container == max(C_container))]
 #acceptance rate
 acc.count_p/(K * N_iter)
 
-burnin_p = p_container[,,-(N_iter*0.5)]
 
 
 
@@ -216,4 +220,4 @@ for(i in 1:K){
     mse_table[i,j]= (mean(burnin_p[i,j,]) - P_true[i,j])
   }
 }
-
+mse_table
