@@ -1,3 +1,4 @@
+
 simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, truncations, beta_max, diag0.5=T){
   
   #we map the proportions on a desired scale
@@ -16,9 +17,9 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, t
       
       # Calculate the likelihood using a truncated distribution
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
-      sigma <- (ub - lb) *overlap
-      
-      P_matrix[i,j] = rtruncnorm(1,a = 0.5,b = beta_max,mean = mu,sd = sigma)
+      #sigma <- (ub - lb) *overlap
+      sigma <- overlap*(beta_max - 0.5)/K
+      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
     }
   }
   P_matrix[lower.tri(P_matrix)] = 1 - t(P_matrix)[lower.tri(P_matrix)]
@@ -28,11 +29,11 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, t
   
   return(P_matrix)}
 
-#--------------------------#
-# SIMULATION OF TOURNAMENT #
-#--------------------------#
 
 
+#--------------------------#
+# joint prior on the  #
+#--------------------------#
 l_like_p_ij_normal_overlap = function(K, P_matrix, overlap,truncations, diag0.5 = T) {
   #we map the proportions on a desired scale
   beta_0 <- truncations
@@ -55,14 +56,13 @@ l_like_p_ij_normal_overlap = function(K, P_matrix, overlap,truncations, diag0.5 
       
       # Calculate the likelihood using a truncated distribution
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
-      sigma <- (ub - lb) *overlap
+      sigma <- overlap *(beta_max - 0.5)/K
       
-      log_lik_matrix[ii,jj] = log(truncnorm::dtruncnorm(P_matrix[ii,jj], a = 0.5, b = beta_max, mean = mu, sd = sigma))
+      log_lik_matrix[ii,jj] = log(dtruncnorm(P_matrix[ii,jj], a = 0.5, b = beta_max, mean = mu, sd = sigma))
     }
   }
   return(sum(log_lik_matrix[upper.tri(log_lik_matrix)]))
 }
-
 
 #--------------------------#
 # SIMULATION OF TOURNAMENT #
@@ -177,7 +177,9 @@ simulating_tournament_new_overlap_norm<- function(N,alpha,overlap, beta_max, K,M
 # POMM overlap P update #
 #-----------------------#
 
-P_POMM_update_given_overlap1 = function(z_current, p_current, 
+
+
+P_POMM_update_fixed_alpha_S_z = function(z_current, p_current, 
                                         A_current,C_current,y_ij,n_ij,labels_available,
                                         upper.tri.non.zero,K,alpha_current,truncations_current,beta_max, overlap_current, diag0.5,acc.count_p,sigma_p){
   
@@ -204,7 +206,7 @@ P_POMM_update_given_overlap1 = function(z_current, p_current,
       C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_prime,overlap = 
                                               overlap_current, 
                                             truncations = truncations_current,
-                                            diag0.5 = T) + dlnorm_mu_sigma(alpha_current) + dlnorm_mu_sigma(overlap_current,mu = 0.3,sigma  = 0.5)         
+                                            diag0.5 = T) + + dunif(alpha_current,0,4,log = T) + dunif(overlap_current,min = 0,max=1, log = T)
       
       A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
       
@@ -233,37 +235,28 @@ P_POMM_update_given_overlap1 = function(z_current, p_current,
 
 
 
+
+
 #------------------------#
 # POMM overlap update (S)  #
 #------------------------#
 
 
 
-P_POMM_overlap_update = function(z_current, p_current, 
+
+S_POMM_update_fixed_P_alpha_z = function(z_current, p_current, 
                                  A_current,C_current,y_ij,n_ij,labels_available,
                                  upper.tri.non.zero,K,truncations_current, alpha_current,beta_max, overlap_current,acc.count_overlap, sigma_overlap){
-  
-  z_current_mat<- vec2mat(z_current)
   
   
   overlap_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = overlap_current,sd = sigma_overlap)
   
   
-  # #proposing a new P
-  # p_prime <-  simulating_overlapping_POMM_powerlaw_norm(K, alpha_current, 
-  #                                                       truncations_current, 
-  #                                                       overlap = overlap_prime, 
-  #                                                       beta_max = beta_max, diag0.5 = T)
-  # 
-  # #computing full probabilities
-  # p_ij_prime_nbyn <- calculate_victory_probabilities(z_current_mat, P = p_prime)
-  # p_ij_prime <- p_ij_prime_nbyn[upper.tri.non.zero]
-  
   
   C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap = 
                                           overlap_prime, 
                                         truncations = truncations_current,
-                                        diag0.5 = T) + dlnorm_mu_sigma(alpha_current) + dlnorm_mu_sigma_trunc(y = overlap_prime,mu=0.5, sigma = 1, a = 0.1, b=0.9)       
+                                        diag0.5 = T) + dunif(alpha_current,0,4,log = T) + dunif(overlap_prime,min = 0,max=1, log = T)
   
   
   #A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
@@ -293,22 +286,22 @@ P_POMM_overlap_update = function(z_current, p_current,
 
 
 
+
 #---------
 #alpha update
 #---------
 
 
 
-
-P_POMM_alpha_update = function(z_current, p_current, 
+alpha_POMM_update_fixed_P_S_z = function(z_current, p_current, 
                                A_current,C_current,y_ij,n_ij,labels_available,
                                upper.tri.non.zero,K,alpha_current,beta_max, overlap_current, acc.count_alpha, sigma_alpha, truncations_current){
   
   z_current_mat<- vec2mat(z_current)
   
-  #proposing a new overlap
+  #proposing a new alpha
   
-  alpha_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = overlap_current,sd = sigma_alpha)
+  alpha_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = alpha_current,sd = sigma_alpha)
   truncations_prime <- improper_prior5(K,beta_max,alpha = alpha_prime,diag0.5 = T)
   
   # #proposing a new P
@@ -325,7 +318,7 @@ P_POMM_alpha_update = function(z_current, p_current,
   C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap = 
                                           overlap_current, 
                                         truncations = truncations_prime,
-                                        diag0.5 = T) + dlnorm_mu_sigma(alpha_prime) + dlnorm_mu_sigma_trunc(overlap_current,mu =0.5, sigma = 1,a = 0.1,b=0.9)    
+                                        diag0.5 = T) + dunif(alpha_prime,0,4,log = T) + dunif(overlap_current,min = 0,max=1, log = T)
   
   
   
@@ -356,10 +349,10 @@ P_POMM_alpha_update = function(z_current, p_current,
 
 
 
+
 #-----------------
 #z adaptive update
 #-----------------
-
 
 
 
@@ -452,7 +445,9 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
 
 
 
-
+#------------------
+# Adaptive Proposal
+#------------------
 
 
 tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget, min_sigma){
