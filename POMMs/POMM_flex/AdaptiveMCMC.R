@@ -13,11 +13,11 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorS
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_POMM2.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_overlap.R")
-N_iter=2
+N_iter=10000
 set.seed(34)
 
 N=100
-M= 30000
+M= 40000
 K=5
 alpha=0.5
 beta_max= .85
@@ -26,13 +26,14 @@ gamma_vec = vector()
 for(i in 1:K){
   gamma_vec = append(gamma_vec, i/(K**2))
 }
-
+model='POMM'
+diag0.5<-T
 
 synth = simulating_tournament_new_overlap_norm(N = N, alpha = alpha,overlap = overlap,
                                                beta_max = beta_max,
                                                K=K, M = M,
                                                gamma_vec = gamma_vec,
-                                               n_ij_max = 6,model = 'POMM',diag0.5 = T 
+                                               n_ij_max = 6,model = model,diag0.5 = T 
 )
 
 n_ij_matrix=synth$n_ij_true
@@ -117,7 +118,7 @@ labels_available = 1:K
 
 A_current= sum(dbinom(y_ij, n_ij, p_ij_current, log = T))
 B_current=ddirichlet_multinomial(N,K,n_k = n_k_current ,my_alpha = gamma_vec)
-C_current =  l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap =overlap_current, truncations = truncations_current,diag0.5 = T) + dlnorm_param(alpha_current)
+C_current =  l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap =overlap_current, truncations = truncations_current,diag0.5 = T) + + dlnorm_mu_sigma(overlap_current)+ dlnorm_mu_sigma(alpha_current)
 
 z_container[,1] = z_current
 p_container[,,1] = p_current
@@ -162,7 +163,7 @@ for(j in 1:N_iter){
   
   setTxtProgressBar(pb, j)
   # Create a vector of update indices in random order
-  updateOrder <- sample(1:4, size = 4,replace = F)
+  updateOrder <- c(1:4)
   
   for (updateIndex in updateOrder) {
     if (updateIndex == 1) {
@@ -185,7 +186,7 @@ for(j in 1:N_iter){
       truncations_current = alpha_update$truncations_current
       #adaptive standard deviation
       if(j %% 50 == 0){
-        sigma_alpha = tuning_proposal(iteration=j,acceptance_count = acc.count_alpha,sigma = sigma_alpha,acceptanceTarget = optimal_p)
+        sigma_alpha = tuning_proposal(iteration=j,acceptance_count = acc.count_alpha,sigma = sigma_alpha,acceptanceTarget = optimal_p,min_sigma = 0.02)
       }
     }else if (updateIndex == 2) {
       #z UPDATE----------------------------------------------------------------
@@ -202,7 +203,7 @@ for(j in 1:N_iter){
        acc.count_z = z_update$acc.moves
        if(j %% 50 == 0){
          for(t in 1:N){
-           sigma_z[t] = tuning_proposal_z(iteration=j,acceptance_count = acc.count_z[t],sigma = sigma_z[t],acceptanceTarget = optimal_p)
+           sigma_z[t] = tuning_proposal(iteration=j,acceptance_count = acc.count_z[t],sigma = sigma_z[t],acceptanceTarget = optimal_p,min_sigma = 0.2)
          }
          
        }
@@ -230,7 +231,7 @@ for(j in 1:N_iter){
       C_current = overlap_update$C_current
       overlap_current = overlap_update$overlap_current
       if(j %% 50 == 0){
-        sigma_overlap = tuning_proposal(iteration=j,acceptance_count = acc.count_overlap,sigma = sigma_overlap,acceptanceTarget = optimal_p)
+        sigma_overlap = tuning_proposal(iteration=j,acceptance_count = acc.count_overlap,sigma = sigma_overlap,acceptanceTarget = optimal_p,min_sigma = 0.02)
       }
     }else if (updateIndex == 4) {
       #P UPDATE----------------------------------------------------------------
@@ -258,7 +259,7 @@ for(j in 1:N_iter){
         for( ii in 1:K_stop){
           for(jj in (ii+j_start):K){
             
-            sigma_p[ii,jj] <- tuning_proposal(iteration=j,acceptance_count = acc.count_p[ii,jj],sigma = sigma_p[ii,jj],acceptanceTarget = optimal_p)
+            sigma_p[ii,jj] <- tuning_proposal(iteration=j,acceptance_count = acc.count_p[ii,jj],sigma = sigma_p[ii,jj],acceptanceTarget = optimal_p,min_sigma = 0.005)
           }
         }
       }

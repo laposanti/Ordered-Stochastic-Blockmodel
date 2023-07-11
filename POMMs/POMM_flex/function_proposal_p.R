@@ -27,7 +27,7 @@ P_POMM_update_given_overlap1 = function(z_current, p_current,
       C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_prime,overlap = 
                                               overlap_current, 
                                             truncations = truncations_current,
-                                            diag0.5 = T) + dlnorm_param(alpha_current) + dlnorm_param(overlap_current,z.mu = 0.3,z.sigma  = 0.5)         
+                                              diag0.5 = T) + + dlnorm_mu_sigma(alpha_current) + dlnorm_mu_sigma(overlap_current,mu = 0.3,sigma   = 0.5)         
       
       A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
       

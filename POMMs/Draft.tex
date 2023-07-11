@@ -6,7 +6,9 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{lscape}
-
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
 \usepackage{epstopdf}
 \usepackage{verbatim}
 \usepackage{rotating}
@@ -21,7 +23,7 @@
 \newtheorem{proposition}{Proposition}
 \newtheorem{definition}{Definition}
 \newcommand{\vertgeq}{\rotatebox{90}{$\leq$}}
-
+\newcommand{\vertg}{\rotatebox{90}{$>$}}
 \title{Draft}
 \author{Lapo Santi}
 %\date{}                                           % Activate to display a given date or no date
@@ -35,29 +37,31 @@
 \newpage
 
 \section{Introduction}
-Introduction:
 
-The purpose of this paper is to introduce a novel methodology to infer the latent ordering of blocks that exhibit a transitivity property in directed networks. Specifically, we develop a method to infer the community structure of binary interactions, where the groups are ordered in a one-dimensional hierarchy that determines the preferred edge direction. The paper builds on a class of models closely related to stochastic blockmodels, where only non-negative entries are considered. However, in this model, we are ignoring the zero entries, which can be debatable whether we are still dealing with a network as we are ignoring the sparsity that is one of the staples of networks.
 
-Research Question:
 
-The research question of this paper is to infer the block structure underlying a set of binary interactions with transitivity properties in directed networks. Our approach advances the existing literature by considering a method to learn the ordering of the blocks that reflects better an ordering of the block themselves.
+When faced with a multitude of alternatives, individuals often strive to organize them into coherent blocks or groups to better understand the decision landscape. Furthermore, they aim to establish a meaningful order within these blocks, enabling them to prioritize alternatives based on preference. This process involves two fundamental tasks: block clustering and order-based ranking. While clustering involves categorizing alternatives into distinct blocks, ranking focuses on arranging these blocks in a specific order. These tasks are typically accomplished through human judgments, often in the form of pairwise comparisons.
 
-Importance of the Study:
+In block clustering, the aim is to determine the inherent similarities among alternatives and group them accordingly. By comparing pairs of alternatives, individuals can identify common characteristics, shared attributes, or comparable features that contribute to their clustering. This process helps unveil the underlying structure of the alternatives, allowing decision-makers to comprehend the relationships and associations between them. Several techniques, such as hierarchical clustering and k-means clustering, have been employed to address this task effectively.
 
-This paper innovates the field of statistics by providing a novel methodology to infer the latent ordering of blocks, which can be very useful under certain circumstances. The proposed method has practical applications in analyzing tennis tournament data, where we can learn how competitive a tournament is by inferring the blocks and their ordering, from the strongest to the weakest.
+Conversely, in order-based ranking, the primary objective is to establish a preference-based order among the identified blocks of alternatives. By comparing pairs of blocks, individuals can discern the relative favorability of one block over another. These pairwise comparisons generate a ranking list that encapsulates the perceived preference or priority of each block. Various methodologies, including the Bradley-Terry model and pairwise comparison matrices, have been utilized to derive meaningful rankings from the collected preferences.
 
-Objectives:
+In this article, we propose a novel approach, termed Block Clustering and Order-based Ranking (BCOR), which unifies the tasks of block clustering and order-based ranking into a cohesive framework. The BCOR model introduces a dynamic parameter that governs the granularity of block clustering, allowing decision-makers to explore a spectrum of clustering options. By iteratively adjusting this parameter, the model can encompass a wide range of decision-making scenarios, from finely differentiated blocks to coarser groupings.
 
-The objective of this paper is to develop a method to infer the community structure of binary interactions where the groups are ordered in a one-dimensional hierarchy that determines the preferred edge direction. Specifically, we aim to learn the ordering of the blocks that exhibit a transitivity property in directed networks.
+A key insight of the BCOR model lies in its ability to relate the number of blocks to the underlying ranking structure. As the number of blocks converges to the total number of alternatives, the model effectively transitions into a traditional ranking approach, providing a complete ordering of the alternatives. Conversely, by intentionally reducing the number of blocks, decision-makers are presented with distinct groups of choices, each requiring preference considerations within its own subset. This approach offers a nuanced perspective on decision-making, allowing individuals to differentiate between highly favored groups and those that are comparatively less preferred.
 
-Methodology:
+The BCOR model provides a flexible and adaptive solution for organizing and prioritizing alternatives in various decision-making contexts. Its application extends beyond conventional clustering and ranking tasks, empowering decision-makers to explore the continuum between comprehensive rankings and granular groupings. Additionally, the model can be tailored to incorporate different types of pairwise comparisons, enabling its utilization in diverse domains and decision scenarios.
 
-We start by introducing the theory behind Partially Ordered Markov Models (POMMs) and the definition of a Strong Stochastic Transitivity matrix (SST matrix). Then we combine the two ideas into one, showing that we can represent the SST matrix with a collection of level sets. We impose a very specific dependence structure between the blocks, a Markovian one. Next, we specify the full model, where outcomes of tennis matches are represented as a binomial distribution, the POMM ordering is imposed on the entries of the winning probability matrix, and a dirichlet multinomial distribution is imposed on the assignment of players to blocks. This distribution is expanded into a Chinese Restaurant Process (CRP), which can be used to avoid assumptions on the initial number of blocks. Initially, we assume that the number of blocks follows a Poisson distribution. Finally, we simulate data and test our methodology with simulated data, followed by applying it to a real tennis dataset.
+To evaluate the effectiveness of the BCOR model, we conducted experiments using real-world datasets encompassing a wide range of decision contexts. The results demonstrate the model's ability to generate meaningful block clusters and order-based rankings, outperforming traditional approaches that solely focus on clustering or ranking tasks.
 
-Outline of the Paper:
+The contributions of this work can be summarized as follows:
 
-This paper is organized as follows. Section 2 introduces the theory behind Partially Ordered Markov Models (POMMs) and the definition of a Strong Stochastic Transitivity matrix (SST matrix). In Section 3, we combine the two ideas into one, showing that we can represent the SST matrix with a collection of level sets. Section 4 describes the dependence structure imposed on the blocks, a Markovian one, and how we specify the full model. In Section 5, we explain how we expand the dirichlet multinomial distribution into a Chinese Restaurant Process (CRP) and the assumptions we make on the number of blocks. Section 6 presents our simulation study, where we test our methodology with simulated data. Finally, in Section 7, we apply our methodology to a real tennis dataset. We conclude the paper with a discussion of our findings and potential future research directions.
+We introduce the novel problem of block clustering and order-based ranking, bridging the gap between these two fundamental decision tasks.
+We propose the BCOR model, which provides a unified framework to accommodate various levels of granularity in decision-making, from complete rankings to distinct preference-based groups.
+We showcase the versatility of the BCOR model through experiments on real-world datasets, highlighting its superior performance compared to existing methods.
+By integrating block clustering and order-based ranking, the BCOR model offers decision-makers a comprehensive tool to navigate complex decision landscapes
+
+
 
 
 
@@ -1039,23 +1043,23 @@ The interesting aspect of this methodology is that we could compute the discrepa
 
 For the moment, we want to infer just $\theta = \{ z, P, \alpha, S \}$, meaning that we treat $K$ as a known constant. The estimation strategy is a Hybrid MCMC algorithm. Since simulating from the conditional distribution $p(\theta_i| \theta_j, j\neq i)$ is unfeasible or computationally expensive, we substitute the simulation from the full conditional distribution with a simulation from a proposal distribution $q_i$. Referencing Muller's (1991) work, the Hybrid modification is as follows:
 
-
-z
 \begin{algorithm}
 \begin{algorithmic}[h]
 \For{$i = 1,\ldots, p \quad \texttt{given} \quad \left( \theta_1^{(t+1)}, \dots,\theta_{i-1}^{(t+1)},\theta_i^{(t)}, \dots,\theta_{p}^{(t)}\right)  $}
-\State \texttt{Simulate} \begin{equation}\label{eqn_general_proposal}
+\State \texttt{1. Simulate} \begin{equation}\label{eqn_general_proposal}
 \theta_i^{\prime} \sim q_i \left(\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)} \right)
 \end{equation}
-\State \texttt{Take} \begin{equation}
-theta_i^{(t+1)} = 
+\State \texttt{2. Take} \begin{equation}\label{eqn_acc_reject}
+\theta_i^{(t+1)} = 
 \begin{cases}
-&\theta_{i}^{(t)} \quad \texttt{with probability} \quad 1 - r, \\
-&\theta_{i}^{\prime} \quad \texttt{with probability} \quad 1 - r,
+\theta_{i}^{(t)} \quad &\texttt{with probability} \quad 1 - r_i, \\
+\theta_{i}^{\prime} \quad &\texttt{with probability} \quad 1 - r_i,
 \end{cases}
 \end{equation}
-\State where
-
+\State \texttt{where} \begin{equation}\label{eqn_gen_ratio}
+r_i = 1 \vertg \left\{
+\frac{\left(p(\theta_i^{\prime}|\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)}\right)}{\left(p(\theta_i^{(t)}|\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)}\right)}\right\}
+\end{equation}
 \EndFor
 \end{algorithmic}
 \label{alg_general_algortm}
@@ -1063,11 +1067,852 @@ theta_i^{(t+1)} =
 \end{algorithm}
 
 
-\subsubsection{Adaptive algorithm}
-The proposal distributions mentioned above are $\operatorname{Normals}\left( \theta^{(t-1)}, \sigma_{\theta}^2 \right)$. The proposal is accepted or rejected by evaluating the Metropolis ratio (to be precise, the logarithm of the Metropolis ratio). Th
-To answer these questions, an adaptive algorithm can be used. We proceed as follows. For each of the variables \(i\) \((1 \leq i \leq K + 3)\), we create an associated variable \(ls_i\) giving the logarithm of the standard deviation to be used when proposing a normal increment to variable \(i\). We begin with \(ls_i = 0\) for all \(i\) (corresponding to unit proposal variance). After the \(n\)-th "batch" of 50 iterations, we update each \(ls_i\) by adding or subtracting an adaption amount \(\delta(n)\). The adapting attempts to make the acceptance rate of proposals for variable \(i\) as close as possible to 0.44 (which is optimal for one-dimensional proposals in certain settings; cf. Roberts, Gelman, and Gilks 1997; Roberts and Rosenthal 2001). Specifically, we increase \(ls_i\) by \(\delta(n)\) if the fraction of acceptances of variable \(i\) was more than 0.44 on the \(n\)-th batch, or decrease \(ls_i\) by \(\delta(n)\) if it was less.
+\subsubsection{Adaptive algorithm for $\theta = \{ P, \alpha, S \}$}
 
-Condition (1.1) is satisfied provided \(\delta(n) \rightarrow 0\); we take \(\delta(n) = \min(0.01, n^{-1/2})\). Our approach is to specify a global maximal parameter value \(M < \infty\), and restrict each \(ls_i\) to the interval \([-M, M]\). For a large class of target densities (which includes all those which are log-concave outside an arbitrary bounded region), this ensures (1.2) holds. In practice, the \(ls_i\) stabilize nicely, so the bound on \(M\) is not actually needed.
+We specify the proposal distributions in \eqref{eqn_general_proposal} above as $$\theta_i^{\prime} \sim \operatorname{Normal}\left( \theta_i^{(t-1)}, \sigma_{\theta_i}^2 \right)$$ whose sampled value is accepted or rejected by evaluating the logarithm of \eqref{eqn_gen_ratio}. Choosing a correct $\sigma_{\theta_i}^2 $ value is not straightforward, and we choose to resort to an adaptive algorithm to elicitate a correct proposal variance. We proceed as in Roberts, Rosenthal 2012. For each of the $K(K-1)/2 + 2$ parameters \(i\) \((1 \leq i \leq K(K-1)/2 + 2)\), we create an associated variable \(ls_i\) giving the logarithm of the standard deviation to be used when proposing a normal increment to variable \(i\). We begin with \(ls_i = \log{(0.04)}\) for all \(i\) (corresponding to 0.2 proposal standard deviation). After the \(n\)-th "batch" of 50 iterations, we update each \(ls_i\) by adding or subtracting an adaption amount \(\delta(n)\). The adapting attempts to make the acceptance rate of proposals for variable \(i\) as close as possible to 0.234, following the literature practice Chris Sherlock12009. Specifically, we increase \(ls_i\) by \(\delta(n)\) if the fraction of acceptances of variable \(i\) was more than 0.234 on the \(n\)-th batch, or decrease \(ls_i\) by \(\delta(n)\) if it was less.
+
+$\rightarrow$ Insert here plots of convergence to the acceptance ratio
+
+We specify in the Appendix the full expression for the ratio of $\theta = \{ P, \alpha, S \}$ in \eqref{eqn_gen_ratio}.
+
+\subsubsection{Adaptive Algorithm for $\theta = { z }$}
+
+When dealing with $\theta = { z }$, a discrete parameter, we need to adapt the formulation while maintaining the underlying concept. In the case of the POMM model, the labels $k = 1, \ldots, K$ are ordered, and therefore, we can define a distance metric between these labels. Let us denote the distance between $k$ and $k'$ as $d(k, k')$, which can be expressed as:
+
+\begin{equation}
+d(k, k^\prime) = |k - k^\prime|
+\end{equation}
+
+If the acceptance rate for a particular player $i$ is too low, we want the proposal to explore neighboring labels. Conversely, if the acceptance rate is too high, we aim to sample labels further away. To achieve this, we assign a sampling probability to each label that is inversely related to its distance from the current label. Specifically, we define $p(k') = p(|k' - k|) = \operatorname{Normal}(0, \sigma_i^2)$, where $\sigma_i^2$ is adapted as above. A larger variance assigns higher probabilities to distant labels, while a smaller variance favors closer labels. Finally, we employ a multinomial distribution to sample the next label $k'$:
+
+\begin{equation}
+k' \sim \operatorname{Multinomial}(1, K, p(|k' - k|))
+\end{equation}
+
+By utilizing this approach, we can adapt the algorithm to explore labels based on their distances from the current label. 
+
+We specify in the Appendix the full expression for the ratio of $\theta = \{z\}$ in \eqref{eqn_gen_ratio}.
+
+
+\clearpage
+
+\section{Point Estimate, Model Selection,  and inference}
+
+While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. We are comparing the results from the simulation study via the following three main measures:
+
+\begin{itemize}
+\item Variation of Inforamation (VI): to fully utilise this posterior and engage in inference directly within the partition space, we adopt the decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modeling. This involves summarizing posterior distributions using the variation of information (vi) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The vi metric ranges from 0 to log2 V, where V represents the number of nodes. Intuitively, the vi metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. Refer to Wade and Ghahramani (2018) for a detailed exploration of the key properties of the vi metric. Within this framework, a formal Bayesian point estimate for z is obtained by selecting the partition with the lowest averaged vi distance from the other clusterings
+\item WAIC: While the WAIC yields practical and theoretical advantages  and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:$
+\log p(y_{ij} | z, P, \alpha) = y_{ij} \log p_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - p_{z_i, z_j}), \quad i = 2, \ldots, N,  j = 1, \ldots, i - 1$.
+
+\item Misclassification error: predicting the group membership $z_{N+1}$ of a new player may also be of interest. We can derive the estimate of the block probabilities for new players based on their early matches with some of the existing players.
+\begin{align}
+p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z}) &\propto p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z}) \nonumber \\
+&= p(y_{N+1} | \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z})
+\end{align}
+where $p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z})$ is the posterior probability of the new node $N+1$ to belong to the block $k$, given the previously observed data $Y$, the new node's data $y_{N+1}$ and the estimated labels $\hat{z}$. On the right hand side of the expression above, $p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k )$ represents the likelihood of observing $y_{N+1}$ given the previously observed data $Y$ and the estimated labels $\hat{z}$, which, due to conditional independence, is the same as conditioning just on $\hat{z}$. Finally, $p(z_{N+1} = k | \hat{z})$ represents the prior probability of label $k$ for the new node $N+1$ given $\hat{z}$, which we can approximate with the relative size of the blocks $n_k$.
+\end{itemize}
+\begin{comment}
+\item Prediction error: making prediction on the match score between two players is also possible within this framework. Once we have obtained the MCMC samples, we can retrieve the posterior predictive distribution.
+
+Let us assume $i^\star$ is a new player . The posterior predictive is:
+\begin{align}
+p(y_{i^\star j}| \textbf{Y}) &= \int p(z| \{ \textbf{Y}\setminus y_{i^\star} \})  \cdot p(y_{i^\star j} | z ) dz \\
+&\approx \frac{1}{T} \sum_{t = 1}^{T} \sum_{z_i=1}^{K}  p(y_{i^\star j}| z_j^{(t)}) \\
+&=  \frac{1}{T} \sum_{t = 1}^{T} \sum_{z_{i^\star} =1}^{K}  p_{z_{i^\star}, z_j^{(t)}}^{y_{i^\star j} } \cdot (1-p_{z_{i^\star}, z_j^{(t)}})^{n_{i^\star j} -  y_{i^\star j}} \quad \quad \text{for }y_{i^\star j} = 0,\ldots, n_{i^\star j} \\
+\end{align} 
+where $z_j^{(t)} \sim p(z|Y)$
+\end{itemize}
+\end{comment}
+
+\clearpage
+
+\section{Simulation Study from the Simple Model}
+
+In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. We want to compare how it performs compared to the POMM extension and other state-of-the-art alternatives. Each tournament had a different number of blocks in the underlying structure. We set the total number of games $M := 0.5* \sum_{i,j}^N n_{ij}= \sum_{i,j}^N y_{ij} = 4000$, which is the average number of matches played in one year of tennis tournaments. We divided the players into three, five and nine blocks ($K = 3,5,9$ respectively). In Figure (\ref{fig:simple_adjacency}), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games increases with the number of blocks.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K3.png}%
+        \label{fig:simple_adjacency_K3}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K5.png}%
+        \label{fig:simple_adjacency_K5}%
+    }\hfill
+    \subfigure[K=9, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K9.png}%
+        \label{fig:simple_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the Simple Model}
+    \label{fig:simple_adjacency}
+\end{figure}
+
+We compare the performance of the Simple model with the POMM one. We fixed arbitrarily $\beta_{\max} = .75$.
+In table (\ref{table:simulations_from_simple}) we report the results of the simulation. In the three cases, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained by considering 100 new incoming players which get to play just with 10 players each. We also compare the labels estimated against the regularised spectral clustering algorithm and the Louvain algorithm. The Simple model is the best performing relative to the other three alternatives.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K3.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, Simple Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K9.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K3.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K9.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:adjacency_all_simple}
+\end{figure}
+
+
+In figure (\ref{fig:adjacency_all_simple}) we report the estimated co-clustering matrices resulting from the simulation process.
+
+
+
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{$Y_{ij}$ drawn from a simple model}
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+Simple model &  $\underset{[44.5]}{-12040.4}$ & $\underset{[26.5]}{-10483.7}$ & $\underset{[35.4]}{-11514.6}$ & 0 & 2.70 & 1.84 & 0.66 & 0.71 & 0.91 \\
+POMM model & $\underset{[39.6]}{-11076.5}$ & $\underset{[29.8]}{-10500.8}$& $\underset{[33.2]}{-11173.7}$ & 0.12 & 2.59 & 2.58 & 0.6 & 0.73 & 0.88  \\
+Spectral Clustering & - & - & - & 0.26 & 4.06 & 4.55 & - & - & -  \\
+Louvain algorithm & - & - & - & 4.90 & 3.43 & 4.12 & - & - & -  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table}
+  \label{tab:data}
+  \begin{tabular}{ccc}
+    \toprule
+    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
+    \midrule
+    K3\_M4000 & $0.43 \underset{[0.14, 0.83]}{}$ & $0.53 \underset{[0.27, 0.84]}{}$ \\
+    K5\_M4000 & $0.83 \underset{[0.74, 0.90]}{}$ & $0.85 \underset{[0.76, 0.90]}{}$ \\
+    K9\_M4000 & $0.82 \underset{[0.72, 0.89]}{}$ & $0.88 \underset{[0.84, 0.90]}{}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{$Y_{ij}$ drawn from a simple model}
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+\% $\{p \in \text{CI}_{95\%}\}$} & \multicolumn{3}{c}{
+\% $\{p \in \text{CI}_{99\%}\}$} & \multicolumn{3}{c}{mean MSE} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+Simple model & 1 &  0.9 & 0.61 & 1&1 & 0.71 & 0.01 & 0.08 & 0.11 \\
+POMM model  &0.33&  0.5 & 0.25 & 0.33 & 0.5  & 0.31 & 0.12 & 0.09 & 0.10  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+\clearpage
+\section{Simulation Study from the POMM Model}
+
+In this section we reverse the exercise performed in previous one. Before we were simulating from the Simple model, now we are doing the same, with similar parameters ($K=3,5,9, M=4000 \text{ and } \beta_{\max} = .75)$. Here are the results.
+
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K3.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=5, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{//Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K5.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=9, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K9.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the POMM Model}
+    \label{fig:all_images}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK5_M4000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK9_M4000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK5_M4000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK9_M4000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+
+
+In table (\ref{table:simulations_from_simple}) we report the results of the simulation. As before, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained $N_new = 100$. Also here we compare clustering performance against that of the regularised spectral clustering algorithm and the Louvain algorithm. The POMM model is the best performing relative to the other three alternatives.
+
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{$Y_{ij}$ drawn from the POMM model}
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+Simple model &  $\underset{[35.31]}{-11027.45}$ & $\underset{[33.51]}{-10991.22}$ & $\underset{[34.05]}{-11621.91}$ & 0.79 & 2.88 & 4.11 & 0.73 & 0.70 & 0.90 \\
+POMM model & $\underset{[35.42]}{-11030.84}$ & $\underset{[33.47]}{-10963.05}$& $\underset{[33.49]}{-11409.65}$ & 0.79 & 2.81 & 3.30 & 0.60 & 0.75 & 0.93\\
+Spectral Clustering & - & - & - & 0.95 & 1.85 & - & - & - & - \\
+Louvain algorithm & - & - & - & 3.94 & 4.26 & - & - & - & - \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table, $\alpha=0.5$, $S=0.2$}
+  \label{tab:data}
+  \begin{tabular}{ccc}
+    \toprule
+    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI)  \\
+    \midrule
+    K3\_M4000 & $0.4442 \underset{[0.1930, 0.7855]}{}$ & $0.2845 \underset{[0.1122, 0.6842]}{}$ \\
+    K5\_M4000 & $0.7357 \underset{[0.5367, 0.8844]}{}$ & $0.7498 \underset{[0.5573, 0.8877]}{}$ \\
+    K9\_M4000 & $0.7696 \underset{[0.6254, 0.8865]}{}$ & $0.8707 \underset{[0.8247, 0.8981]}{}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{$Y_{ij}$ drawn from a simple model}
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+\% $\{p \in \text{CI}_{95\%}\}$} & \multicolumn{3}{c}{
+\% $\{p \in \text{CI}_{99\%}\}$} & \multicolumn{3}{c}{mean MSE} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+Simple model & 0.67 &  0.8 & 0.78 & 1&0.80 & 0.97 & 0.01 & 0.05 & 0.15 \\
+POMM model  &0.67&  0.7 & 0.97 & 0.67 & 0.80  & 1 & 0.01 & 0.04 & 0.09  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\clearpage
+
+
+\subsection{Extended Simulation Study}
+In this section, we want to investigate the performance of the POMM model in recovering the true known partition, generated via the POMM model itself by changing the number of clusters involved ($K$) and the number of games played among the players $M$.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table K=3}
+  \label{tab:data}
+  \begin{tabular}{ccccc}
+    \toprule
+    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
+    \midrule
+    $M=4000$ & 1.1246508 & 0.9617248 & 0.6333333 & 0.054827731 \\
+    $M=10000$ & 0.2557382 & 0.2557382 & 0.6166667 & 0.007170147 \\
+    $M=40000$ & 0.0000000 & 0.0000000 & 0.6166667 & 0.003346822 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table K=5}
+  \label{tab:data}
+  \begin{tabular}{ccccc}
+    \toprule
+    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
+    \midrule
+    $M=4000$ & 2.8488118 & 2.7704420 & 0.7333333 & 0.095988871 \\
+    $M=10000$ & 1.6784835 & 1.6024773 & 0.8000000 & 0.059037933 \\
+    $M=40000$ & 0.4500958 & 0.4500958 & 0.6666667 & 0.057649622 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table K=9}
+  \label{tab:data}
+  \begin{tabular}{ccccc}
+    \toprule
+    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
+    \midrule
+    $M=4000$ & 3.6752208 & 3.7966766 & 0.8166667 & 0.051228350 \\
+    $M=10000$ & 2.8036489 & 2.6477037 & 0.8166667 & 0.047891014 \\
+    $M=40000$ & 1.7268339 & 1.6557098 & 0.9000000 & 0.033409231 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table, $K =3, \alpha=0.5$, $S = 0.2$}
+  \label{tab:data}
+  \begin{tabular}{ccc}
+    \toprule
+    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
+    \midrule
+        M=4000 & $0.6275 \underset{[0.3515, 0.8679]}{}$ & $0.5018 \underset{[0.2251, 0.8398]}{}$ \\
+    M=10000 & $0.5054 \underset{[0.2600, 0.8057]}{}$ & $0.3098 \underset{[0.1263, 0.6942]}{}$ \\
+    M=40000 & $0.4802 \underset{[0.2452, 0.7880]}{}$ & $0.3308 \underset{[0.1343, 0.7215]}{}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table, $K =5, \alpha=0.5$, $S = 0.2$}
+  \label{tab:data}
+  \begin{tabular}{ccc}
+    \toprule
+    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
+    \midrule
+        M=4000 & $0.7497 \underset{[0.5944, 0.8841]}{}$ & $0.8260 \underset{[0.7178, 0.8950]}{}$ \\
+    M=10000 & $0.6905 \underset{[0.4872, 0.8734]}{}$ & $0.6801 \underset{[0.4702, 0.8735]}{}$ \\
+    M=40000 & $0.7888 \underset{[0.6365, 0.8918]}{}$ & $0.7136 \underset{[0.5171, 0.8816]}{}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Data Table, $K =9, \alpha=0.5$, $S = 0.2$}
+  \label{tab:data}
+  \begin{tabular}{ccc}
+    \toprule
+    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
+    \midrule
+     M = 4000 & $0.5966 \underset{[0.5966, 0.5966]}{}$ & $0.8699 \underset{[0.8215, 0.8980]}{}$ \\
+       M=10000 & $0.6038 \underset{[0.5989, 0.6378]}{}$ & $0.8574 \underset{[0.7899, 0.8971]}{}$ \\
+    M = 40000 & $0.7241 \underset{[0.6251, 0.8412]}{}$ & $0.8330 \underset{[0.7290, 0.8959]}{}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+
+
+
+
+
+\clearpage
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, M=4000, Adjacency ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=3, M=4000, Adjacency ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=3, M=10000, Adjacency ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, M=40000, Similarity ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=3, M=4000, Similarity ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=3, M=10000, Similarity ]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M40000.png}%
+        \label{fig:M40000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+\clearpage
+\begin{figure}[h]
+    \centering
+    \subfigure[K=5, M=4000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, M=10000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=5, M=40000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=5, M=4000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, M=10000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=5, M=40000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M40000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+\clearpage
+\begin{figure}[h]
+    \centering
+    \subfigure[K=9, M=4000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=9, M=10000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, M=40000 Adjacency]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=9, M=4000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=9, M=10000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, M=40000 Similarity]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M40000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+
+
+\subsection{Diagnostic Checks}
+
+
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, M=4000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=3, M=10000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=3, M=40000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, M=4000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=3, M=10000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=3, M=40000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M40000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \subfigure[K=5, M=4000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, M=10000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=5, M=40000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=5, M=4000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, M=10000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=5, M=40000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M40000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+\clearpage
+\begin{figure}[h]
+    \centering
+    \subfigure[K=9, M=4000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=9, M=10000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, M=40000 Traceplot]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M40000.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=9, M=4000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M4000.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=9, M=10000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M10000.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, M=40000 Autocorrelation]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M40000.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+\clearpage
+\section{Application to Tennis Data}
+
+
+\clearpage
+
+\section{Appendix I: Investigating Empirically the prior behaviour}
+
+
+In this section, we explore the behaviour of the POMM prior, as $\alpha$, the parameter controlling the rate of increase of the power-law process and $S$, the variation (and therefore, the overlap) of the level sets sets, change. 
+
+We start with a simulation study, whose results are reported in figure \eqref{fig}.
+
+\begin{figure}[h]
+    \centering
+       \subfigure[$\alpha=0.1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.2K5.png}%
+        \label{l}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.4K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.7K5.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.2K5.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.4K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.7K5.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.2K5.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.4K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.7K5.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.2K5.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.4K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.7K5.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.2K5.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.4K5.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.7K5.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
+    \label{fig:exploratoryanalysisalpha_andS}
+\end{figure}
+
+
+\clearpage
+
+
+\section{Appendix II: Empirical Assessment of the inference problem}
+
+This section has two main objectives:
+
+\begin{enumerate}
+\item The first objective is to assess the identifiability of the POMM model. Given that the richness of the model, it is not obvious that the parameters are identifiable in all the regions of the parameter space. Therefore, by means of several simulation studies, we aim at identifying any possible identifiability constraints.
+\item The second objective is code testing, by checking the whole estimation procedure on simulated data.
+\end{enumerate}
+
+\subsection{Focus on $\alpha$}
+\begin{longtable}{l|rrr}
+\caption{
+{\large Mean absolute error for different alpha values} \\ 
+{\small Sample size = 1000. MAEs = $|\hat{\alpha}_{\text{MLE}} - \alpha|$}
+} \\ 
+\toprule
+\multicolumn{1}{l}{} & S = 0.2 & S = 0.4 & S = 0.7 \\ 
+\midrule
+$\alpha=$ 0.1 & $3.199 \times 10^{-4}$ & $1.270 \times 10^{-4}$ & $0.003$ \\ 
+$\alpha=$ 0.5 & $1.377 \times 10^{-4}$ & $2.955 \times 10^{-4}$ & $0.001$ \\ 
+$\alpha=$ 1.0 & $7.695 \times 10^{-4}$ & $0.007$ & $0.001$ \\ 
+$\alpha=$ 1.5 & $0.001$ & $0.006$ & $0.004$ \\ 
+$\alpha=$ 3.0 & $0.003$ & $0.036$ & $0.004$ \\ 
+\bottomrule
+\end{longtable}
+
+
+
+\begin{figure}[h]
+    \centering
+       \subfigure[$\alpha=0.1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.2_diag_.png}%
+        \label{l}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
+    \label{fig:exploratoryanalysisalpha_andS}
+\end{figure}
+
+
+\subsubsection{Updating $\alpha$ algorithm}
+
+
+
+
+\subsubsection{Montecarlo algorithm}
+
+
+
+\subsection{Focus on $S$}
+
+\begin{longtable}{l|rrrrr}
+\caption*{
+{\large Mean absolute error for different $S$ values} \\ 
+{\small Each row is a different $S$ value. Sample size = 1000}
+} \\ 
+\toprule
+\multicolumn{1}{l}{} & $\alpha = 0.1$ & $\alpha = 0.5$ & $\alpha = 1$ & $\alpha = 1.5$ & $\alpha = 3$ \\ 
+\midrule
+S = 0.2 & $0.002$ & $0.002$ & $9.780 \times 10^{-4}$ & $3.709 \times 10^{-4}$ & $9.931 \times 10^{-4}$ \\ 
+S = 0.4 & $0.005$ & $0.003$ & $0.006$ & $0.002$ & $0.003$ \\ 
+S = 0.7 & $0.006$ & $0.002$ & $0.005$ & $0.006$ & $0.007$ \\ 
+\bottomrule
+\end{longtable}
+
+
+\begin{figure}[h]
+    \centering
+       \subfigure[$\alpha=0.1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.2_diag_.png}%
+        \label{l}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=0.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=1.5, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.2_diag_.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.4$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.4_diag_.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[$\alpha=3, S = 0.7$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.7_diag_.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
+    \label{fig:exploratoryanalysisalpha_andS}
+\end{figure}
+
+
+\subsubsection{Montecarlo algorithm}
+
+
+
+
+
+
+
+
+\clearpage
+
+\section{Appendix I: Estimation Details}
+
 
 \subsection{Updating z}
 
@@ -1161,311 +2006,12 @@ log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij}
 \caption{Updating $P$ step}
 \end{algorithm}
 
+\section{Appendix II: POMM prior checks}
 
-\clearpage
+\subsection{Prior predictive check}
 
-\section{Point Estimate, Model Selection,  and inference}
+\subsection{MLE check}
 
-While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. We are comparing the results from the simulation study via the following three main measures:
-
-\begin{itemize}
-\item Variation of Inforamation (VI): to fully utilise this posterior and engage in inference directly within the partition space, we adopt the decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modeling. This involves summarizing posterior distributions using the variation of information (vi) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The vi metric ranges from 0 to log2 V, where V represents the number of nodes. Intuitively, the vi metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. Refer to Wade and Ghahramani (2018) for a detailed exploration of the key properties of the vi metric. Within this framework, a formal Bayesian point estimate for z is obtained by selecting the partition with the lowest averaged vi distance from the other clusterings
-\item WAIC: While the WAIC yields practical and theoretical advantages  and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:$
-\log p(y_{ij} | z, P, \alpha) = y_{ij} \log p_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - p_{z_i, z_j}), \quad i = 2, \ldots, N,  j = 1, \ldots, i - 1$.
-
-\item Misclassification error: predicting the group membership $z_{N+1}$ of a new player may also be of interest. We can derive the estimate of the block probabilities for new players based on their early matches with some of the existing players.
-\begin{align}
-p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z}) &\propto p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z}) \nonumber \\
-&= p(y_{N+1} | \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z})
-\end{align}
-where $p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z})$ is the posterior probability of the new node $N+1$ to belong to the block $k$, given the previously observed data $Y$, the new node's data $y_{N+1}$ and the estimated labels $\hat{z}$. On the right hand side of the expression above, $p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k )$ represents the likelihood of observing $y_{N+1}$ given the previously observed data $Y$ and the estimated labels $\hat{z}$, which, due to conditional independence, is the same as conditioning just on $\hat{z}$. Finally, $p(z_{N+1} = k | \hat{z})$ represents the prior probability of label $k$ for the new node $N+1$ given $\hat{z}$, which we can approximate with the relative size of the blocks $n_k$.
-\end{itemize}
-\begin{comment}
-\item Prediction error: making prediction on the match score between two players is also possible within this framework. Once we have obtained the MCMC samples, we can retrieve the posterior predictive distribution.
-
-Let us assume $i^\star$ is a new player . The posterior predictive is:
-\begin{align}
-p(y_{i^\star j}| \textbf{Y}) &= \int p(z| \{ \textbf{Y}\setminus y_{i^\star} \})  \cdot p(y_{i^\star j} | z ) dz \\
-&\approx \frac{1}{T} \sum_{t = 1}^{T} \sum_{z_i=1}^{K}  p(y_{i^\star j}| z_j^{(t)}) \\
-&=  \frac{1}{T} \sum_{t = 1}^{T} \sum_{z_{i^\star} =1}^{K}  p_{z_{i^\star}, z_j^{(t)}}^{y_{i^\star j} } \cdot (1-p_{z_{i^\star}, z_j^{(t)}})^{n_{i^\star j} -  y_{i^\star j}} \quad \quad \text{for }y_{i^\star j} = 0,\ldots, n_{i^\star j} \\
-\end{align} 
-where $z_j^{(t)} \sim p(z|Y)$
-\end{itemize}
-\end{comment}
-
-\clearpage
-
-\section{Simulation Study from the Simple Model}
-
-In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. We want to compare how it performs compared to the POMM extension and other state-of-the-art alternatives. Each tournament had a different number of blocks in the underlying structure. We set the total number of games $M := 0.5* \sum_{i,j}^N n_{ij}= \sum_{i,j}^N y_{ij} = 4000$, which is the average number of matches played in one year of tennis tournaments. We divided the players into three, five and nine blocks ($K = 3,5,9$ respectively). In Figure (\ref{fig:all_images}), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games increases with the number of blocks.
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk3m4000simple.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk5m4000simple.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk9m4000simple.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Adjacency Matrices simulated via the Simple Model}
-    \label{fig:all_images}
-\end{figure}
-
-We compare the performance of the Simple model with the POMM one. We fixed arbitrarily $\beta_{\max} = .75$.
-In table (\ref{table:simulations_from_simple}) we report the results of the simulation. In the three cases, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained by considering 100 new incoming players which get to play just with 10 players each. We also compare the labels estimated against the regularised spectral clustering algorithm and the Louvain algorithm. The Simple model is the best performing relative to the other three alternatives.
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000simplesimple.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000simplesimple.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000simplesimple.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000simplePOMM.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000simplePOMM.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000simplePOMM.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:adjacency_all_simple}
-\end{figure}
-
-
-In figure (\ref{fig:adjacency_all_simple}) we report the estimated co-clustering matrices resulting from the simulation process.
-
-
-
-
-
-
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from a simple model}
-\begin{tabular}{cccccccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
-\midrule
-Simple model & 1805.5 & 1805.8 & 1336.5 & 0 & 0.12 & 1.18 & 0.18 & 0.61 & 0.76 \\
-POMM model & 1590.0 & 1454.3 & 954.7 & 0.51 & 0.65 & 2.97 & 1 & 0.85 & 0.92 \\
-Spectral Clustering & - & - & - & 1.37 & 0.58 & 2.82 & - & - & - \\
-Louvain algorithm & - & - & - & 4.06 & 2.78 & 3.79 &  & - & - \\
-\bottomrule
-\end{tabular}
-\label{table:simulations_from_simple}
-\end{table}
-
-
-
-\clearpage
-
-\section{Simulation Study from the POMM Model}
-
-In this section we reverse the exercise performed in previous one. Before we were simulating from the Simple model, now we are doing the same, with similar parameters ($K=3,5,9, M=4000 \text{ and } \beta_{\max} = .75)$. Here are the results.
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk3m4000POMM.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk5m4000POMM.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=518,natheight=526]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/adjacencyk9m4000POMM.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Adjacency Matrices simulated via the POMM Model}
-    \label{fig:all_images}
-\end{figure}
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=3, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000POMMsimple.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000POMMsimple.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000POMMsimple.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk3m4000POMMPOMM.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk5m4000POMMPOMM.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=518,natheight=560]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/similarityk9m4000POMMPOMM.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
-
-
-
-In table (\ref{table:simulations_from_simple}) we report the results of the simulation. As before, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained $N_new = 100$. Also here we compare clustering performance against that of the regularised spectral clustering algorithm and the Louvain algorithm. The POMM model is the best performing relative to the other three alternatives.
-
-
-
-
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from the POMM model}
-\begin{tabular}{cccccccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
-\midrule
-Simple model & 2353.7 & 2019.1 & 1692.0 & 0.83 & 2.37 & 3.93 & 0.90 & 0.81& 0.69  \\
-POMM model & 2438.5 & 1992.7 & 1560.9 & 0.56 & 2.00 & 3.21 & 0.26 & 0.39 & 0.6 \\
-Spectral Clustering & - & - & - & 0.95 & 1.85 & - & - & - & - \\
-Louvain algorithm & - & - & - & 3.94 & 4.26 & - & - & - & - \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\clearpage
-\subsection{Diagnostic Checks}
-
-In a Bayesian framework, especially when dealing with MCMC methods, it is important to check whether there has been convergence of the distribution to the stationary one and to check the overall performance of the method.
-
-Here we report several measures to assess the convergence of the estimation procedure.
-
-We simulated according to the same procedure as before a tournament from the POMM prior model, with $N=100$,$K=4$, $M=4000$, $\alpha=1$, and $\beta_{\max}=0.8$.In this estimation procedure we run four different MCMC chains for $N_iter = 20000$ according to the POMM prior model($K=4,\beta_{\max}=0.8$,; to fasten the computations, the code is parallelised on 4 different cores. The results that we get are therefore regarding the 4 different MCMC chains.
-
-
-\subsubsection{Posterior Predictive Check}
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=4, Chain1]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_firstchain.png}%
-        \label{fig:posteriorpredictive1}%
-    }\hfill
-    \subfigure[K=4, Chain2]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_secondchain.png}%
-        \label{fig:posteriorpredictive2}%
-    }\\[2ex]\subfigure[K=4, Chain3]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_thirdchain.png}%
-        \label{fig:posteriorpredictive3}%
-    }\hfill
-    \subfigure[K=4, Chain4]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/posteriorpredictive_fourthchain.png}%
-        \label{fig:posteriorpredictive4}%
-    }
-    \caption{Posterior predictive check: simulating from the estimated parameters}
-    \label{fig:predictive_checks}
-\end{figure}
-
-
-\subsubsection{Density Plot}
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=4, Chain1-4, $P_{1,2}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_2.png}%
-        \label{fig:posteriorpredictive1}%
-    }\hfill
-    \subfigure[K=4, Chain1-4, $P_{1,3}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_3.png}%
-        \label{fig:posteriorpredictive2}%
-    }\\[2ex]\subfigure[K=4, Chain1-4, $P_{1,4}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_4.png}%
-        \label{fig:posteriorpredictive3}%
-    }\hfill
-    \subfigure[K=4, Chain1-4, $P_{2,3}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_3.png}%
-        \label{fig:posteriorpredictive4}%
-    }\\[2ex]\subfigure[K=4, Chain1-4, $P_{2,4}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_4.png}%
-        \label{fig:posteriorpredictive3}%
-    }\hfill
-    \subfigure[K=4, Chain1-4, $P_{3,4}$]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_3_4.png}%
-        \label{fig:posteriorpredictive4}%
-    }
-
-    \caption{Density plot for each P entry: in red the true P value. Different lines correspond to different chains}
-    \label{fig:predictive_checks}
-\end{figure}
-
-
-\subsubsection{Traceplot}
-
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=4, Chain1]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain1.png}%
-        \label{fig:posteriorpredictive1}%
-    }\hfill
-    \subfigure[K=4, Chain2]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain2.png}%
-        \label{fig:posteriorpredictive2}%
-    }\\[2ex]\subfigure[K=4, Chain3]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain3.png}%
-        \label{fig:posteriorpredictive3}%
-    }\hfill
-    \subfigure[K=4, Chain4]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain4.png}%
-        \label{fig:posteriorpredictive4}%
-    }
-    \caption{Traceplot of the likelihood at each iteration for the 4 chains, namely $\sum_{ij} \log \left( p \left( y_ij |\hat{z}^{(t)}, \hat{P}^{(t)} \right) \right) $}
-    \label{fig:predictive_checks}
-\end{figure}
-
-
-\subsubsection{Autocorrelation Plot}
-\clearpage
-\begin{figure}[htbp]
-    \centering
-    \subfigure[K=4, Chain1]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain1.png}%
-        \label{fig:posteriorpredictive1}%
-    }\hfill
-    \subfigure[K=4, Chain2]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain2.png}%
-        \label{fig:posteriorpredictive2}%
-    }\\[2ex]\subfigure[K=4, Chain3]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain3.png}%
-        \label{fig:posteriorpredictive3}%
-    }\hfill
-    \subfigure[K=4, Chain4]{%
-        \includegraphics[width=.5\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain4.png}%
-        \label{fig:posteriorpredictive4}%
-    }
-    \caption{Autocorrplot of the likelihood at each iteration for the 4 chains, namely}
-    \label{fig:predictive_checks}
-\end{figure}
 
 \begin{comment}
 

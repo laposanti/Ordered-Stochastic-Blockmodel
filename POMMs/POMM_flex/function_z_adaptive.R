@@ -42,7 +42,7 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
         print("!")
       }
     }
-    p_ij_scanning= calculate_victory_probabilities_modified(z_scanning_mat, P_matrix)
+    p_ij_scanning= calculate_victory_probabilities(z_scanning_mat, P_matrix)
     p_ij_scanning = p_ij_scanning[upper.tri.non.zero]
     #compute new N and A
     # K_current unchanged 'cause we are in GS context

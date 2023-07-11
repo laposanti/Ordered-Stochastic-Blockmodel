@@ -1,6 +1,3 @@
-
-
-
 simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, truncations, beta_max, diag0.5=T){
   
   #we map the proportions on a desired scale
@@ -21,7 +18,7 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, t
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
       sigma <- (ub - lb) *overlap
       
-      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
+      P_matrix[i,j] = rtruncnorm(1,a = 0.5,b = beta_max,mean = mu,sd = sigma)
     }
   }
   P_matrix[lower.tri(P_matrix)] = 1 - t(P_matrix)[lower.tri(P_matrix)]
@@ -60,11 +57,12 @@ l_like_p_ij_normal_overlap = function(K, P_matrix, overlap,truncations, diag0.5 
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
       sigma <- (ub - lb) *overlap
       
-      log_lik_matrix[ii,jj] = log(dtruncnorm(P_matrix[ii,jj], a = 0.5, b = beta_max, mean = mu, sd = sigma))
+      log_lik_matrix[ii,jj] = log(truncnorm::dtruncnorm(P_matrix[ii,jj], a = 0.5, b = beta_max, mean = mu, sd = sigma))
     }
   }
   return(sum(log_lik_matrix[upper.tri(log_lik_matrix)]))
 }
+
 
 #--------------------------#
 # SIMULATION OF TOURNAMENT #
@@ -110,7 +108,7 @@ simulating_tournament_new_overlap_norm<- function(N,alpha,overlap, beta_max, K,M
     truncations= improper_prior5(K,beta_max,alpha = alpha,diag0.5)
     p = simulating_overlapping_POMM_powerlaw_norm(K = K,alpha = alpha,overlap = overlap,truncations = truncations,beta_max = beta_max,diag0.5)
   }else if(model == 'Simple'){
-    p = matrix(rbeta(K*K,1,1),K,K)
+    p = matrix(runif(K*K,1-beta_max,beta_max),K,K)
     diag(p) <- rep(0.5,K)
     p=semi_symmetric(p)
   }
@@ -118,8 +116,7 @@ simulating_tournament_new_overlap_norm<- function(N,alpha,overlap, beta_max, K,M
   #creating the first dataframe
   z_players <- data.frame(id = 1:N, z = z)
   z_mat_true=vec2mat(z)
-  matrix_z_p_true = p%*%t(z_mat_true)
-  p_n_true = z_mat_true%*%matrix_z_p_true
+  p_n_true<- calculate_victory_probabilities(z_mat_true,p)
   
   similarity_plot(p_n_true,z,z)
   
@@ -131,8 +128,8 @@ simulating_tournament_new_overlap_norm<- function(N,alpha,overlap, beta_max, K,M
   i=1
   while(i<=M){
     #1) sample the blocks
-    block1 = sample(x = labels_available,size = 1)
-    block2 = sample(x = labels_available,size = 1)
+    block1 = sample(x = labels_available,size = 1, prob = block_size/sum(block_size))
+    block2 = sample(x = labels_available,size = 1, prob = block_size/sum(block_size))
     #2) sample a random player within that block
     # Get player IDs within each block
     players_block1 <- z_players[z_players$z == block1, "id"]
@@ -207,7 +204,7 @@ P_POMM_update_given_overlap1 = function(z_current, p_current,
       C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_prime,overlap = 
                                               overlap_current, 
                                             truncations = truncations_current,
-                                            diag0.5 = T) + dlnorm_param(alpha_current) + dlnorm_param(overlap_current,z.mu = 0.3,z.sigma  = 0.5)         
+                                            diag0.5 = T) + dlnorm_mu_sigma(alpha_current) + dlnorm_mu_sigma(overlap_current,mu = 0.3,sigma  = 0.5)         
       
       A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
       
@@ -266,7 +263,7 @@ P_POMM_overlap_update = function(z_current, p_current,
   C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap = 
                                           overlap_prime, 
                                         truncations = truncations_current,
-                                        diag0.5 = T) + dlnorm_param(alpha_current) + dlnormTruncAlt(x = overlap_prime,mean =0.5, cv = 1, min = 0.1,max=0.9)       
+                                        diag0.5 = T) + dlnorm_mu_sigma(alpha_current) + dlnorm_mu_sigma_trunc(y = overlap_prime,mu=0.5, sigma = 1, a = 0.1, b=0.9)       
   
   
   #A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
@@ -302,6 +299,7 @@ P_POMM_overlap_update = function(z_current, p_current,
 
 
 
+
 P_POMM_alpha_update = function(z_current, p_current, 
                                A_current,C_current,y_ij,n_ij,labels_available,
                                upper.tri.non.zero,K,alpha_current,beta_max, overlap_current, acc.count_alpha, sigma_alpha, truncations_current){
@@ -327,7 +325,7 @@ P_POMM_alpha_update = function(z_current, p_current,
   C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap = 
                                           overlap_current, 
                                         truncations = truncations_prime,
-                                        diag0.5 = T) + dlnorm_param(alpha_prime) + dlnormTruncAlt(x = overlap_current,mean =0.5, cv = 1, min = 0.1,max=0.9)       
+                                        diag0.5 = T) + dlnorm_mu_sigma(alpha_prime) + dlnorm_mu_sigma_trunc(overlap_current,mu =0.5, sigma = 1,a = 0.1,b=0.9)    
   
   
   
@@ -354,6 +352,9 @@ P_POMM_alpha_update = function(z_current, p_current,
               truncations_current=truncations_current))
   
 } 
+
+
+
 
 #-----------------
 #z adaptive update
@@ -454,7 +455,7 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
 
 
 
-tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget){
+tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget, min_sigma){
   acceptanceRate <- acceptance_count / iteration
   delta= min(0.01, iteration**(-1/2))
   lsi= log(sigma)
@@ -464,23 +465,11 @@ tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget)
     lsi <- lsi - delta}
   
   # Update the proposal standard deviations
-  sigma_updated <- max(0.01,exp(lsi))
+  sigma_updated <- max(min_sigma,exp(lsi))
   return(sigma_updated)
 }
 
-tuning_proposal_z<- function(iteration, acceptance_count, sigma, acceptanceTarget){
-  acceptanceRate <- acceptance_count / iteration
-  delta= min(0.01, iteration**(-1/2))
-  lsi= log(sigma)
-  if (acceptanceRate > acceptanceTarget) {
-    lsi <- lsi + delta
-  } else {
-    lsi <- lsi - delta}
-  
-  # Update the proposal standard deviations
-  sigma_updated <- max(0.2,exp(lsi))
-  return(sigma_updated)
-}
+
 
 label_probability <- function(distance, sigma_z) {
   prob <- dnorm(distance, mean = 0, sd = sigma_z)

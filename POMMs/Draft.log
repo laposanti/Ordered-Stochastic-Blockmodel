@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  20 JUN 2023 17:50
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  10 JUL 2023 20:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -169,6 +169,67 @@ Package: amssymb 2013/01/14 v3.01 AMS font symbols
 (/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/lscape.sty
 Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
+(/usr/local/texlive/2022/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen176
+\lightrulewidth=\dimen177
+\cmidrulewidth=\dimen178
+\belowrulesep=\dimen179
+\belowbottomsep=\dimen180
+\aboverulesep=\dimen181
+\abovetopsep=\dimen182
+\cmidrulesep=\dimen183
+\cmidrulekern=\dimen184
+\defaultaddspace=\dimen185
+\@cmidla=\count274
+\@cmidlb=\count275
+\@aboverulesep=\dimen186
+\@belowrulesep=\dimen187
+\@thisruleclass=\count276
+\@lastruleclass=\count277
+\@thisrulewidth=\dimen188
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2022/03/01 v3.6b Customizing captions (AR)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2022/03/17 v2.3b caption3 kernel (AR)
+\caption@tempdima=\dimen189
+\captionmargin=\dimen190
+\caption@leftmargin=\dimen191
+\caption@rightmargin=\dimen192
+\caption@width=\dimen193
+\caption@indent=\dimen194
+\caption@parindent=\dimen195
+\caption@hangindent=\dimen196
+Package caption Info: AMS or SMF document class detected.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption-ams-smf.sto
+File: caption-ams-smf.sto 2020/08/22 v2.0 Adaption of the caption package to th
+e AMS and SMF document classes (AR)
+))
+\c@caption@flags=\count278
+\c@continuedfloat=\count279
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
+\LTleft=\skip57
+\LTright=\skip58
+\LTpre=\skip59
+\LTpost=\skip60
+\LTchunksize=\count280
+\LTcapwidth=\dimen197
+\LT@head=\box70
+\LT@firsthead=\box71
+\LT@foot=\box72
+\LT@lastfoot=\box73
+\LT@gbox=\box74
+\LT@cols=\count281
+\LT@rows=\count282
+\c@LT@tables=\count283
+\c@LT@chunks=\count284
+\LT@p@ftn=\toks30
+)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/epstopdf-pkg/epstopdf.sty
 Package: epstopdf 2020-01-24 v2.11 Conversion with epstopdf on the fly (HO)
 
@@ -205,8 +266,8 @@ orted.
 
 )) (/usr/local/texlive/2022/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2020-07-07 v1.5u LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks30
-\verbatim@line=\toks31
+\every@verbatim=\toks31
+\verbatim@line=\toks32
 \verbatim@in@stream=\read2
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/rotating.sty
@@ -215,47 +276,42 @@ Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
 (/usr/local/texlive/2022/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
 )
-\c@r@tfl@t=\count274
-\rotFPtop=\skip57
-\rotFPbot=\skip58
-\rot@float@box=\box70
-\rot@mess@toks=\toks32
+\c@r@tfl@t=\count285
+\rotFPtop=\skip61
+\rotFPbot=\skip62
+\rot@float@box=\box75
+\rot@mess@toks=\toks33
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
-\multirow@colwidth=\skip59
-\multirow@cntb=\count275
-\multirow@dima=\skip60
-\bigstrutjot=\dimen176
+\multirow@colwidth=\skip63
+\multirow@cntb=\count286
+\multirow@dima=\skip64
+\bigstrutjot=\dimen198
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/tools/multicol.sty
 Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
-\c@tracingmulticols=\count276
-\mult@box=\box71
-\multicol@leftmargin=\dimen177
-\c@unbalance=\count277
-\c@collectmore=\count278
-\doublecol@number=\count279
-\multicoltolerance=\count280
-\multicolpretolerance=\count281
-\full@width=\dimen178
-\page@free=\dimen179
-\premulticols=\dimen180
-\postmulticols=\dimen181
-\multicolsep=\skip61
-\multicolbaselineskip=\skip62
-\partial@page=\box72
-\last@line=\box73
-\maxbalancingoverflow=\dimen182
-\mult@rightbox=\box74
-\mult@grightbox=\box75
-\mult@firstbox=\box76
-\mult@gfirstbox=\box77
-\@tempa=\box78
-\@tempa=\box79
-\@tempa=\box80
-\@tempa=\box81
-\@tempa=\box82
+\c@tracingmulticols=\count287
+\mult@box=\box76
+\multicol@leftmargin=\dimen256
+\c@unbalance=\count288
+\c@collectmore=\count289
+\doublecol@number=\count290
+\multicoltolerance=\count291
+\multicolpretolerance=\count292
+\full@width=\dimen257
+\page@free=\dimen258
+\premulticols=\dimen259
+\postmulticols=\dimen260
+\multicolsep=\skip65
+\multicolbaselineskip=\skip66
+\partial@page=\box77
+\last@line=\box78
+\maxbalancingoverflow=\dimen261
+\mult@rightbox=\box79
+\mult@grightbox=\box80
+\mult@firstbox=\box81
+\mult@gfirstbox=\box82
 \@tempa=\box83
 \@tempa=\box84
 \@tempa=\box85
@@ -287,55 +343,40 @@ Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \@tempa=\box111
 \@tempa=\box112
 \@tempa=\box113
-\c@minrows=\count282
-\c@columnbadness=\count283
-\c@finalcolumnbadness=\count284
-\last@try=\dimen183
-\multicolovershoot=\dimen184
-\multicolundershoot=\dimen185
-\mult@nat@firstbox=\box114
-\colbreak@box=\box115
-\mc@col@check@num=\count285
-)
-(/usr/local/texlive/2022/texmf-dist/tex/latex/booktabs/booktabs.sty
-Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen186
-\lightrulewidth=\dimen187
-\cmidrulewidth=\dimen188
-\belowrulesep=\dimen189
-\belowbottomsep=\dimen190
-\aboverulesep=\dimen191
-\abovetopsep=\dimen192
-\cmidrulesep=\dimen193
-\cmidrulekern=\dimen194
-\defaultaddspace=\dimen195
-\@cmidla=\count286
-\@cmidlb=\count287
-\@aboverulesep=\dimen196
-\@belowrulesep=\dimen197
-\@thisruleclass=\count288
-\@lastruleclass=\count289
-\@thisrulewidth=\dimen198
+\@tempa=\box114
+\@tempa=\box115
+\@tempa=\box116
+\@tempa=\box117
+\@tempa=\box118
+\c@minrows=\count293
+\c@columnbadness=\count294
+\c@finalcolumnbadness=\count295
+\last@try=\dimen262
+\multicolovershoot=\dimen263
+\multicolundershoot=\dimen264
+\mult@nat@firstbox=\box119
+\colbreak@box=\box120
+\mc@col@check@num=\count296
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/subfigure/subfigure.sty
 Package: subfigure 2002/03/15 v2.1.5 subfigure package
-\subfigtopskip=\skip63
-\subfigcapskip=\skip64
-\subfigcaptopadj=\dimen256
-\subfigbottomskip=\skip65
-\subfigcapmargin=\dimen257
-\subfiglabelskip=\skip66
-\c@subfigure=\count290
-\c@lofdepth=\count291
-\c@subtable=\count292
-\c@lotdepth=\count293
+\subfigtopskip=\skip67
+\subfigcapskip=\skip68
+\subfigcaptopadj=\dimen265
+\subfigbottomskip=\skip69
+\subfigcapmargin=\dimen266
+\subfiglabelskip=\skip70
+\c@subfigure=\count297
+\c@lofdepth=\count298
+\c@subtable=\count299
+\c@lotdepth=\count300
 
 ****************************************
 * Local config file subfigure.cfg used *
 ****************************************
 (/usr/local/texlive/2022/texmf-dist/tex/latex/subfigure/subfigure.cfg)
-\subfig@top=\skip67
-\subfig@bottom=\skip68
+\subfig@top=\skip71
+\subfig@bottom=\skip72
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/algorithms/algorithm.sty
 Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
@@ -343,14 +384,14 @@ nment
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count294
-\float@exts=\toks33
-\float@box=\box116
-\@float@everytoks=\toks34
-\@floatcapt=\box117
+\c@float@type=\count301
+\float@exts=\toks34
+\float@box=\box121
+\@float@everytoks=\toks35
+\@floatcapt=\box122
 )
-\@float@every@algorithm=\toks35
-\c@algorithm=\count295
+\@float@every@algorithm=\toks36
+\c@algorithm=\count302
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
 Package: algpseudocode 
@@ -359,62 +400,648 @@ Package: algpseudocode
 Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
 
 Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
-\c@ALG@line=\count296
-\c@ALG@rem=\count297
-\c@ALG@nested=\count298
-\ALG@tlm=\skip69
-\ALG@thistlm=\skip70
-\c@ALG@Lnr=\count299
-\c@ALG@blocknr=\count300
-\c@ALG@storecount=\count301
-\c@ALG@tmpcounter=\count302
-\ALG@tmplength=\skip71
+\c@ALG@line=\count303
+\c@ALG@rem=\count304
+\c@ALG@nested=\count305
+\ALG@tlm=\skip73
+\ALG@thistlm=\skip74
+\c@ALG@Lnr=\count306
+\c@ALG@blocknr=\count307
+\c@ALG@storecount=\count308
+\c@ALG@tmpcounter=\count309
+\ALG@tmplength=\skip75
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
 )
-\c@proposition=\count303
-\c@definition=\count304
+\c@proposition=\count310
+\c@definition=\count311
  (/usr/local/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-dvips.def
 File: l3backend-dvips.def 2022-02-07 L3 backend support: dvips
-\l__pdf_internal_box=\box118
-\g__pdf_backend_object_int=\count305
-\l__pdf_backend_content_box=\box119
-\l__pdf_backend_model_box=\box120
-\g__pdf_backend_annotation_int=\count306
-\g__pdf_backend_link_int=\count307
-\g__pdf_backend_link_sf_int=\count308
+\l__pdf_internal_box=\box123
+\g__pdf_backend_object_int=\count312
+\l__pdf_backend_content_box=\box124
+\l__pdf_backend_model_box=\box125
+\g__pdf_backend_annotation_int=\count313
+\g__pdf_backend_link_int=\count314
+\g__pdf_backend_link_sf_int=\count315
 )
-(./Draft.aux)
+(./Draft.aux
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `tab:data' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `l' multiply defined.
+
+
+LaTeX Warning: Label `sub@l' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:exploratoryanalysisalpha_andS' multiply defined.
+
+
+LaTeX Warning: Label `l' multiply defined.
+
+
+LaTeX Warning: Label `sub@l' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:exploratoryanalysisalpha_andS' multiply defined.
+
+)
 \openout1 = `Draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for JY2/mc/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for JT2/mc/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for JY2/mc/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for JT2/mc/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 8.65997pt on input line 29.
+(Font)              scaled to size 8.65997pt on input line 31.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 8.65997pt on input line 29.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 29.
+(Font)              scaled to size 8.65997pt on input line 31.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 31.
 
  (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 29.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 31.
 
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -454,151 +1081,154 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: longtable package is loaded.
+(/usr/local/texlive/2022/texmf-dist/tex/latex/caption/ltcaption.sty
+Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
+)
+Package caption Info: rotating package is loaded.
+Package caption Info: subfigure package is loaded.
+Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `JT2/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JT2/gt/m/n' tried instead on input line 30.
+(Font)              Font shape `JT2/gt/m/n' tried instead on input line 32.
 LaTeX Font Info:    Font shape `JT2/gt/m/n' will be
-(Font)              scaled to size 10.53629pt on input line 30.
+(Font)              scaled to size 10.53629pt on input line 32.
 LaTeX Font Info:    Font shape `JY2/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JY2/gt/m/n' tried instead on input line 30.
+(Font)              Font shape `JY2/gt/m/n' tried instead on input line 32.
 LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
-(Font)              scaled to size 10.53629pt on input line 30.
+(Font)              scaled to size 10.53629pt on input line 32.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 33.
+(Font)              No change on input line 35.
+
 (./Draft.toc)
 \tf@toc=\write3
 \openout3 = `Draft.toc'.
 
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 35.
+(Font)              scaled to size 7.69775pt on input line 37.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 35.
+(Font)              scaled to size 7.69775pt on input line 37.
  [1]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 37.
+(Font)              No change on input line 39.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
 [3]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 66.
+(Font)              No change on input line 70.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 67.
+(Font)              No change on input line 71.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 5.77332pt on input line 72.
+(Font)              scaled to size 5.77332pt on input line 76.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 5.77332pt on input line 72.
+(Font)              scaled to size 5.77332pt on input line 76.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 73.
+(Font)              No change on input line 77.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 76.
+(Font)              No change on input line 80.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 95.
+(Font)              No change on input line 99.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 96.
+(Font)              No change on input line 100.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 102.
+(Font)              No change on input line 106.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 103.
+(Font)              No change on input line 107.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 108.
+(Font)              No change on input line 112.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 109.
+(Font)              No change on input line 113.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 115.
+(Font)              No change on input line 119.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 116.
+(Font)              No change on input line 120.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 122.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 123.
+(Font)              No change on input line 126.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
 (Font)              No change on input line 127.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 131.
  [4]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 136.
+(Font)              No change on input line 140.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 160.
+(Font)              No change on input line 164.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 166.
+(Font)              No change on input line 170.
  [5] [6]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 201.
+(Font)              No change on input line 205.
  [7]
 File: /Users/lapo_santi/Desktop/Nial/project/POMMs/IMG_0EE4E8AB347D-1.jpeg Grap
 hic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/project/POMMs/IMG_0EE4E8AB347D-1.jpeg>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 242.
-
-
-LaTeX Warning: Reference `def:Poset' on page 8 undefined on input line 253.
-
-
-LaTeX Warning: Reference `fig:DAG' on page 8 undefined on input line 253.
-
+(Font)              No change on input line 246.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 246.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 246.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 246.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 257.
+(Font)              No change on input line 261.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 262.
-[8]
+(Font)              No change on input line 266.
+ [8]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 269.
+(Font)              No change on input line 273.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 276.
+(Font)              No change on input line 280.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 283.
+(Font)              No change on input line 287.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 284.
+(Font)              No change on input line 288.
 File: /Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg Graphic file
  (type eps)
- </Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg>
+
+</Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 293.
+(Font)              No change on input line 297.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 297.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 297.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 297.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 299.
-
-
-LaTeX Warning: Reference `eq:result1' on page 9 undefined on input line 313.
-
-[9] [10]
+(Font)              No change on input line 303.
+ [9] [10]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 631.
+(Font)              No change on input line 635.
 
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 644.
+(amsmath)                 on input line 648.
 
 [11]
-Overfull \hbox (6.17139pt too wide) in paragraph at lines 676--677
+Overfull \hbox (6.17139pt too wide) in paragraph at lines 680--681
 []\OT1/cmr/m/n/10.95 Finally, we as-sume that the num-ber of clus-ters $\OML/cm
 m/m/it/10.95 K$ \OT1/cmr/m/n/10.95 fol-low a Pois-son dis-tri-bu-tion $[](\OML/
 cmm/m/it/10.95 ^^U \OT1/cmr/m/n/10.95 =
  []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 689.
+(Font)              No change on input line 693.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 699.
+(Font)              No change on input line 703.
 [12]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 725.
-
-
-LaTeX Warning: Reference `eq:truncations' on page 13 undefined on input line 73
-6.
-
+(Font)              No change on input line 729.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 743.
+(Font)              No change on input line 747.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 744.
-[13]
-
-LaTeX Warning: Reference `eq:truncations' on page 14 undefined on input line 75
-5.
-
+(Font)              No change on input line 748.
+ [13]
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.2__diag__0.
 5.png Graphic file (type eps)
@@ -621,308 +1251,902 @@ graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.
 s_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.5.png
 >
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 778.
+(Font)              No change on input line 782.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 782.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 782.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 782.
  [14]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1038.
+(Font)              No change on input line 1042.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1069.
-
-Overfull \hbox (22.84392pt too wide) in paragraph at lines 1069--1071
- \OT1/cmr/m/n/10.95 5.0.1.\OT1/cmr/m/it/10.95 Adaptive al-go-rithm.[] \OT1/cmr/
-m/n/10.95 The pro-posal dis-tri-bu-tions men-tioned above are $[] []$.
- []
-
-[15] [16]
-Overfull \hbox (5.27441pt too wide) detected at line 1132
-[]
- []
-
-[17] [18]
+(Font)              No change on input line 1072.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 1080.
+ [15] [16]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1169.
- [19
+(Font)              No change on input line 1099.
+ [17
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1200.
+(Font)              No change on input line 1130.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/simple_adjacency_K3.png Graphic file (type eps)
 
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/simple_adjacency_K3.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/simple_adjacency_K5.png Graphic file (type eps)
 
-LaTeX Warning: Reference `fig:all_images' on page 20 undefined on input line 12
-02.
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/simple_adjacency_K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/simple_adjacency_K9.png Graphic file (type eps)
 
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk3m4000simple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk3m4000simple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk5m4000simple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk5m4000simple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk9m4000simple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk9m4000simple.png>
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/simple_adjacency_K9.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1218.
-
-
-LaTeX Warning: Reference `table:simulations_from_simple' on page 20 undefined o
-n input line 1223.
-
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk3m4000simplesimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk3m4000simplesimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk5m4000simplesimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk5m4000simplesimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk9m4000simplesimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk9m4000simplesimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk3m4000simplePOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk3m4000simplePOMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk5m4000simplePOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk5m4000simplePOMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk9m4000simplePOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk9m4000simplePOMM.png>
+(Font)              No change on input line 1148.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1250.
+(Font)              No change on input line 1148.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1148.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1148.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimpleSimple_similarity_K3.png Graphic file (type eps)
 
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimpleSimple_similarity_K3.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimpleSimple_similarity_K5.png Graphic file (type eps)
 
-LaTeX Warning: Reference `fig:adjacency_all_simple' on page 20 undefined on inp
-ut line 1255.
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimpleSimple_similarity_K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimpleSimple_similarity_K9.png Graphic file (type eps)
 
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimpleSimple_similarity_K9.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimplePOMM_similarity_K3.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimplePOMM_similarity_K3.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimplePOMM_similarity_K5.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimplePOMM_similarity_K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/SimplePOMM_similarity_K9.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/SimplePOMM_similarity_K9.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1180.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1180.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1180.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1180.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1194.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1194.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1194.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1194.
+
+Overfull \hbox (12.30516pt too wide) in paragraph at lines 1195--1208
+ [][][][] 
+ []
+
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1212.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1212.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1212.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1212.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1230.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1230.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1230.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1230.
+[18
+
+] [19] [20]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1246.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/POMM_adjacency_K3.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/POMM_adjacency_K3.png>
+File: //Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/result
+s/results_plots/POMM_adjacency_K5.png Graphic file (type eps)
+
+<//Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/res
+ults_plots/POMM_adjacency_K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/results_plots/POMM_adjacency_K9.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/resu
+lts_plots/POMM_adjacency_K9.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 1264.
-[20
-
-] [21]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1284.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk3m4000POMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk3m4000POMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk5m4000POMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk5m4000POMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/adjacencyk9m4000POMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/adjacencyk9m4000POMM.png>
+(Font)              No change on input line 1264.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1302.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk3m4000POMMsimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk3m4000POMMsimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk5m4000POMMsimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk5m4000POMMsimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk9m4000POMMsimple.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk9m4000POMMsimple.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk3m4000POMMPOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk3m4000POMMPOMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk5m4000POMMPOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk5m4000POMMPOMM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/similarityk9m4000POMMPOMM.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/similarityk9m4000POMMPOMM.png>
+(Font)              No change on input line 1264.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1331.
+(Font)              No change on input line 1264.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_SimpleK3_M4000.png Graphic file (type eps)
 
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_SimpleK3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_SimpleK5_M4000.png Graphic file (type eps)
 
-LaTeX Warning: Reference `table:simulations_from_simple' on page 22 undefined o
-n input line 1337.
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_SimpleK5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_SimpleK9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_SimpleK9_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_POMMK3_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_POMMK3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_POMMK5_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_POMMK5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/old_studies/plots/similarity_POMMK9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_
+studies/plots/similarity_POMMK9_M4000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1293.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1293.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1293.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1293.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1306.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1306.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1306.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1306.
+
+Overfull \hbox (28.73018pt too wide) in paragraph at lines 1307--1319
+ [][][][] 
+ []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1344.
-[22
-
-] [23]
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/posteriorpredictive_firstchain.png Graphic fil
-e (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/posteriorpredictive_firstchain.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/posteriorpredictive_secondchain.png Graphic fi
-le (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/posteriorpredictive_secondchain.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/posteriorpredictive_thirdchain.png Graphic fil
-e (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/posteriorpredictive_thirdchain.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/posteriorpredictive_fourthchain.png Graphic fi
-le (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/posteriorpredictive_fourthchain.png>
+(Font)              No change on input line 1326.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1388.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1393.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_2.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_2.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_3.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_3.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_4.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_1_4.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_3.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_3.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_4.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_2_4.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_3_4.png 
-Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/Density_plots/density_plot_4_chains_p_3_4.png>
+(Font)              No change on input line 1326.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1420.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1425.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain1.png Gra
-phic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/traceplots/traceplot_likelihood_chain1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain2.png Gra
-phic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/traceplots/traceplot_likelihood_chain2.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain3.png Gra
-phic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/traceplots/traceplot_likelihood_chain3.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/traceplots/traceplot_likelihood_chain4.png Gra
-phic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/traceplots/traceplot_likelihood_chain4.png>
+(Font)              No change on input line 1326.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1444.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1449.
+(Font)              No change on input line 1326.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1345.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1345.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1345.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1345.
+[21
 
-[24
+] [22] [23]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1369.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1369.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1369.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1369.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1383.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1383.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1383.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1383.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1397.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1397.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1397.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1397.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1413.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1413.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1413.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1413.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1428.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1428.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1428.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1428.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1443.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1443.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1443.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1443.
+ [24
 
 ] [25]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1450.
- [26]
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain1.png Graphic f
-ile (type eps)
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K3_M4000.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/autocorrplot/autocorrplot_chain1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain2.png Graphic f
-ile (type eps)
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K3_M10000.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/autocorrplot/autocorrplot_chain2.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain3.png Graphic f
-ile (type eps)
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K3_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K3_M40000.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/autocorrplot/autocorrplot_chain3.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modula
-r_code/results/diagnostic_checks/autocorrplot/autocorrplot_chain4.png Graphic f
-ile (type eps)
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K3_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K3_M4000.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/power_law_prior/Modular_cod
-e/results/diagnostic_checks/autocorrplot/autocorrplot_chain4.png>
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K3_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K3_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K3_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K3_M40000.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1468.
+(Font)              No change on input line 1488.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1488.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1488.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1488.
+ [26
+
+]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K5_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K5_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K5_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K5_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K5_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K5_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K5_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K5_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K5_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K5_M40000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1517.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1517.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1517.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1517.
  [27
 
 ]
-(./Draft.aux)
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K9_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K9_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K9_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/adjacency_POMM_K9_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/adjacency_POMM_K9_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K9_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K9_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K9_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/similarity_POMM_K9_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/similarity_POMM_K9_M40000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1546.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1546.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1546.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1546.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K3_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K3_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K3_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K3_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K3_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K3_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K3_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K3_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K3_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K3_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K3_M40000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1580.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1580.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1580.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1580.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[28
+
+] [29]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K5_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K5_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K5_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K5_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K5_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K5_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K5_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K5_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K5_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K5_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K5_M40000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1611.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1611.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1611.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1611.
+ [30
+
+]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K9_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K9_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K9_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/traceplot_POMM_K9_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/traceplot_POMM_K9_M40000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K9_M4000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K9_M4000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K9_M10000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K9_M10000.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
+/differentKstudy/autocorrplot_POMM_K9_M40000.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/diff
+erentKstudy/autocorrplot_POMM_K9_M40000.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1640.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1640.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1640.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1640.
+ [31
+
+]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1645.
+ [32
+
+]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1650.
+
+
+LaTeX Warning: Reference `fig' on page 33 undefined on input line 1655.
+
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.2K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.2K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.4K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.4K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.7K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.7K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.2K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.2K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.4K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.4K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.7K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.7K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.2K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1overlap0.2K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.4K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1overlap0.4K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.7K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1overlap0.7K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.2K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.2K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.4K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.4K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.7K5.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.7K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.2K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha3overlap0.2K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.4K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha3overlap0.4K5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.7K5.png Gr
+aphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/alpha_and_overlap_investigation_alpha3overlap0.7K5.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1715.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1715.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1715.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1715.
+
+
+LaTeX Warning: Float too large for page by 80.79788pt on input line 1717.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[33
+
+] [34]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1723.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1737.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1737.
+LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
+(Font)              scaled to size 11.54663pt on input line 1737.
+LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
+(Font)              scaled to size 11.54663pt on input line 1737.
+LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
+(Font)              scaled to size 6.73553pt on input line 1737.
+LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
+(Font)              scaled to size 6.73553pt on input line 1737.
+LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
+(Font)              scaled to size 4.8111pt on input line 1737.
+LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
+(Font)              scaled to size 4.8111pt on input line 1737.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1737.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1737.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.2_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.1_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.4_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.1_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.7_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.1_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.2_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.5_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.4_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.5_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.7_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha0.5_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1_overlap0.2_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1_overlap0.4_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1_overlap0.7_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.2_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1.5_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.4_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1.5_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.7_diag_.png Graphic file (
+type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha1.5_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha3_overlap0.2_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha3_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha3_overlap0.4_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha3_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/LikelihoodK5_alpha3_overlap0.7_diag_.png Graphic file (ty
+pe eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/LikelihoodK5_alpha3_overlap0.7_diag_.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1809.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1809.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1809.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1809.
+
+
+LaTeX Warning: Float too large for page by 80.79788pt on input line 1811.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 1837.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 1841.
+[35
+
+]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.2_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.4_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.7_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.2_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.4_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.7_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.2_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.4_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.7_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.2_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.4_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.7_diag_.png Graphi
+c file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.7_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.2_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.2_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.4_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.4_diag_.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.7_diag_.png Graphic 
+file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.7_diag_.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1916.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1916.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1916.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1916.
+
+
+LaTeX Warning: Float too large for page by 80.79788pt on input line 1918.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 1930.
+[36] [37] [38]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1932.
+
+Overfull \hbox (5.27441pt too wide) detected at line 1993
+[]
+ []
+
+[39
+
+]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2027.
+ [40] [41] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5908 strings out of 478716
- 172516 string characters out of 5858226
- 398159 words of memory out of 5000000
- 23908 multiletter control sequences out of 15000+600000
- 485986 words of font info for 105 fonts, out of 8000000 for 9000
+ 8619 strings out of 478716
+ 342880 string characters out of 5858226
+ 426940 words of memory out of 5000000
+ 26349 multiletter control sequences out of 15000+600000
+ 489510 words of font info for 119 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
- 69i,11n,76p,1099b,411s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 69i,13n,76p,1355b,667s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (27 pages, 81264 bytes).
+Output written on Draft.dvi (41 pages, 116344 bytes).

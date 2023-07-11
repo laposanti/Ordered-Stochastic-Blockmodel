@@ -17,7 +17,7 @@ N_iter=10000
 set.seed(34)
 
 N=100
-M= 50000
+M= 4000
 K=3
 alpha=0.5
 beta_max= .85

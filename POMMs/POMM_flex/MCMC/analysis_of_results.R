@@ -1,100 +1,340 @@
 
-samples_simple$z_container
-# Stop parallel computing
-stopCluster(cl)
+library(label.switching)
+library(collpcm)
+library(loo)
 
-seed79141<-readRDS("ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79141.RDS")
-ts.plot(seed79141$A_container[-c(1:10000)])
-acf(seed79141$A_container[-c(1:10000)])
+#where the data are stored
+data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies"
 
-seed79141$p_container
+setwd(data_wd)
 
-matrixP_list <- list()
-p_true_list <- list()
+getwd()
 
+model<- "POMM"
+filename <- list.files(pattern = paste0("True_ModelSimpleEst_model_", model))
+print(filename)
 
+#uploading the data
+results_gen <- data.frame(
+  MAP = 0,
+  MINVI = 0,
+  MISCLASSERROR = 0,
+  WAIC_est = 0,
+  WAIC_se = 0
+)
 
-file_names <- list.files(pattern = "ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed")
-
-for (file_name in file_names) {
-  obj <- readRDS(file_name)
-  matrixP <- obj$p_container
-  true_P <-obj$p_true
-  matrixP_list[[file_name]] <- matrixP
-  p_true_list[[file_name]] <- true_P
-  print(true_P)
+#where to save the results
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots")
+for(i in 1:length(filename)){
+  a<- obtaining_resultsI(filename[i],model = model)
+  results_gen<- rbind(results_gen,a)
 }
 
-blue_shades <- generate_color_gradient_K(5)
-
-#Diagnostics for the P entries ---------
-entry1=1
-entry2=4
-#checking convergence
-density_plot_df<-data.frame(chain1_density = matrixP_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79141.RDS[entry1,entry2,],
-                            chain2_density = matrixP_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79142.RDS[entry1,entry2,],
-                            chain3_density = matrixP_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79143.RDS[entry1,entry2,],
-                            chain4_density = matrixP_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79144.RDS[entry1,entry2,],
-                            chain4_density = matrixP_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79145.RDS[entry1,entry2,])
+results_gen = results_gen[-1,]
+results_gen = round(results_gen,2)
 
 
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots")
+resultsII_gen = data.frame(alphaest = 0, alpha0.05 = 0 , alpha0.95 =0 , overlapest =0, overlap0.05 = 0 , overlap0.95 =0)
+resultsII_gen<- resultsII_gen[-1,]
+for(i in 1:length(filename)){
+  a<- obtaining_resultsII(filename[i])
+  resultsII_gen<- rbind(resultsII_gen,a)
+}
+resultsII_gen<- round(resultsII_gen,2)
+resultsII_gen = results_genII[-1,]
+
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots")
+resultsIII_gen = data.frame(p_est = 0, p_est0.05 = 0 , p_est0.95 =0 , mean_MSE = 0)
+for(i in 1:length(filename)){
+  a<- obtaining_resultsII(filename[i])
+  resultsII_gen<- rbind(resultsII_gen,a)
+}
+resultsII_gen<- resultsII_gen[-1,]
 
 
-# Create a density plot of points for each level
-ggplot() +
-  # Add a layer for each level
-  lapply(seq(1,5), function(i) {
-    geom_density(data = data.frame(x = density_plot_df[,i]), aes(x = x, y = ..density.., color = paste("Chain ", i)), alpha = .5)
-  }) +
-  geom_vline(aes(xintercept = p_true_list$ModelPOMMPOMMK4_overlap0.2_alpha0.5_seed79141.RDS[entry1,entry2]), col="red", alpha=0.5)+
-  # Set the x-axis limits
-  scale_x_continuous(limits = c(min(density_plot_df), max(density_plot_df))) +# Remove the legend title
-  guides(color = guide_legend(title = NULL)) +
-  # Set the legend title
-  labs(fill = "Chain", x = "Points", y = "Density", title = paste("Density Plot of Entries","P[",entry1,",",entry2,"]"))+
-  # Set blue color scale for the lines
-  scale_color_manual(values=blue_shades)+
-  theme_bw()
+resultsIII_gen = data.frame(counter5perc = 0, counter1perc =0 , mean_MSE = 0)
+
+for(i in 1:length(filename)){
+  a<- obtaining_resultsIII(filename[i],"Simple")
+  resultsIII_gen<- rbind(resultsIII_gen,a)
+}
+resultsIII_gen<- resultsIII_gen[-1,]
+resultsIII_gen <- round(resultsIII_gen,2)
+
+
+obj_POMM<- readRDS(paste0(data_wd,"/",filename[1]))
 
 
 
 
-for (file_name in file_names) {
-  obj <- readRDS(file_name)
-  z_container <- samples_simple$z_container
-  z_true <- obj$z_true
-  similarity_matrix = pr_cc(z_container[,-c(1:20000)])
-  point_est = minVI(similarity_matrix)$cl
-  print(adj.rand.index(point_est, samples_simple$z_true))
-  mean(overlap_container)
-  A_container <- obj$A_container
-  z_MAP= z_container[,which(A_container == max(A_container))]
-  print(adj.rand.index(z_MAP, z_true))
-  ts.plot(A_container[-c(1:N_iter*0.25)])
+
+
+obtaining_resultsIII<- function(filename,model){
+  results = data.frame(counter5perc = 0, counter1perc =0 , mean_MSE = 0)
+  obj_POMM<- readRDS(paste0(data_wd,"/",filename[1]))
+  print(filename)
+  
+  K = nrow(obj_POMM$p_true)
+  M = sum(obj_POMM$Yij_matrix)
+  
+  entries<- which(upper.tri(obj_POMM$p_true),arr.ind = T)
+ 
+  #pomm
+  
+  
+  if(model=="POMM"){
+    mean_MSE<- mean(abs(MSE_p_matrix(10000,obj_POMM$p_container,p_true = obj_POMM$p_true)[upper.tri(matrix(0,K,K))]))
+    results$mean_MSE <-  mean_MSE
+    
+    p_true_POMM <- obj_POMM$p_true
+    burnin_p <- obj_POMM$p_container[,,-c(1:10000)]
+    plotsPOMM = list()
+    for(i in 1:K) {
+      for(j in 1:K) {
+        y_try = data.frame(y = as.vector(burnin_p[i, j,]))
+        p1 = ggplot(y_try, aes(y)) +
+          geom_density(fill = "dodgerblue", alpha = 0.5) +
+          scale_x_log10() +
+          geom_vline(xintercept = obj_POMM$p_true[i, j], color = "red")+
+          xlab("probability") +
+          ylab("Density") +
+          ggtitle(paste("Density plot of entry ", i, ",", j, sep = ""))
+        
+        plotsPOMM[[length(plotsPOMM) + 1]] <- p1
+      }
+    }
+    p_combinedPOMM = patchwork::wrap_plots(plotsPOMM, ncol = K, nrow = K)
+    # Construct the file name using paste() or paste0()
+    plot_name <- paste0("P_est_",model,"K",K,"_M",M,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 518)
+    print(p_combinedPOMM)
+    dev.off()
+    
+    counter5perc=0
+    counter1perc=0
+    for(i in 1:nrow(entries)){
+      lb <- quantile(obj_POMM$p_container[entries[i,1],entries[i,2],-c(1:10000)],probs = 0.05)
+      ub <- quantile(obj_POMM$p_container[entries[i,1],entries[i,2],-c(1:10000)], probs = 0.95)
+      contained5<- obj_POMM$p_true[entries[i,1],entries[i,2]]<ub & obj_POMM$p_true[entries[i,1],entries[i,2]]>lb
+      counter5perc = counter5perc + contained5
+      
+      lb <- quantile(obj_POMM$p_container[entries[i,1],entries[i,2],-c(1:10000)],probs = 0.01)
+      ub <- quantile(obj_POMM$p_container[entries[i,1],entries[i,2],-c(1:10000)], probs = 0.99)
+      contained1<- obj_POMM$p_true[entries[i,1],entries[i,2]]<ub & obj_POMM$p_true[entries[i,1],entries[i,2]]>lb
+      counter1perc = counter1perc + contained1
+    }
+    results$counter5perc <- counter5perc/nrow(entries)
+    results$counter1perc<- counter1perc/nrow(entries)
+  }else{
+    runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
+    # apply the permutations returned by typing:
+    perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
+    mean_MSE<- mean(abs(MSE_p_matrix(10000,perm.POMM,p_true = obj_POMM$p_true)[upper.tri(matrix(0,K,K))]))
+    results$mean_MSE <-  mean_MSE
+    burnin_p <- perm.POMM[,,-c(1:10000)]
+    plotsPOMM = list()
+    for(i in 1:K) {
+      for(j in 1:K) {
+        y_try = data.frame(y = as.vector(burnin_p[i, j,]))
+        p1 = ggplot(y_try, aes(y)) +
+          geom_density(fill = "dodgerblue", alpha = 0.5) +
+          scale_x_log10() +
+          geom_vline(xintercept = obj_POMM$p_true[i, j], color = "red")+
+          xlab("probability") +
+          ylab("Density") +
+          ggtitle(paste("Density plot of entry ", i, ",", j, sep = ""))
+        
+        plotsPOMM[[length(plotsPOMM) + 1]] <- p1
+      }
+    }
+    p_combinedPOMM = patchwork::wrap_plots(plotsPOMM, ncol = K, nrow = K)
+    # Construct the file name using paste() or paste0()
+    plot_name <- paste0("P_est_",model,"K",K,"_M",M,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 518)
+    print(p_combinedPOMM)
+    dev.off()
+    
+    counter5perc=0
+    counter1perc=0
+    for(i in 1:nrow(entries)){
+      lb <- quantile(perm.POMM[entries[i,1],entries[i,2],-c(1:10000)],probs = 0.05)
+      ub <- quantile(perm.POMM[entries[i,1],entries[i,2],-c(1:10000)], probs = 0.95)
+      contained5<- obj_POMM$p_true[entries[i,1],entries[i,2]]<ub && obj_POMM$p_true[entries[i,1],entries[i,2]]>lb
+      counter5perc = counter5perc + contained5
+      
+      lb <- quantile(perm.POMM[entries[i,1],entries[i,2],-c(1:10000)],probs = 0.01)
+      ub <- quantile(perm.POMM[entries[i,1],entries[i,2],-c(1:10000)], probs = 0.99)
+      contained1<- obj_POMM$p_true[entries[i,1],entries[i,2]]<ub && obj_POMM$p_true[entries[i,1],entries[i,2]]>lb
+      counter1perc = counter1perc + contained1
+    }
+    results$counter5perc <- counter5perc/nrow(entries)
+    results$counter1perc<- counter1perc/nrow(entries)
+  }
+  rownames(results) <- paste0(model,"K", K, "_M", M)
+  return(results)
+}
+
+
+obtaining_resultsII<- function(filename){
+  
+  obj_POMM<- readRDS(paste0(data_wd,"/",filename))
+  print(filename)
+  
+  K = nrow(obj_POMM$p_true)
+  M = sum(obj_POMM$Yij_matrix)
+  print(obj_POMM$alpha)
+  print(obj_POMM$overlap)
+  resultsII = data.frame(alphaest = 0, alpha0.05 = 0 , alpha0.95 =0 , overlapest =0, overlap0.05 = 0 , overlap0.95 =0)
+  
+  
+  resultsII$alphaest<- mean(obj_POMM$alpha_container[-c(1:10000)])
+  resultsII$alpha0.05<- quantile(obj_POMM$alpha_container[-c(1:10000)],probs = 0.05)
+  resultsII$alpha0.95<- quantile(obj_POMM$alpha_container[-c(1:10000)], probs = 0.95)
+  
+  resultsII$overlapest<- mean(obj_POMM$overlap_container[-c(1:10000)])
+  resultsII$overlap0.05<- quantile(obj_POMM$overlap_container[-c(1:10000)],probs = 0.05)
+  resultsII$overlap0.95<- quantile(obj_POMM$overlap_container[-c(1:10000)], probs = 0.95)
+  print(MSE_p_matrix(10000,obj_POMM$p_container,p_true = obj_POMM$p_true))
+  MSE_sum<- mean(abs(MSE_p_matrix(10000,obj_POMM$p_container,p_true = obj_POMM$p_true)[upper.tri(matrix(0,K,K))]))
+  results$MSE_sum <-  MSE_sum
+  
+  p_true_POMM <- obj_POMM$p_true
+  
+  burnin_p <- obj_POMM$p_container[,,-c(1:10000)]
+  plotsPOMM = list()
+  for(i in 1:K) {
+    for(j in 1:K) {
+      y_try = data.frame(y = as.vector(burnin_p[i, j,]))
+      p1 = ggplot(y_try, aes(y)) +
+        geom_density(fill = "dodgerblue", alpha = 0.5) +
+        scale_x_log10() +
+        geom_vline(xintercept = p_true_POMM[i, j], color = "red")+
+        xlab("probability") +
+        ylab("Density") +
+        ggtitle(paste("Density plot of entry ", i, ",", j, sep = ""))
+      
+      plotsPOMM[[length(plotsPOMM) + 1]] <- p1
+    }
+  }
+  p_combinedPOMM = patchwork::wrap_plots(plotsPOMM, ncol = K, nrow = K)
+  # Construct the file name using paste() or paste0()
+  plot_name <- paste0("P_est_","POMM_","K",K,"_M",M,".png")
+  # Save the plot with the constructed file name
+  png(plot_name,width = 800, height = 518)
+  print(p_combinedPOMM)
+  dev.off()
+  
+  rownames(resultsII) <- paste0("K", K, "_M", M)
+  return(resultsII)
 }
 
 
 
 
-for (file_name in file_names) {
-  obj <- readRDS(file_name)
-  z0 <- obj$init$z0
-  overlap0 <- obj$init$overlap0
-  alpha0 <- obj$init$alpha0
-  print(adj.rand.index(obj$z_true, z0))
-  print(abs(overlap0- obj$overlap))
-  print(abs(overlap0- obj$alpha))
+
+
+obtaining_resultsI<- function(filename, model){
+  
+  obj_POMM<- readRDS(paste0(data_wd,"/",filename))
+  print(filename)
+  #Data used to generate the data -----
+  K = nrow(obj_POMM$p_true)
+  M = sum(obj_POMM$Yij_matrix)
+  # Create a data frame to store the results
+  results <- data.frame(
+    MAP = 0,
+    MINVI = 0,
+    MISCLASSERROR = 0,
+    WAIC_est = 0,
+    WAIC_se = 0
+  )
+  A_container_POMM <- obj_POMM$A_container #likelihood across iterations
+  z_container_POMM <- obj_POMM$z_container #similarity matrix
+  z_truePOMM <- obj_POMM$z_true #true underlying value
+  
+  # Construct the file name using paste() or paste0()
+  plot_name <- paste0("traceplot_",model,"K",K,"_M",M,".png")
+  
+  
+  # Save the plot with the constructed file name
+  png(plot_name,width = 800, height = 518)
+  plot(ts(A_container_POMM[-c(1:N_iter*0.50)])) #checking mixing
+  # Close the device to save the plot
+  dev.off()
+  
+  
+  # Construct the file name using paste() or paste0()
+  plot_name <- paste0("autocorrplot_",model,"K",K,"_M",M,".png")
+  # Save the plot with the constructed file name
+  png(plot_name,width = 800, height = 518)
+  
+  acf(A_container_POMM[-c(1:N_iter*0.25)])
+  dev.off()
+  
+  #extracting similarity matrix
+  similarity_matrixPOMMM = pr_cc(z_container_POMM[,-c(1:10000)])
+  
+  #plotting it
+  plot_name <- paste0("adjacency_",model,"K",K,"_M",M,".png")
+  # Save the plot with the constructed file name
+  png(plot_name,width = 800, height = 800)
+  similarity_plot(obj_POMM$Yij_matrix, z_truePOMM, z_truePOMM) #checking mixing
+  # Close the device to save the plot
+  dev.off()
+  
+  #plotting it
+  plot_name <- paste0("similarity_",model,"K",K,"_M",M,".png")
+  # Save the plot with the constructed file name
+  png(plot_name,width = 800, height = 800)
+  similarity_plot(similarity_matrixPOMMM, z_truePOMM, z_truePOMM) #checking mixing
+  # Close the device to save the plot
+  dev.off()
+  
+  
+  #point est 1
+  point_est_POMM = minVI(similarity_matrixPOMMM)$cl
+  #point est 2
+  z_MAP_POMM= obj_POMM$z_container[,which(obj_POMM$A_container == max(obj_POMM$A_container))[1]]
+  
+  #computing VI distance
+  print(paste("MAP",vi.dist(z_MAP_POMM, z_truePOMM)))
+  print(paste("MINVI",vi.dist(point_est_POMM, z_truePOMM)))
+  
+  results$MAP[1] <- vi.dist(z_MAP_POMM, z_truePOMM)
+  results$MINVI<- vi.dist(point_est_POMM, z_truePOMM)
+  
+  #computing WAIC
+  WAIC<- calculate_waic_matrix(n_ij_matrix = obj_POMM$Nij_matrix,z_container = obj_POMM$z_container,N_iter = 40000,p_container = obj_POMM$p_container,y_ij_matrix = obj_POMM$Yij_matrix )
+  results$WAIC_est <- WAIC$estimates[3,1]
+  results$WAIC_se <- WAIC$estimates[3,2]
+  #computing MISCLASS
+  N_new = 60
+  z_new_init = sample(x=c(1:K),size = N_new,replace = T)
+  sampled_games <- 40
+  #-------we need the point estimates for p---
+  #pomm
+  runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
+  # apply the permutations returned by typing:
+  perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
+  #obtaining the point estimate
+  p_est_POMM<- Est_p_matrix(10000,p_container = perm.POMM,p_true = obj_POMM$p_true)
+  
+  #------ here is the misclass
+  #new games
+  misss<- calculate_misclassification_rate(N_new = N_new,z_new = z_new_init,N = nrow(obj_POMM$Nij_matrix),
+                                           p_true =obj_POMM$p_true,z_true =  obj_POMM$z_true,sampled_games = sampled_games,
+                                           labels_available = c(1:K),P_est =p_est_POMM ,z_est = z_MAP_POMM)
+  
+  
+  print(paste0("MISCLASSERROR = ",misss))
+  results$MISCLASSERROR<- misss
+  
+  
+  
+  # Save the table to a file in LaTeX format
+  rownames(results) <- paste0(model,"K", K, "_M", M)
+  return(results)
 }
-
-ts.plot(samples_simple$A_container[-c(1:25000)])
-acf(samples_simple$A_container[-c(1:25000)])
-
-
-
-
-
-
-
-
-
-

@@ -2,12 +2,12 @@
 
 P_simple_update_adaptive = function(z_current, p_current, 
                                         A_current,C_current,y_ij,n_ij,labels_available,
-                                        upper.tri.non.zero,K, diag0.5,acc.count_p,sigma_p){
+                                        upper.tri.non.zero,K, diag0.5,acc.count_p,sigma_p,beta_max){
   
   z_current_mat<- vec2mat(z_current)
   
   
-  
+
   j_start = ifelse(diag0.5, yes = 1, no = 0)
   K_stop = ifelse(diag0.5, yes = K-1, no = K)
   
@@ -24,7 +24,7 @@ P_simple_update_adaptive = function(z_current, p_current,
       p_ij_prime_nbyn <- calculate_victory_probabilities(z_current_mat, P  = p_prime)
       p_ij_prime <- p_ij_prime_nbyn[upper.tri.non.zero]
       
-      C_prime <- get_B(p_prime, 1)
+      C_prime <- sum(dunif(p_prime[upper.tri(p_prime)],min = 1-beta_max, max = beta_max, log = T))
       A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
       
       log_r= A_prime + C_prime - A_current- C_current

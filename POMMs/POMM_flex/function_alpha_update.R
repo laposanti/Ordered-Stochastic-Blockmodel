@@ -6,9 +6,9 @@ P_POMM_alpha_update = function(z_current, p_current,
   
   z_current_mat<- vec2mat(z_current)
   
-#proposing a new overlap
+#proposing a new alpha
 
-alpha_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = overlap_current,sd = sigma_alpha)
+alpha_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = alpha_current,sd = sigma_alpha)
 truncations_prime <- improper_prior5(K,beta_max,alpha = alpha_prime,diag0.5 = T)
 
 # #proposing a new P
@@ -25,7 +25,7 @@ truncations_prime <- improper_prior5(K,beta_max,alpha = alpha_prime,diag0.5 = T)
 C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,overlap = 
                                         overlap_current, 
                                       truncations = truncations_prime,
-                                      diag0.5 = T) + dlnorm_param(alpha_prime) + dlnormTruncAlt(x = overlap_current,mean =0.5, cv = 1, min = 0.1,max=0.9)       
+                                      diag0.5 = T) + dlnorm_mu_sigma(alpha_prime) + dlnorm_mu_sigma(overlap_current,mean =0.5, sigma = 1)    
 
 
 
