@@ -1,61 +1,41 @@
 
 
-alpha=1
-beta_max = 0.8
-K=5
-truncations <- improper_prior5(K,beta_max,alpha,T)
-
-means = vector()
-for(i in 1:(length(truncations))-1){
-  means <- append(means, (truncations[i]+truncations[i+1])/2)
-}
-
-sigma <- (beta_max - 0.5)/K
-dim_level_set_i <- K:1
-expected_boundaries = matrix(0, nrow = length(means), ncol=2)
-for(i in 1:length(means)){
-  expected_boundaries[i,1]<- expected_min(mu = means[i],sigma = sigma,n = dim_level_set_i[i])
-  expected_boundaries[i,2]<- expected_max(mu = means[i],sigma = sigma,n = dim_level_set_i[i])
-}
-
-overlap_between_sets = vector()
-for(i in 1:((nrow(expected_boundaries))-1)){
-  overlap_i= max(0,(expected_boundaries[i,2]-expected_boundaries[i+1,1]))
-  overlap_between_sets <- append(overlap_between_sets, overlap_i)
-}
-  
-overlap_ = sum(overlap_between_sets)/length(overlap_between_sets)
-overlap_
+expected_min<- function(mu, sigma,n){
+  return(mu + sigma*qnorm((1- pi/8)/(n-pi/4+1)))}
+expected_max<- function(mu,sigma,n){
+  return(mu + sigma*qnorm((n- pi/8)/(n-pi/4+1)))}
 
 # Function to compute the parameter overlap given sigma
 compute_overlap <- function(sigma, truncations,K,nsamples=1) {
 
-  
-  means = vector()
+  mid_points = vector()
   for(i in 1:(length(truncations))-1){
-    means <- append(means, (truncations[i]+truncations[i+1])/2)
+    mid_points <- append(mid_points, (truncations[i]+truncations[i+1])/2)
   }
   
-
   dim_level_set_i <- K:1
-  expected_boundaries = matrix(0, nrow = length(means), ncol=2)
-  for(i in 1:length(means)){
-    expected_boundaries[i,1]<- expected_min(mu = means[i],sigma = sigma,n = (dim_level_set_i[i])*nsamples)
-    expected_boundaries[i,2]<- expected_max(mu = means[i],sigma = sigma,n = (dim_level_set_i[i])*nsamples)
+  expected_boundaries = matrix(0, nrow = length(mid_points), ncol=2)
+  for(i in 1:length(mid_points)){
+    expected_boundaries[i,1]<- expected_min(mu = mid_points[i],sigma = sigma,n = (dim_level_set_i[i])*nsamples)
+    expected_boundaries[i,2]<- expected_max(mu = mid_points[i],sigma = sigma,n = (dim_level_set_i[i])*nsamples)
   }
   
-  overlap_between_sets = vector()
-  for(i in 1:((nrow(expected_boundaries))-1)){
-    overlap_i= max(0,(expected_boundaries[i,2]-expected_boundaries[i+1,1]))
-    overlap_between_sets <- append(overlap_between_sets, overlap_i)
+  overlap <- 0
+  possible_overlap <- 0
+  num_expected_boundaries <- nrow(expected_boundaries)
+  for (i in 1:(num_expected_boundaries - 1)) {
+    for (j in (i + 1):num_expected_boundaries) {
+      possible_overlap <- possible_overlap + max(expected_boundaries[j, 2],expected_boundaries[i, 2]) - min(expected_boundaries[i, 1], expected_boundaries[j, 1])
+      if (expected_boundaries[i, 2] > expected_boundaries[j, 1] && expected_boundaries[j, 2] > expected_boundaries[i, 1]) {
+        overlap <- overlap + (min(expected_boundaries[i, 2], expected_boundaries[j, 2]) - max(expected_boundaries[i, 1], expected_boundaries[j, 1]))
+      }
+    }
   }
-  
-  overlap_ = sum(overlap_between_sets)/length(overlap_between_sets)
-  return(overlap_)
+  return(overlap / possible_overlap)
 }
 
 # Function to find the inverse of the overlap function
-inverse_overlap <- function(overlap,truncations,K, beta_max) {
+inverse_overlap <- function(overlap,truncations,K, beta_max,nsamples=1) {
   # Define the range of sigma values
   sigma_min <- 0  # Minimum possible sigma value
   sigma_max <- beta_max - 0.5  # Maximum possible sigma value
@@ -66,7 +46,7 @@ inverse_overlap <- function(overlap,truncations,K, beta_max) {
   # Perform bisection method
   while (sigma_max - sigma_min > epsilon) {
     sigma_mid <- (sigma_min + sigma_max) / 2
-    overlap_mid <- compute_overlap(sigma_mid, truncations,K)
+    overlap_mid <- compute_overlap(sigma_mid, truncations,K,n_samples)
     
     if (overlap_mid < overlap) {
       sigma_min <- sigma_mid
@@ -79,6 +59,13 @@ inverse_overlap <- function(overlap,truncations,K, beta_max) {
 }
 
 # Example usage
-desired_overlap <- 0.03861841  # Replace with the desired overlap value
-inverse_sigma <- inverse_overlap(desired_overlap)
+desired_overlap <- 1.7 # Replace with the desired overlap value
+sigma <- inverse_overlap(desired_overlap,truncations = truncations,K = K,beta_max = beta_max)
 inverse_sigma
+
+
+
+desired_overlap <- 1.7 # Replace with the desired overlap value
+sigma <- inverse_overlap1(desired_overlap,truncations = truncations,K = K,beta_max = beta_max)
+sigma
+
