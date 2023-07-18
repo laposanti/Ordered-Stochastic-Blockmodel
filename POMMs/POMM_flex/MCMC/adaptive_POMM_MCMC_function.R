@@ -19,8 +19,6 @@
 #gamma_vec: the hyperprior on the block sizes
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
-Yij_matrix= Y_ij
-Nij_matrix = N_ij
 adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control, ground_truth,N, N_iter, targ_rate, hyper_params, seed){
   
   #validation
@@ -43,8 +41,8 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
   print(paste0("Estimation of ", names(estimation_control)[which(estimation_control==1)]))
   upper.tri.non.zero = which(Nij_matrix > 0,arr.ind = T)
   #working with just with non-zero-values
-  n_ij = Nij_matrix[upper.tri.non.zero]
-  y_ij = Yij_matrix[upper.tri.non.zero]
+  n_ij = Nij_matrix
+  y_ij = Yij_matrix
   #setting hyperparams
   K = as.numeric(hyper_params$K)
   beta_max = as.numeric(hyper_params$beta_max)
@@ -159,7 +157,7 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
       
       z_update = z_update_adaptive( z_current = z_current,
                                     P_matrix = p_current,
-                                    K = K,n_ij = n_ij,
+                                    K = K,N=N, n_ij = n_ij,
                                     y_ij = y_ij,
                                     A_current = A_current,B_current=B_current,
                                     upper.tri.non.zero = upper.tri.non.zero,labels_available = labels_available,
@@ -275,6 +273,9 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
     S_container[j] = S_current
     p_container[,,j] = p_current
     
+    if(j %%1000 == 0){
+      print(paste0("Iteration ",j))
+    }
   }
   
   acceptance_rates <- list(acc.count_p = acc.count_p, acc.count_z = acc.count_z, acc.count_alpha = acc.count_alpha,acc.count_S=acc.count_S)

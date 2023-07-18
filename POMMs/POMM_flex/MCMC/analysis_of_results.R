@@ -67,6 +67,26 @@ obj_POMM<- readRDS(paste0(data_wd,"/",filename[1]))
 
 
 
+plot_P = function(p_container, p_true, burnin,K){
+  
+  burnin_p <- p_container[,,-c(1:burnin)]
+  plots = list()
+  for(i in 1:K) {
+    for(j in 1:K) {
+      y_try = data.frame(y = as.vector(burnin_p[i, j,]))
+      p1 = ggplot(y_try, aes(y)) +
+        geom_density(fill = "dodgerblue", alpha = 0.5) +
+        scale_x_log10() +
+        geom_vline(xintercept = p_true[i, j], color = "red")+
+        xlab("probability") +
+        ylab("Density") +
+        ggtitle(paste("Density plot of entry ", i, ",", j, sep = ""))
+      
+      plots[[length(plots) + 1]] <- p1
+    }
+  }
+  p_combined = patchwork::wrap_plots(plots, ncol = K, nrow = K)
+  return(p_combined)}
 
 
 
