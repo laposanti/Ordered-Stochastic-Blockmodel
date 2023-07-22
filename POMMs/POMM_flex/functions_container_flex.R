@@ -55,6 +55,7 @@ inverse_S <- function(S,truncations,K, beta_max,n_samples=1) {
   
   return(sigma_min)  # or sigma_max, they should be close at this point
 }
+
 simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncations, beta_max, diag0.5=T){
   
   #we map the proportions on a desired scale
@@ -89,7 +90,7 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncat
 #--------------------------#
 # joint prior on the  #
 #--------------------------#
-l_like_p_ij_normal_overlap = function(K, P_matrix,S ,truncations, diag0.5 = T) {
+l_like_p_ij_normal_overlap <-function(K, P_matrix,S ,truncations, diag0.5 = T) {
   #we map the proportions on a desired scale
   beta_0 <- truncations
   j_start = ifelse(diag0.5, yes = 1, no = 0)
@@ -99,9 +100,7 @@ l_like_p_ij_normal_overlap = function(K, P_matrix,S ,truncations, diag0.5 = T) {
   level_sets <- diag_split_matrix(P_matrix)
   
   # Consider or exclude the main diagonal
-  lowest_level_set_index <- ifelse(diag0.5, 2, 1)
-  lbindex <- ifelse(diag0.5, 1, 0)
-  
+
   log_lik_matrix = matrix(0, K,K)
   sigma <- inverse_S(S,truncations = truncations,K = K,beta_max = beta_max)
   for( ii in 1:K_stop){
@@ -119,6 +118,27 @@ l_like_p_ij_normal_overlap = function(K, P_matrix,S ,truncations, diag0.5 = T) {
     }
   }
   return(sum(log_lik_matrix[upper.tri(log_lik_matrix)]))
+}
+
+single_p_ij_normal_overlap = function(entry_i,entry_j, K, P_matrix,S ,truncations, diag0.5 = T) {
+  #we map the proportions on a desired scale
+  beta_0 <- truncations
+  j_start = ifelse(diag0.5, yes = 1, no = 0)
+  
+  # Consider or exclude the main diagonal
+  
+  sigma <- inverse_S(S,truncations = truncations,K = K,beta_max = beta_max)
+  
+  level_set = abs(entry_j -entry_i) + abs(1-j_start)
+  lb <- beta_0[level_set]
+  ub <- beta_0[level_set+1]
+  
+  # Calculate the likelihood using a truncated distribution
+  mu <- (lb + ub) / 2  # Mean of the truncated distribution
+  
+  log_p = log(dtruncnorm(P_matrix[entry_i,entry_j], a = 0.5, b = beta_max, mean = mu, sd = sigma))
+
+return(log_p)
 }
 
 #--------------------------#
@@ -242,46 +262,65 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
                                          A_current,C_current,y_ij,n_ij,labels_available,
                                          upper.tri.non.zero,K,alpha_current,truncations_current,beta_max, S_current, diag0.5,acc.count_p,sigma_p){
   
-  z_current_mat<- vec2mat(z_current)
+  A_prime <- A_current
+  C_prime <- l_like_p_ij_normal_overlap(K,p_current,S,truncations_current,diag0.5)
+  z_prime <- z_current
+  p_prime <- p_current
+  P_NbyN_prime <- calculate_victory_probabilities(vec2mat(z_prime),p_prime)
   
+  j_start <- ifelse(diag0.5, yes = 1, no = 0)
+  K_stop <- ifelse(diag0.5, yes = K-1, no = K)
   
-  
-  j_start = ifelse(diag0.5, yes = 1, no = 0)
-  K_stop = ifelse(diag0.5, yes = K-1, no = K)
-  
-  
-  for( ii in 1:K_stop){
-    for(jj in (ii+j_start):K){
+  for(p_i in 1:K_stop){
+    for(p_j in (p_i+j_start):K){
+      
+      #extracing just players in the updating clusters
+      players_ii <- which(z==p_i)
+      players_jj <- which(z==p_j)
+      
+      #the current likelihood and prior for those players
+      A_minus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_prime[players_ii,players_jj], log=T)) + sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_prime[players_jj,players_ii], log=T))
+      C_minus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K,P_matrix = p_prime,S = S_current,truncations = truncations_current,diag0.5 = diag0.5)
       
       
-      p_prime = p_current
-      p_prime[ii,jj] <- rtruncnorm(1, mean = p_current[ii,jj],sd = sigma_p[ii,jj], a =   0.5, b  = beta_max)
-      p_prime[jj,ii] <- 1 - p_prime[ii,jj]
+      #proposing a new p_ij
+      p_scanning = p_prime
+      p_scanning[p_i,p_j] <- rtruncnorm(1, mean = p_prime[p_i,p_j],sd = sigma_p[p_i,p_j], a =   0.5, b  = beta_max)
+      p_scanning[p_j,p_i] <- 1 - p_scanning[p_i,p_j]
       
-      #computing full probabilities
-      p_ij_prime_nbyn <- calculate_victory_probabilities(z_current_mat, P  = p_prime)
-      p_ij_prime <- p_ij_prime_nbyn[upper.tri.non.zero]
+      #updating P_NbyN_prime for all players in cluster ii and cluster jj
+      P_NbyN_scanning = P_NbyN_prime
+      P_NbyN_scanning[players_ii,players_jj] <- p_scanning[p_i,p_j]
+      P_NbyN_scanning[players_jj,players_ii] <- p_scanning[p_j,p_i]
       
-      C_prime <- l_like_p_ij_normal_overlap(K = K, P_matrix = p_prime,S = 
-                                              S_current, 
-                                            truncations = truncations_current,
-                                            diag0.5 = T) +  dunif(alpha_current,0,4,log = T) + dunif(S_current,min = 0,max=1, log = T)
+      #the new likelihood and prior values for those players
+      A_plus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_scanning[players_ii,players_jj], log=T)) + sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_scanning[players_jj,players_ii], log=T))
+      C_plus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K, P_matrix = p_scanning,S = S_current,truncations = truncations_current,diag0.5 = diag0.5) 
       
-      A_prime <- sum(dbinom(y_ij, n_ij, p_ij_prime, log = T))
       
-      log_r= A_prime + C_prime - A_current- C_current
+      A_scanning = A_prime - A_minus + A_plus
+      C_scanning = C_prime - C_minus + C_plus
+
+      
+      #browser()
+      log_r= A_scanning - A_prime + C_scanning - C_prime  
       
       #create statements that check conditiond to accept move
       MH_condition= min(log_r,0)>=log(runif(1))
       if(MH_condition){
-        acc.count_p[ii,jj] =acc.count_p[ii,jj] +1
-        acc.count_p[jj,ii] =acc.count_p[jj,ii] +1
-        C_current<- C_prime
-        p_current<- p_prime
-        A_current <- A_prime
+        acc.count_p[p_i,p_j] =acc.count_p[p_i,p_j] +1
+        acc.count_p[p_j,p_i] =acc.count_p[p_j,p_i] +1
+        C_prime<- C_scanning
+        p_prime<- p_scanning
+        A_prime <- A_scanning
+        P_NbyN_prime<-P_NbyN_scanning
       }
     }}
   
+  A_current <- A_prime
+  C_current <-C_prime
+  z_current <-z_prime
+  p_current <-p_prime
   
   return(list(acc.moves = acc.count_p,
               sigma_p=sigma_p,
@@ -290,6 +329,7 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
               A_current = A_current))
   
 } 
+
 
 
 
@@ -308,7 +348,7 @@ S_POMM_update_fixed_P_alpha_z = function(z_current, p_current,
                                          upper.tri.non.zero,K,truncations_current, alpha_current,beta_max, S_current,acc.count_S, sigma_S){
   
   
-  S_prime <- rtruncnorm(1,a = 0.1,b = 0.9,mean = S_current,sd = sigma_S)
+  S_prime <- rtruncnorm(1,a = 0.001,b = 0.9,mean = S_current,sd = sigma_S)
   
   
   
@@ -355,7 +395,7 @@ alpha_POMM_update_fixed_P_S_z = function(z_current, p_current,
                                          A_current,C_current,y_ij,n_ij,labels_available,
                                          upper.tri.non.zero,K,alpha_current,beta_max, S_current, acc.count_alpha, sigma_alpha, truncations_current){
   
-  z_current_mat<- vec2mat(z_current)
+  
   
   #proposing a new alpha
   
@@ -442,13 +482,9 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
       if (length(unique(z_scanning)) == K) {
         break
       } else {
-        ## if there is an error, undo the update
-        z_scanning[ii] <- k_prime
-        
         # resample new_label and try again
         k_scanning <- sample(labels_available,size = 1)
         z_scanning[ii] <- k_scanning
-        
         print("!")
       }
     }
@@ -471,7 +507,7 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
     
     n_scanning<- n_prime
     n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
-  
+    
     B_scanning<- ddirichlet_multinomial(N,K,n_k = n_scanning,my_alpha = gamma_vec)
     
     log_r= A_scanning - A_prime + B_scanning - B_prime

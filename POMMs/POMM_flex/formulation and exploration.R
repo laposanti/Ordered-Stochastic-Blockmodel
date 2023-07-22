@@ -6,130 +6,43 @@ library(randnet)
 library(fossil)
 library(dplyr)
 library(truncnorm)
-source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/function_Z1.R")
+
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-source("/Users/lapo_santi/Desktop/Nial/project/POMMs/power-law prior/Modular_code/functionP_POMM2.R")
-
-
-#generating the overlapping sets
 
 
 
-
-simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, overlap=1, truncations, beta_max, diag0.5=T){
-  
-  #we map the proportions on a desired scale
-  beta_0 <- truncations
-  
-  j_start = ifelse(diag0.5, yes = 1, no = 0)
-  K_stop = ifelse(diag0.5, yes = K-1, no = K)
-  N_levelset_i = K:1
-  
-  P_matrix = matrix(0, K,K)
-  for( i in 1:K_stop){
-    for(j in (i+j_start):K){
-      level_set = abs(j-i) + abs(1-j_start)
-      lb <- beta_0[level_set]
-      ub <- beta_0[level_set+1]
-      
-      # Calculate the likelihood using a truncated distribution
-      mu <- (lb + ub) / 2  # Mean of the truncated distribution
-      #sigma <- (ub - lb) *overlap
-      sigma <- overlap*(beta_max - 0.5)/K
-      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
-    }
-  }
-  P_matrix[lower.tri(P_matrix)] = 1 - t(P_matrix)[lower.tri(P_matrix)]
-  if(diag0.5){
-    diag(P_matrix) = rep(0.5,K)
-  }
-  
-  return(P_matrix)}
-
-
-
-
-
-
-l_like_p_ij_normal_overlap = function(K, P_matrix, overlap,truncations, diag0.5 = T) {
-  #we map the proportions on a desired scale
-  beta_0 <- truncations
-  j_start = ifelse(diag0.5, yes = 1, no = 0)
-  K_stop = ifelse(diag0.5, yes = K-1, no = K)
-  N_levelset_i = K:1
-  
-  level_sets <- diag_split_matrix(P_matrix)
-  
-  # Consider or exclude the main diagonal
-  lowest_level_set_index <- ifelse(diag0.5, 2, 1)
-  lbindex <- ifelse(diag0.5, 1, 0)
-  
-  log_lik_matrix = matrix(0, K,K)
-  for( ii in 1:K_stop){
-    for(jj in (ii+j_start):K){
-      level_set = abs(jj-ii) + abs(1-j_start)
-      lb <- beta_0[level_set]
-      ub <- beta_0[level_set+1]
-      
-      # Calculate the likelihood using a truncated distribution
-      mu <- (lb + ub) / 2  # Mean of the truncated distribution
-      sigma <- overlap *(beta_max - 0.5)/K
-      
-      log_lik_matrix[ii,jj] = log(dtruncnorm(P_matrix[ii,jj], a = 0.5, b = beta_max, mean = mu, sd = sigma))
-    }
-  }
-  return(sum(log_lik_matrix[upper.tri(log_lik_matrix)]))
-}
-
-truncations_try = improper_prior5(4,.8,1,T)
-
-simulating_overlapping_POMM_powerlaw_norm(4,1,.3,truncations_try,T)
 
 K=5
 n_samples=1000
-overlap = .7
+S = 0.1
 beta_max = .8
-alpha=0.1
+alpha=1
 diag0.5=T
 true_alpha<-alpha
+
 
 
 #creating a sample of P matrices
 p_container = array(0, dim=c(K,K,n_samples))
 for(i in 1:n_samples){
   trunc = improper_prior5(K,alpha = alpha,diag0.5 = diag0.5, beta_max = beta_max )
-  p_container[,,i] = simulating_overlapping_POMM_powerlaw_norm(K, alpha=alpha, overlap  = overlap, beta_max = beta_max,truncations = trunc,diag0.5 = diag0.5)
+  p_container[,,i] = simulating_overlapping_POMM_powerlaw_norm(K, alpha=alpha, S  = S, beta_max = beta_max,truncations = trunc,diag0.5 = diag0.5)
 }
 
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
 # Combine the four levels into a list
-# Step 1: Combine the four lists into a data frame
-combined_data <- data.frame(
-  values = c(level_list_p_container[[1]],
-             level_list_p_container[[2]],
-             level_list_p_container[[3]],
-             level_list_p_container[[4]])
-)
 
-# Step 2: Create a factor variable for the levels
-combined_data$levels <- factor(rep(1:4, times = c(4000, 3000, 2000, 1000)))
-
-# Step 3: Calculate the mean values for each level
-mean_values <- aggregate(values ~ levels, combined_data, mean)
-
-# Step 3: Create the scatter plot using ggplot
-library(ggplot2) 
-
-ggplot(combined_data, aes(x = levels, y = values)) +
-  geom_point() +
-  geom_line(data = mean_values, aes(x = levels, y = values, group=1), color = "red", size = 1.2) +
-  labs(x = "Levels", y = "Values") +
-  scale_x_discrete(labels = c("1", "2", "3", "4")) +
-  stat_summary(fun = mean, geom = "errorbar", color = "red", width = 0.2) +
-  stat_summary(fun = mean, geom = "point", color = "red", size = 3, shape = 18)+
-  labs(x = "Level sets", y = "P_ij", title = paste0("Distribution of ",n_samples,' simulated P matrices with K=', K-1 , " ,alpha=",alpha,",overlap=",overlap))+
-  theme_bw()
+# ggplot(combined_data, aes(x = levels, y = values)) +
+#   geom_point() +
+#   geom_line(data = mean_values, aes(x = levels, y = values, group=1), color = "red", linewidth = 1.2) +
+#   labs(x = "Levels", y = "Values") +
+#   scale_x_discrete(labels = c("1", "2", "3", "4")) +
+#   stat_summary(fun = mean, geom = "errorbar", color = "red", width = 0.2) +
+#   stat_summary(fun = mean, geom = "point", color = "red", size = 3, shape = 18)+
+#   labs(x = "Level sets", y = "P_ij", title = paste0("Distribution of ",n_samples,' simulated P matrices with K=', K-1 , " ,alpha=",alpha,",overlap=",overlap))+
+#   theme_bw()
 
 paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',overlap,'K',K)
 
@@ -142,65 +55,10 @@ for(i in 2:length(level_list_p_container)){
 mean(overlap_space)/(beta_max- 0.5)
 
 
-try
 
-(expected_min - mu)/qnorm((1- pi/8)/(n-pi/4+1)) =  sigma
+blue_purple <- generate_color_gradient_K(K)
 
-expected_min = function(mu, sigma,n){
-  return(mu + sigma*qnorm((1- pi/8)/(n-pi/4+1)))}
-expected_max = function(mu,sigma,n){
-  return(mu + sigma*qnorm((n- pi/8)/(n-pi/4+1)))}
-
-expected_max(0.5011719, 0.01,5)
-
-expected_min(0.5187500, 0.01,5)
-
-
-
-
-# Approach 1: Direct calculation of delta_y using the formula
-compute_delta_y <- function(k, beta_max, alpha, K,diag0.5 = TRUE) {
-  K <- ifelse(diag0.5, K - 1, K)
-  term1 <- ((beta_max - 0.5)^(1/alpha)) / K
-  term2 <- k^alpha - (k-1)^alpha
-  delta_y <- term1^alpha * term2
-  return(delta_y)
-}
-
-# Approach 2: Calculation of truncation points and difference between consecutive truncation points
-compute_delta_y_alternative <- function(k, beta_max, alpha, K, diag0.5 = TRUE) {
-  K <- ifelse(diag0.5, K - 1, K)
-  x_min <- 0
-  x_max <- (beta_max - 0.5)^(1/alpha)
-  delta <- (x_max - x_min) / K
-  delta_sum <- rep(delta, K)
-  points <- cumsum(c(x_min, delta_sum))
-  truncations <- points^alpha + 0.5
-  delta_y <- truncations[k+1] - truncations[k]
-  return(delta_y)
-}
-
-# Compare the results for different values of k
-beta_max <- 0.9
-alpha <- 0.8
-K <- 5
-
-for (k in 1:K) {
-  delta_y_1 <- compute_delta_y(k, beta_max, alpha, K, T)
-  delta_y_2 <- compute_delta_y_alternative(k, beta_max, alpha, K, T)
-  
-  cat("k =", k, ": Approach 1 =", delta_y_1, ", Approach 2 =", delta_y_2, "\n")
-}
-
-
-
-model <- lm(log(mean_values$values) ~ log(as.numeric(mean_values$levels)))
-exp(coef(model)[1])
-coef(model)[2]
-
-
-blue_purple <-generate_color_gradient(K)
-
+#goood plot here
 ggplot() +
   # Add a layer for each level
   lapply(seq_along(level_list_p_container), function(i) {
@@ -268,10 +126,10 @@ for (nrow in 1: nrow(results)){
   }
   
   # Find the alpha value that maximizes the likelihood_est
-  max_likelihood <- optimize(likelihood_function, interval = c(0.1, 4), maximum = TRUE)
+  max_likelihood <- optimize(likelihood_function, interval = c(0.1, 1), maximum = TRUE)
   max_value <- max_likelihood$max
   overlap_true <- overlap
-  max_alpha
+  
   results$MAE[nrow] = abs(max_value - overlap)
   
   df_diagnostic = data.frame(overlap = overlap_test, likelihood= colSums(likelihood_est)) %>% filter(likelihood != - Inf)
@@ -294,15 +152,15 @@ for (nrow in 1: nrow(results)){
   dev.off()
 }
 
-
-
+library(gt)
+library(tidyr)
 results_summary <- results %>%
   pivot_wider(names_from = alpha, values_from = MAE)%>%
   as.data.frame()
 
 results_summary<-results_summary %>%gt(rowname_col= 'S')%>%
-  tab_header(title = md('Mean absolute error for different alpha values'),
-             subtitle = md('Each row is a different alpha value. Sample size = 1000')) %>%
+  tab_header(title = md('Mean absolute error for different S values'),
+             subtitle = md('Each row is a different S value. Sample size = 1000')) %>%
   cols_label(
     '0.1' =  md("alpha = 0.1"),
     '0.5' =  md("alpha = 0.5"),
@@ -711,22 +569,22 @@ mean(overlap_container[-c(1:N_iter*0.25)])
 ###
 
 
-
-
 K = 3
 n_samples = 1000
 beta_max = 0.8
 diag0.5 = TRUE
-alpha=
-  overlap=0.2
-K_value_test = seq(3, 11, 2)
-results = matrix(0, length(K_value_test), 2)
+#true values
+alpha= 0.5
+overlap=0.2
+#values combinations
+alpha_value_test = seq(0.1,3,0.1)
+overlap_value_test= seq(0.1,.8,0.1)
 
-params <- expand.grid(alpha_value_test, overlap_value_test)
+results <- expand.grid(alpha_value_test, overlap_value_test) %>% mutate(likelihood = rep(0,nrow(params)))
 
-results = matrix(0, nrow=nrow(params),ncol=1)
 
-K = 5
+
+
 p_container = array(0, dim = c(K, K, n_samples))
 
 for (i in 1:n_samples) {
@@ -738,22 +596,25 @@ for (i in 1:n_samples) {
 for(rows in 1:nrow(params)){
   
   
-  alpha = params[rows,1]
-  overlap = params[rows,2]
+  alpha = results$Var1[rows]
+  overlap = results$Var2[rows]
   
   likelihood_est = matrix(0, nrow = n_samples, ncol = 1)
   
   for (jjj in 1:n_samples) {
     trunc_i = improper_prior5(K, beta_max, alpha, diag0.5 = diag0.5)
-    likelihood_est[jjj] = l_like_p_ij_normal_overlap(K, p_container[,,jjj], overlap = overlap, trunc_i, diag0.5 = diag0.5) + dlnorm_param(alpha)
-  }
+    likelihood_est[jjj] = l_like_p_ij_normal_overlap(K, p_container[,,jjj], overlap = overlap, trunc_i, diag0.5 = diag0.5) }
   
   #likelihood_est[likelihood_est==-Inf] <- -2**31
   
   
-  results[rows,1]<- sum(likelihood_est)
+  results$likelihood[rows]<- sum(likelihood_est)
   
 }
+
+
+head(results)
+
 
 # Reshape results for plotting
 results_df <- data.frame(alpha<- params[,1], overlap<-params[,2], likelihood = results) %>% filter(likelihood>0) %>% mutate(likelihood= likelihood**3) %>%  mutate(likelihood= scale(likelihood))
