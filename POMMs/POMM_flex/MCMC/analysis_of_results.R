@@ -90,7 +90,6 @@ plot_P = function(p_container, p_true, burnin,K){
 
 
 
-obtaining_resultsIII<- function(filename,model){
   results = data.frame(counter5perc = 0, counter1perc =0 , mean_MSE = 0)
   obj_POMM<- readRDS(paste0(data_wd,"/",filename[1]))
   print(filename)
@@ -358,3 +357,37 @@ obtaining_resultsI<- function(filename, model){
   rownames(results) <- paste0(model,"K", K, "_M", M)
   return(results)
 }
+
+P_summary_table<- function(MCMC_samples, true_value, diag0.5,P,K){
+  j_start = ifelse(diag0.5, yes = 1, no = 0)
+  K_stop = ifelse(diag0.5, yes = K-1, no = K)
+  
+  entries_df <- data.frame(entry_i = 0 ,entry_j =0 )
+  for( ii in 1:K_stop){
+    for(jj in (ii+j_start):K){
+      entries_df <- rbind(entries_df, data.frame(entry_i= ii, entry_j = jj))
+    }
+  }
+  entries_df=entries_df[-1,]   
+  
+  if(true_value == F){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- mean(m)
+      HPD <- round(cbind(coda::HPDinterval(m)),2)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+    }
+  }else if(true_value == T){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df)), true_value =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- round(mean(m),4)
+      HPD <- round(cbind(coda::HPDinterval(m)),4)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+      results$true_value[i]<- P[results$entry_i[i],results$entry_j[i]]
+    }
+  }
+  return(results)}

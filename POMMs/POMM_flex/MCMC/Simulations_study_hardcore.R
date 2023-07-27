@@ -3,6 +3,9 @@ library(foreach)
 library(doParallel)
 library(tidyverse)
 library(EnvStats)
+library(truncnorm)
+library(dplyr)
+
 # Set up simulation parameters
 K_values <- c(3,5,9)  # Range of K values to explore
 overlap_values <- c(0.2,0.4,0.6)    # Range of overlap values to explore
@@ -34,9 +37,7 @@ samples <- 5
 cl <- makeCluster(cores)
 registerDoParallel(cl)
 foreach(combn = 1:nrow(test_grid)) %dopar% {
-  library(truncnorm)
-  library(dplyr)
-  library(EnvStats)
+
   M<- test_grid$M_values[combn]
   overlap <- 0.2
   alpha <- 0.5

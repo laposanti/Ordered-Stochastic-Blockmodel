@@ -66,6 +66,110 @@ for(i in 1:K){
     print(mean(TEST$est_containers$P[i,j,]) - P[i,j])
 }
 
+library(gt)
+library(coda)
+
+#creating a table with entry, mean, HPD 95%, if true value is provided also the true value 
+
+P_summary_table<- function(MCMC_samples, true_value, diag0.5,P,K){
+  j_start = ifelse(diag0.5, yes = 1, no = 0)
+  K_stop = ifelse(diag0.5, yes = K-1, no = K)
+  
+  entries_df <- data.frame(entry_i = 0 ,entry_j =0 )
+  for( ii in 1:K_stop){
+    for(jj in (ii+j_start):K){
+      entries_df <- rbind(entries_df, data.frame(entry_i= ii, entry_j = jj))
+    }
+  }
+  entries_df=entries_df[-1,]   
+  
+  if(true_value == F){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- mean(m)
+      HPD <- round(cbind(coda::HPDinterval(m)),2)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+    }
+  }else if(true_value == T){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df)), true_value =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- round(mean(m),4)
+      HPD <- round(cbind(coda::HPDinterval(m)),4)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+      results$true_value[i]<- P[results$entry_i[i],results$entry_j[i]]
+    }
+  }
+  return(results)}
+x=10
+while(min(which(abs(coda::autocorr.diag(m,1:x)) <0.01))==Inf){
+  x=x+1
+  print(x)
+  if(x>1000)
+    stop
+}
+min(which(abs(coda::autocorr.diag(m,1:10)) <0.01))
+
+
+P_summary_table(MCMC_samples = TEST$est_containers$P,true_value = T,diag0.5 = T,P = P,K=K)
+
+P_summary_table<- function(MCMC_samples, true_value, diag0.5,P,K){
+  j_start = ifelse(diag0.5, yes = 1, no = 0)
+  K_stop = ifelse(diag0.5, yes = K-1, no = K)
+  
+  entries_df <- data.frame(entry_i = 0 ,entry_j =0 )
+  for( ii in 1:K_stop){
+    for(jj in (ii+j_start):K){
+      entries_df <- rbind(entries_df, data.frame(entry_i= ii, entry_j = jj))
+    }
+  }
+  entries_df=entries_df[-1,]   
+  
+  if(true_value == F){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- mean(m)
+      HPD <- round(cbind(coda::HPDinterval(m)),2)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+    }
+  }else if(true_value == T){
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+                                           credible_interval_95 =rep(0,nrow(entries_df)), true_value =rep(0,nrow(entries_df))))
+    for(i in 1:nrow(results)){
+      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+      results$mean_est[i] <- round(mean(m),4)
+      HPD <- round(cbind(coda::HPDinterval(m)),4)
+      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+      results$true_value[i]<- P[results$entry_i[i],results$entry_j[i]]
+    }
+  }
+  return(results)}
+
+
+
+
+for(i in 1:nrow(results)){
+  m<-mcmc(TEST$est_containers$P[results$entry_i[i],results$entry_j[i],])
+  results$mean_est[i] <- mean(m)
+  HPD <- round(cbind(coda::HPDinterval(m)),2)
+  results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+}
+
+m<-mcmc(TEST$est_containers$P[1,2,])
+coda::HPDinterval(m)
+
+mean(m)
+
+
+
+
+
+
 #chains[[i]]= TEST
 #}
 
@@ -75,14 +179,14 @@ test3<-chains[[3]]
 test4<-chains[[4]]
 
 mcmc_list<- mcmc.list(mcmc(t(test1$est_containers$S)), mcmc(t(test2$est_containers$S)),
-          mcmc(t(test3$est_containers$S)),mcmc(t(test4$est_containers$S)))
+                      mcmc(t(test3$est_containers$S)),mcmc(t(test4$est_containers$S)))
 
 #computing gelman rubin diagnostics
 unlist(gelman.diag(mcmc_list))[1]
 
 # mean effective sample size
 mean_acceptance_rate<- mean(test1$acceptance_rates$acc.count_S,test2$acceptance_rates$acc.count_S,
-     test3$acceptance_rates$acc.count_S,test4$acceptance_rates$acc.count_S)/N_iter
+                            test3$acceptance_rates$acc.count_S,test4$acceptance_rates$acc.count_S)/N_iter
 
 mean_effective_size<-mean(unlist(lapply(mcmc_list, effectiveSize)))
 
@@ -91,9 +195,9 @@ lapply(mcmc_list, HPDinterval)[[1]][1]
 coda::HPDinterval(mcmc_list)
 
 S_diagnostic<- data.frame(gelman_diagnostic = unlist(gelman.diag(mcmc_list))[1], 
-           effective_sample_size = mean_effective_size, mean_acceptance_rate=mean_acceptance_rate*100,
-           HPD_region_0.05 = lapply(mcmc_list, HPDinterval)[[1]][1],
-           HPD_region_0.95 = lapply(mcmc_list, HPDinterval)[[1]][2])
+                          effective_sample_size = mean_effective_size, mean_acceptance_rate=mean_acceptance_rate*100,
+                          HPD_region_0.05 = lapply(mcmc_list, HPDinterval)[[1]][1],
+                          HPD_region_0.95 = lapply(mcmc_list, HPDinterval)[[1]][2])
 
 
 
@@ -142,6 +246,6 @@ ggplot(data, aes(x = alpha, y = S)) +
   geom_xsidedensity(aes(fill = alpha), alpha = 0.5, position = "stack") +
   geom_ysidedensity(aes(fill = S), alpha = 0.5, position = "stack") +
   theme_minimal()
-  
-  
+
+
 
