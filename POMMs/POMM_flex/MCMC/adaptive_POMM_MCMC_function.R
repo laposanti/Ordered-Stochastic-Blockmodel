@@ -153,7 +153,7 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
     
     
     
-    if (estimation_control[['z']] == 1) {
+    if (estimation_control$z == 1) {
       #z UPDATE----------------------------------------------------------------
       
       z_update = z_update_adaptive( z_current = z_current,
@@ -178,7 +178,7 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
       A_current = z_update$A_current
       
     }
-    if (estimation_control[['alpha']] == 1) {
+    if (estimation_control$alpha == 1) {
       
       #alpha UPDATE----------------------------------------------------------------
       alpha_update = alpha_POMM_update_fixed_P_S_z(z_current = z_current,
@@ -202,7 +202,7 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
         sigma_alpha = tuning_proposal(iteration=j,acceptance_count = acc.count_alpha,sigma = sigma_alpha,acceptanceTarget = optimal_p,min_sigma = 0.02)
       }
     }
-    if (estimation_control[['S']] == 1) {
+    if (estimation_control$S == 1) {
       #S UPDATE----------------------------------------------------------------
       
       S_update= S_POMM_update_fixed_P_alpha_z(z_current = z_current,
@@ -224,7 +224,7 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
         sigma_S = tuning_proposal(iteration=j,acceptance_count = acc.count_S,sigma = sigma_S,acceptanceTarget = optimal_p,min_sigma = 0.02)
       }
     }
-    if (estimation_control[['P']] == 1) {
+    if (estimation_control$P== 1) {
       #P UPDATE----------------------------------------------------------------
       
       p_update= P_POMM_update_fixed_alpha_S_z(z_current = z_current,
