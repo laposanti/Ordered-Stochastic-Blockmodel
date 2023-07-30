@@ -96,13 +96,12 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
   #p_ij_function = calculate_victory_probabilities(z_mat_current,P_true)
   aux = p_current%*%t(z_mat_current)
   p_nbyn_current = z_mat_current%*%aux
-  upper.tri.non.zero = which(N_ij>0, arr.ind = T)
-  p_ij_current = p_nbyn_current[upper.tri.non.zero]
+
   
   labels_available = 1:K
   
   
-  A_current= sum(dbinom(y_ij, n_ij, p_ij_current, log = T))
+  A_current= sum(dbinom(y_ij, n_ij, p_nbyn_current, log = T))
   B_current=ddirichlet_multinomial(N,K,n_k = n_k_current ,my_alpha = gamma_vec)
   C_current =  l_like_p_ij_normal_overlap(K = K, P_matrix = p_current,S =S_current, truncations = truncations_current,diag0.5 = T) + dlnorm_mu_sigma(alpha_current) +dlnorm_mu_sigma(S_current)
   

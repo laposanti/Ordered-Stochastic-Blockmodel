@@ -13,12 +13,12 @@ library(truncnorm)
 library(fossil)
 M= 13  
 N = 30
-N_iter =5000
+N_iter =20000
 N_ij = matrix(M,N,N)
-alpha=1
-S=.05
+alpha=.5
+S=.01
 K=3
-beta_max=0.75
+beta_max=0.8
 gamma_vec = rep(1/K,K)
 diag0.5=T
 trunc = improper_prior5(K,beta_max ,alpha,diag0.5)
@@ -43,25 +43,36 @@ mean(Y_ij[z_k,2]/M)
 
 
 chains= list()
-for(i in 1:4){
+for(i in 1){
   alpha0=runif(1,0.1,3)
   trunc=improper_prior5(K,beta_max,alpha = alpha0)
   S0=runif(1,0.1,.9)
-  P_start= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
-  init =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S,P=P_start)
+  P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
+  init_pomm =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S,P=P0_POMM)
   names(init)
   estimation_control = list(z = 1,alpha=1,S=0,P=1)
   ground_truth= list(z = z,alpha=alpha,S=S,P=P)
   hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-  
-  
   TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init,estimation_control = estimation_control,ground_truth = ground_truth,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params ,seed = 123)
   chains[[i]]= TEST
+  #simple study
+
+  P0_Simple= matrix(.5,K,K)
+  P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
+  P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
+  
+  init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
+  names(init_Simple)
+  estimation_control_Simple = list(z = 1,P=1)
+  ground_truth_Simple= list(z = z,P=P)
+  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_Simple,estimation_control = estimation_control_Simple,ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params_Simple ,seed = 123)
+  chains[[1]]= TEST
 }
 
-chains[1]
 
-TEST$acceptance_rates$acc.count_p
+
+
 
 mean(TEST$st.deviations$sd_p[1,2,])
 mean(TEST$st.deviations$sd_p[1,3,])
@@ -84,15 +95,59 @@ mcmc_list_fied<- mcmc.list(mcmc_fied)
 
 P_diagnostic_table(chains, T, diag0.5,P,K)
 
-P_summary_table(test_output = test1 ,true_value = F,diag0.5 = T,K=K,P = P,burn_in = 3000)
+P_summary_table(test_output = test1 ,true_value =T,diag0.5 = T,K=K,P = P,burn_in = 3000)
 z_summary_table(test1,model = 'POMM',burn_in = 2000)
-alpha_summary_table(test_output = test4,true_value = T,diag0.5 = T,alpha = alpha,K = K,burn_in = 3000)
+z_
+
+alpha_summary_table(test_output = test1,true_value = T,diag0.5 = T,alpha = alpha,K = K,burn_in = 3000)
 
 P_diagnostic_table(chains = chains ,true_value = F,diag0.5 = T,K=K,P = P,burn_in = 3000)
 z_diagnostic_table(chains = chains,true_value = F,diag0.5 = T,K=K,z = z,burn_in = 3000)
-alpha_diagnostic_table(chains = chains,true_value = F,diag0.5 = T,K=K,alpha=alpha,burn_in = 3000)
+alpha_table<-alpha_diagnostic_table(chains = chains,true_value = F,diag0.5 = T,K=K,alpha=alpha,burn_in = 3000)
+
+alpha_title<-paste0('alpha_',alpha,'K',K,'.tex')
+alpha_table %>% gt()%>% as_latex()%>% as.character() %>% writeLines(con = alpha_title)
+getwd()
 
 test1$acceptance_rates$acc.count_alpha
+# Define a function to save tables
+save_table_to_file <- function(table_code, filename) {
+  table_code %>%
+    gt() %>%
+    as_latex() %>%
+    as.character() %>%
+    writeLines(con = filename)
+}
+
+# Replace these values with your desired values for alpha and K
+alpha <- 0.05
+K <- 10
+
+# Specify the directory where you want to save the files
+# Replace "path/to/your/directory/" with the actual directory path
+directory <- "path/to/your/directory/"
+
+# Save each table with appropriate filenames and directory
+alpha_title <- paste0(directory, 'alpha_', alpha, 'K', K, '.tex')
+
+# Replace the table codes with the respective functions that generate the tables
+P_summary_table(test_output = test1, true_value = FALSE, diag0.5 = TRUE, K = K, P = P, burn_in = 3000)
+save_table_to_file(table_code, alpha_title)
+
+z_summary_table(test1, model = 'POMM', burn_in = 2000)
+save_table_to_file(table_code, paste0(directory, "z_summary_table.tex"))
+
+alpha_summary_table(test_output = test4, true_value = TRUE, diag0.5 = TRUE, alpha = alpha, K = K, burn_in = 3000)
+save_table_to_file(table_code, paste0(directory, "alpha_summary_table.tex"))
+
+P_diagnostic_table(chains = chains, true_value = FALSE, diag0.5 = TRUE, K = K, P = P, burn_in = 3000)
+save_table_to_file(table_code, paste0(directory, "P_diagnostic_table.tex"))
+
+z_diagnostic_table(chains = chains, true_value = FALSE, diag0.5 = TRUE, K = K, z = z, burn_in = 3000)
+save_table_to_file(table_code, paste0(directory, "z_diagnostic_table.tex"))
+
+alpha_table <- alpha_diagnostic_table(chains = chains, true_value = FALSE, diag0.5 = TRUE, K = K, alpha = alpha, burn_in = 3000)
+save_table_to_file(table_code, paste0(directory, "alpha_table.tex"))
 
 
 

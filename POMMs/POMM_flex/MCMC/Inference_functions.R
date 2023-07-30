@@ -111,34 +111,13 @@ Est_p_matrix= function(burnin, p_container, p_true){
   return(est_table)
 }
 
-
-z_summary_table<- function(test1, model,burn_in){
-  
+z_plot <- function(test1, model,burn_in,directory,K,M){
   obj_POMM<- test1
-  
-  #Data used to generate the data -----
-  K = nrow(obj_POMM$init$P)
-  M = sum(obj_POMM$Yij_matrix)
-  # Create a data frame to store the results
-  results <- data.frame(
-    MAP = 0,
-    MINVI = 0,
-    WAIC_est = 0,
-    WAIC_se = 0
-  )
-  getwd()
-  A_container_POMM <- obj_POMM$control_containers$A #likelihood across iterations
   z_container_POMM <- test1$est_containers$z #container matrix
   z_truePOMM <- obj_POMM$ground_truth$z #true underlying value
-  
-  # Construct the file name using paste() or paste0()
-  plot_name <- paste0("traceplot_",model,"K",K,"_M",M,".png")
-  
-  
-  
   #extracting similarity matrix
-  similarity_matrixPOMMM = pr_cc(z_container_POMM[,-c(1:burn_in)])
-  
+  similarity_matrixPOMMM = pr_cc(z_container_POMM[,-c(1:10000)])
+  setwd(directory)
   #plotting it
   plot_name <- paste0("adjacency_",model,"K",K,"_M",M,".png")
   # Save the plot with the constructed file name
@@ -155,6 +134,29 @@ z_summary_table<- function(test1, model,burn_in){
   # Close the device to save the plot
   dev.off()
   
+}
+
+z_summary_table<- function(test1, model,burn_in){
+  
+  obj_POMM<- test1
+  
+  #Data used to generate the data -----
+  K = nrow(obj_POMM$init$P)
+  M = sum(obj_POMM$Yij_matrix)
+  # Create a data frame to store the results
+  results <- data.frame(
+    MAP_vi_dist = 0,
+    MINVI_vi_dist = 0,
+    WAIC_est = 0,
+    WAIC_se = 0
+  )
+  
+  getwd()
+  A_container_POMM <- obj_POMM$control_containers$A #likelihood across iterations
+  z_container_POMM <- test1$est_containers$z #container matrix
+  z_truePOMM <- obj_POMM$ground_truth$z #true underlying value
+
+ 
   
   #point est 1
   point_est_POMM = minVI(similarity_matrixPOMMM)$cl
@@ -481,7 +483,7 @@ alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in)
     results$mean_est<- round(mean(m),4)
     HPD <- round(cbind(coda::HPDinterval(m)),4)
     results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-    results$true_value<- round(S,4)
+    results$true_value<- round(alpha,4)
     
   }
   return(results)}
