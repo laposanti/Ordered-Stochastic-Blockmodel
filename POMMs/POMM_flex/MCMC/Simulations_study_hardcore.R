@@ -42,7 +42,7 @@ test_grid = expand_grid(K_values, switch_values, N_values)
 
 cl <- makeCluster(cores)
 registerDoParallel(cl)
-foreach(iterazione = 9:nrow(test_grid)) %dopar% {
+foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   library(foreach)
   library(doParallel)
   library(tidyverse)
@@ -55,7 +55,7 @@ foreach(iterazione = 9:nrow(test_grid)) %dopar% {
   
   M= 13  
   N = test_grid$N_values[iterazione]
-  N_iter = 40000
+  N_iter = 30000
   N_ij = matrix(M,N,N)
   alpha=.5
   S=.01
@@ -134,9 +134,9 @@ foreach(iterazione = 9:nrow(test_grid)) %dopar% {
                               ground_truth = ground_truth,N = N,
                               N_iter = N_iter,targ_rate = .22,
                               hyper_params =hyper_params ,seed = seed)
-    chains_POMM[[i]]= TEST
+    chains_POMM[[paste0("chain",i)]]= TEST
   }
-  filename <- paste0("True_Model",model,"Est_model_POMM","N", N,"K", K, "S", S, "_alpha", alpha,"M",M, "_seed", seed,".RDS")
+  filename <- paste0("True_Model",model,"Est_model_POMM_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
   saveRDS(chains_POMM, file = filename) #saving results
   
   #------
@@ -158,9 +158,9 @@ foreach(iterazione = 9:nrow(test_grid)) %dopar% {
                                 init = init_Simple,estimation_control = estimation_control_Simple,
                                 ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,
                                 targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
-    chains_Simple[[i]]= TEST
+    chains_Simple[[paste0("chain",i)]]= TEST
   }
-  filename_simple <- paste0("True_Model",model,"Est_model_Simple","N", N,"K", K, "S", S, "_alpha","M",M, alpha,"_seed", seed, ".RDS")
+  filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
   saveRDS(chains_Simple, file = filename_simple) #saving results
   
 }

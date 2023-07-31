@@ -110,39 +110,71 @@ Est_p_matrix= function(burnin, p_container, p_true){
   }
   return(est_table)
 }
+save_table_to_file <- function(table_code, filename) {
+  table_code %>%
+    gt() %>%
+    as_latex() %>%
+    as.character() %>%
+    writeLines(con = filename)
+}
 
-z_plot <- function(test1, model,burn_in,directory,K,M){
-  obj_POMM<- test1
-  z_container_POMM <- test1$est_containers$z #container matrix
-  z_truePOMM <- obj_POMM$ground_truth$z #true underlying value
+z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N, z , burn_in ){
+  z_all_chain <- cbind(test_output$chain1$est_containers$z[,-c(1:burnin)],
+                       test_output$chain2$est_containers$z[,-c(1:burnin)],
+                       test_output$chain3$est_containers$z[,-c(1:burnin)],
+                       test_output$chain4$est_containers$z[,-c(1:burnin)]) 
+  
+  
+  Y_ij<-test_output$chain1$Yij_matrix
   #extracting similarity matrix
-  similarity_matrixPOMMM = pr_cc(z_container_POMM[,-c(1:10000)])
-  setwd(directory)
+  similarity_matrixPOMMM = pr_cc(z_all_chain)
+  
+  if(true_value == T){
   #plotting it
-  plot_name <- paste0("adjacency_",model,"K",K,"_M",M,".png")
+  plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
   # Save the plot with the constructed file name
   png(plot_name,width = 800, height = 800)
-  similarity_plot(obj_POMM$Yij_matrix, z_truePOMM, z_truePOMM) #checking mixing
+  similarity_plot(Y_ij, z, z) #checking mixing
   # Close the device to save the plot
   dev.off()
   
   #plotting it
-  plot_name <- paste0("similarity_",model,"K",K,"_M",M,".png")
+  plot_name <- paste0("similarity_",true_model,est_model, "_K",K,"_N",N,".png")
   # Save the plot with the constructed file name
   png(plot_name,width = 800, height = 800)
-  similarity_plot(similarity_matrixPOMMM, z_truePOMM, z_truePOMM) #checking mixing
+  similarity_plot(similarity_matrixPOMMM, z, z) #checking mixing
   # Close the device to save the plot
   dev.off()
+  }else{
+    #plotting it
+    plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 800)
+    similarity_plot(Y_ij, z, z) #checking mixing
+    # Close the device to save the plot
+    dev.off()
+    
+    #plotting it
+    plot_name <- paste0("similarity_",model,"K",K,"_M",M,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 800)
+    point_est_POMM = minVI(similarity_matrixPOMMM)$cl
+    similarity_plot(similarity_matrixPOMMM, point_est_POMM, point_est_POMM) #checking mixing
+    # Close the device to save the plot
+    dev.off()
+  }
   
 }
 
-z_summary_table<- function(test1, model,burn_in){
-  
-  obj_POMM<- test1
+z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
+  z_container_POMM <- cbind(test_output$chain1$est_containers$z[,-c(1:burnin)],
+                              test_output$chain2$est_containers$z[,-c(1:burnin)],
+                              test_output$chain3$est_containers$z[,-c(1:burnin)],
+                              test_output$chain4$est_containers$z[,-c(1:burnin)]) 
+
   
   #Data used to generate the data -----
-  K = nrow(obj_POMM$init$P)
-  M = sum(obj_POMM$Yij_matrix)
+  if(true_value==T){
   # Create a data frame to store the results
   results <- data.frame(
     MAP_vi_dist = 0,
@@ -150,28 +182,35 @@ z_summary_table<- function(test1, model,burn_in){
     WAIC_est = 0,
     WAIC_se = 0
   )
-  
-  getwd()
-  A_container_POMM <- obj_POMM$control_containers$A #likelihood across iterations
-  z_container_POMM <- test1$est_containers$z #container matrix
-  z_truePOMM <- obj_POMM$ground_truth$z #true underlying value
+ 
+  A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
+                       test_output$chain2$control_containers$A[-c(1:burnin)],
+                       test_output$chain3$control_containers$A[-c(1:burnin)],
+                       test_output$chain4$control_containers$A[-c(1:burnin)]) 
+  z_truePOMM <- z #true underlying value
 
  
-  
+  similarity_matrixPOMMM<- pr_cc(z_container_POMM)
   #point est 1
   point_est_POMM = minVI(similarity_matrixPOMMM)$cl
   #point est 2
   z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
   
-  #computing VI distance
-  print(paste("MAP",vi.dist(z_MAP_POMM, z_truePOMM)))
-  print(paste("MINVI",vi.dist(point_est_POMM, z_truePOMM)))
-  
+
   results$MAP[1] <- vi.dist(z_MAP_POMM, z_truePOMM)
   results$MINVI<- vi.dist(point_est_POMM, z_truePOMM)
   
+  
   #computing WAIC
-  WAIC<- calculate_waic_matrix(n_ij_matrix = obj_POMM$Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = obj_POMM$est_containers$P,y_ij_matrix = obj_POMM$Yij_matrix )
+  Yij_matrix<- uploded_results$chain1$Yij_matrix
+  Nij_matrix<- uploded_results$chain1$Nij_matrix
+  Pcontainer<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
+                                          test_output$chain2$est_containers$P[,,-c(1:burnin)],
+                                          test_output$chain3$est_containers$P[,,-c(1:burnin)],
+                                          test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
+  
+  
+  WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = Pcontainer,y_ij_matrix = Yij_matrix )
   results$WAIC_est <- WAIC$estimates[3,1]
   results$WAIC_se <- WAIC$estimates[3,2]
   # #computing MISCLASS
@@ -197,24 +236,76 @@ z_summary_table<- function(test1, model,burn_in){
   # print(paste0("MISCLASSERROR = ",misss))
   # results$MISCLASSERROR<- misss
   
-  
-  
-  # Save the table to a file in LaTeX format
-  rownames(results) <- paste0(model,"K", K, "_M", M)
+
+  }else{
+    results <- data.frame(
+      WAIC_est = 0,
+      WAIC_se = 0
+    )
+    
+    
+    A_all_chain <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
+                         test_output$chain2$control_containers$A[-c(1:burnin)],
+                         test_output$chain3$control_containers$A[-c(1:burnin)],
+                         test_output$chain4$control_containers$A[-c(1:burnin)]) 
+    A_container_POMM <- A_all_chain #likelihood across iterations
+    z_container_POMM <- z_all_chain #container matri
+    
+    
+    #computing WAIC
+    Yij_matrix<- uploded_results$chain1$Yij_matrix
+    Nij_matrix<- uploded_results$chain1$Nij_matrix
+    Pcontainer<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
+                              test_output$chain2$est_containers$P[,,-c(1:burnin)],
+                              test_output$chain3$est_containers$P[,,-c(1:burnin)],
+                              test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
+    
+    
+    #computing WAIC
+    WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = Pcontainer,y_ij_matrix = Yij_matrix )
+    
+    results$WAIC_est <- WAIC$estimates[3,1]
+    results$WAIC_se <- WAIC$estimates[3,2]
+    # #computing MISCLASS
+    # N_new = 60
+    # z_new_init = sample(x=c(1:K),size = N_new,replace = T)
+    # sampled_games <- 40
+    # 
+    #-------we need the point estimates for p---
+    #pomm
+    # runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
+    # # apply the permutations returned by typing:
+    # perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
+    # #obtaining the point estimate
+    # p_est_POMM<- Est_p_matrix(10000,p_container = perm.POMM,p_true = obj_POMM$p_true)
+    # 
+    #------ here is the misclass
+    #new games
+    # misss<- calculate_misclassification_rate(N_new = N_new,z_new = z_new_init,N = nrow(obj_POMM$Nij_matrix),
+    #                                          p_true =obj_POMM$p_true,z_true =  obj_POMM$z_true,sampled_games = sampled_games,
+    #                                          labels_available = c(1:K),P_est =p_est_POMM ,z_est = z_MAP_POMM)
+    # 
+    # 
+    # print(paste0("MISCLASSERROR = ",misss))
+    # results$MISCLASSERROR<- misss
+    
+    
+
+  }
   return(results)
 }
 
-z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in){
+z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
-  
-  test1<-chains[[1]]
-  test2<-chains[[2]]
-  test3<-chains[[3]]
-  test4<-chains[[4]]
+  chains<- uploded_results
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
   
   
   if(true_value == F){
-    results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0)
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0)
     
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$z[,-c(1:burn_in)]),
                                           mcmc(test2$est_containers$z[,-c(1:burn_in)]),
@@ -227,7 +318,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in){
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
     #Gelman Rubin
-    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    #results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     
@@ -238,7 +329,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in){
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   }else if(true_value == T){
-    results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0, MAP=0)
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, MAP=0)
     
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$z[,-c(1:burn_in)]),
                                           mcmc(test2$est_containers$z[,-c(1:burn_in)]),
@@ -251,7 +342,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in){
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
     #Gelman Rubin
-    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    #results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     
@@ -276,7 +367,12 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in){
 
 P_summary_table<- function(test_output, true_value, diag0.5,P,K, burn_in){
   
-  MCMC_samples = test_output$est_containers$P[,,-c(1:burn_in)]
+  P_all_chain<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
+                  test_output$chain2$est_containers$P[,,-c(1:burnin)],
+                  test_output$chain3$est_containers$P[,,-c(1:burnin)],
+                  test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
+  
+  MCMC_samples = P_all_chain
   j_start = ifelse(diag0.5, yes = 1, no = 0)
   K_stop = ifelse(diag0.5, yes = K-1, no = K)
   
@@ -314,13 +410,13 @@ P_summary_table<- function(test_output, true_value, diag0.5,P,K, burn_in){
 #Diagnostics for P#
 
 
-P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in){
+P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
   
-  test1<-chains[[1]]
-  test2<-chains[[2]]
-  test3<-chains[[3]]
-  test4<-chains[[4]]
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
   
   
   
@@ -392,7 +488,11 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in){
 
 #S inference and diagnostics
 S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
-  MCMC_samples = test_output$est_containers$S[-c(1:burn_in)]
+  S_all_chain<- rbind(test_output$chain1$est_containers$S[-c(1:burn_in)],
+                             test_output$chain2$est_containers$S[-c(1:burn_in)],
+                             test_output$chain3$est_containers$S[-c(1:burn_in)],
+                             test_output$chain4$est_containers$S[-c(1:burn_in)])
+  MCMC_samples = S_all_chain
   m<-mcmc(MCMC_samples)
   if(true_value == F){
     results = data.frame(mean_est = 0, credible_interval_95 =0)
@@ -406,20 +506,20 @@ S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
     results$mean_est<- round(mean(m),4)
     HPD <- round(cbind(coda::HPDinterval(m)),4)
     results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-    results$true_value<- round(S,4)
+    results$true_value<- ifelse(S=='na','na',round(S,4))
     
   }
   return(results)}
 
 
 
-S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in){
+S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
   
-  test1<-chains[[1]]
-  test2<-chains[[2]]
-  test3<-chains[[3]]
-  test4<-chains[[4]]
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
   
   mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$S[-c(1:burn_in)]),
                                         mcmc(test2$est_containers$S[-c(1:burn_in)]),
@@ -444,11 +544,11 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in){
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   }else if(true_value == T){
-    results = data.frame(ESS = rep(0,nrow(entries_df)),
-                         LAG_30=rep(0,nrow(entries_df)),
-                         Gelman_rubin=rep(0,nrow(entries_df)),
-                         acceptance_rate=rep(0,nrow(entries_df)),
-                         MAE = rep(0,nrow(entries_df)))
+    results = data.frame(ESS = 0,
+                         LAG_30=0,
+                         Gelman_rubin=0,
+                         acceptance_rate=0,
+                         MAE = 0)
     
     
 
@@ -471,7 +571,12 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in){
   return(results)}
 #alpha inference and diagnosics
 alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in){
-  MCMC_samples = test_output$est_containers$alpha[-c(1:burn_in)]
+  alpha_all_chain <- abind::abind(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
+                                  test_output$chain2$est_containers$alpha[-c(1:burn_in)],
+                                  test_output$chain3$est_containers$alpha[-c(1:burn_in)],
+                                  test_output$chain4$est_containers$alpha[-c(1:burn_in)], along = 3)
+  
+  MCMC_samples = alpha_all_chain
   m<-mcmc(MCMC_samples)
   if(true_value == F){
     results = data.frame(mean_est = 0, credible_interval_95 =0)
@@ -488,14 +593,13 @@ alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in)
   }
   return(results)}
 
-alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in){
+alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
   
-  test1<-chains[[1]]
-  test2<-chains[[2]]
-  test3<-chains[[3]]
-  test4<-chains[[4]]
-  
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
   mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$alpha[-c(1:burn_in)]),
                                         mcmc(test2$est_containers$alpha[-c(1:burn_in)]),
                                         mcmc(test3$est_containers$alpha[-c(1:burn_in)]),
@@ -519,11 +623,11 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in){
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   }else if(true_value == T){
-    results = data.frame(ESS = rep(0,nrow(entries_df)),
-                         LAG_30=rep(0,nrow(entries_df)),
-                         Gelman_rubin=rep(0,nrow(entries_df)),
-                         acceptance_rate=rep(0,nrow(entries_df)),
-                         MAE = rep(0,nrow(entries_df)))
+    results = data.frame(ESS = 0,
+                         LAG_30=0,
+                         Gelman_rubin=0,
+                         acceptance_rate=0,
+                         MAE = 0)
     
     
     #ESS
