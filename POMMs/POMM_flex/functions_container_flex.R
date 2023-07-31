@@ -263,7 +263,7 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
                                          upper.tri.non.zero,K,alpha_current,truncations_current,beta_max, S_current, diag0.5,acc.count_p,sigma_p){
   
   A_prime <- A_current
-  C_prime <- l_like_p_ij_normal_overlap(K,p_current,S,truncations_current,diag0.5)
+  C_prime <- l_like_p_ij_normal_overlap(K,p_current,S_current,truncations_current,diag0.5)
   z_prime <- z_current
   p_prime <- p_current
   P_NbyN_prime <- calculate_victory_probabilities(vec2mat(z_prime),p_prime)
@@ -275,12 +275,14 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
     for(p_j in (p_i+j_start):K){
       
       #extracing just players in the updating clusters
-      players_ii <- which(z==p_i)
-      players_jj <- which(z==p_j)
+      players_ii <- which(z_current==p_i)
+      players_jj <- which(z_current==p_j)
       
       #the current likelihood and prior for those players
-      A_minus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_prime[players_ii,players_jj], log=T)) + sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_prime[players_jj,players_ii], log=T))
-      C_minus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K,P_matrix = p_prime,S = S_current,truncations = truncations_current,diag0.5 = diag0.5)
+      A_minus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_prime[players_ii,players_jj], log=T)) + 
+        sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_prime[players_jj,players_ii], log=T))
+      C_minus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K,P_matrix = p_prime,
+                                            S = S_current,truncations = truncations_current,diag0.5 = diag0.5)
       
       
       #proposing a new p_ij
@@ -294,8 +296,10 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
       P_NbyN_scanning[players_jj,players_ii] <- p_scanning[p_j,p_i]
       
       #the new likelihood and prior values for those players
-      A_plus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_scanning[players_ii,players_jj], log=T)) + sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_scanning[players_jj,players_ii], log=T))
-      C_plus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K, P_matrix = p_scanning,S = S_current,truncations = truncations_current,diag0.5 = diag0.5) 
+      A_plus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_scanning[players_ii,players_jj], log=T)) + 
+        sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_scanning[players_jj,players_ii], log=T))
+      C_plus <- single_p_ij_normal_overlap(entry_i = p_i,entry_j =p_j, K = K, P_matrix = p_scanning,
+                                           S = S_current,truncations = truncations_current,diag0.5 = diag0.5) 
       
       
       A_scanning = A_prime - A_minus + A_plus

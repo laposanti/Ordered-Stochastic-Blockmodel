@@ -24,15 +24,15 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
   #validation
   if(missing(ground_truth)){
     print("Estimation of real data: no ground truth available")
+  }else if(sum(names(ground_truth) != c("z" ,    "alpha" ,"S" ,    "P" ))!=0){
+    print("please provide initial values with the following order and names: c(z, alpha,S, P)")
+    stopifnot(FALSE)
   }
   if(sum(names(init) != c("z" ,    "alpha" ,"S" ,    "P" ))!=0){
     print("please provide initial values with the following order and names: c(z, alpha,S, P)")
     stopifnot(FALSE)
   }
-  if(sum(names(ground_truth) != c("z" ,    "alpha" ,"S" ,    "P" ))!=0){
-    print("please provide initial values with the following order and names: c(z, alpha,S, P)")
-    stopifnot(FALSE)
-  }
+
   if(sum(names(estimation_control) != c("z" ,    "alpha" ,"S" ,    "P" ))!=0){
     print("please provide initial values with the following order and names: c(z, alpha,S, P)")
     stopifnot(FALSE)
@@ -64,7 +64,9 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
   
   if(estimation_control$alpha==1){
     alpha_current<- as.numeric(init$alpha)
-  }else{
+  }else if(missing(ground_truth)){
+    alpha_current = 1}
+  else{
     alpha_current=  as.numeric(ground_truth$alpha)
   }
   
@@ -282,5 +284,8 @@ adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control,
   st.deviations<- list(sd_p = sigma_p_container, sd_alpha = sigma_alpha_container, sd_S = sigma_S_container, sd_z = sigma_z_container )
   est_containers = list(z = z_container, alpha = alpha_container,S = S_container,P= p_container)
   control_containers = list(A = A_container, B = B_container,C = C_container)
-  
+  if(missing(ground_truth)){
+    ground_truth<- NA
+  }
   return(list(Yij_matrix=Yij_matrix, Nij_matrix=Nij_matrix,init = init, ground_truth=ground_truth,est_containers=est_containers, control_containers=control_containers, acceptance_rates= acceptance_rates, st.deviations=st.deviations, seed=seed))}
+P_POMM_update_fixed_alpha_S_z
