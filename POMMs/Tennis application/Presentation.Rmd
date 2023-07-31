@@ -1,0 +1,284 @@
+---
+title: "Explorative Tennis Data"
+author: "Lapo Santi"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(ggraph)
+library(tidygraph)
+library(igraph)
+library(pander)
+```
+
+
+```{r}
+
+
+source('/Users/lapo_santi/Library/Mobile Documents/com~apple~CloudDocs/Desktop - Lapo’s MacBook Air/Nial/tennis data/functions_byLapoSanti.R')
+
+match_2017_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/match_scores_2017_unindexed_csv/data/df00561878fee97bf28b92cc70ae1d54/match_scores_2017_unindexed_csv.csv'
+ranking_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/rankings_1973-2017_csv/data/79dd58b82401b1e872c23d4d2b6365fb/rankings_1973-2017_csv.csv'
+
+#importing the data
+df_match <- read.csv(match_2017_url)
+df_rank <- read.csv('/Users/lapo_santi/Library/Mobile Documents/com~apple~CloudDocs/Desktop - Lapo’s MacBook Air/Nial/tennis data/rankings_1973-2017_csv.csv')
+
+#taking values just for the 2016-2017 tournaments
+df_rank = df_rank %>%  filter(week_year > 2016)
+df_r = df_rank
+```
+This dataset contains tennis data from the ATP World Tour website. 
+
+The data is updated annually in October. The data contains ATP tournaments, match scores, match stats, rankings and players overview. The latest available data is for 2017.
+
+How does a tennis tournmanet function? The vast majority of tennis tournaments, at both professional and amateur levels, are run on a knockout basis. This means that once a player loses a match they are eliminated, and the last unbeaten player is the winner. This is what you will see at the major events like Wimbledon and the US Open.
+
+We expect top players to play more games not only because they have better chances to win, but also because they are positioned in specific places of the draw so they don’t face each other in early rounds. Other players, including wild-cards and qualifiers, are randomly positioned in the remaining slots. From there, players go head-to-head against each other with the winner advancing to the next round.
+
+Let us give a look at the tournaments we have in this dataset:
+```{r}
+length(unique(df_match$tourney_slug) )
+length(unique(c(df_match$winner_slug, df_match$loser_slug)))
+```
+
+Most of them have several rounds, namely:
+
+```{r}
+unique(df_match$tourney_slug) %>% pander()
+```
+
+For every player we have:
+```{r}
+df_rank %>% count(player_slug == 'rafael-nadal') 
+
+head(df_match) 
+```
+We will take the number of tournaments played and the ranking points.
+We see that we have data for every week. We will aggregate them by taking the median value.
+
+
+Here we drop all the players who have never played in one of the tournaments in our dataset.
+
+```{r}
+df_r=df_rank
+
+
+
+```
+
+Here we drop two matches played by two players we do not have any data on.
+
+```{r}
+
+#selecting just a number of statistics
+#tourneys_played: the number of tournaments played
+#ranking_points: the number of points for each player
+```
+
+
+Choice 1) How to aggregate the ranking data: In order to build our final dataset, we want a unique attribute for each player, so we aggregate their weekly data.
+
+Choice 2) Selecting kust a number of players: we look at the average probability of matching and at the average number of players for each tournament
+```{r}
+probabilities = vector()
+for(i in seq(80,500, 20)){
+  df_r=df_rank
+  df_match <- read.csv(match_2017_url)
+  df_r = df_r %>% group_by(player_id) %>% summarise(ranking_p = mean(ranking_points), rank_n = median(rank_number)) %>%
+  filter(rank_n < i)
+  df_r=df_r %>%
+  filter(player_id %in% unique(c(df_match$winner_player_id, df_match$loser_player_id)))
+df_match=df_match %>%
+ filter(winner_player_id %in% df_r$player_id)
+df_match=df_match %>%
+ filter(loser_player_id %in% df_r$player_id)
+
+#removing duplicate rows
+df_r=df_r[!duplicated(df_r$player_id),]
+#here we take the winner and loser player identifiers
+edgelist_df = df_match %>% select(winner_player_id, loser_player_id)
+gr = graph.data.frame(d= as.matrix(edgelist_df), directed = TRUE, vertices=df_r)
+gr_adj = as.matrix(as_adj(gr))
+probabilities = append(probabilities,mean(gr_adj))
+}
+df_r=df_rank
+df_match <- read.csv(match_2017_url)
+plot(seq(80,500, 20), probabilities, type = 'l',ylab = 'Non-zero cells adjacency matrix', xlab='number of players', main= 'Sparsity as function of # players' )
+#here I want to nderstand the average number of plauers for each tournament
+tournaments = unique(df_match$tourney_slug)
+players_per_tournaments = vector()
+for(i in tournaments){
+  subset_df = df_match[which(df_match['tourney_slug']==i),]
+  count_player = length(unique(c(subset_df$winner_slug, subset_df$loser_slug)))
+  print(unique(c(subset_df$winner_slug, subset_df$loser_slug)))
+  players_per_tournaments = append(players_per_tournaments, count_player)
+}
+median(players_per_tournaments)
+```
+
+
+```{r}
+#aggregating the data across weeks and taking the median
+df_r = df_r %>% group_by(player_id) %>% summarise(ranking_p = mean(ranking_points), rank_n = median(rank_number), age = mean(player_age), tourneys_pl = mean(tourneys_played) ) %>%
+  filter(rank_n < 100)
+
+# df_r = aggregate(df_rank$ranking_points, by=list(df_rank$player_id), FUN=mean)
+# colnames(df_r)  = c('player_id','ranking_points')
+# 
+
+
+
+
+
+#reducing the size of the df by selecting just the players who played in 2017
+df_r=df_r %>%
+  filter(player_id %in% unique(c(df_match$winner_player_id, df_match$loser_player_id)))
+df_match=df_match %>%
+ filter(winner_player_id %in% df_r$player_id)
+df_match=df_match %>%
+ filter(loser_player_id %in% df_r$player_id)
+
+#removing duplicate rows
+df_r=df_r[!duplicated(df_r$player_id),]
+#here we take the winner and loser player identifiers
+edgelist_df = df_match %>% select(winner_player_id, loser_player_id)
+```
+
+Here we create a graph. The graph is directed and weighted, with weights w = 1,2,3,4 standing for the number of times each player won against the others
+
+
+```{r}
+
+n=length(unique(c(edgelist_df$winner_player_id, edgelist_df$loser_player_id)))
+players_id = unique(c(edgelist_df$winner_player_id, edgelist_df$loser_player_id))
+w_matrix = matrix(0,nrow=n,ncol=n)  
+
+w_matrix = as.data.frame(w_matrix,row.names =players_id,  col.names=players_id)
+colnames(w_matrix) = players_id
+
+for(i in 1:nrow(edgelist_df)){
+  w_matrix[edgelist_df[i,1],edgelist_df[i,2]] = 1 + w_matrix[edgelist_df[i,1],edgelist_df[i,2]]
+  w_matrix[edgelist_df[i,2],edgelist_df[i,1]] = -1 + w_matrix[edgelist_df[i,1],edgelist_df[i,2]]
+}
+#defining an igraph object using the edges and enriching it with attributes
+
+gr = graph.data.frame(d= as.matrix(edgelist_df), directed = TRUE, vertices=df_r)
+
+gr_attributes=get.vertex.attribute(gr)
+#the adjacency matrix
+gr_adj = as.matrix(as_adj(gr))
+mean(gr_adj)
+#a plot of the graph
+gr_plot = plotting_graphs(gr_adj,z_vector=seq(1:348), degree_vector = rowSums(gr_adj) )
+
+```
+
+
+```{r}
+#a plot of the adjacency matrix
+gr_heat=heatmap(as.matrix(w_matrix), keep.dendro = FALSE,Rowv = NA, Colv = NA,)
+
+number_victories = rowSums(gr_adj)
+number_loss = colSums(gr_adj)
+number_games = number_victories + number_loss
+
+win_proportion = number_victories/number_games
+
+spline_ranking_p = smooth.spline(df_r$ranking_p,number_victories)
+spline_rank_n = smooth.spline(df_r$rank_n,number_victories)
+spline_age = smooth.spline(df_r$age,number_victories)
+spline_tourneys_pl = smooth.spline(df_r$tourneys_pl,number_victories)
+
+par(mfrow = c(2, 2))
+
+plot(df_r$ranking_p,number_victories)
+lines(spline_ranking_p$x,spline_ranking_p$y)
+plot(df_r$rank_n, number_victories)
+lines(spline_rank_n$x,spline_rank_n$y)
+plot(df_r$age, number_victories)
+lines(spline_age$x,spline_age$y)
+plot(df_r$tourneys_pl, number_victories)
+lines(spline_tourneys_pl$x,spline_tourneys_pl$y)
+
+#correlation and correlation test
+cor(number_victories, df_r$ranking_p, method = "spearman")
+cor.test(number_victories, df_r$ranking_p, method = "spearman")
+
+cor(number_victories, df_r$rank_n, method = "spearman")
+cor.test(number_victories, df_r$rank_n, method = "spearman")
+
+cor(number_victories, df_r$age, method = "spearman")
+cor.test(number_victories, df_r$age, method = "spearman")
+
+cor(number_victories, df_r$tourneys_pl, method = "spearman")
+cor.test(number_victories, df_r$tourneys_pl, method = "spearman")
+
+
+plot(number_games, win_proportion)
+plot(df_r$rank_n, number_victories)
+plot(number_victories~df_r $rank_n)
+lines(number_victories~df_r)
+plot(number_victories~df_r $rank_n)
+spline_rankn = smooth.spline(df_r$rank_n,number_victories)
+spline_rankpt = smooth.spline(x = df_r$ranking_p, y = number_victories)
+plot(df_r$ranking_p, number_victories)
+lines(spline_rankpt$x, spline_rankpt$y)
+
+
+save(gr_adj,file = "/Users/lapo_santi/Library/Mobile Documents/com~apple~CloudDocs/Desktop - Lapo’s MacBook Air/Nial/tennis data/A.")
+```
+
+```{r}
+library(sbm)
+A = as.matrix(gr_adj)
+sbm_est = estimateSimpleSBM(A, 'poisson')
+z = sbm_est$memberships
+
+plotting_graphs(A,z,rowSums(A))
+adjacency_plot <- function(adj, z_0){
+  ID <- c(1:nrow(adj))
+  df_a <- data.frame(adj)
+  #sorting columns
+  z_0_a <- data.frame(z_0, ID )
+  df_a <- data.frame(adj, ID)
+  df_a <- left_join(df_a, z_0_a, by="ID")
+  df_a <- df_a[order(df_a$z_0, decreasing = FALSE),]
+  df_a$z_0 <- NULL
+  df_a$ID <- NULL
+  #sorting rows
+  df_a <- t(df_a)
+  df_a <- data.frame(df_a, ID)
+  df_a <- left_join(df_a, z_0_a, by="ID")
+  df_a <- df_a[order(df_a$z_0),]
+  df_a$z_0 <- NULL
+  df_a$ID <- NULL
+  
+  a_aux <- as.matrix(df_a)
+  h_aux <- heatmap(a_aux  , symm = TRUE, Rowv = NA, Colv = NA, ColSideColors = as.character(z_0[order(z_0)]), RowSideColors = as.character(z_0[order(z_0, decreasing = FALSE)]) )
+  return(h_aux)
+}
+C= sbm_est$connectParam
+Cv=as.vector(unlist(C))
+C = matrix(Cv, ncol=3,nrow=3)
+#interblock probabilities
+adjacency_plot(C,c(1,2,3))
+#edges probabilities
+adjacency_plot(A, z)
+plot(number_games, z)
+plot(number_victories,z)
+C
+```
+
+
+
