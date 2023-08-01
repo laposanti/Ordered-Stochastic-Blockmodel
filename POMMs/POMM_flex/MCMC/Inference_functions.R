@@ -498,11 +498,12 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter){
 
 #S inference and diagnostics
 S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
-  S_all_chain<- rbind(test_output$chain1$est_containers$S[-c(1:burn_in)],
+  test_output=uploded_results
+  MCMC_samples<- c(test_output$chain1$est_containers$S[-c(1:burn_in)],
                              test_output$chain2$est_containers$S[-c(1:burn_in)],
                              test_output$chain3$est_containers$S[-c(1:burn_in)],
                              test_output$chain4$est_containers$S[-c(1:burn_in)])
-  MCMC_samples = S_all_chain
+
   m<-mcmc(MCMC_samples)
   if(true_value == F){
     results = data.frame(mean_est = 0, credible_interval_95 =0)

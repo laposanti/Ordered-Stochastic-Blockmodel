@@ -154,11 +154,11 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     estimation_control_Simple = list(z = 1,P=1)
     ground_truth_Simple= list(z = z,P=P)
     hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-    TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
+    TEST_simple = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
                                 init = init_Simple,estimation_control = estimation_control_Simple,
                                 ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,
                                 targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
-    chains_Simple[[paste0("chain",i)]]= TEST
+    chains_Simple[[paste0("chain",i)]]= TEST_simple
   }
   filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
   saveRDS(chains_Simple, file = filename_simple) #saving results

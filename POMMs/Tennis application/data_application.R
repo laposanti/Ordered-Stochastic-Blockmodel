@@ -114,12 +114,12 @@ for(i in 1:4){
   hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
   TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
                               init = init_Simple,estimation_control = estimation_control_Simple,
-                              ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,
+                             N = N,N_iter = N_iter,
                               targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
   chains_Simple[[paste0("chain",i)]]= TEST
 }
-setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
-filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
+ setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
+filename_simple <- paste0('Tennis_application_Est_model_Simple_',"_N", N,"_K", K, "_seed", seed,".RDS")
 saveRDS(chains_Simple, file = filename_simple) #saving results
 
 

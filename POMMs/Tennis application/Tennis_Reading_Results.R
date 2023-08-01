@@ -22,9 +22,10 @@ plots_dir<- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis applicati
 #Printing all possible results
 
 #1: POMM, 0:Simple
-est_model  <- 'POMM'
+est_model  <- 'Simple'
 filename <- list.files(pattern = paste0('Tennis_application_Est_model_', est_model),path = data_wd)
 print(filename)
+
 
 
 N_iter=30000
@@ -54,7 +55,7 @@ for(i in 1:length(filename)){
   
   
   
-  S<- if(est_model == 'POMM'){
+  if(est_model == 'POMM'){
     S_s_title <- paste0(tap,'/S_summary_table','Tennis_application_Est_model_',est_model,'_K', K,'_N', N, '.tex')
     S_s_table<- S_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, S = S, K = K, burn_in = burnin)
     save_table_to_file(S_s_table, S_s_title)
@@ -64,11 +65,11 @@ for(i in 1:length(filename)){
   P_d_table<- P_diagnostic_table(chains = uploded_results, true_value = F, diag0.5 = TRUE,K = K, P = P, burn_in = burnin,N_iter = N_iter)
   save_table_to_file(P_d_table, P_d_title)
   
-  # z_d_title <- paste0(tap,'/z_diagnostic_table','Tennis_application_Est_model_',est_model,'_K', K,'_N', N, '.tex')
-  # z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)
-  # save_table_to_file(z_d_table, z_d_title)
+  z_d_title <- paste0(tap,'/z_diagnostic_table','Tennis_application_Est_model_',est_model,'_K', K,'_N', N, '.tex')
+  z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin,N_iter=N_iter)
+  save_table_to_file(z_d_table, z_d_title)
 
-  S<- if(est_model == 'POMM'){
+  if(est_model == 'POMM'){
     S_d_title <- paste0(tap,'/S_diagnostic_table','Tennis_application_Est_model_',est_model,'_K', K,'_N', N, '.tex')
     S_d_table <- S_diagnostic_table(chains = uploded_results, true_value = F, diag0.5 = TRUE, K = K, S = S, burn_in = burnin,N_iter = N_iter)
     save_table_to_file(S_d_table, S_d_title)
@@ -77,6 +78,6 @@ for(i in 1:length(filename)){
   z_plot(test_output =uploded_results , true_model= 'Tennis_application_Est_model_', 
          est_model = est_model, true_value =F , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin )
 }
-}
+
 
 
