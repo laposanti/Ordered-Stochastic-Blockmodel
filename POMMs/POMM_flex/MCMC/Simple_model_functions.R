@@ -16,8 +16,8 @@ P_simple_update = function(z_current, p_current,
     for(p_j in (p_i+j_start):K){
       
       #extracing just players in the updating clusters
-      players_ii <- which(z==p_i)
-      players_jj <- which(z==p_j)
+      players_ii <- which(z_prime==p_i)
+      players_jj <- which(z_prime==p_j)
       
       #the current likelihood and prior for those players
       A_minus = sum(dbinom(y_ij[players_ii,players_jj], n_ij[players_ii,players_jj], P_NbyN_prime[players_ii,players_jj], log=T)) + sum(dbinom(y_ij[players_jj,players_ii], n_ij[players_jj,players_ii], P_NbyN_prime[players_jj,players_ii], log=T))

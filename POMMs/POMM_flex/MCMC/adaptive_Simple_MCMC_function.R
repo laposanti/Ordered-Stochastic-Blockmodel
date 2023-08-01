@@ -24,15 +24,15 @@ adaptive_MCMC_simple <- function(Yij_matrix, Nij_matrix,init , estimation_contro
   #validation
   if(missing(ground_truth)){
     print("Estimation of real data: no ground truth available")
+  }else if(sum(names(ground_truth) != c("z" ,     "P" ))!=0){
+    print("please provide initial values with the following order and names: c(z, P)")
+    stopifnot(FALSE)
   }
   if(sum(names(init) != c("z" ,    "P" ))!=0){
     print("please provide initial values with the following order and names: c(z, P)")
     stopifnot(FALSE)
   }
-  if(sum(names(ground_truth) != c("z" ,     "P" ))!=0){
-    print("please provide initial values with the following order and names: c(z, P)")
-    stopifnot(FALSE)
-  }
+  
   if(sum(names(estimation_control) != c("z" ,    "P" ))!=0){
     print("please provide initial values with the following order and names: c(z, P)")
     stopifnot(FALSE)
@@ -58,12 +58,18 @@ adaptive_MCMC_simple <- function(Yij_matrix, Nij_matrix,init , estimation_contro
   #if the parameters is fixed, setting it to the true value
   if(estimation_control$z==1){
     z_current= matrix(init$z,N,1)
+  }else if(missing(ground_truth)){
+    print('z must be estimated or fixed to a value')
+    stopifnot(FALSE)
   }else{
     z_current=  matrix(ground_truth$z, N, 1)
   }
   
   if(estimation_control$P==1){
     p_current<- as.matrix(init$P)
+  }else if(missing(ground_truth)){
+    print('P must be estimated or fixed to a value')
+    stopifnot(FALSE)
   }else{
     p_current=  as.matrix(ground_truth$P)
   }
@@ -209,5 +215,7 @@ adaptive_MCMC_simple <- function(Yij_matrix, Nij_matrix,init , estimation_contro
   st.deviations<- list(sd_p = sigma_p_container, sd_z = sigma_z_container )
   est_containers = list(z = z_container,P= p_container)
   control_containers = list(A = A_container, B = B_container,C = C_container)
-  
+  if(missing(ground_truth)){
+    ground_truth= NA
+  }
   return(list(Yij_matrix=Yij_matrix, Nij_matrix=Nij_matrix,init = init, ground_truth=ground_truth,est_containers=est_containers, control_containers=control_containers, acceptance_rates= acceptance_rates, st.deviations=st.deviations, seed=seed))}

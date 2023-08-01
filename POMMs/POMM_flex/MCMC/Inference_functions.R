@@ -147,21 +147,23 @@ z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N
   dev.off()
   }else{
     #plotting it
+    point_est_POMM = minVI(similarity_matrixPOMMM)$cl
     plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    similarity_plot(Y_ij, z, z) #checking mixing
+    similarity_plot(Y_ij, point_est_POMM, point_est_POMM) #checking mixing
     # Close the device to save the plot
     dev.off()
     
     #plotting it
-    plot_name <- paste0("similarity_",model,"K",K,"_M",M,".png")
+    plot_name <- paste0("similarity_",true_model,est_model,"K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    point_est_POMM = minVI(similarity_matrixPOMMM)$cl
+    
     similarity_plot(similarity_matrixPOMMM, point_est_POMM, point_est_POMM) #checking mixing
     # Close the device to save the plot
     dev.off()
+    return(point_est_POMM)
   }
   
 }
@@ -243,14 +245,18 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
       WAIC_se = 0
     )
     
+    similarity_matrixPOMMM<- pr_cc(z_container_POMM)
+    #point est 1
+    point_est_POMM = minVI(similarity_matrixPOMMM)$cl
+    #point est 2
     
-    A_all_chain <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
+    
+    A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
                          test_output$chain2$control_containers$A[-c(1:burnin)],
                          test_output$chain3$control_containers$A[-c(1:burnin)],
                          test_output$chain4$control_containers$A[-c(1:burnin)]) 
-    A_container_POMM <- A_all_chain #likelihood across iterations
-    z_container_POMM <- z_all_chain #container matri
-    
+
+    z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
     
     #computing WAIC
     Yij_matrix<- uploded_results$chain1$Yij_matrix
@@ -262,7 +268,10 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
     
     
     #computing WAIC
-    WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = Pcontainer,y_ij_matrix = Yij_matrix )
+    WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,
+                                 z_container = z_container_POMM,
+                                 N_iter = ncol(z_container_POMM),
+                                 p_container = Pcontainer,y_ij_matrix = Yij_matrix )
     
     results$WAIC_est <- WAIC$estimates[3,1]
     results$WAIC_se <- WAIC$estimates[3,2]
@@ -292,33 +301,33 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
     
 
   }
-  return(results)
+  return(list(table=results, memb = point_est_POMM))
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
-  chains<- uploded_results
+  
   test1<-chains$chain1
   test2<-chains$chain2
   test3<-chains$chain3
   test4<-chains$chain4
-  
-  
+
   if(true_value == F){
+    
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0)
     
-    mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test2$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test3$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test4$est_containers$z[,-c(1:burn_in)])))
-    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test2$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test3$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test4$control_containers$A[-c(1:burn_in)]))))
+    mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test3$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test4$est_containers$z[,-c(1:burn_in)]))))
+    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(test1$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test2$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test3$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test4$control_containers$A[-c(1:burn_in)])))
     #ESS
-    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)/N
     #Gelman Rubin
-    #results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     
@@ -329,13 +338,14 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   }else if(true_value == T){
+    
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, MAP=0)
     
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$z[,-c(1:burn_in)]),
                                           mcmc(test2$est_containers$z[,-c(1:burn_in)]),
                                           mcmc(test3$est_containers$z[,-c(1:burn_in)]),
                                           mcmc(test4$est_containers$z[,-c(1:burn_in)])))
-    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$control_containers$A[-c(1:burn_in)])),
+    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc((test1$control_containers$A[-c(1:burn_in)])),
                                             mcmc(t(test2$control_containers$A[-c(1:burn_in)])),
                                             mcmc(t(test3$control_containers$A[-c(1:burn_in)])),
                                             mcmc(t(test4$control_containers$A[-c(1:burn_in)]))))

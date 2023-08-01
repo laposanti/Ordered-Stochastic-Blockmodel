@@ -55,8 +55,8 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   
   M= 13  
   N = test_grid$N_values[iterazione]
-  N_iter = 30000
   N_ij = matrix(M,N,N)
+  N_iter = 30000
   alpha=.5
   S=.01
   K= test_grid$K_values[iterazione]

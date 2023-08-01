@@ -4,7 +4,9 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_c
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
 
 library(EnvStats)
 library(ggplot2)
@@ -28,7 +30,7 @@ ranking_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-da
 
 #importing the data
 
-df_rank <- read.csv('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/rankings_1973-2017_csv.csv')
+df_rank <- read.csv('/Users/lapo_santi/Desktop/Nial/raw_tennis_data/rankings_1973-2017_csv.csv')
 
 match_2017_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/match_scores_2017_unindexed_csv/data/df00561878fee97bf28b92cc70ae1d54/match_scores_2017_unindexed_csv.csv'
 df_match <- read.csv(match_2017_url)
@@ -45,81 +47,82 @@ top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
 df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
 
 #now, for each game I want to filter just those players in the top one-hundred
-df_match = df_match %>% mutate(player_id = winner_player_id)
-df_match = left_join(df_match, df_r, by = "player_id", suffix = c("_winner","_winner"))
-names(df_match)[names(df_match) == "rank_number"] <- "winner_rank_number"
-names(df_match)[names(df_match) == "player_slug"] <- "winner_player_slug"
-
-df_match = df_match %>% mutate(player_id = loser_player_id)
-df_match = left_join(df_match, df_r, by = "player_id", suffix = c("_loser","_loser"))
-names(df_match)[names(df_match) == "rank_number"] <- "loser_rank_number"
-names(df_match)[names(df_match) == "player_slug"] <- "loser_player_slug"
+df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
 
 df_match = df_match %>% filter(loser_rank_number <= 100) %>% filter(winner_rank_number <= 100)
 
 my_edges = df_match %>% select(winner_slug, loser_slug)
 
+
 g =graph_from_edgelist(as.matrix(my_edges),directed = T)
 
 my_name = data.frame(player_slug=vertex_attr(g)$name)
 
-players_df = left_join(my_name, ranks %>% select(player_slug,rank_number), by="player_slug")
+players_df = inner_join(my_name,top100players, by="player_slug")
 
 A = as_adjacency_matrix(g)
 
-A= as.matrix(A)
-B = matrix(0, nrow(A), ncol(A))
-B[lower.tri(B)] = A[lower.tri(A)] + t(A)[lower.tri(A)]
-B[upper.tri(B)] = A[upper.tri(A)] + t(A)[upper.tri(A)]
 
-# 
-# edgelist <- data.frame(df_match$winner_name, df_match$loser_name)
-# reversed_edgelist <- data.frame(df_match$loser_name,df_match$winner_name)
-# 
-# 
-# 
-# 
-# 
-# 
-# data_clean <- data_clean %>%
-#   mutate(player1_number = as.integer(factor(player1, levels = unique(c(player1, player2)))),
-#          player2_number = as.integer(factor(player2, levels = unique(c(player1, player2)))))
-# 
-# # 
-# # Create a new dataframe with player names and unique IDs
-# player_data <- data.frame(player = c(data_clean$player1, data_clean$player2),
-#                           unique_id = c(data_clean$player1_number, data_clean$player2_number))
-# 
-# 
-# # Remove duplicate rows (if any)
-# player_data <- unique(player_data)
-
-# Print the resulting dataframe
+Y_ij= as.matrix(A)
+N_ij = matrix(0, nrow(Y_ij), ncol(Y_ij))
+N_ij[lower.tri(N_ij)] = Y_ij[lower.tri(Y_ij)] + t(Y_ij)[lower.tri(Y_ij)]
+N_ij[upper.tri(N_ij)] = Y_ij[upper.tri(Y_ij)] + t(Y_ij)[upper.tri(Y_ij)]
 
 
+beta_max=.8
+K=3
+N=95
+gamma_vec = rep(1/K,K)
+diag0.5=T
+N_iter=30000
+chains_POMM <- list()
+for(i in 1:4){
+  seed=123
+  alpha0=runif(1,0.1,3)
+  trunc=improper_prior5(K,beta_max,alpha = alpha0)
+  S0=runif(1,0.1,.9)
+  P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
+  init_POMM =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S0,P=P0_POMM)
+  
+  estimation_control = list(z = 1,alpha=0,S=1,P=1)
+  
+  hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
+                            estimation_control = estimation_control,N = N,
+                            N_iter = N_iter,targ_rate = .22,
+                            hyper_params =hyper_params ,seed = seed)
+  chains_POMM[[paste0("chain",i)]]= TEST
+}
+
+filename <- paste0('Tennis_application_Est_model_POMM_',"_N", N,"_K", K, "_seed", seed,".RDS")
+saveRDS(chains_POMM, file = filename) #saving results
+
+#------
+#Simple 
+#------
+
+chains_Simple <- list()
+for(i in 1:4){
+  seed=123
+  P0_Simple= matrix(.5,K,K)
+  P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
+  P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
+  init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
+  
+  estimation_control_Simple = list(z = 1,P=1)
+  
+  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
+                              init = init_Simple,estimation_control = estimation_control_Simple,
+                              ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,
+                              targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
+  chains_Simple[[paste0("chain",i)]]= TEST
+}
+setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
+filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
+saveRDS(chains_Simple, file = filename_simple) #saving results
 
 
-# 
-# n_ij_matrix = matrix(0,N,N)
-# M =nrow(data_clean)
-# for(i in 1:M){
-#   n_ij_matrix[data_clean$player1_number[i],data_clean$player2_number[i]] = data_clean$games[i]
-#   n_ij_matrix[data_clean$player2_number[i],data_clean$player1_number[i]] = data_clean$games[i]
-#   }
-# 
-# y_ij_matrix= matrix(0,N,N)
-# for(i in 1:M){
-#   y_ij_matrix[data_clean$player1_number[i],data_clean$player2_number[i]] = data_clean$victories[i]
-#   y_ij_matrix[data_clean$player2_number[i],data_clean$player1_number[i]] = data_clean$games[i] - data_clean$victories[i]
-# }
-
-beta_max=.75
-
-
-res = MCMC_POMM_Estimation(N_iter = 20000,K_true = 3,n_ij_matrix = B, y_ij_matrix =   A, beta_max = beta_max)
-res_simple = MCMC_simple_model_Estimation(N_iter = 20000,K_true = 3,n_ij_matrix = B, y_ij_matrix =   A)
-
-z_burn = res$z[,-c(1:10000)]
 label_switch = label.switching(method = "DATA-BASED",z = t(z_burn),K = 3, data=rowSums(A))
 point_est2 = as.vector(label_switch$clusters)
 
