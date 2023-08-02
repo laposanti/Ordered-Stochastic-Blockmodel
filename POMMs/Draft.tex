@@ -86,7 +86,8 @@ By integrating block clustering and order-based ranking, the BCOR model offers d
 
 \section{The Simple Model}
 
-The following Bayesian model is used to describe and analyze pairwise data, with the specific aim to identify clusters of points with similar connectivity patterns. 
+The following Bayesian model is used to describe and analyze pairwise data, with the specific aim to identify clusters of points with similar connectivity patterns. Consider a scenario where entities engage in pairwise comparisons, and the outcomes are asymmetric – meaning that the probability of entity i winning over entity j is not necessarily the same as the probability of j winning over i. 
+
 
 The model uses a Poisson distribution to model the number of blocks, a Dirichlet-multinomial distribution to model the distribution of nodes' assignment across blocks, and a binomial distribution to model the distribution of edges within blocks. Additionally, the model includes a POMM process to model the probability of edge formation between nodes within blocks.
 
@@ -136,6 +137,83 @@ Finally, we assume that the number of clusters $K$ follow a Poisson distribution
 
 \section{The POMM Model}
 
+
+
+In this section, we introduce a novel pairwise model that combines the notions of ordering and community structure to capture the complex interactions observed in various systems. Just as in network analysis, where directed hierarchies and community patterns play crucial roles in understanding interactions among entities (see Peixoto), we seek to develop a framework that simultaneously incorporates these two fundamental aspects in the context of pairwise data.
+
+
+Drawing inspiration from the directed stochastic block model (SBM) used in network analysis, we develop a modified version tailored specifically for pairwise data. The model allows us to identify directed hierarchies among the entities while simultaneously detecting community structures that influence their interactions. By incorporating these two elements into a unified framework, our model offers a more comprehensive understanding of the underlying dynamics governing pairwise comparisons.
+
+Several models of stochastic transitivity exist and have been used to describe the probabilities involved in experiments of paired comparisons, specifically in scenarios where transitivity is expected, however, empirical observations of the binary relation is probabilistic. This allows for a weaker player to win with a positive probability against a stronger opponent. 
+
+Tightly matched players might have a higher chance of observing this inversion while players with large differences in their skills might only see these inversions happen seldom. Stochastic transitivity models formalize such relations between the probabilities (e.g. of an outcome of a match) and the underlying transitive relation (e.g. the skills of the players).
+
+Tightly matched players might have a higher chance of observing this inversion while players with large differences in their skills might only see these inversions happen seldom. Stochastic transitivity models formalize such relations between the probabilities (e.g. of an outcome of a match) and the underlying transitive relation (e.g. the skills of the players).
+
+A binary relation $\succsim$ on a set $\mathcal{A}$ is called \emph{transitive}, in the standard \textit{non-stochastic} sense, if
+$a \succsim b$ and $b \succsim c$ implies $a \succsim c$ for all members $a,b,c$ of $\mathcal{A}$.
+
+\emph{Stochastic} versions of transitivity include:
+\begin{enumerate}
+  \item \textbf{Weak Stochastic Transitivity (WST):} $\mathbb{P}(a\succsim b)\geq \tfrac{1}{2}$ and $\mathbb{P}(b\succsim c)\geq \tfrac{1}{2}$ implies $\mathbb{P}(a\succsim c)\geq \tfrac{1}{2}$, for all $a,b,c \in \mathcal{A}$;
+  \item \textbf{Strong Stochastic Transitivity (SST):} $\mathbb{P}(a\succsim b)\geq \tfrac{1}{2}$ and $\mathbb{P}(b\succsim c)\geq \tfrac{1}{2}$ implies $\mathbb{P}(a\succsim c)\geq \max \{\mathbb{P}(a\succsim b),\mathbb{P}(b\succsim c)\}$, for all $a,b,c \in \mathcal{A}$;
+  \item \textbf{Linear Stochastic Transitivity (LST):} $\mathbb{P}(a\succsim b) = F(\mu(a) - \mu(b))$, for all $a,b \in \mathcal{A}$, where $F:\mathbb{R} \to [0,1]$ is some \textit{increasing} and symmetric function (called a \emph{comparison function}), and $\mu: \mathcal{A}\to \mathbb{R}$ is some mapping from the set $\mathcal{A}$ of alternatives to the real line (called a \emph{merit function}).
+\end{enumerate}
+
+In the following sections we will focus on the Strong Stochastic Transitivity version.
+
+\subsection{Assuming the SST property for the probabilities in matrix P (SST matrix)}
+We want to model the matrix in te Simple model so that it satisfies the SST assumption. Recall that $\underset{K \times K}{P}$ is a collection of victory probabilities among $K$ blocks or communities as follows:
+
+\begin{center}
+$$P = 
+\left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right)$$
+\end{center}
+
+
+In order to satisfy the SST property, P entries can be spelled out explicitly as follows:
+\begin{center}
+$$
+\left(\begin{array}{ccccccc} 0.5 & \leq & p_{1,2} & \leq &  ... & \leq & p_{1,K} \\  &  & \vertgeq &  & ... &  & \vertgeq \\
+1 - p_{1,2} & \leq & 0.5 & \leq & ... & \leq & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots &  ... & \vdots& \vdots \\ 1 - p_{1,K}& \leq & 1 - p_{2,K}& \leq & ... & \leq & 0.5\end{array}\right)
+$$
+\end{center}
+
+We further assume that the P matrix is skew-simmetric, that is, $p_{j,i}= 1 - p_{i,j}$. Furthermore, we set the main diagonal of matrix $P$ to $0.5$ for teams and $0$ for individual players.
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.6\textwidth,natwidth=1386,natheight=1000]{/Users/lapo_santi/Desktop/Nial/project/POMMs/IMG_0EE4E8AB347D-1.jpeg}
+\caption{Dag representation of the Poset imposed onto the SST matrix}
+\label{fig:DAG}
+\end{center}
+\end{figure}
+
+
+\subsection{Mathematical background to specify a prior on P0}
+
+In order to incorporate such structure within a Bayesian framework, we need to impose an appropriate prior and hyper-prior on $P$ so to reproduces such ordering among the probabilities. To this end, we draw inspiration from the the literature on spatial statistics. In particular, we exploit the idea of Partially Order Markov Models (POMMs) to define dependency and structure within the $P$ matrix. 
+
+
+In order to define the Strong Stochastic Transitivity (SST) matrix, we first introduce the mathematical concepts of Posets and Directed Acyclic Graphs (DAGs).
+
+In POMMs, we define a finite Poset $(P, \leq)$, which is a partially ordered set based on the matrix $P$. The elements of $P$ are pairs $(i, j)$ representing the $K \times K$ array of probabilities. The binary relation $\leq$ on $P$ is defined as $(p, q) \leq (i, j)$ if and only if $p \leq i$ and $q \leq j$. This makes $(P, \leq)$ a Poset satisfying the three properties of reflexivity, transitivity, and antisymmetry.
+
+The Poset $(P, \leq)$ corresponds to a directed acyclic graph (DAG) $(P, F)$, where $F$ is the set of directed edges between vertices. The concepts of cone, adjacent lower neighborhood, cover of a subset, and level sets are defined within this Poset.
+
+To apply POMMs to the SST matrix $P$, we express the probability of each element $P_{ij}$ in terms of its immediate predecessors using conditional probabilities. This results in a joint probability distribution of $P(D)$, where $D$ is the set of all elements in $P$. The joint distribution is expressed as a product of conditional probabilities of each element given its adjacent lower neighborhood.
+
+To introduce the desired hierarchical structure for the SST matrix, we impose three conditions:
+
+Probabilities should increase in the columns (from left to right).
+Probabilities should decrease in the rows (from top to bottom).
+Probabilities in the upper triangular matrix should be greater than or equal to 0.5.
+To satisfy these conditions, we define level sets $L^{(k)}$ as diagonals of the upper triangular matrix, where $L^{(0)}$ is the main diagonal, $L^{(1)}$ is the diagonal above it, and so on up to $L^{(K-1)}$. Each level set $L^{(k)}$ contains elements $P_{ij}$ where $j - i = k$.
+
+The transitivity condition is then enforced by ensuring that the maximum value of each level set is less than the minimum value of the next level set. This implies that the probabilities increase as we move down the rows and decrease as we move across the columns.
+
+By incorporating POMMs and imposing the desired hierarchical structure, we create a coherent and tractable framework for expressing the joint probability distribution of the SST matrix $P$, enabling efficient inference and modeling of player abilities in tournaments.
+
 \subsection{Posets and Dags}
 \begin{definition}\label{def:Poset}[Poset]To define poset, a partially ordered set we start from $D$, a set of elements. The binary relation $\prec$ on $D$ is said to be a partial order if:
 \begin{align}
@@ -178,23 +256,7 @@ For any $y \in D$ the \textit{adjacent lower neighbourhood} of $y$ is the set $$
 $$
 \end{definition}
 
-\begin{definition}[Dilation]
-For any $y \in D$, the \textit{dilation} of $y$ is the set 
-\begin{equation}
-\text{dil } y = \bigcup\{ \overline{\text{adjl }} x : y \in \overline{\text{adjl }} \} \nonumber
-\end{equation}
-\end{definition}
 
-\begin{definition}[Excluded dilation]
-For any $y \in D$, the \textit{excluded dilation}  of $y$ is the set 
-\begin{equation}
-\text{dil }^* y = \text{dil } y \setminus \{y\}
-\end{equation}
-\end{definition}
-
-\begin{definition}[Minimal element]
-In general, an element $y\in D$ is called \textit{minimal element} if there is no other element $x$ satisfying $x\prec y$ where $\text{ adjl } s$ is the set of adjacent lower neighbors of $s \in D$.
-\end{definition}
 
 
 \begin{definition}[Cover of a Subset]
@@ -275,47 +337,20 @@ The second part of the result simplifies the product by noting that the conditio
 
 
 
-In this section, I will introduce a matrix that displays the Strong Stochastic Transitivity (SST) property. The aim of this section is to model the probability of a player winning a match in a tournament against another one. To achieve this goal, we need to ensure that the probabilities are arranged in a consistent manner. Specifically, we want to ensure that if Player A is stronger than Player B, and Player B is stronger than Player C, then Player A must be stronger than Player C. This is a well-known mathematical concept known as transitivity, and it is essential to impose it on the probabilities of victory between the players. For instance, if we know that Djoković is stronger than Medvedev and Medvedev is stronger than Kyrgios, then we can infer that Djoković must be stronger than Kyrgios. By using the SST property, we can guarantee that the probabilities of victory reflect this logical relationship, which enhances the clarity and coherence of our model.
-After having introduced the SST property, we want to build upon the definitions of Section(1), and re-express the SST matrix within the POMMs' framework. This new definition will allow us to have a coherent and tractable framework to express the joint probability distribution of such ordered probabilities and, ultimately, to perform inference.
 
-\subsection{Defining matrix P (SST matrix)}
-The matrix under consideration, that is $P$, is a collection of victory probabilities among $K$ entities, which could represent players or also groups of players. The matrix is denoted by $\underset{K \times K}{P}$, where $K$ is the number of players/ group of players taken into consideration. 
+In this section, we introduce a matrix that exhibits the Strong Stochastic Transitivity (SST) property. Our aim is to model the probabilities of players winning matches in a tournament, ensuring that these probabilities are consistent. Transitivity, as mentioned above, is crucial in guaranteeing that if Player A is stronger than Player B and Player B is stronger than Player C, then Player A must be stronger than Player C. This logical relationship is reflected in the probabilities of victory between players, which are contained in the matrix $P$ introduced in the previous section.
+The matrix under consideration is denoted as $\underset{K \times K}{P}$, representing victory probabilities among $K$ entities, such as players or groups of players. Each element $p_{i,j}$ in the matrix $P$ represents the probability of player $i$ winning against player $j$ in a tennis match, without draws allowed. To satisfy the requirements of a valid probability, we have $p_{i,j} + p_{j,i} = 1$, where $p_{j,i} = 1 - p_{i,j}$.
 
-\begin{center}
-$$P = 
-\left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right)$$
-\end{center}
+Without loss of generality, we assume that player/team 1 is the strongest and player/team $K$ is the weakest. Monotonicity in the probabilities is crucial, ensuring that the probabilities increase monotonically as the index of the columns $j$ increases and decrease monotonically as the index of the rows $i$ increases. Violation of these assumptions could lead to contradictions where weaker players have higher probabilities of winning than stronger ones.
 
+Therefore, we impose the following constraints on the probabilities in the upper triangular part of matrix $P$:
 
+$0.5 \leq p_{i,j} \leq p_{1,K}$ for all $i<j$.
+$1 - p_{i,j} \leq 1 - p_{j,K}$ for all $i<j$.
+The main diagonal of matrix $P$ is set to $0.5$ for teams and $0$ for individual players.
 
-Each element $p_{i,j}$ in the matrix $P$ represents the probability of player $i$ winning over player $j$ in a tennis match, where draws are not permitted. Therefore, it must be the case that $p_{i,j} + p_{j,i} = 1$ in order to satisfy the requirements for a valid probability. It follows that $p_{j,i}$ can be expressed as $1 - p_{i,j}$. The lower triangular entries of matrix $P$ can be determined from the upper triangular entries. Consequently, our focus is on modelling the upper triangular part of $P$.
- 
-Without loss of generality, we can assume that player/team 1 is the strongest, and player/team $K$ is the weakest.
+By ensuring the SST property and imposing the constraints, we obtain a coherent and tractable framework to express the joint probability distribution of these ordered probabilities, enabling us to perform inference efficiently.
 
-From this assumption, it follows that the elements in the upper triangular part of the matrix must remain above $0.5$ to maintain the assumption of monotonicity in the probabilities. Violation of this assumption could lead to a contradiction where a weaker player/team has a higher probability of winning than a stronger one. For instance, if $p_{1,2} = 0.4 \leq 0.5$, then $p_{2,1} = 0.6$ would imply that player 1 is weaker than player 2, which is contradictory with our baseline assumption. Furthermore, we set the main diagonal of matrix $P$ to $0.5$ for teams and $0$ for individual players.
-
-Therefore, we must constrain the probabilities as follows:
-
-\begin{itemize}
-\item The probabilities must increase monotonically as the index of the columns $j$ increases;
-\item The probabilities must decrease monotonically as the index of the rows $i$ increases.
-\end{itemize}
-The matrix $P$ with the described modification will look like this: 
-\begin{center}
-$$
-\left(\begin{array}{ccccccc} 0.5 & \leq & p_{1,2} & \leq &  ... & \leq & p_{1,K} \\  &  & \vertgeq &  & ... &  & \vertgeq \\
-1 - p_{1,2} & \leq & 0.5 & \leq & ... & \leq & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots &  ... & \vdots& \vdots \\ 1 - p_{1,K}& \leq & 1 - p_{2,K}& \leq & ... & \leq & 0.5\end{array}\right)
-$$
-\end{center}
-
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.6\textwidth,natwidth=1386,natheight=1000]{/Users/lapo_santi/Desktop/Nial/project/POMMs/IMG_0EE4E8AB347D-1.jpeg}
-\caption{Dag representation of the Poset imposed onto the SST matrix}
-\label{fig:DAG}
-\end{center}
-\end{figure}
 
 \subsection{Defining a Poset over $P$}
 Having defined $P$, now we want to re-define it within a finite Poset framework to obtain $(P, \leq)$. Let $(i,j)$ and $(p,q)$ be two elements of $P$ and define the binary relation $\leq$ on $P$ as 
