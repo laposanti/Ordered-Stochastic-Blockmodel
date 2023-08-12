@@ -23,11 +23,12 @@ plots_dir<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/r
 
 #1: POMM, 0:Simple
 results_control <- data.frame(True_m=c(0,0,1,1), Est_m =c(0,1,0,1))
-for(results_row in 1:nrow(printing_results_control)){
+for(results_row in 1:nrow(results_control)){
   true_model <- ifelse(results_control$True_m[results_row], "True_ModelPOMMEst_model_","True_ModelSimpleEst_model_")
   est_model  <- ifelse(results_control$Est_m[results_row], "POMM","Simple")
   filename <- list.files(pattern = paste0(true_model, est_model),path = data_wd)
   print(filename)
+  
   
   
   N_iter=30000
@@ -50,40 +51,57 @@ for(results_row in 1:nrow(printing_results_control)){
       S<-uploded_results$chain1$ground_truth$S
     }
     z<- uploded_results$chain1$ground_truth$z
-    
+
     P_s_title <- paste0(tap,'/P_summary_table',true_model,est_model,'_K', K,'_N', N, '.tex')
     P_s_table<- P_summary_table(test_output = uploded_results, true_value = T, diag0.5 = TRUE, K = K, P = P, burn_in = burnin)
     save_table_to_file(P_s_table, P_s_title)
-    
+
     z_s_title <- paste0(tap,'/z_summary_table',true_model,est_model,'_K', K,'_N', N, '.tex')
-    z_s_table<- z_summary_table(test_output = uploded_results, true_value = T, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)
+    z_s_table<- z_summary_table(test_output = uploded_results, true_value = T, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)$table
     save_table_to_file(z_s_table, z_s_title)
-    
-    
-    
-    S<- if(est_model == 'POMM'){
+
+
+
+    if(est_model == 'POMM'){
     S_s_title <- paste0(tap,'/S_summary_table',true_model,est_model,'_K', K,'_N', N, '.tex')
     S_s_table<- S_summary_table(test_output = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, S = S, K = K, burn_in = burnin)
     save_table_to_file(S_s_table, S_s_title)
     }
-    
+
     P_d_title <- paste0(tap,'/P_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
     P_d_table<- P_diagnostic_table(chains = uploded_results, true_value = T, diag0.5 = TRUE,K = K, P = P, burn_in = burnin,N_iter = N_iter)
     save_table_to_file(P_d_table, P_d_title)
-    
-    # z_d_title <- paste0(tap,'/z_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
-    # z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = T, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)
-    # save_table_to_file(z_d_table, z_d_title)
-    # 
-    S<- if(est_model == 'POMM'){
+
+    z_d_title <- paste0(tap,'/z_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
+    z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = T, diag0.5 = TRUE, K = K, z = z, burn_in = burnin, N_iter)
+    save_table_to_file(z_d_table, z_d_title)
+  
+    dim(uploded_results$chain4$est_containers$z)
+    if(est_model == 'POMM'){
       S_d_title <- paste0(tap,'/S_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
       S_d_table <- S_diagnostic_table(chains = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, K = K, S = S, burn_in = burnin,N_iter = N_iter)
       save_table_to_file(S_d_table, S_d_title)
     }
     setwd(plots_dir)
-    z_plot(test_output =uploded_results , true_model= true_model, 
+    z_plot(test_output =uploded_results , true_model= true_model,
            est_model = est_model, true_value =T , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin )
   }
 }
+
+#fixing the label switching
+runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
+# apply the permutations returned by typing:
+perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
+
+
+
+
+
+
+
+
+
+
+
 
 

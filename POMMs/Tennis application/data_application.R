@@ -39,7 +39,7 @@ head(df_match)
 
 #computing the median rank for each player in 2017
 ranks= df_rank   %>%
-  filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number))
+  filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
 
 top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
 
@@ -49,9 +49,9 @@ df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_sl
 #now, for each game I want to filter just those players in the top one-hundred
 df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
 
-df_match = df_match %>% filter(loser_rank_number <= 100) %>% filter(winner_rank_number <= 100)
 
 my_edges = df_match %>% select(winner_slug, loser_slug)
+
 
 
 g =graph_from_edgelist(as.matrix(my_edges),directed = T)
@@ -77,6 +77,10 @@ diag0.5=T
 N_iter=30000
 chains_POMM <- list()
 for(i in 1:4){
+  
+  #------
+  #POMM 
+  #------
   seed=123
   alpha0=runif(1,0.1,3)
   trunc=improper_prior5(K,beta_max,alpha = alpha0)
@@ -118,7 +122,9 @@ for(i in 1:4){
                               targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
   chains_Simple[[paste0("chain",i)]]= TEST
 }
- setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
+
+
+setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
 filename_simple <- paste0('Tennis_application_Est_model_Simple_',"_N", N,"_K", K, "_seed", seed,".RDS")
 saveRDS(chains_Simple, file = filename_simple) #saving results
 
@@ -132,7 +138,7 @@ point_est = minVI(similarity_matrix)$cl
 
 
 similarity_plot(A,point_est2,point_est2)
-edsimilarity_plot(similarity_matrix,point_est2,point_est2)
+similarity_plot(similarity_matrix,point_est2,point_est2)
 
 g <- set_vertex_attr(g, "cluster", value = point_est2)
 
@@ -147,7 +153,8 @@ plot(g,
 
 g_df =  data.frame(vertex_attr(g)) %>% 
   rename( player_slug= name) %>% 
-  left_join(players_df, by="player_slug")
+  left_join(players_df, by="player_slug") %>%
+  arrange()
 
 head(g_df)
 

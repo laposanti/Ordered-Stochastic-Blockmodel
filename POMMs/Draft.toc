@@ -4,9 +4,9 @@
 \contentsline {subsection}{\tocsubsection {}{2.2}{Prior Specification}}{4}{}%
 \contentsline {section}{\tocsection {}{3}{The POMM Model}}{6}{}%
 \contentsline {subsection}{\tocsubsection {}{3.1}{Assuming the SST property for the probabilities in matrix P (SST matrix)}}{6}{}%
-\contentsline {subsection}{\tocsubsection {}{3.2}{Mathematical background to specify a prior on P0}}{7}{}%
+\contentsline {subsection}{\tocsubsection {}{3.2}{Prior on $P$}}{7}{}%
 \contentsline {subsection}{\tocsubsection {}{3.3}{Posets and Dags}}{8}{}%
-\contentsline {subsection}{\tocsubsection {}{3.4}{Partially ordered Markov models:}}{10}{}%
+\contentsline {subsection}{\tocsubsection {}{3.4}{Partially ordered Markov models:}}{9}{}%
 \contentsline {section}{\tocsection {}{4}{Application to the SST matrix}}{11}{}%
 \contentsline {subsection}{\tocsubsection {}{4.1}{Defining a Poset over $P$}}{11}{}%
 \contentsline {subsection}{\tocsubsection {}{4.2}{Partially ordered Markov Models applied to P}}{12}{}%
@@ -14,26 +14,25 @@
 \contentsline {subsubsection}{\tocsubsubsection {}{4.2.2}{Truncation Process}}{13}{}%
 \contentsline {subsubsection}{\tocsubsubsection {}{4.2.3}{The POMM Prior}}{14}{}%
 \contentsline {subsubsection}{\tocsubsubsection {}{4.2.4}{The POMM Prior 2}}{14}{}%
-\contentsline {subsection}{\tocsubsection {}{4.3}{Some notes on the overlap}}{14}{}%
-\contentsline {section}{\tocsection {}{5}{Estimation}}{18}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{5.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{18}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{19}{}%
-\contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{20}{}%
-\contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model}}{21}{}%
-\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model}}{24}{}%
-\contentsline {subsection}{\tocsubsection {}{8.1}{Extended Simulation Study}}{27}{}%
-\contentsline {subsection}{\tocsubsection {}{8.2}{Diagnostic Checks}}{31}{}%
-\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{35}{}%
-\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{36}{}%
-\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{38}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{38}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{38}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{38}{}%
-\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{38}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{38}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{41}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{41}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{41}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{42}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{42}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{42}{}%
+\contentsline {subsection}{\tocsubsection {}{4.3}{Some notes on the overlap of two normal densities}}{14}{}%
+\contentsline {section}{\tocsection {}{5}{Estimation}}{17}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{5.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{17}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{18}{}%
+\contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{19}{}%
+\contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model N=100}}{20}{}%
+\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{20}{}%
+\contentsline {subsection}{\tocsubsection {}{8.1}{Diagnostic Checks}}{25}{}%
+\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{26}{}%
+\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{27}{}%
+\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{29}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{29}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{29}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{29}{}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{29}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{29}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{32}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{32}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{32}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{33}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{33}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{33}{}%

@@ -1,4 +1,5 @@
 # Load required libraries
+
 library(foreach)
 library(doParallel)
 library(tidyverse)
@@ -23,15 +24,13 @@ switch_values <- c(1,0) # Range of models to explore: 1= POMM, 0 =Simple
 M_values <- c(4000,10000,40000)
 # Set other fixed parameters
 N <- 100
-
-N_iter<- 1000 #number of iterations
 targ_rate <-0.22
 beta_max <- 0.85
 
 diag0.5 <- T
 
 # Set up parallel computing
-cores <- 5
+cores <- 7
 
 # Iterate over parameter combinations using foreach
 

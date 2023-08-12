@@ -8,11 +8,11 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Dag representation of the Poset imposed onto the SST matrix\relax }}{7}{}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:DAG}{{1}{7}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.2}{Mathematical background to specify a prior on P0}}{7}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.2}{Prior on $P$}}{7}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.3}{Posets and Dags}}{8}{}\protected@file@percent }
 \newlabel{def:Poset}{{1}{8}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.4}{Partially ordered Markov models:}}{10}{}\protected@file@percent }
-\newlabel{eq:result1}{{1}{10}}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{3.4}{Partially ordered Markov models:}}{9}{}\protected@file@percent }
+\newlabel{eq:result1}{{1}{9}}
 \@writefile{toc}{\contentsline {section}{\tocsection {}{4}{Application to the SST matrix}}{11}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.1}{Defining a Poset over $P$}}{11}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Visual Display of the level sets $L^k: k=0,\ldots  ,4$\relax }}{12}{}\protected@file@percent }
@@ -20,10 +20,10 @@
 \@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.2}{Partially ordered Markov Models applied to P}}{12}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.1}{Level Sets}}{13}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.2}{Truncation Process}}{13}{}\protected@file@percent }
-\newlabel{eq:truncations}{{26}{13}}
+\newlabel{eq:truncations}{{25}{13}}
 \@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.3}{The POMM Prior}}{14}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{4.2.4}{The POMM Prior 2}}{14}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.3}{Some notes on the overlap}}{14}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{4.3}{Some notes on the overlap of two normal densities}}{14}{}\protected@file@percent }
 \newlabel{fig:overlap0.2}{{3(a)}{15}}
 \newlabel{sub@fig:overlap0.2}{{(a)}{15}}
 \newlabel{fig:overlap0.5}{{3(b)}{15}}
@@ -35,125 +35,161 @@
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =1, S=0.2$}}}{15}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =1, S=0.5$}}}{15}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =1, S=0.8$}}}{15}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{5}{Estimation}}{18}{}\protected@file@percent }
-\newlabel{eqn_general_proposal}{{36}{18}}
-\newlabel{eqn_acc_reject}{{37}{18}}
-\newlabel{eqn_gen_ratio}{{38}{18}}
-\newlabel{alg_general_algortm}{{\caption@xref {alg_general_algortm}{ on input line 645}}{18}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Metropolis-within-Gibbs MCMC\relax }}{18}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{5.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{18}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{19}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{20}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model}}{21}{}\protected@file@percent }
-\newlabel{fig:simple_adjacency_K3}{{4(a)}{21}}
-\newlabel{sub@fig:simple_adjacency_K3}{{(a)}{21}}
-\newlabel{fig:simple_adjacency_K5}{{4(b)}{21}}
-\newlabel{sub@fig:simple_adjacency_K5}{{(b)}{21}}
-\newlabel{fig:simple_adjacency_K9}{{4(c)}{21}}
-\newlabel{sub@fig:simple_adjacency_K9}{{(c)}{21}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Adjacency Matrices simulated via the Simple Model\relax }}{21}{}\protected@file@percent }
-\newlabel{fig:simple_adjacency}{{4}{21}}
+\@writefile{toc}{\contentsline {section}{\tocsection {}{5}{Estimation}}{17}{}\protected@file@percent }
+\newlabel{eqn_general_proposal}{{35}{17}}
+\newlabel{eqn_acc_reject}{{36}{17}}
+\newlabel{eqn_gen_ratio}{{37}{17}}
+\newlabel{alg_general_algortm}{{\caption@xref {alg_general_algortm}{ on input line 565}}{17}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Metropolis-within-Gibbs MCMC\relax }}{17}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{5.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{17}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{18}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{19}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model N=100}}{20}{}\protected@file@percent }
+\newlabel{fig:simple_adjacency_K3}{{4(a)}{20}}
+\newlabel{sub@fig:simple_adjacency_K3}{{(a)}{20}}
+\newlabel{fig:simple_adjacency_K5}{{4(b)}{20}}
+\newlabel{sub@fig:simple_adjacency_K5}{{(b)}{20}}
+\newlabel{fig:simple_adjacency_K9}{{4(c)}{20}}
+\newlabel{sub@fig:simple_adjacency_K9}{{(c)}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Adjacency Matrices simulated via the Simple Model\relax }}{20}{}\protected@file@percent }
+\newlabel{fig:simple_adjacency}{{4}{20}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, Simple Model}}}{20}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, Simple Model}}}{20}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, Simple Model}}}{20}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{20}{}\protected@file@percent }
+\gdef \LT@i {\LT@entry 
+    {1}{41.95581pt}\LT@entry 
+    {1}{42.25998pt}\LT@entry 
+    {1}{52.93623pt}\LT@entry 
+    {1}{101.89496pt}\LT@entry 
+    {1}{58.07668pt}}
+\newlabel{fig:M4000}{{5(a)}{21}}
+\newlabel{sub@fig:M4000}{{(a)}{21}}
+\newlabel{fig:M7000}{{5(b)}{21}}
+\newlabel{sub@fig:M7000}{{(b)}{21}}
+\newlabel{fig:M10000}{{5(c)}{21}}
+\newlabel{sub@fig:M10000}{{(c)}{21}}
+\newlabel{fig:M4000}{{5(d)}{21}}
+\newlabel{sub@fig:M4000}{{(d)}{21}}
+\newlabel{fig:M7000}{{5(e)}{21}}
+\newlabel{sub@fig:M7000}{{(e)}{21}}
+\newlabel{fig:M10000}{{5(f)}{21}}
+\newlabel{sub@fig:M10000}{{(f)}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{21}{}\protected@file@percent }
+\newlabel{fig:adjacency_all_simple}{{5}{21}}
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, Simple Model}}}{21}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, Simple Model}}}{21}{}\protected@file@percent }
 \@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, Simple Model}}}{21}{}\protected@file@percent }
-\newlabel{fig:M4000}{{5(a)}{22}}
-\newlabel{sub@fig:M4000}{{(a)}{22}}
-\newlabel{fig:M7000}{{5(b)}{22}}
-\newlabel{sub@fig:M7000}{{(b)}{22}}
-\newlabel{fig:M10000}{{5(c)}{22}}
-\newlabel{sub@fig:M10000}{{(c)}{22}}
-\newlabel{fig:M4000}{{5(d)}{22}}
-\newlabel{sub@fig:M4000}{{(d)}{22}}
-\newlabel{fig:M7000}{{5(e)}{22}}
-\newlabel{sub@fig:M7000}{{(e)}{22}}
-\newlabel{fig:M10000}{{5(f)}{22}}
-\newlabel{sub@fig:M10000}{{(f)}{22}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{22}{}\protected@file@percent }
-\newlabel{fig:adjacency_all_simple}{{5}{22}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, Simple Model}}}{22}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, Simple Model}}}{22}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, Simple Model}}}{22}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, POMM Model}}}{22}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, POMM Model}}}{22}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, POMM Model}}}{22}{}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces $Y_{ij}$ drawn from a simple model\relax }}{22}{}\protected@file@percent }
-\newlabel{table:simulations_from_simple}{{1}{22}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Data Table\relax }}{23}{}\protected@file@percent }
-\newlabel{tab:data}{{2}{23}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces $Y_{ij}$ drawn from a simple model\relax }}{23}{}\protected@file@percent }
-\newlabel{table:simulations_from_simple}{{3}{23}}
-\@writefile{toc}{\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model}}{24}{}\protected@file@percent }
-\newlabel{fig:POMM_adjacency_K3}{{6(a)}{24}}
-\newlabel{sub@fig:POMM_adjacency_K3}{{(a)}{24}}
-\newlabel{fig:POMM_adjacency_K5}{{6(b)}{24}}
-\newlabel{sub@fig:POMM_adjacency_K5}{{(b)}{24}}
-\newlabel{fig:POMM_adjacency_K9}{{6(c)}{24}}
-\newlabel{sub@fig:POMM_adjacency_K9}{{(c)}{24}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Adjacency Matrices simulated via the POMM Model\relax }}{24}{}\protected@file@percent }
-\newlabel{fig:all_images}{{6}{24}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, POMM Model}}}{24}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, POMM Model}}}{24}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, POMM Model}}}{24}{}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces $Y_{ij}$ drawn from the POMM model\relax }}{24}{}\protected@file@percent }
-\newlabel{fig:M4000}{{7(a)}{25}}
-\newlabel{sub@fig:M4000}{{(a)}{25}}
-\newlabel{fig:M7000}{{7(b)}{25}}
-\newlabel{sub@fig:M7000}{{(b)}{25}}
-\newlabel{fig:M10000}{{7(c)}{25}}
-\newlabel{sub@fig:M10000}{{(c)}{25}}
-\newlabel{fig:M4000}{{7(d)}{25}}
-\newlabel{sub@fig:M4000}{{(d)}{25}}
-\newlabel{fig:M7000}{{7(e)}{25}}
-\newlabel{sub@fig:M7000}{{(e)}{25}}
-\newlabel{fig:M10000}{{7(f)}{25}}
-\newlabel{sub@fig:M10000}{{(f)}{25}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{25}{}\protected@file@percent }
-\newlabel{fig:all_images}{{7}{25}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, Simple Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, Simple Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, Simple Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, POMM Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, POMM Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, POMM Model Estimates}}}{25}{}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Data Table, $\alpha =0.5$, $S=0.2$\relax }}{25}{}\protected@file@percent }
-\newlabel{tab:data}{{5}{25}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces $Y_{ij}$ drawn from a simple model\relax }}{26}{}\protected@file@percent }
-\newlabel{table:simulations_from_simple}{{6}{26}}
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{8.1}{Extended Simulation Study}}{27}{}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Data Table K=3\relax }}{27}{}\protected@file@percent }
-\newlabel{tab:data}{{7}{27}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Data Table K=5\relax }}{27}{}\protected@file@percent }
-\newlabel{tab:data}{{8}{27}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Data Table K=9\relax }}{27}{}\protected@file@percent }
-\newlabel{tab:data}{{9}{27}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Data Table, $K =3, \alpha =0.5$, $S = 0.2$\relax }}{27}{}\protected@file@percent }
-\newlabel{tab:data}{{10}{27}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Data Table, $K =5, \alpha =0.5$, $S = 0.2$\relax }}{28}{}\protected@file@percent }
-\newlabel{tab:data}{{11}{28}}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Data Table, $K =9, \alpha =0.5$, $S = 0.2$\relax }}{28}{}\protected@file@percent }
-\newlabel{tab:data}{{12}{28}}
-\newlabel{fig:M4000}{{8(a)}{29}}
-\newlabel{sub@fig:M4000}{{(a)}{29}}
-\newlabel{fig:M7000}{{8(b)}{29}}
-\newlabel{sub@fig:M7000}{{(b)}{29}}
-\newlabel{fig:M10000}{{8(c)}{29}}
-\newlabel{sub@fig:M10000}{{(c)}{29}}
-\newlabel{fig:M4000}{{8(d)}{29}}
-\newlabel{sub@fig:M4000}{{(d)}{29}}
-\newlabel{fig:M7000}{{8(e)}{29}}
-\newlabel{sub@fig:M7000}{{(e)}{29}}
-\newlabel{fig:M40000}{{8(f)}{29}}
-\newlabel{sub@fig:M40000}{{(f)}{29}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{29}{}\protected@file@percent }
-\newlabel{fig:all_images}{{8}{29}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, M=4000, Adjacency }}}{29}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=3, M=4000, Adjacency }}}{29}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=3, M=10000, Adjacency }}}{29}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, M=40000, Similarity }}}{29}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=3, M=4000, Similarity }}}{29}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=3, M=10000, Similarity }}}{29}{}\protected@file@percent }
-\newlabel{fig:M4000}{{9(a)}{30}}
-\newlabel{sub@fig:M4000}{{(a)}{30}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, POMM Model}}}{21}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, POMM Model}}}{21}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, POMM Model}}}{21}{}\protected@file@percent }
+\newlabel{fig:POMM_adjacency_K3}{{6(a)}{23}}
+\newlabel{sub@fig:POMM_adjacency_K3}{{(a)}{23}}
+\newlabel{fig:POMM_adjacency_K5}{{6(b)}{23}}
+\newlabel{sub@fig:POMM_adjacency_K5}{{(b)}{23}}
+\newlabel{fig:POMM_adjacency_K9}{{6(c)}{23}}
+\newlabel{sub@fig:POMM_adjacency_K9}{{(c)}{23}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Adjacency Matrices simulated via the POMM Model\relax }}{23}{}\protected@file@percent }
+\newlabel{fig:all_images}{{6}{23}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, POMM Model}}}{23}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, POMM Model}}}{23}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, POMM Model}}}{23}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces $Y_{ij}$ drawn from the POMM model\relax }}{23}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Data Table, $\alpha =0.5$, $S=0.2$\relax }}{23}{}\protected@file@percent }
+\newlabel{tab:data}{{3}{23}}
+\newlabel{fig:M4000}{{7(a)}{24}}
+\newlabel{sub@fig:M4000}{{(a)}{24}}
+\newlabel{fig:M7000}{{7(b)}{24}}
+\newlabel{sub@fig:M7000}{{(b)}{24}}
+\newlabel{fig:M10000}{{7(c)}{24}}
+\newlabel{sub@fig:M10000}{{(c)}{24}}
+\newlabel{fig:M4000}{{7(d)}{24}}
+\newlabel{sub@fig:M4000}{{(d)}{24}}
+\newlabel{fig:M7000}{{7(e)}{24}}
+\newlabel{sub@fig:M7000}{{(e)}{24}}
+\newlabel{fig:M10000}{{7(f)}{24}}
+\newlabel{sub@fig:M10000}{{(f)}{24}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{24}{}\protected@file@percent }
+\newlabel{fig:all_images}{{7}{24}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, Simple Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, Simple Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, Simple Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, POMM Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, POMM Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, POMM Model Estimates}}}{24}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces $Y_{ij}$ drawn from a simple model\relax }}{24}{}\protected@file@percent }
+\newlabel{table:simulations_from_simple}{{4}{24}}
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{8.1}{Diagnostic Checks}}{25}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{26}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{27}{}\protected@file@percent }
+\newlabel{l}{{8(a)}{28}}
+\newlabel{sub@l}{{(a)}{28}}
+\newlabel{fig:M7000}{{8(b)}{28}}
+\newlabel{sub@fig:M7000}{{(b)}{28}}
+\newlabel{fig:M10000}{{8(c)}{28}}
+\newlabel{sub@fig:M10000}{{(c)}{28}}
+\newlabel{fig:M4000}{{8(d)}{28}}
+\newlabel{sub@fig:M4000}{{(d)}{28}}
+\newlabel{fig:M7000}{{8(e)}{28}}
+\newlabel{sub@fig:M7000}{{(e)}{28}}
+\newlabel{fig:M10000}{{8(f)}{28}}
+\newlabel{sub@fig:M10000}{{(f)}{28}}
+\newlabel{fig:M4000}{{8(g)}{28}}
+\newlabel{sub@fig:M4000}{{(g)}{28}}
+\newlabel{fig:M7000}{{8(h)}{28}}
+\newlabel{sub@fig:M7000}{{(h)}{28}}
+\newlabel{fig:M10000}{{8(i)}{28}}
+\newlabel{sub@fig:M10000}{{(i)}{28}}
+\newlabel{fig:M4000}{{8(j)}{28}}
+\newlabel{sub@fig:M4000}{{(j)}{28}}
+\newlabel{fig:M7000}{{8(k)}{28}}
+\newlabel{sub@fig:M7000}{{(k)}{28}}
+\newlabel{fig:M10000}{{8(l)}{28}}
+\newlabel{sub@fig:M10000}{{(l)}{28}}
+\newlabel{fig:M4000}{{8(m)}{28}}
+\newlabel{sub@fig:M4000}{{(m)}{28}}
+\newlabel{fig:M7000}{{8(n)}{28}}
+\newlabel{sub@fig:M7000}{{(n)}{28}}
+\newlabel{fig:M10000}{{8(o)}{28}}
+\newlabel{sub@fig:M10000}{{(o)}{28}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{28}{}\protected@file@percent }
+\newlabel{fig:exploratoryanalysisalpha_andS}{{8}{28}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{28}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{28}{}\protected@file@percent }
+\gdef \LT@ii {\LT@entry 
+    {1}{46.24525pt}\LT@entry 
+    {1}{70.63626pt}\LT@entry 
+    {1}{70.63626pt}\LT@entry 
+    {1}{45.89172pt}}
+\gdef \LT@iii {\LT@entry 
+    {1}{45.89172pt}\LT@entry 
+    {1}{45.63687pt}\LT@entry 
+    {1}{45.63687pt}\LT@entry 
+    {1}{70.63626pt}\LT@entry 
+    {1}{70.63626pt}\LT@entry 
+    {1}{70.63626pt}}
+\@writefile{toc}{\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{29}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{29}{}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces  {\large  Mean absolute error for different alpha values}   {\small  Sample size = 1000. MAEs = $|\hat  {\alpha }_{\text  {MLE}} - \alpha |$} \relax }}{29}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{29}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{29}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{29}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{29}{}\protected@file@percent }
+\newlabel{l}{{9(a)}{30}}
+\newlabel{sub@l}{{(a)}{30}}
 \newlabel{fig:M7000}{{9(b)}{30}}
 \newlabel{sub@fig:M7000}{{(b)}{30}}
 \newlabel{fig:M10000}{{9(c)}{30}}
@@ -164,16 +200,43 @@
 \newlabel{sub@fig:M7000}{{(e)}{30}}
 \newlabel{fig:M10000}{{9(f)}{30}}
 \newlabel{sub@fig:M10000}{{(f)}{30}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{30}{}\protected@file@percent }
-\newlabel{fig:all_images}{{9}{30}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=5, M=4000 Adjacency}}}{30}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, M=10000 Adjacency}}}{30}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=5, M=40000 Adjacency}}}{30}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=5, M=4000 Similarity}}}{30}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, M=10000 Similarity}}}{30}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=5, M=40000 Similarity}}}{30}{}\protected@file@percent }
-\newlabel{fig:M4000}{{10(a)}{31}}
-\newlabel{sub@fig:M4000}{{(a)}{31}}
+\newlabel{fig:M4000}{{9(g)}{30}}
+\newlabel{sub@fig:M4000}{{(g)}{30}}
+\newlabel{fig:M7000}{{9(h)}{30}}
+\newlabel{sub@fig:M7000}{{(h)}{30}}
+\newlabel{fig:M10000}{{9(i)}{30}}
+\newlabel{sub@fig:M10000}{{(i)}{30}}
+\newlabel{fig:M4000}{{9(j)}{30}}
+\newlabel{sub@fig:M4000}{{(j)}{30}}
+\newlabel{fig:M7000}{{9(k)}{30}}
+\newlabel{sub@fig:M7000}{{(k)}{30}}
+\newlabel{fig:M10000}{{9(l)}{30}}
+\newlabel{sub@fig:M10000}{{(l)}{30}}
+\newlabel{fig:M4000}{{9(m)}{30}}
+\newlabel{sub@fig:M4000}{{(m)}{30}}
+\newlabel{fig:M7000}{{9(n)}{30}}
+\newlabel{sub@fig:M7000}{{(n)}{30}}
+\newlabel{fig:M10000}{{9(o)}{30}}
+\newlabel{sub@fig:M10000}{{(o)}{30}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{30}{}\protected@file@percent }
+\newlabel{fig:exploratoryanalysisalpha_andS}{{9}{30}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{30}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{30}{}\protected@file@percent }
+\newlabel{l}{{10(a)}{31}}
+\newlabel{sub@l}{{(a)}{31}}
 \newlabel{fig:M7000}{{10(b)}{31}}
 \newlabel{sub@fig:M7000}{{(b)}{31}}
 \newlabel{fig:M10000}{{10(c)}{31}}
@@ -184,250 +247,54 @@
 \newlabel{sub@fig:M7000}{{(e)}{31}}
 \newlabel{fig:M10000}{{10(f)}{31}}
 \newlabel{sub@fig:M10000}{{(f)}{31}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{31}{}\protected@file@percent }
-\newlabel{fig:all_images}{{10}{31}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=9, M=4000 Adjacency}}}{31}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=9, M=10000 Adjacency}}}{31}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, M=40000 Adjacency}}}{31}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=9, M=4000 Similarity}}}{31}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=9, M=10000 Similarity}}}{31}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, M=40000 Similarity}}}{31}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{8.2}{Diagnostic Checks}}{31}{}\protected@file@percent }
-\newlabel{fig:M4000}{{11(a)}{32}}
-\newlabel{sub@fig:M4000}{{(a)}{32}}
-\newlabel{fig:M7000}{{11(b)}{32}}
-\newlabel{sub@fig:M7000}{{(b)}{32}}
-\newlabel{fig:M10000}{{11(c)}{32}}
-\newlabel{sub@fig:M10000}{{(c)}{32}}
-\newlabel{fig:M4000}{{11(d)}{32}}
-\newlabel{sub@fig:M4000}{{(d)}{32}}
-\newlabel{fig:M7000}{{11(e)}{32}}
-\newlabel{sub@fig:M7000}{{(e)}{32}}
-\newlabel{fig:M10000}{{11(f)}{32}}
-\newlabel{sub@fig:M10000}{{(f)}{32}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{32}{}\protected@file@percent }
-\newlabel{fig:all_images}{{11}{32}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=3, M=4000 Traceplot}}}{32}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=3, M=10000 Traceplot}}}{32}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=3, M=40000 Traceplot}}}{32}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=3, M=4000 Autocorrelation}}}{32}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=3, M=10000 Autocorrelation}}}{32}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=3, M=40000 Autocorrelation}}}{32}{}\protected@file@percent }
-\newlabel{fig:M4000}{{12(a)}{33}}
-\newlabel{sub@fig:M4000}{{(a)}{33}}
-\newlabel{fig:M7000}{{12(b)}{33}}
-\newlabel{sub@fig:M7000}{{(b)}{33}}
-\newlabel{fig:M10000}{{12(c)}{33}}
-\newlabel{sub@fig:M10000}{{(c)}{33}}
-\newlabel{fig:M4000}{{12(d)}{33}}
-\newlabel{sub@fig:M4000}{{(d)}{33}}
-\newlabel{fig:M7000}{{12(e)}{33}}
-\newlabel{sub@fig:M7000}{{(e)}{33}}
-\newlabel{fig:M10000}{{12(f)}{33}}
-\newlabel{sub@fig:M10000}{{(f)}{33}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{33}{}\protected@file@percent }
-\newlabel{fig:all_images}{{12}{33}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=5, M=4000 Traceplot}}}{33}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=5, M=10000 Traceplot}}}{33}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=5, M=40000 Traceplot}}}{33}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=5, M=4000 Autocorrelation}}}{33}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=5, M=10000 Autocorrelation}}}{33}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=5, M=40000 Autocorrelation}}}{33}{}\protected@file@percent }
-\newlabel{fig:M4000}{{13(a)}{34}}
-\newlabel{sub@fig:M4000}{{(a)}{34}}
-\newlabel{fig:M7000}{{13(b)}{34}}
-\newlabel{sub@fig:M7000}{{(b)}{34}}
-\newlabel{fig:M10000}{{13(c)}{34}}
-\newlabel{sub@fig:M10000}{{(c)}{34}}
-\newlabel{fig:M4000}{{13(d)}{34}}
-\newlabel{sub@fig:M4000}{{(d)}{34}}
-\newlabel{fig:M7000}{{13(e)}{34}}
-\newlabel{sub@fig:M7000}{{(e)}{34}}
-\newlabel{fig:M10000}{{13(f)}{34}}
-\newlabel{sub@fig:M10000}{{(f)}{34}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).\relax }}{34}{}\protected@file@percent }
-\newlabel{fig:all_images}{{13}{34}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {K=9, M=4000 Traceplot}}}{34}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {K=9, M=10000 Traceplot}}}{34}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {K=9, M=40000 Traceplot}}}{34}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {K=9, M=4000 Autocorrelation}}}{34}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {K=9, M=10000 Autocorrelation}}}{34}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {K=9, M=40000 Autocorrelation}}}{34}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{35}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{36}{}\protected@file@percent }
-\newlabel{l}{{14(a)}{37}}
-\newlabel{sub@l}{{(a)}{37}}
-\newlabel{fig:M7000}{{14(b)}{37}}
-\newlabel{sub@fig:M7000}{{(b)}{37}}
-\newlabel{fig:M10000}{{14(c)}{37}}
-\newlabel{sub@fig:M10000}{{(c)}{37}}
-\newlabel{fig:M4000}{{14(d)}{37}}
-\newlabel{sub@fig:M4000}{{(d)}{37}}
-\newlabel{fig:M7000}{{14(e)}{37}}
-\newlabel{sub@fig:M7000}{{(e)}{37}}
-\newlabel{fig:M10000}{{14(f)}{37}}
-\newlabel{sub@fig:M10000}{{(f)}{37}}
-\newlabel{fig:M4000}{{14(g)}{37}}
-\newlabel{sub@fig:M4000}{{(g)}{37}}
-\newlabel{fig:M7000}{{14(h)}{37}}
-\newlabel{sub@fig:M7000}{{(h)}{37}}
-\newlabel{fig:M10000}{{14(i)}{37}}
-\newlabel{sub@fig:M10000}{{(i)}{37}}
-\newlabel{fig:M4000}{{14(j)}{37}}
-\newlabel{sub@fig:M4000}{{(j)}{37}}
-\newlabel{fig:M7000}{{14(k)}{37}}
-\newlabel{sub@fig:M7000}{{(k)}{37}}
-\newlabel{fig:M10000}{{14(l)}{37}}
-\newlabel{sub@fig:M10000}{{(l)}{37}}
-\newlabel{fig:M4000}{{14(m)}{37}}
-\newlabel{sub@fig:M4000}{{(m)}{37}}
-\newlabel{fig:M7000}{{14(n)}{37}}
-\newlabel{sub@fig:M7000}{{(n)}{37}}
-\newlabel{fig:M10000}{{14(o)}{37}}
-\newlabel{sub@fig:M10000}{{(o)}{37}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{37}{}\protected@file@percent }
-\newlabel{fig:exploratoryanalysisalpha_andS}{{14}{37}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{37}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{37}{}\protected@file@percent }
-\gdef \LT@i {\LT@entry 
-    {1}{46.24525pt}\LT@entry 
-    {1}{70.63626pt}\LT@entry 
-    {1}{70.63626pt}\LT@entry 
-    {1}{45.89172pt}}
-\gdef \LT@ii {\LT@entry 
-    {1}{45.89172pt}\LT@entry 
-    {1}{45.63687pt}\LT@entry 
-    {1}{45.63687pt}\LT@entry 
-    {1}{70.63626pt}\LT@entry 
-    {1}{70.63626pt}\LT@entry 
-    {1}{70.63626pt}}
-\@writefile{toc}{\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{38}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{38}{}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces  {\large  Mean absolute error for different alpha values}   {\small  Sample size = 1000. MAEs = $|\hat  {\alpha }_{\text  {MLE}} - \alpha |$} \relax }}{38}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{38}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{38}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{38}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{38}{}\protected@file@percent }
-\newlabel{l}{{15(a)}{39}}
-\newlabel{sub@l}{{(a)}{39}}
-\newlabel{fig:M7000}{{15(b)}{39}}
-\newlabel{sub@fig:M7000}{{(b)}{39}}
-\newlabel{fig:M10000}{{15(c)}{39}}
-\newlabel{sub@fig:M10000}{{(c)}{39}}
-\newlabel{fig:M4000}{{15(d)}{39}}
-\newlabel{sub@fig:M4000}{{(d)}{39}}
-\newlabel{fig:M7000}{{15(e)}{39}}
-\newlabel{sub@fig:M7000}{{(e)}{39}}
-\newlabel{fig:M10000}{{15(f)}{39}}
-\newlabel{sub@fig:M10000}{{(f)}{39}}
-\newlabel{fig:M4000}{{15(g)}{39}}
-\newlabel{sub@fig:M4000}{{(g)}{39}}
-\newlabel{fig:M7000}{{15(h)}{39}}
-\newlabel{sub@fig:M7000}{{(h)}{39}}
-\newlabel{fig:M10000}{{15(i)}{39}}
-\newlabel{sub@fig:M10000}{{(i)}{39}}
-\newlabel{fig:M4000}{{15(j)}{39}}
-\newlabel{sub@fig:M4000}{{(j)}{39}}
-\newlabel{fig:M7000}{{15(k)}{39}}
-\newlabel{sub@fig:M7000}{{(k)}{39}}
-\newlabel{fig:M10000}{{15(l)}{39}}
-\newlabel{sub@fig:M10000}{{(l)}{39}}
-\newlabel{fig:M4000}{{15(m)}{39}}
-\newlabel{sub@fig:M4000}{{(m)}{39}}
-\newlabel{fig:M7000}{{15(n)}{39}}
-\newlabel{sub@fig:M7000}{{(n)}{39}}
-\newlabel{fig:M10000}{{15(o)}{39}}
-\newlabel{sub@fig:M10000}{{(o)}{39}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{39}{}\protected@file@percent }
-\newlabel{fig:exploratoryanalysisalpha_andS}{{15}{39}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{39}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{39}{}\protected@file@percent }
-\newlabel{l}{{16(a)}{40}}
-\newlabel{sub@l}{{(a)}{40}}
-\newlabel{fig:M7000}{{16(b)}{40}}
-\newlabel{sub@fig:M7000}{{(b)}{40}}
-\newlabel{fig:M10000}{{16(c)}{40}}
-\newlabel{sub@fig:M10000}{{(c)}{40}}
-\newlabel{fig:M4000}{{16(d)}{40}}
-\newlabel{sub@fig:M4000}{{(d)}{40}}
-\newlabel{fig:M7000}{{16(e)}{40}}
-\newlabel{sub@fig:M7000}{{(e)}{40}}
-\newlabel{fig:M10000}{{16(f)}{40}}
-\newlabel{sub@fig:M10000}{{(f)}{40}}
-\newlabel{fig:M4000}{{16(g)}{40}}
-\newlabel{sub@fig:M4000}{{(g)}{40}}
-\newlabel{fig:M7000}{{16(h)}{40}}
-\newlabel{sub@fig:M7000}{{(h)}{40}}
-\newlabel{fig:M10000}{{16(i)}{40}}
-\newlabel{sub@fig:M10000}{{(i)}{40}}
-\newlabel{fig:M4000}{{16(j)}{40}}
-\newlabel{sub@fig:M4000}{{(j)}{40}}
-\newlabel{fig:M7000}{{16(k)}{40}}
-\newlabel{sub@fig:M7000}{{(k)}{40}}
-\newlabel{fig:M10000}{{16(l)}{40}}
-\newlabel{sub@fig:M10000}{{(l)}{40}}
-\newlabel{fig:M4000}{{16(m)}{40}}
-\newlabel{sub@fig:M4000}{{(m)}{40}}
-\newlabel{fig:M7000}{{16(n)}{40}}
-\newlabel{sub@fig:M7000}{{(n)}{40}}
-\newlabel{fig:M10000}{{16(o)}{40}}
-\newlabel{sub@fig:M10000}{{(o)}{40}}
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{40}{}\protected@file@percent }
-\newlabel{fig:exploratoryanalysisalpha_andS}{{16}{40}}
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{40}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{40}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{41}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{41}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf  {P}$}}{41}{}\protected@file@percent }
+\newlabel{fig:M4000}{{10(g)}{31}}
+\newlabel{sub@fig:M4000}{{(g)}{31}}
+\newlabel{fig:M7000}{{10(h)}{31}}
+\newlabel{sub@fig:M7000}{{(h)}{31}}
+\newlabel{fig:M10000}{{10(i)}{31}}
+\newlabel{sub@fig:M10000}{{(i)}{31}}
+\newlabel{fig:M4000}{{10(j)}{31}}
+\newlabel{sub@fig:M4000}{{(j)}{31}}
+\newlabel{fig:M7000}{{10(k)}{31}}
+\newlabel{sub@fig:M7000}{{(k)}{31}}
+\newlabel{fig:M10000}{{10(l)}{31}}
+\newlabel{sub@fig:M10000}{{(l)}{31}}
+\newlabel{fig:M4000}{{10(m)}{31}}
+\newlabel{sub@fig:M4000}{{(m)}{31}}
+\newlabel{fig:M7000}{{10(n)}{31}}
+\newlabel{sub@fig:M7000}{{(n)}{31}}
+\newlabel{fig:M10000}{{10(o)}{31}}
+\newlabel{sub@fig:M10000}{{(o)}{31}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.\relax }}{31}{}\protected@file@percent }
+\newlabel{fig:exploratoryanalysisalpha_andS}{{10}{31}}
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(a)}{\ignorespaces {$\alpha =0.1, S = 0.2$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(b)}{\ignorespaces {$\alpha =0.1, S = 0.4$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(c)}{\ignorespaces {$\alpha =0.1, S = 0.7$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(d)}{\ignorespaces {$\alpha =0.5, S = 0.2$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(e)}{\ignorespaces {$\alpha =0.5, S = 0.4$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(f)}{\ignorespaces {$\alpha =0.5, S = 0.7$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(g)}{\ignorespaces {$\alpha =1, S = 0.2$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(h)}{\ignorespaces {$\alpha =1, S = 0.4$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(i)}{\ignorespaces {$\alpha =1, S = 0.7$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(j)}{\ignorespaces {$\alpha =1.5, S = 0.2$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(k)}{\ignorespaces {$\alpha =1.5, S = 0.4$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(l)}{\ignorespaces {$\alpha =1.5, S = 0.7$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(m)}{\ignorespaces {$\alpha =3, S = 0.2$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(n)}{\ignorespaces {$\alpha =3, S = 0.4$}}}{31}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {subfigure}{\numberline{(o)}{\ignorespaces {$\alpha =3, S = 0.7$}}}{31}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{32}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf  {P}$}}{32}{}\protected@file@percent }
 \newlabel{tocindent-1}{0pt}
 \newlabel{tocindent0}{0pt}
 \newlabel{tocindent1}{24.94171pt}
 \newlabel{tocindent2}{38.47682pt}
 \newlabel{tocindent3}{0pt}
-\newlabel{alg:z_update}{{\caption@xref {alg:z_update}{ on input line 1630}}{42}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Updating $z$ step\relax }}{42}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{42}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{42}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{42}{}\protected@file@percent }
-\newlabel{alg:P_update}{{\caption@xref {alg:P_update}{ on input line 1680}}{43}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces Updating $P$ step\relax }}{43}{}\protected@file@percent }
-\gdef \@abspage@last{43}
+\newlabel{alg:z_update}{{\caption@xref {alg:z_update}{ on input line 1248}}{33}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Updating $z$ step\relax }}{33}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{33}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{33}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{33}{}\protected@file@percent }
+\newlabel{alg:P_update}{{\caption@xref {alg:P_update}{ on input line 1298}}{34}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces Updating $P$ step\relax }}{34}{}\protected@file@percent }
+\gdef \@abspage@last{34}

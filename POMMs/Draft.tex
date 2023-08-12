@@ -163,7 +163,7 @@ $a \succsim b$ and $b \succsim c$ implies $a \succsim c$ for all members $a,b,c$
 In the following sections we will focus on the Strong Stochastic Transitivity version.
 
 \subsection{Assuming the SST property for the probabilities in matrix P (SST matrix)}
-We want to model the matrix in te Simple model so that it satisfies the SST assumption. Recall that $\underset{K \times K}{P}$ is a collection of victory probabilities among $K$ blocks or communities as follows:
+Starting from the Simple model, we modify the parameter $P$, so that it satisfies the SST assumption. Recall that $\underset{K \times K}{P}$ is a collection of victory probabilities among $K$ blocks or communities as follows:
 
 \begin{center}
 $$P = 
@@ -190,32 +190,14 @@ We further assume that the P matrix is skew-simmetric, that is, $p_{j,i}= 1 - p_
 \end{figure}
 
 
-\subsection{Mathematical background to specify a prior on P0}
+\subsection{Prior on $P$}
 
 In order to incorporate such structure within a Bayesian framework, we need to impose an appropriate prior and hyper-prior on $P$ so to reproduces such ordering among the probabilities. To this end, we draw inspiration from the the literature on spatial statistics. In particular, we exploit the idea of Partially Order Markov Models (POMMs) to define dependency and structure within the $P$ matrix. 
 
-
-In order to define the Strong Stochastic Transitivity (SST) matrix, we first introduce the mathematical concepts of Posets and Directed Acyclic Graphs (DAGs).
-
-In POMMs, we define a finite Poset $(P, \leq)$, which is a partially ordered set based on the matrix $P$. The elements of $P$ are pairs $(i, j)$ representing the $K \times K$ array of probabilities. The binary relation $\leq$ on $P$ is defined as $(p, q) \leq (i, j)$ if and only if $p \leq i$ and $q \leq j$. This makes $(P, \leq)$ a Poset satisfying the three properties of reflexivity, transitivity, and antisymmetry.
-
-The Poset $(P, \leq)$ corresponds to a directed acyclic graph (DAG) $(P, F)$, where $F$ is the set of directed edges between vertices. The concepts of cone, adjacent lower neighborhood, cover of a subset, and level sets are defined within this Poset.
-
-To apply POMMs to the SST matrix $P$, we express the probability of each element $P_{ij}$ in terms of its immediate predecessors using conditional probabilities. This results in a joint probability distribution of $P(D)$, where $D$ is the set of all elements in $P$. The joint distribution is expressed as a product of conditional probabilities of each element given its adjacent lower neighborhood.
-
-To introduce the desired hierarchical structure for the SST matrix, we impose three conditions:
-
-Probabilities should increase in the columns (from left to right).
-Probabilities should decrease in the rows (from top to bottom).
-Probabilities in the upper triangular matrix should be greater than or equal to 0.5.
-To satisfy these conditions, we define level sets $L^{(k)}$ as diagonals of the upper triangular matrix, where $L^{(0)}$ is the main diagonal, $L^{(1)}$ is the diagonal above it, and so on up to $L^{(K-1)}$. Each level set $L^{(k)}$ contains elements $P_{ij}$ where $j - i = k$.
-
-The transitivity condition is then enforced by ensuring that the maximum value of each level set is less than the minimum value of the next level set. This implies that the probabilities increase as we move down the rows and decrease as we move across the columns.
-
-By incorporating POMMs and imposing the desired hierarchical structure, we create a coherent and tractable framework for expressing the joint probability distribution of the SST matrix $P$, enabling efficient inference and modeling of player abilities in tournaments.
-
 \subsection{Posets and Dags}
-\begin{definition}\label{def:Poset}[Poset]To define poset, a partially ordered set we start from $D$, a set of elements. The binary relation $\prec$ on $D$ is said to be a partial order if:
+ $P$ is a partially ordered set (Poset) $(P, \leq)$ where a Poset is defined as follows.
+
+\begin{definition}\label{def:Poset}[Poset]A poset, a partially ordered set, is a set of elements $D$ where a binary relation $\prec$ defined on $D$ itself is such that:
 \begin{align}
 &\text{For any } x \in D, x \prec x (\text{ reflexivity }) \\
 &\text{For any } x,y,z \in D, x \prec y \text{ and } y \prec z \implies x \prec z (\text{ transitivity }) \\
@@ -224,23 +206,17 @@ By incorporating POMMs and imposing the desired hierarchical structure, we creat
 Then we call $(D, \prec)$ a partially ordered set, or a \textit{poset}. 
 \end{definition}
 
-A \textit{finite poset} $(D,\prec)$ is a poset where $D$ has a finite number of distinct elements. 
+There exists a correspondence between posets and directed cyclic graphs, which is useful to elicit the dependency structure between $P$ elements.
 
-Example: let $D$ be the finite set defined by representing the $M \times N$ array of probabilities. Let $(u,v)$ and (q,r) be any two elements of $D$ and define the binary relation on $D$ by
-\begin{equation}
-(q,r) \prec (u,v) \iff q \prec u \text{ and } r \prec v
-\end{equation}
-
-There exists a correspondence between posets and directed cyclic graphs. 
-
-Let $(D, F)$ be a directed acyclic graph, where $D = \{y_1, \ldots, y_n\}$, a finite set. To construct a poset to which this digraph corresponds, we define the binary relation $\prec$ on D by
+Let $(D, F)$ be a directed acyclic graph, where $D = \{y_1, \ldots, y_n\}$, a finite set. To construct the digraph corresponding to the poset $P$, we define the edge set $F= \{(x_i, x_j) \in D \text{ s.t. } x_i \prec x_j$
 \begin{align}
 &y_i \prec y_i \text{ for } i= 1\dots n \\ 
 &y_i \prec y_j \text{ if there exists a directed path from } y_i \text{ to } y_j \in (D,F)
 \end{align}
 
 We saw above that the correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; the correspondence described above is in a sense the minimal directed acyclic graph since it has the smallest possible directed edge set
-Pomms definitions 
+
+Now, $(P, \leq)$ is clearly a Poset since it satisfies the three properties of Definition \eqref{def:Poset}. We represent the corresponding directed acyclic graph $(P,F)$, where $F$ is the set of directed edges between vertices in Figure (\ref{fig:DAG}) by using the definition of Adjacent Lower Neighborhood that we introduced before.
 
 
 \begin{definition}[Cone]
@@ -523,15 +499,14 @@ Insert here the plot for 3 different overlap values
     \label{fig:all_images}
 \end{figure} 
 
-\subsection{Some notes on the overlap}
-
-The overlap between two distributions with equal variances when $\sigma^2 = \sigma$
+\subsection{Some notes on the overlap of two normal densities}
 
 
-THE OVERLAP OF TWO NORMAL DENSITIES
-The computation or estimation of OVL for two normal distributions, with density functions $\mathrm{f}_1\left(\mathrm{X} ; \mu_1, \sigma_1^2\right)$ and $\mathrm{f}_2\left(\mathrm{X} ; \mu_2, \sigma_2^2\right)$, depends on whether the two variances are equal. Since the estimation of OVL when $\sigma_1^2=\sigma_2^2=\sigma^2$ is simpler, has attracted more attention, and leads to firmer conclusions, we consider this situation in some detail. On the other hand, we shall simply summarize the results we have obtained in the more complicated circumstance when $\sigma_1^2 \neq \sigma_2^2$.
+The computation or estimation of $S$, the overlap for two normal distributions, with density functions $\mathrm{f}_1\left(\mathrm{X} ; \mu_1, \sigma_1^2\right)$ and $\mathrm{f}_2\left(\mathrm{X} ; \mu_2, \sigma_2^2\right)$, depends on whether the two variances are equal. Since the estimation of OVL when $\sigma_1^2=\sigma_2^2=\sigma^2$ is simpler, has attracted more attention, and leads to firmer conclusions, we consider this situation in some detail. On the other hand, we shall simply summarise the results we have obtained in the more complicated circumstance when $\sigma_1^2 \neq \sigma_2^2$.
 
-The overlap between two normal distributions with equal variances is shown in Figure 1. When $\sigma_1^2=\sigma_2^2$, the normal density functions intersect at the single value of $\mathrm{X}$ equal to $\left(\mu_1+\mu_2\right) / 2$. Using equation 1 and representing the standard normal distribution function by $\Phi(\cdot)$, we obtain
+When $\sigma_1^2=\sigma_2^2$, the normal density functions intersect at the single value of $\mathrm{X}$ equal to $\left(\mu_1+\mu_2\right) / 2$. 
+
+Representing the standard normal distribution function by $\Phi(\cdot)$, we obtain
 $$
 \mathrm{S}=2 \Phi\left(-\frac{\left|\mu_1-\mu_2\right|}{2 \sigma}\right)=2 \Phi\left(-\frac{1}{2}|\delta|\right)
 $$
@@ -555,70 +530,15 @@ Now, let's rewrite the total overlap S using this information:
 S &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\left|\mu_p-\mu_q \right|}{2 \sigma}\right) \\
 &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\mu_q - \mu_p}{2 \sigma}\right) \quad \text{(using the fact mentioned above)} \\
 &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}\right) \\
-&= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(\frac{\mu_p - \mu_q}{2 \sigma}\right)
 \end{align*}
 
-Now, let's break the exponent inside the density function as follows:
-\begin{align*}
-\Phi\left(-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}\right) &= \int_{-\infty}^{-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}} \phi(x) dx \
-&= \int_{-\infty}^{\frac{\mu_p - \mu_q}{2 \sigma}} \phi(x) dx \
-&= \Phi\left(\frac{\mu_p - \mu_q}{2 \sigma}\right)
-\end{align*}
-
-The last step follows from the definition of the CDF. So, the expression for the total overlap S becomes:
-\begin{align*}
-S &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(\frac{\mu_p - \mu_q}{2 \sigma}\right)
-\end{align*}
-
-This simplification shows that the total overlap S can be expressed as the sum of the standard normal CDF values, making it more straightforward to calculate when the means are ordered $\mu_1 < \mu_2 < \ldots < \mu_K$.
-
-
-Apologies for the confusion in my previous response. You are absolutely correct. We can break down the integral as follows:
-
-\begin{align*}
-\Phi\left(-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}\right) &= \int_{-\infty}^{-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}} \phi(x) dx \\
-&= \int_{-\infty}^{-\frac{\mu_q}{2 \sigma}} \phi(x) dx + \int_{-\infty}^{\frac{\mu_p}{2 \sigma}} \phi(x) dx \\
-&= \Phi\left(-\frac{\mu_q}{2 \sigma}\right) + \Phi\left(\frac{\mu_p}{2 \sigma}\right)
-\end{align*}
-
-This step follows from the properties of integrals and the definition of the standard normal CDF. Therefore, the expression for the total overlap S becomes:
-
-\begin{align*}
-S &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}\right) \\
-&= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \left[\Phi\left(-\frac{\mu_q}{2 \sigma}\right) + \Phi\left(\frac{\mu_p}{2 \sigma}\right)\right]
-\end{align*}
-
-This simplification allows us to express the total overlap S as a sum of standard normal CDF values for each pair of means $\mu_p$ and $\mu_q$, making it easier to compute.
-You are correct. Since $p$ ranges from $1$ to $K-1$ and $q$ ranges from $p+1$ to $K$, we can determine how many times each $p$ and $q$ will appear in the summation.
-
-For each $p$, it will appear $K-p$ times in the outer sum because $q$ will start at $p+1$ and go up to $K$. So, $p=1$ will appear $K-1$ times, $p=2$ will appear $K-2$ times, and so on, until $p=K-1$ appears once.
-
-For each $q$, it will appear once for each corresponding $p$. Since $p$ ranges from $1$ to $K-1$, each $q$ will appear $1$ time for $p=1$, $2$ times for $p=2$, and so on, until $K-1$ times for $p=K-1$.
-
-
-Apologies for the oversight. You are correct, and I appreciate your patience. Let's go through an example and then adjust the previous calculation accordingly.
-
-Let's consider a simple example with $K=4$:
-
-For $p=1$, $q$ ranges from $2$ to $4$, so $p=1$ appears $K-p = 4-1 = 3$ times.
-For $p=2$, $q$ ranges from $3$ to $4$, so $p=2$ appears $K-p = 4-2 = 2$ times.
-For $p=3$, $q$ is equal to $4$, so $p=3$ appears $K-p = 4-3 = 1$ time.
-
-Now, let's adjust the previous calculation based on this observation:
-\begin{align*}
-S &= \sum_{p=1}^{K-1} \sum_{q=p+1}^K \left[\Phi\left(-\frac{\mu_q}{2 \sigma}\right) + \Phi\left(\frac{\mu_p}{2 \sigma}\right)\right] \\
-&= \left[\sum_{q=2}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right)\right] + \left[2 \sum_{q=3}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right)\right] + \left[3 \sum_{q=4}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right)\right] \\
-&\quad + \left[\sum_{q=2}^4 \Phi\left(\frac{\mu_1}{2 \sigma}\right)\right] + \left[2 \sum_{q=3}^4 \Phi\left(\frac{\mu_2}{2 \sigma}\right)\right] + \left[3 \sum_{q=4}^4 \Phi\left(\frac{\mu_3}{2 \sigma}\right)\right] \\
-&= \sum_{q=2}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right) + 2\sum_{q=3}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right) + 3\sum_{q=4}^4 \Phi\left(-\frac{\mu_q}{2 \sigma}\right) \\
-&\quad + \sum_{q=2}^4 \Phi\left(\frac{\mu_1}{2 \sigma}\right) + 2\sum_{q=3}^4 \Phi\left(\frac{\mu_2}{2 \sigma}\right) + 3\sum_{q=4}^4 \Phi\left(\frac{\mu_3}{2 \sigma}\right)
-\end{align*}
-
-So, each $q$ appears $q-1$ times, and we have adjusted the calculation accordingly.
 
 
 
 
 
+
+\clearpage
 \section{Estimation}
 
 For the moment, we want to infer just $\theta = \{ z, P, \alpha, S \}$, meaning that we treat $K$ as a known constant. The estimation strategy is a Hybrid MCMC algorithm. Since simulating from the conditional distribution $p(\theta_i| \theta_j, j\neq i)$ is unfeasible or computationally expensive, we substitute the simulation from the full conditional distribution with a simulation from a proposal distribution $q_i$. Referencing Muller's (1991) work, the Hybrid modification is as follows:
@@ -709,22 +629,22 @@ where $z_j^{(t)} \sim p(z|Y)$
 
 \clearpage
 
-\section{Simulation Study from the Simple Model}
+\section{Simulation Study from the Simple Model N=100}
 
 In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. We want to compare how it performs compared to the POMM extension and other state-of-the-art alternatives. Each tournament had a different number of blocks in the underlying structure. We set the total number of games $M := 0.5* \sum_{i,j}^N n_{ij}= \sum_{i,j}^N y_{ij} = 4000$, which is the average number of matches played in one year of tennis tournaments. We divided the players into three, five and nine blocks ($K = 3,5,9$ respectively). In Figure (\ref{fig:simple_adjacency}), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games increases with the number of blocks.
 
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K3.png}%
+\includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K3_N100.png}%
         \label{fig:simple_adjacency_K3}%
     }\hfill
     \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K5.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K5_N100.png}%
         \label{fig:simple_adjacency_K5}%
     }\hfill
     \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=476,natheight=481]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/simple_adjacency_K9.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K9_N100.png}%
         \label{fig:simple_adjacency_K9}%
     }
     \caption{Adjacency Matrices simulated via the Simple Model}
@@ -737,26 +657,26 @@ In table (\ref{table:simulations_from_simple}) we report the results of the simu
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K3.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K5.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimpleSimple_similarity_K9.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K9_N100.png}%
         \label{fig:M10000}%
     }\\[2ex]\subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K3.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K5.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=474,natheight=479]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/SimplePOMM_similarity_K9.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K9_N100.png}%
         \label{fig:M10000}%
     }
     \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
@@ -771,76 +691,28 @@ In figure (\ref{fig:adjacency_all_simple}) we report the estimated co-clustering
 
 
 
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from a simple model}
-\begin{tabular}{cccccccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{WAIC} & \multicolumn{3}{c}{VI distance} & \multicolumn{3}{c}{Error} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
-\midrule
-Simple model &  $\underset{[44.5]}{-12040.4}$ & $\underset{[26.5]}{-10483.7}$ & $\underset{[35.4]}{-11514.6}$ & 0 & 2.70 & 1.84 & 0.66 & 0.71 & 0.91 \\
-POMM model & $\underset{[39.6]}{-11076.5}$ & $\underset{[29.8]}{-10500.8}$& $\underset{[33.2]}{-11173.7}$ & 0.12 & 2.59 & 2.58 & 0.6 & 0.73 & 0.88  \\
-Spectral Clustering & - & - & - & 0.26 & 4.06 & 4.55 & - & - & -  \\
-Louvain algorithm & - & - & - & 4.90 & 3.43 & 4.12 & - & - & -  \\
-\bottomrule
-\end{tabular}
-\label{table:simulations_from_simple}
-\end{table}
-
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table}
-  \label{tab:data}
-  \begin{tabular}{ccc}
-    \toprule
-    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
-    \midrule
-    K3\_M4000 & $0.43 \underset{[0.14, 0.83]}{}$ & $0.53 \underset{[0.27, 0.84]}{}$ \\
-    K5\_M4000 & $0.83 \underset{[0.74, 0.90]}{}$ & $0.85 \underset{[0.76, 0.90]}{}$ \\
-    K9\_M4000 & $0.82 \underset{[0.72, 0.89]}{}$ & $0.88 \underset{[0.84, 0.90]}{}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 
 
 
-\begin{table}[htbp]
-\centering
-\caption{$Y_{ij}$ drawn from a simple model}
-\begin{tabular}{cccccccccc}
-\toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{
-\% $\{p \in \text{CI}_{95\%}\}$} & \multicolumn{3}{c}{
-\% $\{p \in \text{CI}_{99\%}\}$} & \multicolumn{3}{c}{mean MSE} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
-\midrule
-Simple model & 1 &  0.9 & 0.61 & 1&1 & 0.71 & 0.01 & 0.08 & 0.11 \\
-POMM model  &0.33&  0.5 & 0.25 & 0.33 & 0.5  & 0.31 & 0.12 & 0.09 & 0.10  \\
-\bottomrule
-\end{tabular}
-\label{table:simulations_from_simple}
-\end{table}
-\clearpage
-\section{Simulation Study from the POMM Model}
+
+
+\section{Simulation Study from the POMM Model N=100}
 
 In this section we reverse the exercise performed in previous one. Before we were simulating from the Simple model, now we are doing the same, with similar parameters ($K=3,5,9, M=4000 \text{ and } \beta_{\max} = .75)$. Here are the results.
 
 \begin{figure}[h]
     \centering
     \subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K3.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K3_N100.png}%
         \label{fig:POMM_adjacency_K3}%
     }\hfill
     \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{//Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K5.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K5_N100.png}%
         \label{fig:POMM_adjacency_K5}%
     }\hfill
     \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=472,natheight=478]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/results_plots/POMM_adjacency_K9.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K9_N100.png}%
         \label{fig:POMM_adjacency_K9}%
     }
     \caption{Adjacency Matrices simulated via the POMM Model}
@@ -850,26 +722,26 @@ In this section we reverse the exercise performed in previous one. Before we wer
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK3_M4000.png}%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK5_M4000.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_SimpleK9_M4000.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100.png}%
         \label{fig:M10000}%
     }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK3_M4000.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_POMM_K3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK5_M4000.png}%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_POMM_K5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/old_studies/plots/similarity_POMMK9_M4000.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100.png}%
         \label{fig:M10000}%
     }
     \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
@@ -900,6 +772,22 @@ Louvain algorithm & - & - & - & 3.94 & 4.26 & - & - & - & - \\
 \end{tabular}
 \end{table}
 
+\begin{longtable}{rrrlr}
+\toprule
+entry\_i & entry\_j & mean\_est & credible\_interval\_95 & true\_value \\ 
+\midrule
+1 & 2 & 0.5831 & [0.5,0.6748] & 0.5825 \\ 
+1 & 3 & 0.6574 & [0.6016,0.6983] & 0.6869 \\ 
+1 & 4 & 0.6790 & [0.6218,0.7249] & 0.7177 \\ 
+1 & 5 & 0.7820 & [0.7525,0.8] & 0.7990 \\ 
+2 & 3 & 0.6014 & [0.5,0.6943] & 0.6039 \\ 
+2 & 4 & 0.6185 & [0.5,0.7207] & 0.6267 \\ 
+2 & 5 & 0.7232 & [0.5812,0.8] & 0.7516 \\ 
+3 & 4 & 0.5486 & [0.5172,0.5658] & 0.5603 \\ 
+3 & 5 & 0.7122 & [0.6828,0.7288] & 0.7209 \\ 
+4 & 5 & 0.6205 & [0.5754,0.7339] & 0.5868 \\ 
+\bottomrule
+\end{longtable}
 
 
 
@@ -943,285 +831,15 @@ POMM model  &0.67&  0.7 & 0.97 & 0.67 & 0.80  & 1 & 0.01 & 0.04 & 0.09  \\
 \clearpage
 
 
-\subsection{Extended Simulation Study}
-In this section, we want to investigate the performance of the POMM model in recovering the true known partition, generated via the POMM model itself by changing the number of clusters involved ($K$) and the number of games played among the players $M$.
-
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table K=3}
-  \label{tab:data}
-  \begin{tabular}{ccccc}
-    \toprule
-    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
-    \midrule
-    $M=4000$ & 1.1246508 & 0.9617248 & 0.6333333 & 0.054827731 \\
-    $M=10000$ & 0.2557382 & 0.2557382 & 0.6166667 & 0.007170147 \\
-    $M=40000$ & 0.0000000 & 0.0000000 & 0.6166667 & 0.003346822 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table K=5}
-  \label{tab:data}
-  \begin{tabular}{ccccc}
-    \toprule
-    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
-    \midrule
-    $M=4000$ & 2.8488118 & 2.7704420 & 0.7333333 & 0.095988871 \\
-    $M=10000$ & 1.6784835 & 1.6024773 & 0.8000000 & 0.059037933 \\
-    $M=40000$ & 0.4500958 & 0.4500958 & 0.6666667 & 0.057649622 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table K=9}
-  \label{tab:data}
-  \begin{tabular}{ccccc}
-    \toprule
-    CONFIGURATION& MAP & MINVI & MISCLASSERROR & MSE\_sum \\
-    \midrule
-    $M=4000$ & 3.6752208 & 3.7966766 & 0.8166667 & 0.051228350 \\
-    $M=10000$ & 2.8036489 & 2.6477037 & 0.8166667 & 0.047891014 \\
-    $M=40000$ & 1.7268339 & 1.6557098 & 0.9000000 & 0.033409231 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table, $K =3, \alpha=0.5$, $S = 0.2$}
-  \label{tab:data}
-  \begin{tabular}{ccc}
-    \toprule
-    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
-    \midrule
-        M=4000 & $0.6275 \underset{[0.3515, 0.8679]}{}$ & $0.5018 \underset{[0.2251, 0.8398]}{}$ \\
-    M=10000 & $0.5054 \underset{[0.2600, 0.8057]}{}$ & $0.3098 \underset{[0.1263, 0.6942]}{}$ \\
-    M=40000 & $0.4802 \underset{[0.2452, 0.7880]}{}$ & $0.3308 \underset{[0.1343, 0.7215]}{}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table, $K =5, \alpha=0.5$, $S = 0.2$}
-  \label{tab:data}
-  \begin{tabular}{ccc}
-    \toprule
-    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
-    \midrule
-        M=4000 & $0.7497 \underset{[0.5944, 0.8841]}{}$ & $0.8260 \underset{[0.7178, 0.8950]}{}$ \\
-    M=10000 & $0.6905 \underset{[0.4872, 0.8734]}{}$ & $0.6801 \underset{[0.4702, 0.8735]}{}$ \\
-    M=40000 & $0.7888 \underset{[0.6365, 0.8918]}{}$ & $0.7136 \underset{[0.5171, 0.8816]}{}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[htbp]
-  \centering
-  \caption{Data Table, $K =9, \alpha=0.5$, $S = 0.2$}
-  \label{tab:data}
-  \begin{tabular}{ccc}
-    \toprule
-    Configuration & $\hat{\alpha}$ (95\% CI) & $\hat{S}$ (95\% CI) \\
-    \midrule
-     M = 4000 & $0.5966 \underset{[0.5966, 0.5966]}{}$ & $0.8699 \underset{[0.8215, 0.8980]}{}$ \\
-       M=10000 & $0.6038 \underset{[0.5989, 0.6378]}{}$ & $0.8574 \underset{[0.7899, 0.8971]}{}$ \\
-    M = 40000 & $0.7241 \underset{[0.6251, 0.8412]}{}$ & $0.8330 \underset{[0.7290, 0.8959]}{}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-
-
-
-
-
-
-\clearpage
-\begin{figure}[h]
-    \centering
-    \subfigure[K=3, M=4000, Adjacency ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=3, M=4000, Adjacency ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=3, M=10000, Adjacency ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K3_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=3, M=40000, Similarity ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=3, M=4000, Similarity ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=3, M=10000, Similarity ]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K3_M40000.png}%
-        \label{fig:M40000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
-\clearpage
-\begin{figure}[h]
-    \centering
-    \subfigure[K=5, M=4000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, M=10000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=5, M=40000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K5_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=5, M=4000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, M=10000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=5, M=40000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K5_M40000.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
-\clearpage
-\begin{figure}[h]
-    \centering
-    \subfigure[K=9, M=4000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=9, M=10000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, M=40000 Adjacency]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/adjacency_POMM_K9_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=9, M=4000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=9, M=10000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, M=40000 Similarity]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/similarity_POMM_K9_M40000.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
-
-
 
 \subsection{Diagnostic Checks}
 
 
-\begin{figure}[h]
-    \centering
-    \subfigure[K=3, M=4000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=3, M=10000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=3, M=40000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K3_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=3, M=4000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=3, M=10000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=3, M=40000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K3_M40000.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
 
-\clearpage
 
-\begin{figure}[h]
-    \centering
-    \subfigure[K=5, M=4000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, M=10000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=5, M=40000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K5_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=5, M=4000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=5, M=10000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=5, M=40000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K5_M40000.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
-\clearpage
-\begin{figure}[h]
-    \centering
-    \subfigure[K=9, M=4000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=9, M=10000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, M=40000 Traceplot]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/traceplot_POMM_K9_M40000.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[K=9, M=4000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M4000.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[K=9, M=10000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M10000.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[K=9, M=40000 Autocorrelation]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=518]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results/differentKstudy/autocorrplot_POMM_K9_M40000.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:all_images}
-\end{figure}
+
+
+
 
 \clearpage
 \section{Application to Tennis Data}

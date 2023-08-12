@@ -168,13 +168,13 @@ z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N
   
 }
 
+
 z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
   z_container_POMM <- cbind(test_output$chain1$est_containers$z[,-c(1:burnin)],
                               test_output$chain2$est_containers$z[,-c(1:burnin)],
                               test_output$chain3$est_containers$z[,-c(1:burnin)],
                               test_output$chain4$est_containers$z[,-c(1:burnin)]) 
 
-  
   #Data used to generate the data -----
   if(true_value==T){
   # Create a data frame to store the results
@@ -320,6 +320,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
                                           mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test3$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test4$est_containers$z[,-c(1:burn_in)]))))
+    
     mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(test1$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test2$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test3$control_containers$A[-c(1:burn_in)]),
@@ -341,18 +342,19 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
     
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, MAP=0)
     
-    mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test2$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test3$est_containers$z[,-c(1:burn_in)]),
-                                          mcmc(test4$est_containers$z[,-c(1:burn_in)])))
-    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc((test1$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test2$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test3$control_containers$A[-c(1:burn_in)])),
-                                            mcmc(t(test4$control_containers$A[-c(1:burn_in)]))))
+    mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test3$est_containers$z[,-c(1:burn_in)])),
+                                          mcmc(t(test4$est_containers$z[,-c(1:burn_in)]))))
+    
+    mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(test1$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test2$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test3$control_containers$A[-c(1:burn_in)]),
+                                            mcmc(test4$control_containers$A[-c(1:burn_in)])))
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
-    #Gelman Rubin
-    #results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    
+    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     
@@ -364,9 +366,9 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
     A_bind = unlist(mm_A)
     brrr <-simplify2array(mm)
-    z_bind = brrr[,,1]
-    z_bind= cbind(z_bind,brrr[,,2],brrr[,,3],brrr[,,4])
-    results$MAP<- vi.dist(z_bind[,which(A_bind==max(A_bind))],z)
+    
+    z_bind= rbind(mm[[1]],mm[[2]],mm[[3]],mm[[4]])
+    results$MAP <- vi.dist(z_bind[which(A_bind==max(A_bind))[1],],z)
   }
   return(results)}
 
@@ -395,22 +397,24 @@ P_summary_table<- function(test_output, true_value, diag0.5,P,K, burn_in){
   entries_df=entries_df[-1,]   
   
   if(true_value == F){
-    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),credible_interval_05 =rep(0,nrow(entries_df)),
                                            credible_interval_95 =rep(0,nrow(entries_df))))
     for(i in 1:nrow(results)){
       m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
       results$mean_est[i] <- mean(m)
       HPD <- round(cbind(coda::HPDinterval(m)),2)
-      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+      results$credible_interval_95[i]<- HPD[2]
+      results$credible_interval_05[i]<- HPD[1]
     }
   }else if(true_value == T){
-    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),
+    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),credible_interval_05=rep(0,nrow(entries_df)),
                                            credible_interval_95 =rep(0,nrow(entries_df)), true_value =rep(0,nrow(entries_df))))
     for(i in 1:nrow(results)){
       m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
       results$mean_est[i] <- round(mean(m),4)
       HPD <- round(cbind(coda::HPDinterval(m)),4)
-      results$credible_interval_95[i]<- paste0("[",HPD[1],",",HPD[2],"]")
+      results$credible_interval_95[i]<- HPD[2]
+      results$credible_interval_05[i]<- HPD[1]
       results$true_value[i]<- round(P[results$entry_i[i],results$entry_j[i]],4)
     }
   }
