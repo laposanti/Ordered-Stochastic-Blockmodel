@@ -110,12 +110,20 @@ Est_p_matrix= function(burnin, p_container, p_true){
   }
   return(est_table)
 }
-save_table_to_file <- function(table_code, filename) {
-  table_code %>%
+
+
+save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NULL) {
+  # Create a gt table
+  table <- table_code %>%
     gt() %>%
+    tab_header(title = title, subtitle = subtitle) %>%
+    # Apply a custom LaTeX theme
+    tab_options(table.align = 'left') %>%
     as_latex() %>%
-    as.character() %>%
-    writeLines(con = filename)
+    as.character()
+  
+  # Write the LaTeX table to the file
+  writeLines(con = filename, text = table)
 }
 
 z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N, z , burn_in ){
@@ -199,8 +207,8 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
   z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
   
 
-  results$MAP[1] <- vi.dist(z_MAP_POMM, z_truePOMM)
-  results$MINVI<- vi.dist(point_est_POMM, z_truePOMM)
+  results$MAP_vi_dist <- vi.dist(z_MAP_POMM, z_truePOMM)
+  results$MINVI_vi_dist<- vi.dist(point_est_POMM, z_truePOMM)
   
   
   #computing WAIC

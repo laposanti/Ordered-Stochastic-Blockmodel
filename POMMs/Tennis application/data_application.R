@@ -51,13 +51,8 @@ df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% f
 
 
 my_edges = df_match %>% select(winner_slug, loser_slug)
-
-
-
 g =graph_from_edgelist(as.matrix(my_edges),directed = T)
-
 my_name = data.frame(player_slug=vertex_attr(g)$name)
-
 players_df = inner_join(my_name,top100players, by="player_slug")
 
 A = as_adjacency_matrix(g)
@@ -75,6 +70,7 @@ N=95
 gamma_vec = rep(1/K,K)
 diag0.5=T
 N_iter=30000
+
 chains_POMM <- list()
 for(i in 1:4){
   
@@ -150,10 +146,10 @@ plot(g,
      edge.arrow.size = .1)
 
 
-
 g_df =  data.frame(vertex_attr(g)) %>% 
   rename( player_slug= name) %>% 
   left_join(players_df, by="player_slug") %>%
+  mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
   arrange()
 
 head(g_df)

@@ -20,7 +20,7 @@
 \contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{18}{}%
 \contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{19}{}%
 \contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model N=100}}{20}{}%
-\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{20}{}%
+\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{23}{}%
 \contentsline {subsection}{\tocsubsection {}{8.1}{Diagnostic Checks}}{25}{}%
 \contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{26}{}%
 \contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{27}{}%
