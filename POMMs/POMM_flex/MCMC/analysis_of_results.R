@@ -18,7 +18,6 @@ data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/res
 tap <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots"
 plots_dir<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots"
 
-
 #Printing all possible results
 
 #1: POMM, 0:Simple
@@ -44,11 +43,13 @@ for(results_row in 1:nrow(results_control)){
     P<-uploded_results$chain1$ground_truth$P
     N<- nrow(uploded_results$chain1$Yij_matrix)
     print(N)
-    
-    S<- if(true_model == 'True_ModelSimpleEst_model_'){
+    ncol(uploded_results$chain1$est_containers$z)
+    if(true_model == 'True_ModelSimpleEst_model_'){
       S<-'na'
+      alpha<-'na'
     }else{
       S<-uploded_results$chain1$ground_truth$S
+      alpha<-uploded_results$chain1$ground_truth$alpha
     }
     z<- uploded_results$chain1$ground_truth$z
 
@@ -72,8 +73,12 @@ for(results_row in 1:nrow(results_control)){
     S_s_title <- paste0(tap,'/S_summary_table',true_model,est_model,'_K', K,'_N', N, '.tex')
     S_s_table<- S_summary_table(test_output = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, S = S, K = K, burn_in = burnin)
     save_table_to_file(S_s_table, S_s_title,title = 'Ssummarytable',subtitle = paste0(true_model,est_model,K,N))
+    
+    alpha_s_title <- paste0(tap,'/alpha_summary_table',true_model,est_model,'_K', K,'_N', N, '.tex')
+    alpha_s_table<- alpha_summary_table(test_output = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, alpha = alpha, K = K, burn_in = burnin)
+    save_table_to_file(alpha_s_table, alpha_s_title,title = 'alphasummarytable',subtitle = paste0(true_model,est_model,K,N))
+    
     }
-
     P_d_title <- paste0(tap,'/P_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
     P_d_table<- P_diagnostic_table(chains = uploded_results, true_value = T, diag0.5 = TRUE,K = K, P = P, burn_in = burnin,N_iter = N_iter)
     P_d_table <- P_d_table%>% 
@@ -94,7 +99,11 @@ for(results_row in 1:nrow(results_control)){
       S_d_title <- paste0(tap,'/S_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
       S_d_table <- S_diagnostic_table(chains = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, K = K, S = S, burn_in = burnin,N_iter = N_iter)
       save_table_to_file(S_d_table, S_d_title,title = 'Sdiagnosticstable',subtitle = paste0(true_model,est_model,K,N))
-    }
+      alpha_d_title <- paste0(tap,'/alpha_diagnostic_table',true_model,est_model,'_K', K,'_N', N, '.tex')
+      alpha_d_table <- alpha_diagnostic_table(chains = uploded_results, true_value = ifelse(true_model == 'True_ModelSimpleEst_model_',F,T), diag0.5 = TRUE, K = K, alpha = alpha, burn_in = burnin,N_iter = N_iter)
+      save_table_to_file(alpha_d_table, alpha_d_title,title = 'alphadiagnosticstable',subtitle = paste0(true_model,est_model,K,N))
+      
+      }
     setwd(plots_dir)
     z_plot(test_output =uploded_results , true_model= true_model,
            est_model = est_model, true_value =T , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin )

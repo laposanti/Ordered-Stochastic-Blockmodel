@@ -9,6 +9,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Infere
 library(EnvStats)
 library(ggplot2)
 library(dplyr)
+library(ggside)
 library(truncnorm)
 library(fossil)
 M= 13  
@@ -17,7 +18,7 @@ N_iter =20000
 N_ij = matrix(M,N,N)
 alpha=.5
 S=.01
-K=3
+K=13
 beta_max=0.8
 gamma_vec = rep(1/K,K)
 diag0.5=T
@@ -43,31 +44,32 @@ mean(Y_ij[z_k,2]/M)
 
 
 chains= list()
-for(i in 1){
+for(i in 1:4){
   alpha0=runif(1,0.1,3)
   trunc=improper_prior5(K,beta_max,alpha = alpha0)
   S0=runif(1,0.1,.9)
   P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
   init_pomm =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S,P=P0_POMM)
-  names(init)
-  estimation_control = list(z = 1,alpha=1,S=0,P=1)
+  names(init_pomm)
+  estimation_control = list(z = 0,alpha=1,S=1,P=1)
   ground_truth= list(z = z,alpha=alpha,S=S,P=P)
   hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-  TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init,estimation_control = estimation_control,ground_truth = ground_truth,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params ,seed = 123)
+  TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_pomm,estimation_control = estimation_control,ground_truth = ground_truth,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params ,seed = 123)
   chains[[i]]= TEST
-  #simple study
+}
+#simple study
 
-  P0_Simple= matrix(.5,K,K)
-  P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
-  P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
-  
-  init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
-  names(init_Simple)
-  estimation_control_Simple = list(z = 1,P=1)
-  ground_truth_Simple= list(z = z,P=P)
-  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-  TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_Simple,estimation_control = estimation_control_Simple,ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params_Simple ,seed = 123)
-  chains[[1]]= TEST
+P0_Simple= matrix(.5,K,K)
+P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
+P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
+
+init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
+names(init_Simple)
+estimation_control_Simple = list(z = 1,P=1)
+ground_truth_Simple= list(z = z,P=P)
+hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_Simple,estimation_control = estimation_control_Simple,ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,targ_rate = .22,hyper_params =hyper_params_Simple ,seed = 123)
+chains[[1]]= TEST
 }
 
 
@@ -162,8 +164,27 @@ test3<-chains[[3]]
 test4<-chains[[4]]
 
 
-
-
+assembling_chains <- function(chains, burnin, parameter){
+  test1<-chains[[1]]
+  test2<-chains[[2]]
+  test3<-chains[[3]]
+  test4<-chains[[4]]
+  if(parameter == 'S'){
+    assembled<- c(test1$est_containers$S[-c(1:burnin)],test2$est_containers$S[-c(1:burnin)],test3$est_containers$S[-c(1:burnin)],test4$est_containers$S[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'alpha'){
+    assembled<- c(test1$est_containers$alpha[-c(1:burnin)],test2$est_containers$alpha[-c(1:burnin)],test3$est_containers$alpha[-c(1:burnin)],test4$est_containers$alpha[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'P'){
+    assembled<- abind::abind(test1$est_containers$P[,,-c(1:burnin)],test2$est_containers$P[,,-c(1:burnin)],test3$est_containers$P[,,-c(1:burnin)],test4$est_containers$P[,,-c(1:burnin)],along = 3)
+    return(assembled)
+  }else if(parameter == 'z'){
+    assembled<- cbind(test1$est_containers$z[,-c(1:burnin)],test2$est_containers$z[,-c(1:burnin)],test3$est_containers$z[,-c(1:burnin)],test4$est_containers$z[,-c(1:burnin)])
+    return(assembled)
+  }else{
+  print('Please provide a valide name for the parameters: alpha,S,P,Z')
+  }
+}
 
 
 plot(TEST$st.deviations$sd_alpha)
@@ -178,8 +199,10 @@ library(coda)
 point_est_POMM = minVI(similarity_matrixPOMMM,method = 'avg')$cl
 
 
+S_container = assembling_chains(chains,burnin = 5000,parameter = 'S')
+alpha_container = assembling_chains(chains,burnin = 5000,parameter = 'alpha')
 
-data <- data.frame(alpha = alpha_container[-c(1:6000)], S = S_container[-c(1:6000)])
+data <- data.frame(alpha = alpha_container, S = S_container)
 alpha_true=alpha
 S_true<- S
 # Create scatterplot with univariate distributions
@@ -193,8 +216,6 @@ ggplot(data, aes(x = alpha, y = S)) +
   theme_bw()
 
 
-library(ggplot2)
-library(ggside)
 
 
 

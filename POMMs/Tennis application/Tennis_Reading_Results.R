@@ -52,6 +52,7 @@ A = as_adjacency_matrix(g)
 
 
 
+
 #where the data are stored
 data_wd<-  '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results'
 
@@ -61,9 +62,8 @@ plots_dir<- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis applicati
 
 
 #Printing all possible results
-
 #1: POMM, 0:Simple
-est_model  <- 'Simple'
+est_model  <- 'POMM'
 filename <- list.files(pattern = paste0('Tennis_application_Est_model_', est_model),path = data_wd)
 print(filename)
 
@@ -75,7 +75,7 @@ burnin <- 20000
 
 for(i in 1:length(filename)){
   setwd(tap)
-  uploded_results<- readRDS(paste0(data_wd,"/",filename))
+  uploded_results<- readRDS(paste0(data_wd,"/",filename[i]))
   # Save each table with appropriate filenames and directory
   K<- nrow(uploded_results$chain1$init$P)
   print(K)
@@ -118,9 +118,23 @@ for(i in 1:length(filename)){
   setwd(plots_dir)
   z_plot(test_output =uploded_results , true_model= 'Tennis_application_Est_model_', 
          est_model = est_model, true_value =F , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin )
+  
+  clust_est = z_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)$memb
+  
+  plot_name <- paste0("RankvsClust_Est_model",est_model, "_K",K,"_N",N,".png")
+  # Save the plot with the constructed file name
+  
+  g_df =  data.frame(vertex_attr(g)) %>% 
+    rename(player_slug= name) %>% 
+    left_join(players_df, by="player_slug") %>%
+    mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
+    arrange()
+  png(plot_name,width = 800, height = 627)
+  print(rank_vs_cluster(clust_est,est_model = est_model))
+  # Close the device to save the plot
+  dev.off()
 }
 
-clust_est = z_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)$memb
 
 setwd(plots_dir)
 
@@ -134,39 +148,40 @@ g_df =  data.frame(vertex_attr(g)) %>%
   mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
   arrange()
 
-# Create the ggplot plot with error bars and modifications
-main_plot<-ggplot(g_df, aes(x = reorder(player_slug, median_rank), y = median_rank, color = factor(label_switch$clusters))) +
-  geom_point(size = 3) +
-  geom_errorbar(aes(ymin = min_r, ymax = max_r), size = 1) +
-  labs(x = "Player Name", y = "Ranking", title = paste0(est_model," Estimated Block Membership and Ranking"),
-       subtitle = 'Players are sorted in ascending order relative to their median ranking in 2017') +
-  scale_color_discrete(name = "Cluster") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
-    text = element_text(size = 10, family = "Arial"),
-    plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
-    plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
-    legend.text = element_text(size = 12),
-    plot.margin = margin(20, 20, 20, 20)
-  )
-degree_plot <- ggplot(g_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(label_switch$clusters) )) +
-  geom_bar(stat = "identity") +
-  labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
-       subtitle = 'Players are sorted in descending order relative to their percentage of victories') +
-  scale_color_discrete(name = "Cluster") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
-    text = element_text(size = 10, family = "Arial"),
-    plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
-    plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
-    plot.margin = margin(20, 20, 20, 20)
-  )
-plot_grid(main_plot, degree_plot, ncol = 1, align = "v")
+rank_vs_cluster(clust_est,est_model = est_model)
 # Close the device to save the plot
 dev.off()
 
 
-
+rank_vs_cluster <- function(clustering, est_model){
+  # Create the ggplot plot with error bars and modifications
+  main_plot<-ggplot(g_df, aes(x = reorder(player_slug, median_rank), y = median_rank, color = factor(clustering))) +
+    geom_point(size = 3) +
+    geom_errorbar(aes(ymin = min_r, ymax = max_r), size = 1) +
+    labs(x = "Player Name", y = "Ranking", title = paste0(est_model," Estimated Block Membership and Ranking"),
+         subtitle = 'Players are sorted in ascending order relative to their median ranking in 2017') +
+    scale_color_discrete(name = "Cluster") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+      text = element_text(size = 10, family = "Arial"),
+      plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+      plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+      legend.text = element_text(size = 12),
+      plot.margin = margin(20, 20, 20, 20)
+    )
+  degree_plot <- ggplot(g_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(clustering) )) +
+    geom_bar(stat = "identity") +
+    labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
+         subtitle = 'Players are sorted in descending order relative to their percentage of victories') +
+    scale_color_discrete(name = "Cluster") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+      text = element_text(size = 10, family = "Arial"),
+      plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+      plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+      plot.margin = margin(20, 20, 20, 20)
+    )
+  return(plot_grid(main_plot, degree_plot, ncol = 1, align = "v"))}
 

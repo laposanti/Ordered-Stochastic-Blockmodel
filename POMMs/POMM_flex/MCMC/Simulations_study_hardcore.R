@@ -16,9 +16,9 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Infere
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
 
 # Set up simulation parameters
-N_values <- c(30,100)
+N_values <- c(100)
 K_values <- c(3,5,9)  # Range of K values to explore
-overlap_values <- c(0.2,0.4,0.6)  # Range of overlap values to explore
+S_values <- c(0.01,0.1,0.2)  # Range of overlap values to explore
 alpha_values <- c(.5,1,1.5) # Range of alpha values to explore
 switch_values <- c(1,0) # Range of models to explore: 1= POMM, 0 =Simple
 M_values <- c(4000,10000,40000)
@@ -30,7 +30,7 @@ beta_max <- 0.85
 diag0.5 <- T
 
 # Set up parallel computing
-cores <- 7
+cores <- 5
 
 # Iterate over parameter combinations using foreach
 
@@ -41,6 +41,7 @@ test_grid = expand_grid(K_values, switch_values, N_values)
 
 cl <- makeCluster(cores)
 registerDoParallel(cl)
+
 foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   library(foreach)
   library(doParallel)
@@ -51,7 +52,8 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   #-----------------------------------------------------------------------------
   # Generating data
   #-----------------------------------------------------------------------------
-  
+  N=100
+  K=9
   M= 13  
   N = test_grid$N_values[iterazione]
   N_ij = matrix(M,N,N)
@@ -68,13 +70,13 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     
     #True Model selected: POMM
     model<- 'POMM'
+    set.seed(123)
+    P_true=simulating_overlapping_POMM_powerlaw_norm(K,alpha,S,trunc,beta_max,diag0.5)
     
-    P=simulating_overlapping_POMM_powerlaw_norm(K,alpha,S,trunc,beta_max,diag0.5)
+    z_true = rep_len(1:K, N)
     
-    z = rep_len(1:K, N)
-    
-    z_mat=vec2mat(z)
-    P_NbyN<-calculate_victory_probabilities(z_mat,P)
+    z_mat=vec2mat(z_true)
+    P_NbyN<-calculate_victory_probabilities(z_mat,P_true)
     
     Y_ij = matrix(0,N,N)
     for(i in 1:N){
@@ -86,15 +88,15 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     
     #True Model Selected: Simple
     model<- 'Simple'
+    set.seed(123)
+    P_true= matrix(.5,K,K)
+    P_true[upper.tri(P_true)]<- runif(K*(K-1)/2,0.5,beta_max)
+    P_true[lower.tri(P_true)]<- 1- P_true[upper.tri(P_true)]
     
-    P= matrix(.5,K,K)
-    P[upper.tri(P)]<- runif(K*(K-1)/2,0.5,beta_max)
-    P[lower.tri(P)]<- 1- P[upper.tri(P)]
+    z_true = rep_len(1:K, N)
+    z_mat=vec2mat(z_true)
     
-    z = rep_len(1:K, N)
-    z_mat=vec2mat(z)
-    
-    P_NbyN<-calculate_victory_probabilities(z_mat,P)
+    P_NbyN<-calculate_victory_probabilities(z_mat,P_true)
     
     Y_ij = matrix(0,N,N)
     for(i in 1:N){
@@ -119,14 +121,16 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   chains_POMM <- list()
   for(i in 1:4){
     seed=123
+    P_POMM = P_true
+    z_POMM = z_true
     alpha0=runif(1,0.1,3)
     trunc=improper_prior5(K,beta_max,alpha = alpha0)
     S0=runif(1,0.1,.9)
     P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
     init_POMM =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S0,P=P0_POMM)
 
-    estimation_control = list(z = 1,alpha=0,S=1,P=1)
-    ground_truth= list(z = z,alpha=alpha,S=S,P=P)
+    estimation_control = list(z = 1,alpha=1,S=1,P=1)
+    ground_truth= list(z = z_true,alpha=alpha,S=S,P=P_true)
     hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
     TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
                               estimation_control = estimation_control,
@@ -151,7 +155,7 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
     
     estimation_control_Simple = list(z = 1,P=1)
-    ground_truth_Simple= list(z = z,P=P)
+    ground_truth_Simple= list(z = z_true,P=P_true)
     hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
     TEST_simple = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
                                 init = init_Simple,estimation_control = estimation_control_Simple,

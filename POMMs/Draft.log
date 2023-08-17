@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  13 AUG 2023 20:40
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  16 AUG 2023 17:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -493,6 +493,30 @@ LaTeX Warning: Label `sub@fig:M10000' multiply defined.
 LaTeX Warning: Label `fig:all_images' multiply defined.
 
 
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
 LaTeX Warning: Label `fig:M7000' multiply defined.
 
 
@@ -923,70 +947,70 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
 (Font)              No change on input line 206.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 222.
+(Font)              No change on input line 218.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 223.
+(Font)              No change on input line 219.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 229.
+(Font)              No change on input line 225.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 230.
+(Font)              No change on input line 226.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 238.
+(Font)              No change on input line 234.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 247.
+(Font)              No change on input line 243.
  [8]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 271.
+(Font)              No change on input line 267.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 277.
+(Font)              No change on input line 273.
  [9] [10]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 312.
+(Font)              No change on input line 308.
 
-Overfull \hbox (1.32002pt too wide) in paragraph at lines 320--321
+Overfull \hbox (1.32002pt too wide) in paragraph at lines 316--317
 []\OT1/cmr/m/n/10.95 Without loss of gen-er-al-ity, we as-sume that player/team
  1 is the strongest and player/team
  []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 341.
+(Font)              No change on input line 337.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 346.
+(Font)              No change on input line 342.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 353.
+(Font)              No change on input line 349.
 [11]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 360.
+(Font)              No change on input line 356.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 367.
+(Font)              No change on input line 363.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 368.
+(Font)              No change on input line 364.
 File: /Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg Graphic file
  (type eps)
  </Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 377.
+(Font)              No change on input line 373.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 377.
+(Font)              No change on input line 373.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 377.
+(Font)              No change on input line 373.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 377.
+(Font)              No change on input line 373.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 383.
+(Font)              No change on input line 379.
  [12]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 409.
+(Font)              No change on input line 405.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 419.
+(Font)              No change on input line 415.
 
 [13]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 445.
+(Font)              No change on input line 441.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 463.
+(Font)              No change on input line 459.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 464.
+(Font)              No change on input line 460.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.2__diag__0.
 5.png Graphic file (type eps)
@@ -1009,34 +1033,34 @@ graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.
 s_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.5.png
 >
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 498.
+(Font)              No change on input line 494.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 498.
+(Font)              No change on input line 494.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 498.
+(Font)              No change on input line 494.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 498.
+(Font)              No change on input line 494.
  [14]
 Underfull \vbox (badness 5756) has occurred while \output is active []
 
  [15]
 [16]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 542.
+(Font)              No change on input line 538.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 572.
+(Font)              No change on input line 568.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 580.
+(Font)              No change on input line 576.
  [17
 
 ] [18]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 601.
+(Font)              No change on input line 597.
  [19
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 632.
+(Font)              No change on input line 628.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K3_N10
 0.png Graphic file (type eps)
@@ -1059,21 +1083,21 @@ _29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K9_N10
 7/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K9_N100.png
 >
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 650.
+(Font)              No change on input line 646.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 650.
+(Font)              No change on input line 646.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 650.
+(Font)              No change on input line 646.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 650.
+(Font)              No change on input line 646.
 
 
-Package caption Warning: \label without proper reference on input line 819.
+Package caption Warning: \label without proper reference on input line 834.
 See the caption package documentation for explanation.
 
 
 LaTeX Warning: Reference `table:simulations_from_simple' on page 20 undefined o
-n input line 655.
+n input line 651.
 
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K3_N1
@@ -1115,19 +1139,19 @@ _29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K9_N100
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_0
 7/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 682.
+(Font)              No change on input line 678.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 682.
+(Font)              No change on input line 678.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 682.
+(Font)              No change on input line 678.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 682.
+(Font)              No change on input line 678.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 11.54663pt on input line 695.
+(Font)              scaled to size 11.54663pt on input line 691.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 11.54663pt on input line 695.
+(Font)              scaled to size 11.54663pt on input line 691.
 
-Overfull \hbox (23.08678pt too wide) in paragraph at lines 696--709
+Overfull \hbox (23.08678pt too wide) in paragraph at lines 692--705
  [][][][] 
  []
 
@@ -1135,7 +1159,7 @@ Overfull \hbox (23.08678pt too wide) in paragraph at lines 696--709
 
 ] [21] [22]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 743.
+(Font)              No change on input line 739.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K3_N100.pn
 g Graphic file (type eps)
@@ -1155,13 +1179,13 @@ g Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_0
 7/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 761.
+(Font)              No change on input line 757.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 761.
+(Font)              No change on input line 757.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 761.
+(Font)              No change on input line 757.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 761.
+(Font)              No change on input line 757.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K3_N100
 .png Graphic file (type eps)
@@ -1199,23 +1223,23 @@ _29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_0
 7/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 790.
+(Font)              No change on input line 786.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 790.
+(Font)              No change on input line 786.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 790.
+(Font)              No change on input line 786.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 790.
+(Font)              No change on input line 786.
 
-Package caption Warning: \label without proper reference on input line 819.
+Package caption Warning: \label without proper reference on input line 834.
 See the caption package documentation for explanation.
 
 
 LaTeX Warning: Reference `table:simulations_from_simple' on page 23 undefined o
-n input line 796.
+n input line 792.
 
 
-Overfull \hbox (23.08678pt too wide) in paragraph at lines 804--817
+Overfull \hbox (23.08678pt too wide) in paragraph at lines 800--813
  [][][][] 
  []
 
@@ -1225,15 +1249,42 @@ Overfull \hbox (23.08678pt too wide) in paragraph at lines 804--817
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 858.
- [26
+(Font)              No change on input line 855.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png G
+raphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png G
+raphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png
+ Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 872.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 872.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 872.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 872.
+
+[26
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 863.
+(Font)              No change on input line 896.
 
 
-LaTeX Warning: Reference `fig' on page 27 undefined on input line 868.
+LaTeX Warning: Reference `fig' on page 27 undefined on input line 901.
 
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.2K5.png 
@@ -1326,16 +1377,16 @@ aphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/alpha_and_overlap_investigation_alpha3overlap0.7K5.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 928.
+(Font)              No change on input line 961.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 928.
+(Font)              No change on input line 961.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 928.
+(Font)              No change on input line 961.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 928.
+(Font)              No change on input line 961.
 
 
-LaTeX Warning: Float too large for page by 80.79788pt on input line 930.
+LaTeX Warning: Float too large for page by 80.79788pt on input line 963.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1344,23 +1395,23 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 ] [28]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 936.
+(Font)              No change on input line 969.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 950.
+(Font)              No change on input line 983.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 950.
+(Font)              No change on input line 983.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 6.73553pt on input line 950.
+(Font)              scaled to size 6.73553pt on input line 983.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 6.73553pt on input line 950.
+(Font)              scaled to size 6.73553pt on input line 983.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 4.8111pt on input line 950.
+(Font)              scaled to size 4.8111pt on input line 983.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 4.8111pt on input line 950.
+(Font)              scaled to size 4.8111pt on input line 983.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 950.
+(Font)              No change on input line 983.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 950.
+(Font)              No change on input line 983.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.2_diag_.png Graphic file (
 type eps)
@@ -1452,24 +1503,24 @@ pe eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/LikelihoodK5_alpha3_overlap0.7_diag_.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1022.
+(Font)              No change on input line 1055.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1022.
+(Font)              No change on input line 1055.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1022.
+(Font)              No change on input line 1055.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1022.
+(Font)              No change on input line 1055.
 
 
-LaTeX Warning: Float too large for page by 80.79788pt on input line 1024.
+LaTeX Warning: Float too large for page by 80.79788pt on input line 1057.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1029.
+(Font)              No change on input line 1062.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1036.
+(Font)              No change on input line 1069.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.2_diag_.png Graphi
 c file (type eps)
@@ -1561,29 +1612,29 @@ file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.7_diag_.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1111.
+(Font)              No change on input line 1144.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1111.
+(Font)              No change on input line 1144.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1111.
+(Font)              No change on input line 1144.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1111.
+(Font)              No change on input line 1144.
 
 
-LaTeX Warning: Float too large for page by 80.79788pt on input line 1113.
+LaTeX Warning: Float too large for page by 80.79788pt on input line 1146.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1218.
+(Font)              No change on input line 1251.
 [29
 
 ] [30] [31]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1220.
+(Font)              No change on input line 1253.
 
-Overfull \hbox (5.27441pt too wide) detected at line 1281
+Overfull \hbox (5.27441pt too wide) detected at line 1314
 []
  []
 
@@ -1591,7 +1642,7 @@ Overfull \hbox (5.27441pt too wide) detected at line 1281
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1315.
+(Font)              No change on input line 1348.
  [33] [34] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
@@ -1601,12 +1652,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 7925 strings out of 478716
- 281653 string characters out of 5858226
+ 7983 strings out of 478716
+ 289640 string characters out of 5858226
  426957 words of memory out of 5000000
- 25806 multiletter control sequences out of 15000+600000
+ 25851 multiletter control sequences out of 15000+600000
  489510 words of font info for 119 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
  69i,13n,76p,1355b,667s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (34 pages, 107800 bytes).
+Output written on Draft.dvi (34 pages, 108572 bytes).

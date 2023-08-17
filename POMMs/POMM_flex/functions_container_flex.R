@@ -74,7 +74,7 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncat
       # Calculate the likelihood using a truncated distribution
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
       #sigma <- (ub - lb) *overlap
-      sigma <- inverse_S(S,truncations = truncations,K = K,beta_max = beta_max)
+      sigma <- S
       P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
     }
   }
@@ -102,7 +102,7 @@ l_like_p_ij_normal_overlap <-function(K, P_matrix,S ,truncations, diag0.5 = T) {
   # Consider or exclude the main diagonal
 
   log_lik_matrix = matrix(0, K,K)
-  sigma <- inverse_S(S,truncations = truncations,K = K,beta_max = beta_max)
+  sigma <- S
   for( ii in 1:K_stop){
     for(jj in (ii+j_start):K){
       
@@ -127,7 +127,7 @@ single_p_ij_normal_overlap = function(entry_i,entry_j, K, P_matrix,S ,truncation
   
   # Consider or exclude the main diagonal
   
-  sigma <- inverse_S(S,truncations = truncations,K = K,beta_max = beta_max)
+  sigma <- S
   
   level_set = abs(entry_j -entry_i) + abs(1-j_start)
   lb <- beta_0[level_set]
@@ -351,8 +351,8 @@ S_POMM_update_fixed_P_alpha_z = function(z_current, p_current,
                                          A_current,C_current,y_ij,n_ij,labels_available,
                                          upper.tri.non.zero,K,truncations_current, alpha_current,beta_max, S_current,acc.count_S, sigma_S){
   
-  
-  S_prime <- rtruncnorm(1,a = 0.001,b = 0.9,mean = S_current,sd = sigma_S)
+
+  S_prime <- rtruncnorm(1,a = 0.0000000001,b = 0.9,mean = S_current,sd = sigma_S)
   
   
   

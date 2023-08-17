@@ -16,7 +16,7 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 
 K=5
 n_samples=1000
-S = 0.1
+S = 0.01
 beta_max = .8
 alpha=1
 diag0.5=T
@@ -34,15 +34,15 @@ for(i in 1:n_samples){
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
 # Combine the four levels into a list
 
-# ggplot(combined_data, aes(x = levels, y = values)) +
-#   geom_point() +
-#   geom_line(data = mean_values, aes(x = levels, y = values, group=1), color = "red", linewidth = 1.2) +
-#   labs(x = "Levels", y = "Values") +
-#   scale_x_discrete(labels = c("1", "2", "3", "4")) +
-#   stat_summary(fun = mean, geom = "errorbar", color = "red", width = 0.2) +
-#   stat_summary(fun = mean, geom = "point", color = "red", size = 3, shape = 18)+
-#   labs(x = "Level sets", y = "P_ij", title = paste0("Distribution of ",n_samples,' simulated P matrices with K=', K-1 , " ,alpha=",alpha,",overlap=",overlap))+
-#   theme_bw()
+ggplot(combined_data, aes(x = levels, y = values)) +
+  geom_point() +
+  geom_line(data = mean_values, aes(x = levels, y = values, group=1), color = "red", linewidth = 1.2) +
+  labs(x = "Levels", y = "Values") +
+  scale_x_discrete(labels = c("1", "2", "3", "4")) +
+  stat_summary(fun = mean, geom = "errorbar", color = "red", width = 0.2) +
+  stat_summary(fun = mean, geom = "point", color = "red", size = 3, shape = 18)+
+  labs(x = "Level sets", y = "P_ij", title = paste0("Distribution of ",n_samples,' simulated P matrices with K=', K-1 , " ,alpha=",alpha,",overlap=",overlap))+
+  theme_bw()
 
 paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',overlap,'K',K)
 
@@ -53,6 +53,7 @@ for(i in 2:length(level_list_p_container)){
   overlap_space = append(overlap_space,abs(max(level_list_p_container[[i]]) - min(level_list_p_container[[i-1]])))
 }
 mean(overlap_space)/(beta_max- 0.5)
+
 
 
 

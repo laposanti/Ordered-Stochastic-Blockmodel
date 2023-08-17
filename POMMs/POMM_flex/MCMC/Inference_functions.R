@@ -594,10 +594,10 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
   return(results)}
 #alpha inference and diagnosics
 alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in){
-  alpha_all_chain <- abind::abind(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
+  alpha_all_chain <- c(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
                                   test_output$chain2$est_containers$alpha[-c(1:burn_in)],
                                   test_output$chain3$est_containers$alpha[-c(1:burn_in)],
-                                  test_output$chain4$est_containers$alpha[-c(1:burn_in)], along = 3)
+                                  test_output$chain4$est_containers$alpha[-c(1:burn_in)])
   
   MCMC_samples = alpha_all_chain
   m<-mcmc(MCMC_samples)

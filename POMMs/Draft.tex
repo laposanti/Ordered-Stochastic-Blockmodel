@@ -206,17 +206,13 @@ In order to incorporate such structure within a Bayesian framework, we need to i
 Then we call $(D, \prec)$ a partially ordered set, or a \textit{poset}. 
 \end{definition}
 
-There exists a correspondence between posets and directed cyclic graphs, which is useful to elicit the dependency structure between $P$ elements.
+We see that $(P, \leq)$ satisfies the three properties of Definition \eqref{def:Poset}, and therefore, is a poset. Let us now explicit how posets can be represented using directed cyclic graphs; we will see later how this will turn out useful to elicit the dependency structure between $P$'s elements.
 
-Let $(D, F)$ be a directed acyclic graph, where $D = \{y_1, \ldots, y_n\}$, a finite set. To construct the digraph corresponding to the poset $P$, we define the edge set $F= \{(x_i, x_j) \in D \text{ s.t. } x_i \prec x_j$
-\begin{align}
-&y_i \prec y_i \text{ for } i= 1\dots n \\ 
-&y_i \prec y_j \text{ if there exists a directed path from } y_i \text{ to } y_j \in (D,F)
-\end{align}
+Let us denote with $(V, E)$ the vertex and the edge sets of be a directed acyclic graph, respectively. To find the pair $(V=P, E)$, meaning the graph corresponding to the poset $P$, we define the edge set $E$ so that every pair $\{(p_i, p_j) \in E \} \implies p_i \leq p_j$.
 
-We saw above that the correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; the correspondence described above is in a sense the minimal directed acyclic graph since it has the smallest possible directed edge set
+This correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; however, it may be of particular interest the minimal directed acyclic graph since it has the smallest possible directed edge set, which consists in $\{(p_i, p_j) \in E \} \implies p_i \leq p_j \land \{p_k : p_i\leq p_k\leq p_j \} = \emptyset \}$
 
-Now, $(P, \leq)$ is clearly a Poset since it satisfies the three properties of Definition \eqref{def:Poset}. We represent the corresponding directed acyclic graph $(P,F)$, where $F$ is the set of directed edges between vertices in Figure (\ref{fig:DAG}) by using the definition of Adjacent Lower Neighborhood that we introduced before.
+We represent the minimal directed acyclic graph $(P, E)$ corresponding to $P$ in figure (\ref{fig:DAG}) by using the definition of Adjacent Lower Neighborhood that we introduced before.
 
 
 \begin{definition}[Cone]
@@ -855,7 +851,44 @@ Simple model & 0.22 &  0 & 0.09 & 0.66&0 &0.09 & $\underset{17.60}{6481.87}$ & $
 
 
 \clearpage
+
 \section{Application to Tennis Data}
+
+
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the POMM Model}
+    \label{fig:all_images}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \clearpage

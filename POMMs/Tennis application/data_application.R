@@ -65,18 +65,26 @@ N_ij[upper.tri(N_ij)] = Y_ij[upper.tri(Y_ij)] + t(Y_ij)[upper.tri(Y_ij)]
 
 
 beta_max=.8
-K=3
+K=5
 N=95
 gamma_vec = rep(1/K,K)
 diag0.5=T
 N_iter=30000
+#-------------------------------------------------------------------------------
+#POMM 
+#------
+cores=4
+cl <- makeCluster(cores)
+registerDoParallel(cl)
 
-chains_POMM <- list()
-for(i in 1:4){
-  
-  #------
-  #POMM 
-  #------
+chains_POMM <- foreach(iterazione = 1:4) %dopar% { 
+  library(foreach)
+  library(doParallel)
+  library(tidyverse)
+  library(EnvStats)
+  library(truncnorm)
+  library(dplyr)
+
   seed=123
   alpha0=runif(1,0.1,3)
   trunc=improper_prior5(K,beta_max,alpha = alpha0)
@@ -91,18 +99,30 @@ for(i in 1:4){
                             estimation_control = estimation_control,N = N,
                             N_iter = N_iter,targ_rate = .22,
                             hyper_params =hyper_params ,seed = seed)
-  chains_POMM[[paste0("chain",i)]]= TEST
+ TEST
 }
-
+stopCluster()
+names(chains_POMM) <- c('chain1','chain2','chain3','chain4')
+setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
 filename <- paste0('Tennis_application_Est_model_POMM_',"_N", N,"_K", K, "_seed", seed,".RDS")
 saveRDS(chains_POMM, file = filename) #saving results
 
-#------
+#-------------------------------------------------------------------------------
 #Simple 
 #------
 
-chains_Simple <- list()
-for(i in 1:4){
+cores=4
+cl <- makeCluster(cores)
+registerDoParallel(cl)
+
+
+chains_Simple <- foreach(iterazione = 1:4) %dopar% { 
+  library(foreach)
+  library(doParallel)
+  library(tidyverse)
+  library(EnvStats)
+  library(truncnorm)
+  library(dplyr)
   seed=123
   P0_Simple= matrix(.5,K,K)
   P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
@@ -116,10 +136,11 @@ for(i in 1:4){
                               init = init_Simple,estimation_control = estimation_control_Simple,
                              N = N,N_iter = N_iter,
                               targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
-  chains_Simple[[paste0("chain",i)]]= TEST
+  TEST
 }
 
-
+stopCluster()
+names(chains_Simple) <- c('chain1','chain2','chain3','chain4')
 setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
 filename_simple <- paste0('Tennis_application_Est_model_Simple_',"_N", N,"_K", K, "_seed", seed,".RDS")
 saveRDS(chains_Simple, file = filename_simple) #saving results
