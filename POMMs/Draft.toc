@@ -29,10 +29,10 @@
 \contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{29}{}%
 \contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{29}{}%
 \contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{29}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{29}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{32}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{32}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{32}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{33}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{30}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{33}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{33}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{33}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{34}{}%

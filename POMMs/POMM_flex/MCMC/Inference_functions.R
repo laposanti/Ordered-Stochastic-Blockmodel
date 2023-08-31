@@ -23,7 +23,38 @@ plot_P = function(p_container, p_true, burnin,K){
 
 
 
-permute_array <- function(array_samples, perm_matrix) {
+z_permute<-function (z_container, permutations,K) {
+  
+  m <- dim(permutations)[1]
+  K <- dim(permutations)[2]
+  J <- nrow(z_container)
+  
+  t_z<- t(z_container)
+  
+  z_array<- array(0,dim=c(m,K,J))  
+  for(iter in 1:m){
+    z_array[iter,,]<- t(vec2mat(t_z[iter,]))
+  }
+  
+  
+  mcmc.permuted <- z_array
+  for (iter in 1:m) {
+    for (j in 1:J) {
+      mcmc.permuted[iter, , j] <- z_array[iter, permutations[iter, 
+      ], j]
+    }
+  }
+  
+  output<- matrix(0,J,m)
+  for(iter in 1:m){
+    for(j in 1:J){
+      output[j,iter]<- which(mcmc.permuted[iter,,j]>0)
+    }
+  }
+  return(output)
+}
+permute_array <-function(array_samples, perm_matrix) {
+  
   N_iter <- dim(array_samples)[3]  # Number of iterations
   K <- dim(array_samples)[1]       # Dimension of the array (K by K)
   
@@ -35,6 +66,33 @@ permute_array <- function(array_samples, perm_matrix) {
   }
   
   return(permuted_array)
+}
+uncertainty_labels<- function(z_container,K)
+{
+  N <- nrow(z_container)
+  m <- ncol(z_container)
+  label_proportions <- matrix(0, N, K)
+  colnames(label_proportions)<-1:K
+  # Calculate label proportions with zero counts
+  for (i in 1:N) {
+    label_counts <- table(z_container[i, ])
+    
+    # Fill in the label proportions matrix
+    label_proportions[i, names(label_counts)] <- round(label_counts / m,2)
+  }
+  return(label_proportions)
+}
+
+
+estimator_P <- function(P_container){
+  K<-nrow(P_container)
+  P_hat<- matrix(0,K,K )
+  for(p in 1:K){
+    for(q in 1:K){
+      P_hat[p,q]<- mean(P_container[p,q,])
+    }
+  }
+  return(P_hat)
 }
 
 calculate_misclassification_rate <- function(N_new, z_new, N, p_true, z_true, sampled_games, labels_available, P_est, z_est) {
@@ -97,10 +155,10 @@ MSE_p_matrix = function(burnin, p_container, p_true){
   }
   return(mse_table)
 }
-  
+
 
 Est_p_matrix= function(burnin, p_container, p_true){
-  K<- nrow(p_true)
+  K<- nrow(p_container[,,1])
   burned_p <- p_container[,,-c(1:burnin)]
   est_table = matrix(0,K,K)
   for(i in 1:K){
@@ -126,34 +184,41 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
   writeLines(con = filename, text = table)
 }
 
-z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N, z , burn_in ){
-  z_all_chain <- cbind(test_output$chain1$est_containers$z[,-c(1:burnin)],
-                       test_output$chain2$est_containers$z[,-c(1:burnin)],
-                       test_output$chain3$est_containers$z[,-c(1:burnin)],
-                       test_output$chain4$est_containers$z[,-c(1:burnin)]) 
+z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N, z , burn_in,label_switch ){
   
+  z_container_POMM <- assembling_chains(test_output,burn_in,'z')
   
   Y_ij<-test_output$chain1$Yij_matrix
   #extracting similarity matrix
-  similarity_matrixPOMMM = pr_cc(z_all_chain)
+  
   
   if(true_value == T){
-  #plotting it
-  plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
-  # Save the plot with the constructed file name
-  png(plot_name,width = 800, height = 800)
-  similarity_plot(Y_ij, z, z) #checking mixing
-  # Close the device to save the plot
-  dev.off()
-  
-  #plotting it
-  plot_name <- paste0("similarity_",true_model,est_model, "_K",K,"_N",N,".png")
-  # Save the plot with the constructed file name
-  png(plot_name,width = 800, height = 800)
-  similarity_plot(similarity_matrixPOMMM, z, z) #checking mixing
-  # Close the device to save the plot
-  dev.off()
+    if(label_switch==T){
+      runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
+      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR)
+    }
+    similarity_matrixPOMMM = pr_cc(z_container_POMM)
+    #plotting it
+    plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 800)
+    similarity_plot(Y_ij, z, z) #checking mixing
+    # Close the device to save the plot
+    dev.off()
+    
+    #plotting it
+    plot_name <- paste0("similarity_",true_model,est_model, "_K",K,"_N",N,".png")
+    # Save the plot with the constructed file name
+    png(plot_name,width = 800, height = 800)
+    similarity_plot(similarity_matrixPOMMM, z, z) #checking mixing
+    # Close the device to save the plot
+    dev.off()
   }else{
+    if(label_switch==F){
+      runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Yij_matrix)/colSums(Yij_matrix))
+      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
+    }
+    similarity_matrixPOMMM = pr_cc(z_container_POMM)
     #plotting it
     point_est_POMM = minVI(similarity_matrixPOMMM)$cl
     plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
@@ -177,77 +242,70 @@ z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N
 }
 
 
-z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
-  z_container_POMM <- cbind(test_output$chain1$est_containers$z[,-c(1:burnin)],
-                              test_output$chain2$est_containers$z[,-c(1:burnin)],
-                              test_output$chain3$est_containers$z[,-c(1:burnin)],
-                              test_output$chain4$est_containers$z[,-c(1:burnin)]) 
-
+z_summary_table<- function(test_output , true_value, diag0.5 , K, burn_in, label_switch = F){
+  
+  
+  z_container_POMM <- assembling_chains(test_output,burnin = burn_in,parameter = 'z')
+  
   #Data used to generate the data -----
   if(true_value==T){
-  # Create a data frame to store the results
-  results <- data.frame(
-    MAP_vi_dist = 0,
-    MINVI_vi_dist = 0,
-    WAIC_est = 0,
-    WAIC_se = 0
-  )
- 
-  A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
-                       test_output$chain2$control_containers$A[-c(1:burnin)],
-                       test_output$chain3$control_containers$A[-c(1:burnin)],
-                       test_output$chain4$control_containers$A[-c(1:burnin)]) 
-  z_truePOMM <- z #true underlying value
-
- 
-  similarity_matrixPOMMM<- pr_cc(z_container_POMM)
-  #point est 1
-  point_est_POMM = minVI(similarity_matrixPOMMM)$cl
-  #point est 2
-  z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
-  
-
-  results$MAP_vi_dist <- vi.dist(z_MAP_POMM, z_truePOMM)
-  results$MINVI_vi_dist<- vi.dist(point_est_POMM, z_truePOMM)
-  
-  
-  #computing WAIC
-  Yij_matrix<- uploded_results$chain1$Yij_matrix
-  Nij_matrix<- uploded_results$chain1$Nij_matrix
-  Pcontainer<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
-                                          test_output$chain2$est_containers$P[,,-c(1:burnin)],
-                                          test_output$chain3$est_containers$P[,,-c(1:burnin)],
-                                          test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
-  
-  
-  WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = Pcontainer,y_ij_matrix = Yij_matrix )
-  results$WAIC_est <- WAIC$estimates[3,1]
-  results$WAIC_se <- WAIC$estimates[3,2]
-  # #computing MISCLASS
-  # N_new = 60
-  # z_new_init = sample(x=c(1:K),size = N_new,replace = T)
-  # sampled_games <- 40
-  # 
-  #-------we need the point estimates for p---
-  #pomm
-  # runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
-  # # apply the permutations returned by typing:
-  # perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
-  # #obtaining the point estimate
-  # p_est_POMM<- Est_p_matrix(10000,p_container = perm.POMM,p_true = obj_POMM$p_true)
-  # 
-  #------ here is the misclass
-  #new games
-  # misss<- calculate_misclassification_rate(N_new = N_new,z_new = z_new_init,N = nrow(obj_POMM$Nij_matrix),
-  #                                          p_true =obj_POMM$p_true,z_true =  obj_POMM$z_true,sampled_games = sampled_games,
-  #                                          labels_available = c(1:K),P_est =p_est_POMM ,z_est = z_MAP_POMM)
-  # 
-  # 
-  # print(paste0("MISCLASSERROR = ",misss))
-  # results$MISCLASSERROR<- misss
-  
-
+    
+    if(label_switch==T){
+      runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
+      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR)
+    }
+    Yij_matrix<- test_output$chain1$Yij_matrix
+    Nij_matrix<- test_output$chain1$Nij_matrix
+    
+    
+    
+    
+    # Create a data frame to store the results
+    results <- data.frame(
+      MAP_vi_dist = 0,
+      MINVI_vi_dist = 0,
+      WAIC_est = 0,
+      WAIC_se = 0
+    )
+    
+    A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
+                              test_output$chain2$control_containers$A[-c(1:burnin)],
+                              test_output$chain3$control_containers$A[-c(1:burnin)],
+                              test_output$chain4$control_containers$A[-c(1:burnin)]) 
+    z_truePOMM <- test_output$chain1$ground_truth$z #true underlying value
+    
+    
+    similarity_matrixPOMMM<- pr_cc(z_container_POMM)
+    #point est 1
+    point_est_POMM = minVI(similarity_matrixPOMMM)$cl
+    #point est 2
+    z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
+    
+    
+    results$MAP_vi_dist <- vi.dist(z_MAP_POMM, z_truePOMM)
+    results$MINVI_vi_dist<- vi.dist(point_est_POMM, z_truePOMM)
+    
+    
+    #computing WAIC
+    
+    Pcontainer<- assembling_chains(test_output,burnin = burn_in,parameter = 'P')
+    if(label_switch==T){
+      Pcontainer<- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$ECR)
+    }
+    WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,z_container = z_container_POMM,N_iter = ncol(z_container_POMM),p_container = Pcontainer,y_ij_matrix = Yij_matrix )
+    results$WAIC_est <- WAIC$estimates[3,1]
+    results$WAIC_se <- WAIC$estimates[3,2]
+    
+    
+    
   }else{
+    Yij_matrix<- test_output$chain1$Yij_matrix
+    Nij_matrix<- test_output$chain1$Nij_matrix
+    # apply the permutations returned by typing:
+    if(label_switch == T){
+      runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Yij_matrix)/colSums(Yij_matrix))
+      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
+    }
     results <- data.frame(
       WAIC_est = 0,
       WAIC_se = 0
@@ -260,20 +318,20 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
     
     
     A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
-                         test_output$chain2$control_containers$A[-c(1:burnin)],
-                         test_output$chain3$control_containers$A[-c(1:burnin)],
-                         test_output$chain4$control_containers$A[-c(1:burnin)]) 
-
+                              test_output$chain2$control_containers$A[-c(1:burnin)],
+                              test_output$chain3$control_containers$A[-c(1:burnin)],
+                              test_output$chain4$control_containers$A[-c(1:burnin)]) 
+    
     z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
     
     #computing WAIC
-    Yij_matrix<- uploded_results$chain1$Yij_matrix
-    Nij_matrix<- uploded_results$chain1$Nij_matrix
-    Pcontainer<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
-                              test_output$chain2$est_containers$P[,,-c(1:burnin)],
-                              test_output$chain3$est_containers$P[,,-c(1:burnin)],
-                              test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
+    Yij_matrix<- test_output$chain1$Yij_matrix
+    Nij_matrix<- test_output$chain1$Nij_matrix
     
+    Pcontainer<- assembling_chains(test_output,burnin = burn_in,parameter = 'P')
+    if(label_switch==T){
+      Pcontainer<- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$`DATA-BASED`)
+    }    
     
     #computing WAIC
     WAIC<- calculate_waic_matrix(n_ij_matrix = Nij_matrix,
@@ -283,31 +341,7 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, z , burn_in ){
     
     results$WAIC_est <- WAIC$estimates[3,1]
     results$WAIC_se <- WAIC$estimates[3,2]
-    # #computing MISCLASS
-    # N_new = 60
-    # z_new_init = sample(x=c(1:K),size = N_new,replace = T)
-    # sampled_games <- 40
-    # 
-    #-------we need the point estimates for p---
-    #pomm
-    # runPOMM<- label.switching(method = 'ECR' ,zpivot = obj_POMM$z_true,z = t(obj_POMM$z_container), K = K)
-    # # apply the permutations returned by typing:
-    # perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
-    # #obtaining the point estimate
-    # p_est_POMM<- Est_p_matrix(10000,p_container = perm.POMM,p_true = obj_POMM$p_true)
-    # 
-    #------ here is the misclass
-    #new games
-    # misss<- calculate_misclassification_rate(N_new = N_new,z_new = z_new_init,N = nrow(obj_POMM$Nij_matrix),
-    #                                          p_true =obj_POMM$p_true,z_true =  obj_POMM$z_true,sampled_games = sampled_games,
-    #                                          labels_available = c(1:K),P_est =p_est_POMM ,z_est = z_MAP_POMM)
-    # 
-    # 
-    # print(paste0("MISCLASSERROR = ",misss))
-    # results$MISCLASSERROR<- misss
     
-    
-
   }
   return(list(table=results, memb = point_est_POMM))
 }
@@ -319,7 +353,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
   test2<-chains$chain2
   test3<-chains$chain3
   test4<-chains$chain4
-
+  
   if(true_value == F){
     
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0)
@@ -385,48 +419,69 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
 ###
 
 
-P_summary_table<- function(test_output, true_value, diag0.5,P,K, burn_in){
+P_summary_table <- function(test_output, true_value, diag0.5, P, K, burn_in, label_switch) {
   
-  P_all_chain<- abind::abind(test_output$chain1$est_containers$P[,,-c(1:burnin)],
-                  test_output$chain2$est_containers$P[,,-c(1:burnin)],
-                  test_output$chain3$est_containers$P[,,-c(1:burnin)],
-                  test_output$chain4$est_containers$P[,,-c(1:burnin)], along = 3)
+  Yij_matrix <- test_output$chain1$Yij_matrix
   
-  MCMC_samples = P_all_chain
-  j_start = ifelse(diag0.5, yes = 1, no = 0)
-  K_stop = ifelse(diag0.5, yes = K-1, no = K)
+  j_start <- ifelse(diag0.5, yes = 1, no = 0)
+  K_stop <- ifelse(diag0.5, yes = K - 1, no = K)
   
-  entries_df <- data.frame(entry_i = 0 ,entry_j =0 )
-  for( ii in 1:K_stop){
-    for(jj in (ii+j_start):K){
-      entries_df <- rbind(entries_df, data.frame(entry_i= ii, entry_j = jj))
+  entries_df <- data.frame(entry_i = 0, entry_j = 0)
+  for (ii in 1:K_stop) {
+    for (jj in (ii + j_start):K) {
+      entries_df <- rbind(entries_df, data.frame(entry_i = ii, entry_j = jj))
     }
   }
-  entries_df=entries_df[-1,]   
+  entries_df <- entries_df[-1,]
   
-  if(true_value == F){
-    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),credible_interval_05 =rep(0,nrow(entries_df)),
-                                           credible_interval_95 =rep(0,nrow(entries_df))))
-    for(i in 1:nrow(results)){
-      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
+  if (true_value == FALSE) {
+    
+    Pcontainer <- assembling_chains(test_output, burnin = burn_in, parameter = 'P')
+    if (label_switch == TRUE) {
+      z_container_POMM <- assembling_chains(test_output, burnin = burn_in, parameter = 'z')
+      runPOMM <- label.switching(method = 'DATA-BASED', z = t(z_container_POMM), K = K, data = rowSums(Yij_matrix) / colSums(Yij_matrix))
+      Pcontainer <- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$`DATA-BASED`)
+    }
+    
+    results <- cbind(entries_df, data.frame(mean_est = rep(0, nrow(entries_df)),
+                                            credible_interval_05 = rep(0, nrow(entries_df)),
+                                            credible_interval_95 = rep(0, nrow(entries_df))))
+    for (i in 1:nrow(results)) {
+      m <- mcmc(Pcontainer[results$entry_i[i], results$entry_j[i], ])
       results$mean_est[i] <- mean(m)
-      HPD <- round(cbind(coda::HPDinterval(m)),2)
-      results$credible_interval_95[i]<- HPD[2]
-      results$credible_interval_05[i]<- HPD[1]
+      HPD <- round(cbind(coda::HPDinterval(m)), 2)
+      results$credible_interval_95[i] <- HPD[2]
+      results$credible_interval_05[i] <- HPD[1]
     }
-  }else if(true_value == T){
-    results = cbind(entries_df, data.frame(mean_est = rep(0,nrow(entries_df)),credible_interval_05=rep(0,nrow(entries_df)),
-                                           credible_interval_95 =rep(0,nrow(entries_df)), true_value =rep(0,nrow(entries_df))))
-    for(i in 1:nrow(results)){
-      m<-mcmc(MCMC_samples[results$entry_i[i],results$entry_j[i],])
-      results$mean_est[i] <- round(mean(m),4)
-      HPD <- round(cbind(coda::HPDinterval(m)),4)
-      results$credible_interval_95[i]<- HPD[2]
-      results$credible_interval_05[i]<- HPD[1]
-      results$true_value[i]<- round(P[results$entry_i[i],results$entry_j[i]],4)
+    P_hat <- estimator_P(P_container = Pcontainer)
+  } else if (true_value == TRUE) {
+    z_true <- test_output$chain1$ground_truth$z
+    
+    Pcontainer <- assembling_chains(test_output, burnin = burn_in, parameter = 'P')
+    
+    if (label_switch == TRUE) {
+      z_container_POMM <- assembling_chains(test_output, burnin = burn_in, parameter = 'z')
+      runPOMM <- label.switching(method = 'ECR', z = t(z_container_POMM), K = K, zpivot = z_true)
+      Pcontainer <- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$ECR)
     }
+    results <- cbind(entries_df, data.frame(mean_est = rep(0, nrow(entries_df)),
+                                            credible_interval_05 = rep(0, nrow(entries_df)),
+                                            credible_interval_95 = rep(0, nrow(entries_df)),
+                                            true_value = rep(0, nrow(entries_df))))
+    for (i in 1:nrow(results)) {
+      m <- mcmc(Pcontainer[results$entry_i[i], results$entry_j[i], ])
+      results$mean_est[i] <- round(mean(m), 4)
+      HPD <- round(cbind(coda::HPDinterval(m)), 4)
+      results$credible_interval_95[i] <- HPD[2]
+      results$credible_interval_05[i] <- HPD[1]
+      results$true_value[i] <- round(P[results$entry_i[i], results$entry_j[i]], 4)
+    }
+    P_hat <- estimator_P(P_container = Pcontainer)
   }
-  return(results)}
+  
+  return(list(table = results, P_hat = P_hat))
+}
+
 
 
 #Diagnostics for P#
@@ -510,12 +565,12 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter){
 
 #S inference and diagnostics
 S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
-  test_output=uploded_results
+  
   MCMC_samples<- c(test_output$chain1$est_containers$S[-c(1:burn_in)],
-                             test_output$chain2$est_containers$S[-c(1:burn_in)],
-                             test_output$chain3$est_containers$S[-c(1:burn_in)],
-                             test_output$chain4$est_containers$S[-c(1:burn_in)])
-
+                   test_output$chain2$est_containers$S[-c(1:burn_in)],
+                   test_output$chain3$est_containers$S[-c(1:burn_in)],
+                   test_output$chain4$est_containers$S[-c(1:burn_in)])
+  
   m<-mcmc(MCMC_samples)
   if(true_value == F){
     results = data.frame(mean_est = 0, credible_interval_95 =0)
@@ -525,7 +580,7 @@ S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
     results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
   }else if(true_value == T){
     results = data.frame(mean_est = 0, credible_interval_95 =0, true_value =0)
-   
+    
     results$mean_est<- round(mean(m),4)
     HPD <- round(cbind(coda::HPDinterval(m)),4)
     results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
@@ -552,7 +607,7 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
   if(true_value == F){
     results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0)
     
-
+    
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
     #Gelman Rubin
@@ -574,7 +629,7 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
                          MAE = 0)
     
     
-
+    
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
     #Gelman Rubin
@@ -595,9 +650,9 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
 #alpha inference and diagnosics
 alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in){
   alpha_all_chain <- c(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
-                                  test_output$chain2$est_containers$alpha[-c(1:burn_in)],
-                                  test_output$chain3$est_containers$alpha[-c(1:burn_in)],
-                                  test_output$chain4$est_containers$alpha[-c(1:burn_in)])
+                       test_output$chain2$est_containers$alpha[-c(1:burn_in)],
+                       test_output$chain3$est_containers$alpha[-c(1:burn_in)],
+                       test_output$chain4$est_containers$alpha[-c(1:burn_in)])
   
   MCMC_samples = alpha_all_chain
   m<-mcmc(MCMC_samples)
@@ -631,7 +686,7 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_
   if(true_value == F){
     results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0)
     
-
+    
     #ESS
     results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
     #Gelman Rubin
@@ -671,5 +726,25 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_
   }
   return(results)}
 
-
+assembling_chains <- function(chains, burnin, parameter){
+  test1<-chains[[1]]
+  test2<-chains[[2]]
+  test3<-chains[[3]]
+  test4<-chains[[4]]
+  if(parameter == 'S'){
+    assembled<- c(test1$est_containers$S[-c(1:burnin)],test2$est_containers$S[-c(1:burnin)],test3$est_containers$S[-c(1:burnin)],test4$est_containers$S[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'alpha'){
+    assembled<- c(test1$est_containers$alpha[-c(1:burnin)],test2$est_containers$alpha[-c(1:burnin)],test3$est_containers$alpha[-c(1:burnin)],test4$est_containers$alpha[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'P'){
+    assembled<- abind::abind(test1$est_containers$P[,,-c(1:burnin)],test2$est_containers$P[,,-c(1:burnin)],test3$est_containers$P[,,-c(1:burnin)],test4$est_containers$P[,,-c(1:burnin)],along = 3)
+    return(assembled)
+  }else if(parameter == 'z'){
+    assembled<- cbind(test1$est_containers$z[,-c(1:burnin)],test2$est_containers$z[,-c(1:burnin)],test3$est_containers$z[,-c(1:burnin)],test4$est_containers$z[,-c(1:burnin)])
+    return(assembled)
+  }else{
+    print('Please provide a valide name for the parameters: alpha,S,P,Z')
+  }
+}
 

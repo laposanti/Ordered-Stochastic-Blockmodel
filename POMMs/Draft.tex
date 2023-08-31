@@ -697,8 +697,8 @@ $\%$ within-95\% CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.0602&  0.0179 & 0.0170 & 100$\%$  & 100$\%$   & 100$\%$  & 0.1344 & 0.1309 & 0.0837  \\
-Simple model & 0.0601 &  0.0274 & 0.0140 & 100$\%$ &100$\%$  & 100$\%$  & 0.1344 & 0.1311 & 0.0871 \\
+POMM model  &0.0211&  0.0735 & 0.0709 & 100$\%$  & 50$\%$   & 69.4$\%$  & 0.1017 & 0.0955 & 0.1788 \\
+Simple model & 0.0036 &  0.0606 & 0.0826 & 100$\%$ &60$\%$  & 55$\%$  & 0.0108 & 0.1077 & 0.1798 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -719,8 +719,8 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.22&  0 & 0.1 & 0.66 & 0  & 0.1 & $\underset{17.60}{-6481.92}$ & $\underset{17.76}{-6573.49}$ & $\underset{17.95}{6662.23}$  \\
-Simple model & 0.22 &  0 & 0.09 & 0.66&0 &0.09 & $\underset{17.60}{6481.87}$ & $\underset{17.84}{6596.61}$ & $\underset{17.96}{6663.48}$ \\
+POMM model  &0&  0 & 0.33 & 0 & 0.4  & 0.44 & $\underset{17.01}{-6418.29}$ & $\underset{18.74}{-6196.77}$ & $\underset{18.58}{6320.08}$  \\
+Simple model & 0 &  0.5 & 0.58 & 0&0 &0.22 & $\underset{17.60}{-6506.41}$ & $\underset{18.54}{-6248.25}$ & $\underset{18.61}{-6285.03}$ \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -843,9 +843,27 @@ Simple model & 0.22 &  0 & 0.09 & 0.66&0 &0.09 & $\underset{17.60}{6481.87}$ & $
 
 \subsection{Diagnostic Checks}
 
+\subsubsection{Simple Model check}
 
-
-
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $z$ diagnostic table} \\ 
+{\small True Model Simple, $N=100$}
+} 
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{Autocorrelation lag=30} & \multicolumn{3}{c}{acceptance rate} & \multicolumn{3}{c}{
+Gelman Rubin stat}$} && \multicolumn{3}{c}{vi dist}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM model  &0&  0 & 0.33 & 0 & 0.4  & 0.44 & $\underset{17.01}{-6418.29}$ & $\underset{18.74}{-6196.77}$ & $\underset{18.58}{6320.08}$  \\
+Simple model & 0 &  0.5 & 0.58 & 0&0 &0.22 & $\underset{17.60}{-6506.41}$ & $\underset{18.54}{-6248.25}$ & $\underset{18.61}{-6285.03}$ \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
 
 
@@ -1147,6 +1165,20 @@ S = 0.7 & $0.006$ & $0.002$ & $0.005$ & $0.006$ & $0.007$ \\
 
 
 \subsubsection{Montecarlo algorithm}
+some considerations on my prior.
+
+First, it should be noted that within the same block we observe a substantial variability. We may have players that win against other players of the same cluster, against players of weaker clusters, or that simply do not win much. If we have players that substantially win against players of stronger clusters, it means that they are misclassified. So the fundamental variability driver is to be recognised in the blocks of the defeated players. Winning against Federer is not the same as winning against a newcomer. Those two victories should not be accounted in the same fashion.
+
+However, one could argue that if the block exhibits a large amount of variability, this probably means that we should split the block further in two, to possibly account for different patterns of victories.
+
+Another crucial point is data imbalance. Games are not drawn at random, which means that we will observe strongest player playing more with each other, since they are the on remaining within the tournament for longer periods, and weaker players playing less against the strong ones and more among themselves.
+
+The issue is that by assigning one cluster to a player is equivalent to equip them with a single probability to beat all the players within a given cluster.
+
+
+
+
+
 
 
 \begin{comment}
@@ -1182,6 +1214,14 @@ The final dataframe will look like as in Table (2).
 \end{table}
 
 \clearpage
+
+
+
+
+
+
+
+
 
 \section{Descriptive statistics comparing simulated vs ATP data}
 

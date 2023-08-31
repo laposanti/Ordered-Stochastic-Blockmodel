@@ -63,7 +63,7 @@ plots_dir<- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis applicati
 
 #Printing all possible results
 #1: POMM, 0:Simple
-est_model  <- 'POMM'
+est_model  <- 'Simple'
 filename <- list.files(pattern = paste0('Tennis_application_Est_model_', est_model),path = data_wd)
 print(filename)
 
@@ -91,7 +91,8 @@ for(i in 1:length(filename)){
   save_table_to_file(P_s_table, P_s_title)
   
   z_s_title <- paste0(tap,'/z_summary_table','Tennis_application_Est_model_',est_model,'_K', K,'_N', N, '.tex')
-  z_s_table<- z_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)$table
+  z_s_table_tot<- z_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)
+  z_s_table<- z_s_table_tot$table
   save_table_to_file(z_s_table, z_s_title)
   
   
@@ -119,7 +120,7 @@ for(i in 1:length(filename)){
   z_plot(test_output =uploded_results , true_model= 'Tennis_application_Est_model_', 
          est_model = est_model, true_value =F , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin )
   
-  clust_est = z_summary_table(test_output = uploded_results, true_value = F, diag0.5 = TRUE, K = K, z = z, burn_in = burnin)$memb
+  clust_est = z_s_table_tot$memb
   
   plot_name <- paste0("RankvsClust_Est_model",est_model, "_K",K,"_N",N,".png")
   # Save the plot with the constructed file name
@@ -130,11 +131,18 @@ for(i in 1:length(filename)){
     mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
     arrange()
   png(plot_name,width = 800, height = 627)
-  print(rank_vs_cluster(clust_est,est_model = est_model))
+  print(rank_vs_cluster(runPOMM$clusters,est_model = est_model))
   # Close the device to save the plot
   dev.off()
 }
 
+#fixing the label switching
+runPOMM<- label.switching(method = 'DATA-BASED',z = t(assembling_chains(uploded_results,burnin = 20000,parameter = 'z')), K = K,data = players_df$median_rank)
+
+
+
+# apply the permutations returned by typing:
+perm.POMM<- permute_array(array_samples = obj_POMM$p_container, perm_matrix = runPOMM$permutations$ECR)
 
 setwd(plots_dir)
 

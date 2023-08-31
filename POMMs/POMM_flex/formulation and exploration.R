@@ -68,7 +68,7 @@ ggplot() +
   # Set the x-axis limits
   scale_fill_manual(values=blue_purple)+
   # Set the legend title
-  labs(fill = "Levels", x = "Points", y = "Density", title = paste("Density Plot of the ", K, " Level sets [alpha=",alpha,", overlap=",overlap,", diag=",0.5,"]", sep = ""))+
+  labs(fill = "Levels", x = "Points", y = "Density", title = paste("Density Plot of the ", K, " Level sets [alpha=",alpha,", overlap=",S,", diag=",0.5,"]", sep = ""))+
   theme_bw()
 
 

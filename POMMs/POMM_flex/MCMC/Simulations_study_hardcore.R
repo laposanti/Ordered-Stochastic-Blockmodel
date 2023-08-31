@@ -127,7 +127,11 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     trunc=improper_prior5(K,beta_max,alpha = alpha0)
     S0=runif(1,0.1,.9)
     P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
-    init_POMM =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S0,P=P0_POMM)
+    z0=vector()
+    for(i in 1:N){
+      z0=append(z0, sample(1:K,1))
+    }
+    init_POMM =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
 
     estimation_control = list(z = 1,alpha=1,S=1,P=1)
     ground_truth= list(z = z_true,alpha=alpha,S=S,P=P_true)
@@ -152,7 +156,11 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     P0_Simple= matrix(.5,K,K)
     P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
     P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
-    init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
+    z0=vector()
+    for(i in 1:N){
+      z0=append(z0, sample(1:K,1))
+    }
+    init_Simple =list(z = z0,P=P0_Simple)
     
     estimation_control_Simple = list(z = 1,P=1)
     ground_truth_Simple= list(z = z_true,P=P_true)

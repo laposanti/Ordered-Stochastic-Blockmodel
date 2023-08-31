@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  16 AUG 2023 17:38
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  30 AUG 2023 15:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1627,23 +1627,23 @@ LaTeX Warning: Float too large for page by 80.79788pt on input line 1146.
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1251.
+(Font)              No change on input line 1150.
 [29
 
-] [30] [31]
+] [30] [31] [32]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1253.
+(Font)              No change on input line 1275.
 
-Overfull \hbox (5.27441pt too wide) detected at line 1314
+Overfull \hbox (5.27441pt too wide) detected at line 1336
 []
  []
 
-[32
+[33
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1348.
- [33] [34] (./Draft.aux)
+(Font)              No change on input line 1370.
+ [34] [35] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1660,4 +1660,4 @@ Here is how much of TeX's memory you used:
  1090 hyphenation exceptions out of 8191
  69i,13n,76p,1355b,667s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (34 pages, 108572 bytes).
+Output written on Draft.dvi (35 pages, 110396 bytes).
