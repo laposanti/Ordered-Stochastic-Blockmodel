@@ -20,19 +20,20 @@
 \contentsline {subsubsection}{\tocsubsubsection {}{5.0.2}{Adaptive Algorithm for $\theta = { z }$}}{18}{}%
 \contentsline {section}{\tocsection {}{6}{Point Estimate, Model Selection, and inference}}{19}{}%
 \contentsline {section}{\tocsection {}{7}{Simulation Study from the Simple Model N=100}}{20}{}%
-\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{23}{}%
-\contentsline {subsection}{\tocsubsection {}{8.1}{Diagnostic Checks}}{25}{}%
-\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{26}{}%
-\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{27}{}%
-\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{29}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{29}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{29}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{29}{}%
-\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{29}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{30}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{33}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{34}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{7.0.1}{Simple Model check}}{23}{}%
+\contentsline {section}{\tocsection {}{8}{Simulation Study from the POMM Model N=100}}{24}{}%
+\contentsline {subsection}{\tocsubsection {}{8.1}{POMM model check}}{24}{}%
+\contentsline {section}{\tocsection {}{9}{Application to Tennis Data}}{27}{}%
+\contentsline {section}{\tocsection {}{10}{Appendix I: Investigating Empirically the prior behaviour}}{28}{}%
+\contentsline {section}{\tocsection {}{11}{Appendix II: Empirical Assessment of the inference problem}}{30}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{Focus on $\alpha $}}{30}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Updating $\alpha $ algorithm}}{30}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.1.2}{Montecarlo algorithm}}{30}{}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Focus on $S$}}{30}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{31}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{34}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{35}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{35}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{35}{}%

@@ -1,0 +1,14 @@
+\begin{longtable}{rrr}
+\caption*{
+{\large Pestmatrix} \\ 
+{\small True\_ModelPOMMEst\_model\_POMM3100}
+} \\ 
+\toprule
+X1 & X2 & X3 \\ 
+\midrule
+0.5000000 & 0.6040342 & 0.7582449 \\ 
+0.3959658 & 0.5000000 & 0.6237576 \\ 
+0.2417551 & 0.3762424 & 0.5000000 \\ 
+\bottomrule
+\end{longtable}
+

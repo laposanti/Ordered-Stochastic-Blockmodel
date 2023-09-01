@@ -171,6 +171,9 @@ Est_p_matrix= function(burnin, p_container, p_true){
 
 
 save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NULL) {
+  table_code = data.frame(table_code) 
+  if(all(is.numeric(table_code)) != F){
+    table_code %>% select(where(is.numeric)) %>% round(digits = 3)}
   # Create a gt table
   table <- table_code %>%
     gt() %>%
@@ -356,7 +359,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
   
   if(true_value == F){
     
-    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0)
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0,Gelman_rubin=0)
     
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
@@ -382,7 +385,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   }else if(true_value == T){
     
-    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, MAP=0)
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, Gelman_rubin=0,MAP=0)
     
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
@@ -511,8 +514,8 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter){
   if(true_value == F){
     results = cbind(entries_df, data.frame(ESS = rep(0,nrow(entries_df)),
                                            LAG_30=rep(0,nrow(entries_df)),
-                                           Gelman_rubin=rep(0,nrow(entries_df)),
-                                           acceptance_rate=rep(0,nrow(entries_df))))
+                                           acceptance_rate=rep(0,nrow(entries_df)),
+                                           Gelman_rubin=rep(0,nrow(entries_df))))
     for(i in 1:nrow(results)){
       
       mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$P[results$entry_i[i],results$entry_j[i],-c(1:burn_in)]),
@@ -536,8 +539,8 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter){
   }else if(true_value == T){
     results = cbind(entries_df, data.frame(ESS = rep(0,nrow(entries_df)),
                                            LAG_30=rep(0,nrow(entries_df)),
-                                           Gelman_rubin=rep(0,nrow(entries_df)),
                                            acceptance_rate=rep(0,nrow(entries_df)),
+                                           Gelman_rubin=rep(0,nrow(entries_df)),
                                            MAE = rep(0,nrow(entries_df))))
     for(i in 1:nrow(results)){
       
@@ -605,7 +608,7 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
                                         mcmc(test4$est_containers$S[-c(1:burn_in)])))
   
   if(true_value == F){
-    results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0)
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0,Gelman_rubin=0)
     
     
     #ESS
@@ -624,8 +627,8 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
   }else if(true_value == T){
     results = data.frame(ESS = 0,
                          LAG_30=0,
-                         Gelman_rubin=0,
                          acceptance_rate=0,
+                         Gelman_rubin=0,
                          MAE = 0)
     
     
@@ -684,7 +687,7 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_
                                         mcmc(test4$est_containers$alpha[-c(1:burn_in)])))
   
   if(true_value == F){
-    results = data.frame(ESS = 0, LAG_30=0, Gelman_rubin=0, acceptance_rate=0)
+    results = data.frame(ESS = 0, LAG_30=0,acceptance_rate=0, Gelman_rubin=0 )
     
     
     #ESS
@@ -703,8 +706,8 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_
   }else if(true_value == T){
     results = data.frame(ESS = 0,
                          LAG_30=0,
-                         Gelman_rubin=0,
                          acceptance_rate=0,
+                         Gelman_rubin=0,
                          MAE = 0)
     
     

@@ -1,0 +1,11 @@
+\begin{longtable}{rrrlllrrr}
+\caption*{
+{\large Ssummarytable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 \\ 
+\midrule
+0.0178 & 0.312 & 0.0221 & [0.0039,0.0425] & [0.0015,0.8294] & [0.001,0.0608] & 0.01 & 0.01 & 0.01 \\ 
+\bottomrule
+\end{longtable}
+

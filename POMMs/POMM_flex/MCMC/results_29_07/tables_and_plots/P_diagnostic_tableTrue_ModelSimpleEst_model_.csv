@@ -1,0 +1,12 @@
+\begin{longtable}{rrrrrrrrrrrr}
+\caption*{
+{\large Pdiagnosticstable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 & X10 & X11 & X12 \\ 
+\midrule
+1710.000 & 1413.3 & 1301.361 & 0.051 & 0.066 & 0.098 & 16.102 & 7.279 & 8.221 & 30.369 & 34.390 & 31.683 \\ 
+2100.333 & 1767.7 & 1272.139 & 0.000 & NaN & 0.085 & 1.000 & 9.820 & 8.311 & 29.976 & 33.719 & 31.363 \\ 
+\bottomrule
+\end{longtable}
+

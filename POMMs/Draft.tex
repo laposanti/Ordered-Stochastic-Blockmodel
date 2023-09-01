@@ -727,13 +727,99 @@ Simple model & 0 &  0.5 & 0.58 & 0&0 &0.22 & $\underset{17.60}{-6506.41}$ & $\un
 \end{table}
 
 
-
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM hyperparameters summary table} \\ 
+{\small True Model Simple, $N=100$}
+} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
+$\hat{\theta}$} & \multicolumn{3}{c}{
+95$\%$ CI interval} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+S  &0.21 & 0.25 & 0.31 & $[0.01	0.79]$ & $[0.04	0.78]$ & $[0.09	0.81]$   \\
+$\alpha$ & 0.58 & 0.41 & 0.38 & $[0.30,0.90]$ & $[0.11,	0.79]$ & $[0.10,	0.80]$  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
 \clearpage
 
 
 
 
+\subsubsection{Simple Model check}
+
+
+
+
+\begin{table}[h]
+\centering
+\caption*{
+{\large $z$ diagnostic table} \\ 
+{\small True Model Simple, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &232 & 126 & 924 & 0.015 & 0.015 & 0.203 & 0.0066 & 0.0083 & 1.1610 & 319.891 & 92.569 & 50.053 \\
+Simple &0 & 85 & 26 & -0.012 & 0.004 & 0.040 & 0.0058 & 0.0092 & 0.0104 & 1.001 & 163.099 & 17.726 \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption*{
+{\large $P$ diagnostic table} \\ 
+{\small True Model Simple, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &1710 & 1413 & 1301 & 0.0513 & 0.0657 & 0.0976 & 16.1023 & 7.2795 & 8.221472 & 30.36944 & 34.39008 & 31.68347 \\
+Simple &2100 & 1767 & 1272 & -0.0003& NaN & 0.0853 & 1.0003 & 9.8198 & 8.3113 & 29.97556 & 33.7189 & 31.3630\\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+\begin{table}[h]
+\centering
+\caption*{
+{\large POMM hyperparameters diagnostic table} \\ 
+{\small True Model Simple, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+$S$ &716 & 771 & 0 & 0.511 & 0.343 & 0 & 1.698 & 1.446 & 0 & 32.50417 & 32.0075  \\
+$\alpha$ &13 & 13 & 13 & 0.93 & 0.93 & 0.93 & 1.584 & 1.584 & 1.584 & 24.91917 & 24.91917 & 24.91917 \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\clearpage
 
 
 \section{Simulation Study from the POMM Model N=100}
@@ -805,8 +891,8 @@ $\%$ within-95\%-CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.0602&  0.0179 & 0.0170 & 100$\%$  & 100$\%$   & 100$\%$  & 0.1344 & 0.1309 & 0.0837  \\
-Simple model & 0.0601 &  0.0274 & 0.0140 & 100$\%$ &100$\%$  & 100$\%$  & 0.1344 & 0.1311 & 0.0871 \\
+POMM model  &0.003 & 0.041 & 0.010 & 100$\%$ & 100$\%$ & 94.4$\%$ & 0.010 & 0.179 & 0.066  \\
+Simple model & 0.060 &  0.027 & 0.014 & 100$\%$ &100$\%$  & 100$\%$  & 0.134 & 0.13 & 0.087 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -827,43 +913,102 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.22&  0 & 0.1 & 0.66 & 0  & 0.1 & $\underset{17.60}{-6481.92}$ & $\underset{17.76}{-6573.49}$ & $\underset{17.95}{6662.23}$  \\
-Simple model & 0.22 &  0 & 0.09 & 0.66&0 &0.09 & $\underset{17.60}{6481.87}$ & $\underset{17.84}{6596.61}$ & $\underset{17.96}{6663.48}$ \\
+POMM model  &0 & 0 & 0 & 0 & 0.0 & 0.38 & $\underset{17.83}{-6553.31}$ & $\underset{17.68}{-6551.36}$ & $\underset{17.78}{6652.43}$  \\
+Simple model & 0 & 0 & 0 & 0 & 0.4 & 0.0  & $\underset{17.60}{-6415.70}$ & $\underset{17.84}{-6536.58}$ & $\underset{17.96}{6667.41}$ \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
 \end{table}
 
 
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM Hyperparameters summary table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+$\hat{\theta}$} & \multicolumn{3}{c}{
+95$\%$ CI interval} & \multicolumn{3}{c}{True value} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+S  &0.0178 & 0.312 & 0.0221 & [0.0039,	0.0425] & [0.0015,	0.8294] & [0.001,	0.0608] & 0.01 & 0.01 & 0.01   \\
+$\alpha$ & 0.4214 & 0.5345 & 0.4833 & [0.23,	0.58] & [0.21,	0.89] & [0.43,	0.56] & 0.5 & 0.5 & 0.5 \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
 
-\clearpage
+\subsection{POMM model check}
 
 
-
-\subsection{Diagnostic Checks}
-
-\subsubsection{Simple Model check}
 
 \begin{table}[htbp]
 \centering
 \caption*{
 {\large $z$ diagnostic table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model POMM, $N=100$}
 } 
-\begin{tabular}{cccccccccc}
+\begin{tabular}{ccccccccccccc}
 \toprule
-\multirow{2}{*}{Method} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{Autocorrelation lag=30} & \multicolumn{3}{c}{acceptance rate} & \multicolumn{3}{c}{
-Gelman Rubin stat}$} && \multicolumn{3}{c}{vi dist}  \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
-& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0&  0 & 0.33 & 0 & 0.4  & 0.44 & $\underset{17.01}{-6418.29}$ & $\underset{18.74}{-6196.77}$ & $\underset{18.58}{6320.08}$  \\
-Simple model & 0 &  0.5 & 0.58 & 0&0 &0.22 & $\underset{17.60}{-6506.41}$ & $\underset{18.54}{-6248.25}$ & $\underset{18.61}{-6285.03}$ \\
+POMM &0 & 32 & 336 & 0.001 & 0.081 & 0.473 & 0.008 & 0.009 & 7.280 & 1.000 & 101.742 & 7.268   \\
+Simple &0 & 122 & 670 & 0.109 & 0.030 & 0.007 & 0.005  & 0.008 & 0.079 & 470.471 & 90.074 & 1.969 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
 \end{table}
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $P$ diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &1948 & 1489.3 & 1015.778 & 0.006& 0.0256 & 0.076 & 29.253 & 32.468 & 33.203& 1.001 & 20.680 & 3.885   \\
+Simple &1807 & 1362.3 & 1439.056 & 0.072& 0.0552 & 0.0105&24.939 & 33.82367 & 32.44970& 54.698 & 11.999 & 2.296  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM hyperparameters diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+$S$ &319 & 1219 & 0 & 0.188 & 0.214 & 0 & 20.99667 & 27.7225 & 0 & 1.035 & 1.918 & 0 \\
+$\alpha$ &40 & 126 & 187 & 0.79 & 0.756 & 0.393 & 23.57667 & 22.45417 & 15.74333 & 1.108 & 1.238 & 1.884   \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
 
 
 

@@ -1,0 +1,14 @@
+\begin{longtable}{rrr}
+\caption*{
+{\large Pestmatrix} \\ 
+{\small True\_ModelSimpleEst\_model\_Simple3100}
+} \\ 
+\toprule
+X1 & X2 & X3 \\ 
+\midrule
+0.50 & 0.590 & 0.740 \\ 
+0.41 & 0.500 & 0.626 \\ 
+0.26 & 0.374 & 0.500 \\ 
+\bottomrule
+\end{longtable}
+

@@ -1,0 +1,11 @@
+\begin{longtable}{rrrrrrrrrrrrrrr}
+\caption*{
+{\large Sdiagnosticstable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 & X10 & X11 & X12 & X13 & X14 & X15 \\ 
+\midrule
+716 & 771 & 0 & 0.511 & 0.343 & 0 & 32.504 & 32.008 & 0 & 1.698 & 1.446 & 0 & 0 & 0 & 0 \\ 
+\bottomrule
+\end{longtable}
+
