@@ -62,475 +62,220 @@ We showcase the versatility of the BCOR model through experiments on real-world 
 By integrating block clustering and order-based ranking, the BCOR model offers decision-makers a comprehensive tool to navigate complex decision landscapes
 
 
+\section{Connection with Image Recognition}
 
+By drawing inspiration from the literature in Image Recognition, in particular an article of Noel Cressie and Jennifer Davidson, we represent our matrix $P$ as if it was an image, its probabilities as if they were pixels of different intensities, and its entries' indices as if they were pixels' locations. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\newpage
-
-
-
-\section{The Simple Model}
-
-The following Bayesian model is used to describe and analyze pairwise data, with the specific aim to identify clusters of points with similar connectivity patterns. Consider a scenario where entities engage in pairwise comparisons, and the outcomes are asymmetric – meaning that the probability of entity i winning over entity j is not necessarily the same as the probability of j winning over i. 
-
-
-The model uses a Poisson distribution to model the number of blocks, a Dirichlet-multinomial distribution to model the distribution of nodes' assignment across blocks, and a binomial distribution to model the distribution of edges within blocks. Additionally, the model includes a POMM process to model the probability of edge formation between nodes within blocks.
-
-The goal of the model is to estimate the number of blocks, the distribution of nodes across blocks, and the probability of edge formation between nodes within blocks, given observed network data. The Bayesian approach allows for uncertainty in these estimates and provides a framework for incorporating prior knowledge and updating beliefs as new data becomes available.
-
-\subsection{Simple Model specification}
-This is a model for pairwise count data. We explicitly model the results of the interactions between two individuals $i$ and $j$. Given $N$ observations, the likelihood is 
-\begin{align}
-p(y| z, P, K) &= \prod_{i =2 }^{N-1} \prod_{j =i}^{N} p(y_{ij} | z, P, K) \\ 
-&= \prod_{i =2 }^{N-1} \prod_{j =i}^{N}  {n_{ij} \choose y_{ij}} p_{z_i, z_j}^{y_{ij}}(1- p_{z_i, z_j})^{n_{ij}-y_{ij}}
-\end{align}
-
-where $n_{ij}$ denotes the total number of interactions between the two individuals $i$ and $j$ and $y_{ij}$ is the number of successes of the individual $i$ in interacting with $j$. The probability of success is given by $p_{z_i, z_j}$ which consists of two parameters. The $K\times K$ matrix $P$ and the $N \times 1$ vector $z$.
-
-The vector $z$ takes values over the discrete and finite set $\{ 1 , \ldots, K\}$, and it is an indicator variable such that if $z_i = k$ individual $i$ belongs to block $k$. 
-
-The matrix $P$ contains the probabilities of success for individuals belonging to each possible blocks combination. For this reason $P$ is $K\times K$. Therefore, the parameter $p_{z_i, z_j}$ consists in the probability of success in an interaction between one individual belonging to block $z_i$ and another of block $z_j$. 
-
-\subsection{Prior Specification}
-
-This model has three parameters, and we put a prior on each of them.
-
-Starting with $P$, we assume that its entries, namely $p_{k,k^\prime}$, are independent and identically $Beta(a,b)$ distributed random variable. By setting $a=b=1$ they collapse to a uniform distribution.
+Let us denote a generic entry of $P$ as a vector $s$ in $\mathbb{N}^2$. The quantity $Z(s)$ denotes the probability value at the entry index $s$. We rewrite the whole matrix as 
 \begin{equation}
-p_{k,k^\prime} \sim Beta(1,1) \quad \text{for } k,k^\prime = 1, \ldots,K
+Z = \{Z(s): s \in D \}
 \end{equation}
-Second, we assume that the $z_i$s are independent and identically drawn from a multinomial distribution with one trial and probability vector $(\theta_1, \dots, \theta_K)$. We can write then:
+where $D$ is the set of entries' indices of the matrix $P$, that is:
 \begin{equation}
-z_i| \boldsymbol{\theta} \sim \operatorname{Multinomial}(1,\boldsymbol{\theta}) \quad \text{for } i = 1, \ldots,N
+D = \{(u,v): u = 1,\ldots,K;v=1,\ldots,K\}.
 \end{equation}
 
+Now, let us consider a temporal Markov process \{Z(t): t=1,2,\ldots\}. The Markov property can be generalised from a one-dimensional time-process to a two-dimensional space with both a conditional and a joint specification. 
 
-To have more flexibility in the blocks sizes, we put an hyper-prior on the $\theta_1, \dots, \theta_K$, assuming that they are drawn from a Dirichlet distribution with parameter the $K\times1$ vector $\boldsymbol{\gamma}$.
+We draw a connection between the class of models called Partially Ordered Markov models which allows us to efficiently compute the joint probabilities of the prior on $P$, and the literature on preference learning.
 
+Then we introduce the notion of partial order among the $P$ entries. Let's take once more $D$. The binary relation $\succeq$ on $D$ is said to be a partial order if 
+For any $x \in D, x \prec x$ (reflexivity).
+For any $x, y, z \in D, x \prec y$ and $y \prec z$ implies $x \prec z$ (transitivit
+y).
+For any $x, y \in D, x \prec y$ and $y \prec x$ implies $x=y$ (antisymmetry).
+Then we call $(D, \prec)$ a partially ordered set, or a poset. For example, the set of all subsets of a given set, with the relation $\prec$ being set inclusion, is a poset.
 
-By marginalizing out $\theta$, following the common practice in the literature, we can express the marginal distribution of $z$ as:
+Regarding the matrix $P$, we can check whether and how to use the definition of Poset under the three different axiomatic frameworks that specify different (stochastic) transitivity requirements.
 
-\begin{equation} p(\mathbf{z}|\boldsymbol{\gamma}) = \frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n_k+\gamma_k)}
-\end{equation}
-
-where $n_k$ is the number of players assigned to block $k$.
-
-Finally, we assume that the number of clusters $K$ follow a Poisson distribution $\operatorname{Poisson}(\lambda=1)$, subject to the condition $K>0$.
-
-
-\clearpage
-
-\section{The POMM Model}
-
-
-
-In this section, we introduce a novel pairwise model that combines the notions of ordering and community structure to capture the complex interactions observed in various systems. Just as in network analysis, where directed hierarchies and community patterns play crucial roles in understanding interactions among entities (see Peixoto), we seek to develop a framework that simultaneously incorporates these two fundamental aspects in the context of pairwise data.
-
-
-Drawing inspiration from the directed stochastic block model (SBM) used in network analysis, we develop a modified version tailored specifically for pairwise data. The model allows us to identify directed hierarchies among the entities while simultaneously detecting community structures that influence their interactions. By incorporating these two elements into a unified framework, our model offers a more comprehensive understanding of the underlying dynamics governing pairwise comparisons.
-
-Several models of stochastic transitivity exist and have been used to describe the probabilities involved in experiments of paired comparisons, specifically in scenarios where transitivity is expected, however, empirical observations of the binary relation is probabilistic. This allows for a weaker player to win with a positive probability against a stronger opponent. 
-
-Tightly matched players might have a higher chance of observing this inversion while players with large differences in their skills might only see these inversions happen seldom. Stochastic transitivity models formalize such relations between the probabilities (e.g. of an outcome of a match) and the underlying transitive relation (e.g. the skills of the players).
-
-Tightly matched players might have a higher chance of observing this inversion while players with large differences in their skills might only see these inversions happen seldom. Stochastic transitivity models formalize such relations between the probabilities (e.g. of an outcome of a match) and the underlying transitive relation (e.g. the skills of the players).
-
-A binary relation $\succsim$ on a set $\mathcal{A}$ is called \emph{transitive}, in the standard \textit{non-stochastic} sense, if
-$a \succsim b$ and $b \succsim c$ implies $a \succsim c$ for all members $a,b,c$ of $\mathcal{A}$.
-
-\emph{Stochastic} versions of transitivity include:
 \begin{enumerate}
-  \item \textbf{Weak Stochastic Transitivity (WST):} $\mathbb{P}(a\succsim b)\geq \tfrac{1}{2}$ and $\mathbb{P}(b\succsim c)\geq \tfrac{1}{2}$ implies $\mathbb{P}(a\succsim c)\geq \tfrac{1}{2}$, for all $a,b,c \in \mathcal{A}$;
-  \item \textbf{Strong Stochastic Transitivity (SST):} $\mathbb{P}(a\succsim b)\geq \tfrac{1}{2}$ and $\mathbb{P}(b\succsim c)\geq \tfrac{1}{2}$ implies $\mathbb{P}(a\succsim c)\geq \max \{\mathbb{P}(a\succsim b),\mathbb{P}(b\succsim c)\}$, for all $a,b,c \in \mathcal{A}$;
-  \item \textbf{Linear Stochastic Transitivity (LST):} $\mathbb{P}(a\succsim b) = F(\mu(a) - \mu(b))$, for all $a,b \in \mathcal{A}$, where $F:\mathbb{R} \to [0,1]$ is some \textit{increasing} and symmetric function (called a \emph{comparison function}), and $\mu: \mathcal{A}\to \mathbb{R}$ is some mapping from the set $\mathcal{A}$ of alternatives to the real line (called a \emph{merit function}).
+\item Weak Stochastic Transitivity (WST): $\mathbb{P}(x \prec y) \geq \frac{1}{2}$ and $\mathbb{P}(y \prec z) \geq \frac{1}{2}$ imply $\mathbb{P}(x \prec z) \geq \frac{1}{2}$, for all $x, y, z \in \mathcal{A}$.
+
+\item Strong Stochastic Transitivity (SST): $\mathbb{P}(x \prec y) \geq \frac{1}{2}$ and $\mathbb{P}(y \prec z) \geq \frac{1}{2}$ imply $\mathbb{P}(x \prec z) \geq \max \{\mathbb{P}(x \prec y), \mathbb{P}(y \prec z)\}$, for all $x, y, z \in \mathcal{A}$.
+
+\item Linear Stochastic Transitivity (LST): $\mathbb{P}(a \prec b) = F(\mu(a) - \mu(b))$ for all $a, b \in \mathcal{A}$, where $F:\mathbb{R} \to [0, 1]$ is an increasing and symmetric function (referred to as a "comparison function"), and $\mu: \mathcal{A} \to \mathbb{R}$ is a mapping from the set $\mathcal{A}$ of alternatives to the real line (referred to as a "merit function").
 \end{enumerate}
 
-In the following sections we will focus on the Strong Stochastic Transitivity version.
-
-\subsection{Assuming the SST property for the probabilities in matrix P (SST matrix)}
-Starting from the Simple model, we modify the parameter $P$, so that it satisfies the SST assumption. Recall that $\underset{K \times K}{P}$ is a collection of victory probabilities among $K$ blocks or communities as follows:
+Each of these axioms, produces a different $P$ structure. Assuming, without loss of generality, that block 1 is the strongest, and by imposing the main diagonal to be equal to $\frac{1}{2}$ we can visualise a matrix following WST as:
 
 \begin{center}
-$$P = 
-\left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right)$$
+\begin{equation}
+\label{eq:WST_P}
+P^{WST} = 
+\left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right) =  
+\left(\begin{array}{cccc} 1/2 \leq & 1/2 \leq &  ... & 1/2 \\  1/2 \geq &  1/2 \leq & ... &  1/2  \\ \vdots & \vdots & \vdots & \vdots \\  1/2 \geq&  1/2 \geq& ... &  1/2 \end{array}\right) 
+\end{equation}
+\end{center}
+ 
+Instead, under SST, we would observe:
+\begin{center}
+\begin{equation}
+\label{eq:SST_P}
+P^{SST} = 
+\left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right) =  
+\left(\begin{array}{cccc} 1/2 \leq & p_{1,2}\leq &  ... &  p_{1,K}  \\ \vertgeq &  \vertgeq &  & \vertgeq \\
+ p_{2,1} \geq & 1/2 & ... & \leq p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1} \geq & p_{K,2 } \geq & ... & \geq 1/2 \end{array}\right)  
+ \end{equation} 
 \end{center}
 
 
-In order to satisfy the SST property, P entries can be spelled out explicitly as follows:
-\begin{center}
+With regard of $LST$, it is a generalisation of the two axioms and therefore it includes both aforementioned cases \eqref{eq:WST_P} and \eqref{eq:SST_P}, depending how one specifies $F$ and $\mu$. Given the $LST$ definition, we can calculate $p_{ij}$ as follows:
+\begin{equation}
+p_{ij} = F(\mu(i) - \mu(j))
+\end{equation}
+where $i$ and $j$ range from 1 to $K$ and represent the alternatives in the set $\mathcal{A}$.
+
+All the three axiomatic frameworks satisfy (in the $LST$ case we need to check the functional form of $F$ and $\mu$) of the three conditions for being a poset. And therefore, we take advantage of the poset structure.
+
+
+
+We can now describe the correspondence referred to above. This connection opens up a large literature on graphical models, outside of statistical image analysis, that we return to in Section 6.2. Let $(D, F)$ be a directed acyclic graph, where $D=$ $\left\{y_1, \ldots, y_n\right\}$, a finite set. To construct a poset to which this digraph corresponds, we define the binary relation $\prec$ on $D$ by
 $$
-\left(\begin{array}{ccccccc} 0.5 & \leq & p_{1,2} & \leq &  ... & \leq & p_{1,K} \\  &  & \vertgeq &  & ... &  & \vertgeq \\
-1 - p_{1,2} & \leq & 0.5 & \leq & ... & \leq & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots &  ... & \vdots& \vdots \\ 1 - p_{1,K}& \leq & 1 - p_{2,K}& \leq & ... & \leq & 0.5\end{array}\right)
+\begin{aligned}
+& y_i \prec y_i, \text { for } i=1, \ldots, n \text {; } \\
+& y_i \prec y_j, \text { if there exists a directed path from } y_i \text { to } y_j \text { in }(D, F) .
+\end{aligned}
 $$
-\end{center}
-
-We further assume that the P matrix is skew-simmetric, that is, $p_{j,i}= 1 - p_{i,j}$. Furthermore, we set the main diagonal of matrix $P$ to $0.5$ for teams and $0$ for individual players.
-
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.6\textwidth,natwidth=1386,natheight=1000]{/Users/lapo_santi/Desktop/Nial/project/POMMs/IMG_0EE4E8AB347D-1.jpeg}
-\caption{Dag representation of the Poset imposed onto the SST matrix}
-\label{fig:DAG}
-\end{center}
-\end{figure}
-
-
-\subsection{Prior on $P$}
-
-In order to incorporate such structure within a Bayesian framework, we need to impose an appropriate prior and hyper-prior on $P$ so to reproduces such ordering among the probabilities. To this end, we draw inspiration from the the literature on spatial statistics. In particular, we exploit the idea of Partially Order Markov Models (POMMs) to define dependency and structure within the $P$ matrix. 
-
-\subsection{Posets and Dags}
- $P$ is a partially ordered set (Poset) $(P, \leq)$ where a Poset is defined as follows.
-
-\begin{definition}\label{def:Poset}[Poset]A poset, a partially ordered set, is a set of elements $D$ where a binary relation $\prec$ defined on $D$ itself is such that:
-\begin{align}
-&\text{For any } x \in D, x \prec x (\text{ reflexivity }) \\
-&\text{For any } x,y,z \in D, x \prec y \text{ and } y \prec z \implies x \prec z (\text{ transitivity }) \\
-&\text{For any } x, y \in D, x \prec y \text{ and } y \prec x \implies x = y (\text{ antisymmetry }).
-\end{align}
-Then we call $(D, \prec)$ a partially ordered set, or a \textit{poset}. 
-\end{definition}
-
-We see that $(P, \leq)$ satisfies the three properties of Definition \eqref{def:Poset}, and therefore, is a poset. Let us now explicit how posets can be represented using directed cyclic graphs; we will see later how this will turn out useful to elicit the dependency structure between $P$'s elements.
-
-Let us denote with $(V, E)$ the vertex and the edge sets of be a directed acyclic graph, respectively. To find the pair $(V=P, E)$, meaning the graph corresponding to the poset $P$, we define the edge set $E$ so that every pair $\{(p_i, p_j) \in E \} \implies p_i \leq p_j$.
-
-This correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; however, it may be of particular interest the minimal directed acyclic graph since it has the smallest possible directed edge set, which consists in $\{(p_i, p_j) \in E \} \implies p_i \leq p_j \land \{p_k : p_i\leq p_k\leq p_j \} = \emptyset \}$
-
-We represent the minimal directed acyclic graph $(P, E)$ corresponding to $P$ in figure (\ref{fig:DAG}) by using the definition of Adjacent Lower Neighborhood that we introduced before.
-
-
-\begin{definition}[Cone]
-For any $y \in D$, the \textit{cone} of $y$ is the set
-\begin{equation}
-\text{ cone } y = \{x \in D: x\prec y;x\neq y \} \nonumber
-\end{equation}
-\end{definition}
-
-\begin{definition}[Adjl]
-For any $y \in D$ the \textit{adjacent lower neighbourhood} of $y$ is the set $$
-\text{adjl } y = \{ x \in D:(x,y) \text{is a directed edge in} (D,F)\}
+Notice that several different directed acyclic graphs can yield the same poset.
+Conversely, given a finite poset $(D, \prec)$, a corresponding directed acyclic graph can be obtained by defining the set of edges $F$ as follows:
+$\left(y_i, y_i\right) \in F$ if and only if $y_i \prec y_j$ and there does not exist a third element
 $$
-\end{definition}
-
-
-
-
-\begin{definition}[Cover of a Subset]
-The cover of a subset $B$ is a set of all elements $x$ in $D$ such that $x$ is adjacent to an element in $B$ and $x$ is not in $B$. Formally, the cover of $B$ is defined as follows:
-\begin{equation}
-\text{covr}\ B = { x \in D: \text{adjl}\ x \subset B \text{ and } x \notin B } \nonumber
-\end{equation}
-where $\text{adjl}\ x$ is the set of all adjacent elements of $x$ in $D$.
-\end{definition}
-Intuitively, the cover of a subset $B$ represents all the elements in $D$ that are outside of $B$ but are adjacent to at least one element in $B$. In other words, the cover of $B$ captures the neighborhood of $B$ in $D$.
-
-\begin{definition}[Level Sets]
-The level sets of a poset $D$ are a sequence of nonempty cover sets defined recursively as follows:
-\begin{equation}
-L^0 = D_{min};\quad L^i = \text{covr}\left( \bigcup_{k=0}^{i-1} L^k \right) \nonumber
-\end{equation}
-where $D_{min}$ is the set of all minimal elements in $D$.
-\end{definition}
-
-The first level set $L^0$ is simply the set of all minimal elements in $D$. The subsequent level sets are defined by taking the union of all the previous level sets and taking the cover of this union. Intuitively, each level set captures the neighborhood of the previous level sets in $D$.
-
-
-
-\subsection{Partially ordered Markov models:}
-
-Consider a finite set of random variables $\{ Z(s_1),\ldots,Z(s_n) \}$ indexed by location or "points" $$
-D = \{s_1,\ldots ,s_n \}: n \in \{1,2,\ldots \}
+z \neq y_i, y_j \text { such that } y_i \prec z \prec y_j \text {. }
 $$
-
-That is, we assume the existence of a directed acyclic graph $(D,F)$ and its corresponding poset $(D,\prec).$
-Let $(D,F)$ be a finite, directed acyclic graph and its corresponding poset $(D,\prec).$ Consider $s \in D$ and recall the definition of cone $s$. Also, let the quantity $U_s$ denote any subsets of points not related to s. 
-Formally:
-$$
-U_s \subset \{ u \in D: u \text{ and } s \text{ are not related } \}
-$$
-\begin{definition}[POMM]
-Then $\{ Z(s): s \in D \}$ is said to be a partially ordered Markov model (POMM) if , for all $s \in D$ and any $U_s$
-\begin{equation}
-P(Z(s)|Z(\text{ cone } s), Z(U_s)) = P(Z(s)|Z(\text{ adjl } s)
-\end{equation}
-\end{definition}
-\begin{proposition}\label{eq:result1}[Joint Distribution]
-Let $(D,F)$ be a directed acyclic graph with no singleton points and let $(D, \prec)$, be its associated poset. Suppose that $\{Z(s): s \in D\}$ is a POMM. Then 
-\begin{align}
-P(Z(D)) &= P(Z(L^0)) \prod_{k=1}^m \prod \{ P(Z(u))| Z(\text{ adjl } u): u \in L^k \} \\
-&= P(Z(L^0)) \prod \{ P(Z(u))| Z(\text{ adjl } u): u \in D 
-\setminus L^0 \}
-\end{align}
-where $L^0, L^1, \ldots L^m$ are the level sets as defined previously.
-\end{proposition}
+We saw above that the correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; the correspondence described above is in a sense the minimal directed acyclic graph since it has the smallest possible directed edge set. However, if one starts with a directed acyclic graph, the corresponding poset is unique. From the point of view of image modeling, we arc more interested in the directed-acyclic-graph description because we are able to specify directly the spatial relations between pixel locations.
 
 
 
+\section{The SST model}
 
 
+We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L^{(k)}$, where $L^{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
 
+\[
+p_{ij} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu^{(k)}, \sigma^{2(k)}; 0.5, \beta_{\max})
+\]
 
-Result 1 relates the probability of a random variable defined on a poset to the probabilities of its restrictions to the lower level sets of the poset.
+Here:
+\begin{itemize}
+\item $\mu^{(k)}$ is the mean, which corresponds to the midpoint of the level set $L^{(k)}$, defined as $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
+\item $\sigma^{2}$ is the variance parameter constant across the level sets $L^{(1)},\ldots,L^{(K)}$.
+\item $0.5$ and $\beta_{\max}$ are the lower and upper truncation bounds.
+\end{itemize}
+We also place a uniform hyper-prior on the parameter $\alpha$:
 
-The result states that the probability of $Z$ on the entire poset $D$ can be expressed as a product of the probabilities of $Z$ restricted to the level sets $L^0, L^1, \ldots, L^m$ of the poset, where $L^0 = D_{\text{min}}$ is the set of minimal elements of $D$, and $L^k$ is the set of elements of $D$ that are not in any of the previous level sets $L^0, L^1, \ldots, L^{k-1}$ and whose immediate predecessors are all in the union of the previous level sets $\bigcup_{i=0}^{k-1} L^i$.
+\[
+\alpha \sim \text{Uniform}(0, 3)
+\]
 
-The first part of the result states that the probability of $Z$ on $D$ is equal to the product of the probability of $Z$ on $L^0$ and the conditional probabilities of $Z$ on the elements of each subsequent level set $L^k$, given the values of $Z$ on their immediate predecessors. This can be seen as a form of the chain rule of probability, where the joint probability of $Z$ on $D$ is decomposed into a product of conditional probabilities.
-
-The second part of the result simplifies the product by noting that the conditional probabilities of $Z$ on the elements of $D\setminus L^0$ are determined by the values of $Z$ on their immediate predecessors, which are all in $L^0$ or $D\setminus L^0$. Therefore, the product can be simplified to the product of the probability of $Z$ on $L^0$ and the conditional probabilities of $Z$ on the elements of $D\setminus L^0$ given the values of $Z$ on their immediate predecessors in $D\setminus L^0$. This simplification reduces the number of terms in the product and makes the computation of the joint probability of $Z$ on $D$ more efficient.
-
-
-
-
-\newpage
-
-
-
-
-
-
-
-\section{Application to the SST matrix}
-
-
-
-
-In this section, we introduce a matrix that exhibits the Strong Stochastic Transitivity (SST) property. Our aim is to model the probabilities of players winning matches in a tournament, ensuring that these probabilities are consistent. Transitivity, as mentioned above, is crucial in guaranteeing that if Player A is stronger than Player B and Player B is stronger than Player C, then Player A must be stronger than Player C. This logical relationship is reflected in the probabilities of victory between players, which are contained in the matrix $P$ introduced in the previous section.
-The matrix under consideration is denoted as $\underset{K \times K}{P}$, representing victory probabilities among $K$ entities, such as players or groups of players. Each element $p_{i,j}$ in the matrix $P$ represents the probability of player $i$ winning against player $j$ in a tennis match, without draws allowed. To satisfy the requirements of a valid probability, we have $p_{i,j} + p_{j,i} = 1$, where $p_{j,i} = 1 - p_{i,j}$.
-
-Without loss of generality, we assume that player/team 1 is the strongest and player/team $K$ is the weakest. Monotonicity in the probabilities is crucial, ensuring that the probabilities increase monotonically as the index of the columns $j$ increases and decrease monotonically as the index of the rows $i$ increases. Violation of these assumptions could lead to contradictions where weaker players have higher probabilities of winning than stronger ones.
-
-Therefore, we impose the following constraints on the probabilities in the upper triangular part of matrix $P$:
-
-$0.5 \leq p_{i,j} \leq p_{1,K}$ for all $i<j$.
-$1 - p_{i,j} \leq 1 - p_{j,K}$ for all $i<j$.
-The main diagonal of matrix $P$ is set to $0.5$ for teams and $0$ for individual players.
-
-By ensuring the SST property and imposing the constraints, we obtain a coherent and tractable framework to express the joint probability distribution of these ordered probabilities, enabling us to perform inference efficiently.
-
-
-\subsection{Defining a Poset over $P$}
-Having defined $P$, now we want to re-define it within a finite Poset framework to obtain $(P, \leq)$. Let $(i,j)$ and $(p,q)$ be two elements of $P$ and define the binary relation $\leq$ on $P$ as 
-\begin{equation}
-(p,q) \leq (i,j)  \iff p \leq i \text{ and } q \leq j
-\end{equation}
-
-Now, $(P, \leq)$ is clearly a Poset since it satisfies the three properties of Definition \eqref{def:Poset}. We represent the corresponding directed acyclic graph $(P,F)$, where $F$ is the set of directed edges between vertices in Figure (\ref{fig:DAG}) by using the definition of Adjacent Lower Neighborhood that we introduced before.
-
-
-
-\begin{definition}[Cone over $P$]In this case, for any $(i,j) \in D$ the cone of $(i,j)$ is the set:
-\begin{equation}
-\text{cone } (i,j)  = \{(i,j-1), \ldots (i,i), (i+1,j), \dots,(K,j) \}
-\end{equation}
-\end{definition}
-\begin{definition}[$\overline{\text{cone }} (i,j)$]
-In this case, for any $(i,j) \in P$ the closure of the cone of $(i,j)$ is the set:
-\begin{equation}
-\overline{\text{cone }} (i,j)  = \{(i,j), \ldots (i,i), (i,j), \dots,(K,j) \}
-\end{equation}
-\end{definition}
-
-\begin{definition}[The adjacent lower neighborhood of $(i,j)$]
-In this case, for any $(i,j) \in P$ the adjacent lower neighborhood of $(i,j)$ is the set:
-\begin{equation}
-\text{adjl } (i,j)  = \{(i,j-i), (i+1,j)\}
-\end{equation}
-\end{definition}
-
-\begin{definition}[closure of $\text{adjl } (i,j)$]
-In this case, for any $(i,j) \in P$ the closure of $\text{adjl } (i,j)$ is the set:
-\begin{equation}
-\overline{\text{adjl }} (i,j)  = \{(i,j-i), (i+1,j), (i,j)\}
-\end{equation}
-\end{definition}
-
-\begin{definition}[$D_{min}^P$]
-In this case, the \textit{minimal element} denoted by $D_{min}$ is such that
-\begin{equation}
-P_{min}  = \{(i,j) \in P: i=j\}
-\end{equation}
-namely the main diagonal of the $P$ matrix. 
-\end{definition}
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.6\textwidth,natwidth=1921,natheight=1000]{/Users/lapo_santi/Desktop/Nial/project/POMMs/level_sets.jpeg}
-\caption{Visual Display of the level sets $L^k: k=0,\ldots,4$}
-\label{fig:level_sets}
-\end{center}
-\end{figure}
-
-
-The \textit{level sets} of $P$, in this case, corresponds to the diagonals above the main one.
-
-
-\subsection{Partially ordered Markov Models applied to P}
-\bigskip
-Considering the finite set of random variables $\{P_{1,1},\dots, P_{K,K} \}$ indexed by locations where 
-$$D\equiv \{(1,1), \dots (K,K)\}$$
-
-Having showed the existence of a directly acyclic graph $ (P,F)$ and its corresponding poset $(P, \leq)$, we can write down 
-\begin{align}
-P(P_{ij}| Z(\text{cone } i,j)) &= P(P_{ij}| P(\text{adl } i,j))\\
-P(P_{ij}| P_{i+1,j}, P_{i,j-1})
-\end{align}
-
-Now, exploiting Proposition \eqref{eq:result1}, we can write:
-\begin{equation}
-P(P(D)) = \prod_{i=1}^K\prod_{j=i}^K P(P_{ij}| P_{i+1,j}, P_{i,j-1})
-\end{equation}
-
-
-In order to induce an ordering or ranking among the blocks, we introduce a hierarchical structure. Without loss of generality, we assume that block 1 has the highest probability of success when interacting with any other block, while block $K$ has the lowest probability of success. We require this ranking to be transitive, meaning that if block A has a higher probability of success when interacting with block B, and block B has a higher probability of success when interacting with block C, then block A must still be the preferred choice when interacting with block C. Mathematically, this can be expressed as $p_{k,h} > p_{k',h}$ when $k < k'$ for $h \notin { k, k' }$.
-
-To achieve this effect, we impose three conditions: probabilities should increase in the columns, decrease in the rows, and be greater than or equal to 0.5 in the upper triangular matrix. To satisfy these conditions, we construct the following scheme.
-
-\subsubsection{Level Sets}
-
-We define the level sets, denoted by $L^{(k)}$, as the diagonals of the upper triangular matrix P. The main diagonal is referred to as level set 0, denoted by $L^{(0)}$. The diagonal above it is denoted by $L^{(1)}$, and so on up to $L^{(K-1)}$. Each level set $L^{(k)}$ is formally defined as:
-
-\begin{equation}
-L^{(k)} := { p_{ij} \mid j-i = k } \quad \text{for } k = 0, \ldots, K-1
-\end{equation}
-
-It is worth noting that the cardinality of each level set is given by $|L^{(k)}| = K - k$ for $k = 0, \ldots, K-1$.
-
-\subsubsection{Truncation Process}
-
-Requiring that probabilities increase in the rows and decrease in the columns is equivalent to ensuring that the level sets satisfy the condition:
-
-\begin{equation}
-\max(L^{(k)}) < \min(L^{(k+1)}) \quad \text{for } k = 0, \ldots, K-1
-\end{equation}
-
-To enforce this behavior, we employ an increasing truncation process controlled by a parameter $\alpha$, with an upper bound given by $\beta_{\max}$.
-
-We consider a generic power-law function $y = x^\alpha + 0.5$, which governs the rate of increase in the truncation process. Setting $f(0) = 0.5$ ensures that $L^{(0)}$ is greater than or equal to 0.5, satisfying the transitivity condition. The function $y$ is monotonically increasing for $x > 0$. To generate the truncations, we partition $y$ effectively by dividing the interval into $K$ equal-sized segments. The segment endpoints are computed as $x_k = \Delta \times k$ for $k = 0, \ldots, K$, where $\Delta = \left( \left(\beta_{\max} - 0.5\right)^{(1/\alpha)} - 0 \right) / K$. Mapping the cumulative sum of the segment endpoints back to $y$ yields $K$ truncation points denoted by $y^{(k)}$, which are defined as:
-
+which in turn, together with $\beta_{\max}$, it provides the truncations of the level sets as follows:
 \begin{equation}
 \label{eq:truncations}
 y^{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 \quad \text{for } k = 0, \ldots, K
 \end{equation}
 
-Notice that $f(0) = 0.5$ and $f(K) = \beta_{\max}$ by construction.
+We also place a uniform hyper-prior on the parameter $\sigma^2$
+\[
+\sigma^2 \sim \text{Uniform}(0, 1)
+\]
+which is the variance of the level sets truncated normal distribution.
 
-These truncation points provide the upper and lower bounds for the entries within the corresponding level sets, thereby ensuring the desired hierarchy and transitivity in the ranking.
+\subsection{Some considerations}
 
-Mathematically we have that:
-\begin{equation}
-y^{(k)} < p_ij \in L^{(k)} < y^{(k+1)}\quad  k = 0, \ldots, K-1 
-\end{equation}
+This model is very flexible, since for a given number of clusters $K$, it can accommodate for different means across the level sets by changing the slope of $\alpha$. For an $\alpha \in [0,1]$, we will have the clusters concentrated towards $\beta_{\max}$, meaning that the probabilities of victory in the tournament are clear-cut, symptom of an higher predictability overall. Instead, if $\alpha \in [1,3]$, this measn that the probabilities are more concentrated towards 1/2, meaning the chances of victory are not so much clear. 
 
-\subsubsection{The POMM Prior}
+However, the issue is that the number of clusters is not fixed. We would like the model to select by itself the number of clusters and ideally also to place the mean of the distribution wherever it prefers. 
 
-Finally, we put a prior on the matrix $P$ with this new structure in place.
-We assume that entries $p_{ij} \in L^{(k)} \mid (y^{(k)} + y^{(k+1)}$ are identically and independently distributed according to a $\operatorname{Uniform}(y^{(k)},y^{(k+1)}$. We also put a log-normal hyper-prior on $\alpha$ such that 
-\begin{equation}
-\alpha \sim \operatorname{lognormal}(\mu_\alpha, \sigma^2_\alpha)
-\end{equation}
-where $\mu_\alpha, \sigma^2_\alpha$ are specified according to the normal parametrisation of the lognormal and are fixed to 1 and 2 respectively.
-Altogether, the POMM prior on P is the following:
-\begin{align}
-p_{ij} \in L^{(k)} \mid y^{(k)},y^{(k+1)} &\sim (y^{(k)},y^{(k+1)} \\
-\alpha &\sim \operatorname{Lognormal}\left(\mu_\alpha, \sigma^2_\alpha\right)
-\end{align}
-and where the truncations $y^{(k)}$ are derived as in \eqref{eq:truncations}.
+One question may be: what is the difference between a model with a very high $\alpha$, meaning with the probabilities concentrated towards 1/2 but with three clusters, and a model with just one cluster, and all the players having the same mean?
+
+Maybe the parameter $\alpha$ is redundant and we should find a clever way so that, when we add or remove a cluster, we assign a mean of victory to that given level set.
+
+However, the means of the level sets $\mu_1 ,...,\mu_K$ should be ordered as well and we should put a constraint on them.
+
+Another point that I have is the following:
 
 
-
-\subsubsection{The POMM Prior 2}
-
-
-Finally, we put a prior on the matrix $P$ with this new structure in place.
-We assume that entries $p_{ij} \in L^{(k)} \mid (y^{(k)} + y^{(k+1)}$ are identically and independently distributed according to a $\operatorname{Normal}(\mu^{(k)},\sigma^{2(k)})$, where $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$ which corresponds to the midpoint of the level set $L^{(k)}$, and $\sigma^{2(k)} = \left( y^{(k)}+y^{(k+1)} \right) \times S$, where $S$ is a parameter denoted as \textit{overlap}, which intuitively is proportional to the overlap in the distribution support of the level sets.   We also put a log-normal hyper-prior on $\alpha$ such that 
-\begin{equation}
-\alpha \sim \operatorname{lognormal}(\mu_\alpha, \sigma^2_\alpha)
-\end{equation}
-where $\mu_\alpha, \sigma^2_\alpha$ are specified according to the normal parametrisation of the lognormal and are fixed to 1 and 2 respectively.
-Altogether, the POMM prior on P is the following:
-\begin{align}
-p_{ij} \in L^{(k)} \mid y^{(k)},y^{(k+1)} &\sim \operatorname{Normal}\left(\mu^{(k)},\sigma^{2(k)}\right) \mathbb{I}(0.5, \beta_{\max}) \\
-\alpha &\sim \operatorname{Lognormal}\left(\mu_\alpha, \sigma^2_\alpha\right)\\
-S \sim &\sim \operatorname{Lognormal}\left(\mu_S, \sigma^2_S \right)
-\end{align}
-and where the truncations $y^{(k)}$ are derived as in \eqref{eq:truncations}.
-
-
-Insert here the plot for 3 different overlap values
+\section{The LST model}
 
 
 
+The latent skill variables for clusters are denoted by $s_c$ for cluster $c$. We model these latent skills using a Gaussian Process (GP) prior:
 
+\[
+s_c \sim \mathcal{GP}(0, k(\cdot, \cdot))
+\]
 
-\begin{figure}[htbp]
-    \centering
-    \subfigure[$\alpha=1, S=0.2$]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=524]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.2__diag__0.5.png}%
-        \label{fig:overlap0.2}%
-    }\hfill
-    \subfigure[$\alpha=1, S=0.5$]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=568]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.5__diag__0.5.png}%
-        \label{fig:overlap0.5}%
-    }\hfill
-    \subfigure[$\alpha=1, S=0.8$]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=568]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Densityplot_5_Level_sets_alpha__1__overlap__0.8__diag__0.5.png}%
-        \label{fig:overlap0.8}%
-    }
-    \caption{Densities for $K=5$ Level Sets, for different $S$ values and $\alpha=1$; the main diagonal is set to 0.5, and its collapsed density is not reported.}
-    \label{fig:all_images}
-\end{figure} 
+Here, $\mathcal{GP}$ is the Gaussian Process distribution, and $k(\cdot, \cdot)$ is the covariance (kernel) function that captures the relationships between clusters.
 
-\subsection{Some notes on the overlap of two normal densities}
+The victory probability for a player from cluster $A$ against a player from cluster $B$ is modeled using a logistic function $f$ that takes the difference in latent skills into account:
 
+\[
+p_{A,B} = f(s_A - s_B) = \frac{1}{1 + \exp(-\beta \cdot (s_A - s_B))}
+\]
 
-The computation or estimation of $S$, the overlap for two normal distributions, with density functions $\mathrm{f}_1\left(\mathrm{X} ; \mu_1, \sigma_1^2\right)$ and $\mathrm{f}_2\left(\mathrm{X} ; \mu_2, \sigma_2^2\right)$, depends on whether the two variances are equal. Since the estimation of OVL when $\sigma_1^2=\sigma_2^2=\sigma^2$ is simpler, has attracted more attention, and leads to firmer conclusions, we consider this situation in some detail. On the other hand, we shall simply summarise the results we have obtained in the more complicated circumstance when $\sigma_1^2 \neq \sigma_2^2$.
+Where $\beta$ is a parameter that controls the slope of the logistic function and affects how fast the probability changes with the difference in skills.
 
-When $\sigma_1^2=\sigma_2^2$, the normal density functions intersect at the single value of $\mathrm{X}$ equal to $\left(\mu_1+\mu_2\right) / 2$. 
+The likelihood of observing $y_{ij}$ victories out of $n_{ij}$ matches between clusters $i$ and $j$ is given by a binomial distribution:
 
-Representing the standard normal distribution function by $\Phi(\cdot)$, we obtain
-$$
-\mathrm{S}=2 \Phi\left(-\frac{\left|\mu_1-\mu_2\right|}{2 \sigma}\right)=2 \Phi\left(-\frac{1}{2}|\delta|\right)
-$$
+\[
+y_{ij} \sim \text{Binomial}(n_{ij}, p_{i,j})
+\]
 
-In our case we have that $\mu_1 < \mu_2 < \ldots < \mu_K$ and we are interested in the total overlap between the densities that are defined on the level sets. The total overlap is the sum of the pairwise overlaps between the densities taken two at a time:
-\begin{align}
-S &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K S_{pq} \nonumber \\
-&= \sum_{p=1}^{K-1} \sum_{q=i+1}^K  \Phi\left(-\frac{\left|\mu_p-\mu_q \right|}{2 \sigma}\right)\end{align}
+The complete model, combining the Gaussian Process prior on latent skills and the logistic function for victory probabilities, can be written as:
 
-
-Let's simplify the expression for the total overlap, denoted as S, using the fact that the means are ordered $\mu_1 < \mu_2 < \ldots < \mu_K$.
-
-First, we can notice that for each pair of means $\mu_p$ and $\mu_q$, where $p < q$, we have the following relationship:
 \begin{align*}
-\mu_q - \mu_p &> 0 \quad \text{(since } \mu_1 < \mu_2 < \ldots < \mu_K \text{)} \\
-\left|\mu_q - \mu_p \right| &= \mu_q - \mu_p \quad \text{(because it is positive)}
-\end{align*}
-
-Now, let's rewrite the total overlap S using this information:
-\begin{align*}
-S &= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\left|\mu_p-\mu_q \right|}{2 \sigma}\right) \\
-&= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\mu_q - \mu_p}{2 \sigma}\right) \quad \text{(using the fact mentioned above)} \\
-&= \sum_{p=1}^{K-1} \sum_{q=i+1}^K \Phi\left(-\frac{\mu_q}{2 \sigma} + \frac{\mu_p}{2 \sigma}\right) \\
+&\text{For each cluster } c: \\
+&s_c \sim \mathcal{GP}(0, k(\cdot, \cdot)) \\
+&\text{For each match between clusters } i \text{ and } j: \\
+&p_{i,j} = \frac{1}{1 + \exp(-\beta \cdot (s_i - s_j))} \\
+&y_{ij} \sim \text{Binomial}(n_{ij}, p_{i,j})
 \end{align*}
 
 
 
+\section{additional consideration}
+The LST and the SST and the WST models can all of them being expressed as part of the same class of models.
 
+
+
+
+
+\section{Modelling ordered blocks}
+
+
+Let $Y_{i j} \in {0, 1, \ldots, n_{i j}}$ denote the random outcome of $n_{i j}$ comparisons between items $i$ and $j$, where $Y_{i, j} = y_{i j}$ if item $i$ is chosen $y_{i j}$ times over item $j$.
+
+We introduce an indicator variable $z_i$ such that $z_i = k$ if item $i$ belongs to block $k$, where $k$ ranges over the set of all blocks.
+
+Let $p_{i j}^{(k, k')} = \mathbb{P}\left(Y_{i j} = y_{i j} ,|, z_i = k, z_j = k'\right)$ be the probability that item $i$, belonging to block $k$, is chosen $y_{i j}$ times out of $n_{i j}$ over item $j$, belonging to block $k'$.
+
+The collection of labeled choice probabilities associated with $J$ is then $ \mathcal{P}_J = \{ p_{i j}^{(k, k')} : (i, j) \in J \times J, , k, k' \text{ are block indices} \}$.
+
+
+
+
+We define $i \succeq j$ when $p_{i j} \geq p_{j i}$. We say $i \succ j$ when $p_{i j} > p_{j i}$, and $i \sim j$ when $p_{i j} = p_{j i}$. Given our assumption that $p_{i j} + p_{j i} = 1$, it follows that $i \succeq j$ if and only if $p_{i j} \geq \frac{1}{2}$. Additionally, this implies that $p_{i i} = \frac{1}{2}$ for all $i$ in the set $J$.
+
+This definition ensures that preferences over $J$ are complete but not necessarily transitive. To achieve transitivity, specific constraints on choice probabilities can be imposed. Traditionally, these constraints are referred to as stochastic transitivity axioms or relations (Fishburn, 1973), although, strictly speaking, transitivity axioms simply specify different statistical models (Cavagnaro \& Davis-Stober, 2014).
+
+Here, we study three such axioms denoted as $\mathcal{A}_1, \mathcal{A}_2$, and $\mathcal{A}_3$. These axioms progressively impose more stringent constraints on triplets of choice probabilities $p_{i j}, p_{j k}$, and $p_{i k}$. To facilitate this discussion, let's introduce a few definitions:
+
+A composition rule is a function $H$ that maps $(0, 1) \times (0, 1)$ to $[0, 1]$. A composition rule is said to be strictly monotone if $1 > x > y > 0$, then $H(x, z) \geq H(y, z)$ for all $z \in (0, 1)$, and if $H(x, z) \in (0, 1)$, then $H(x, z) > H(y, z) \iff x > y$. Furthermore, a composition rule is said to be symmetric if $H(x, y) = H(y, x)$ for all $x, y \in (0, 1)$.
+
+Stochastic versions of transitivity include:
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
 
 
 
@@ -1054,263 +799,15 @@ $\alpha$ &40 & 126 & 187 & 0.79 & 0.756 & 0.393 & 23.57667 & 22.45417 & 15.74333
 
 
 
-\clearpage
-
-\section{Appendix I: Investigating Empirically the prior behaviour}
-
-
-In this section, we explore the behaviour of the POMM prior, as $\alpha$, the parameter controlling the rate of increase of the power-law process and $S$, the variation (and therefore, the overlap) of the level sets sets, change. 
-
-We start with a simulation study, whose results are reported in figure \eqref{fig}.
-
-\begin{figure}[h]
-    \centering
-       \subfigure[$\alpha=0.1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.2K5.png}%
-        \label{l}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.4K5.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.1overlap0.7K5.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.2K5.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.4K5.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha0.5overlap0.7K5.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.2K5.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.4K5.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1overlap0.7K5.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.2K5.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.4K5.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha1.5overlap0.7K5.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.2K5.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.4K5.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/alpha_and_overlap_investigation_alpha3overlap0.7K5.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
-    \label{fig:exploratoryanalysisalpha_andS}
-\end{figure}
-
-
-\clearpage
-
-
-\section{Appendix II: Empirical Assessment of the inference problem}
-
-This section has two main objectives:
-
-\begin{enumerate}
-\item The first objective is to assess the identifiability of the POMM model. Given that the richness of the model, it is not obvious that the parameters are identifiable in all the regions of the parameter space. Therefore, by means of several simulation studies, we aim at identifying any possible identifiability constraints.
-\item The second objective is code testing, by checking the whole estimation procedure on simulated data.
-\end{enumerate}
-
-\subsection{Focus on $\alpha$}
-\begin{longtable}{l|rrr}
-\caption{
-{\large Mean absolute error for different alpha values} \\ 
-{\small Sample size = 1000. MAEs = $|\hat{\alpha}_{\text{MLE}} - \alpha|$}
-} \\ 
-\toprule
-\multicolumn{1}{l}{} & S = 0.2 & S = 0.4 & S = 0.7 \\ 
-\midrule
-$\alpha=$ 0.1 & $3.199 \times 10^{-4}$ & $1.270 \times 10^{-4}$ & $0.003$ \\ 
-$\alpha=$ 0.5 & $1.377 \times 10^{-4}$ & $2.955 \times 10^{-4}$ & $0.001$ \\ 
-$\alpha=$ 1.0 & $7.695 \times 10^{-4}$ & $0.007$ & $0.001$ \\ 
-$\alpha=$ 1.5 & $0.001$ & $0.006$ & $0.004$ \\ 
-$\alpha=$ 3.0 & $0.003$ & $0.036$ & $0.004$ \\ 
-\bottomrule
-\end{longtable}
 
 
 
-\begin{figure}[h]
-    \centering
-       \subfigure[$\alpha=0.1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.2_diag_.png}%
-        \label{l}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.1_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha0.5_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha1.5_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/LikelihoodK5_alpha3_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
-    \label{fig:exploratoryanalysisalpha_andS}
-\end{figure}
-
-
-\subsubsection{Updating $\alpha$ algorithm}
-
-3
 
 
 \subsubsection{Montecarlo algorithm}
 
 
 
-\subsection{Focus on $S$}
-
-\begin{longtable}{l|rrrrr}
-\caption*{
-{\large Mean absolute error for different $S$ values} \\ 
-{\small Each row is a different $S$ value. Sample size = 1000}
-} \\ 
-\toprule
-\multicolumn{1}{l}{} & $\alpha = 0.1$ & $\alpha = 0.5$ & $\alpha = 1$ & $\alpha = 1.5$ & $\alpha = 3$ \\ 
-\midrule
-S = 0.2 & $0.002$ & $0.002$ & $9.780 \times 10^{-4}$ & $3.709 \times 10^{-4}$ & $9.931 \times 10^{-4}$ \\ 
-S = 0.4 & $0.005$ & $0.003$ & $0.006$ & $0.002$ & $0.003$ \\ 
-S = 0.7 & $0.006$ & $0.002$ & $0.005$ & $0.006$ & $0.007$ \\ 
-\bottomrule
-\end{longtable}
-
-
-\begin{figure}[h]
-    \centering
-       \subfigure[$\alpha=0.1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.2_diag_.png}%
-        \label{l}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.1_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=0.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=0.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha0.5_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=1.5, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=1.5, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha1.5_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }\\[2ex]\subfigure[$\alpha=3, S = 0.2$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.2_diag_.png}%
-        \label{fig:M4000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.4$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.4_diag_.png}%
-        \label{fig:M7000}%
-    }\hfill
-    \subfigure[$\alpha=3, S = 0.7$]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=438]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/Overlap_LikelihoodK5_alpha3_overlap0.7_diag_.png}%
-        \label{fig:M10000}%
-    }
-    \caption{Distribution of $n=1000$ simulated $P$ matrices with $\alpha \in \{0.1,0.5,1,1.5,3\}$ and $S \in \{0.2,0.4,0.7\}$. The points are grouped into the $K=5$ level sets- the main diagonal is set =0.5. The black vertical dots are the points, while the red lines show the evolution of the mean of the level sets.}
-    \label{fig:exploratoryanalysisalpha_andS}
-\end{figure}
-
-
-\subsubsection{Montecarlo algorithm}
-some considerations on my prior.
 
 First, it should be noted that within the same block we observe a substantial variability. We may have players that win against other players of the same cluster, against players of weaker clusters, or that simply do not win much. If we have players that substantially win against players of stronger clusters, it means that they are misclassified. So the fundamental variability driver is to be recognised in the blocks of the defeated players. Winning against Federer is not the same as winning against a newcomer. Those two victories should not be accounted in the same fashion.
 
