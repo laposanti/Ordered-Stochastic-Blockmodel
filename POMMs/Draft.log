@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  13 SEP 2023 16:51
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  13 SEP 2023 23:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -425,7 +425,299 @@ File: l3backend-dvips.def 2022-02-07 L3 backend support: dvips
 \g__pdf_backend_link_int=\count314
 \g__pdf_backend_link_sf_int=\count315
 )
-No file Draft.aux.
+(./Draft.aux
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+)
 \openout1 = `Draft.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
@@ -452,7 +744,7 @@ LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
 (Font)              scaled to size 8.65997pt on input line 31.
 LaTeX Font Info:    Trying to load font information for U+msa on input line 31.
 
-(/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 31.
@@ -515,7 +807,7 @@ LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 35.
 
-No file Draft.toc.
+(./Draft.toc)
 \tf@toc=\write3
 \openout3 = `Draft.toc'.
 
@@ -523,7 +815,7 @@ LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
 (Font)              scaled to size 7.69775pt on input line 37.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
 (Font)              scaled to size 7.69775pt on input line 37.
-[1]
+ [1]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 39.
 
@@ -541,23 +833,18 @@ File: omscmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 78.
  [3]
-
-LaTeX Warning: Reference `eq:WST_P' on page 4 undefined on input line 122.
-
-
-LaTeX Warning: Reference `eq:SST_P' on page 4 undefined on input line 122.
-
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
 (Font)              scaled to size 5.77332pt on input line 135.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
 (Font)              scaled to size 5.77332pt on input line 135.
-[4]
+ [4]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 149.
  [5]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 197.
- [6]
+
+[6]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 235.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
@@ -567,29 +854,11 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 283.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
 (Font)              No change on input line 313.
-
-
-LaTeX Warning: Reference `eqn_general_proposal' on page 8 undefined on input li
-ne 313.
-
-
-LaTeX Warning: Reference `eqn_gen_ratio' on page 8 undefined on input line 313.
-
-
-
-LaTeX Warning: Reference `eqn_gen_ratio' on page 8 undefined on input line 317.
-
-
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
 (Font)              No change on input line 321.
-[8
+ [8
 
-]
-
-LaTeX Warning: Reference `eqn_gen_ratio' on page 9 undefined on input line 335.
-
-
-[9]
+] [9]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 342.
  [10
@@ -597,11 +866,6 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 373.
-
-
-LaTeX Warning: Reference `fig:simple_adjacency' on page 11 undefined on input l
-ine 375.
-
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K3_N10
 0.png Graphic file (type eps)
@@ -631,6 +895,10 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 391.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 391.
+
+
+Package caption Warning: \label without proper reference on input line 1156.
+See the caption package documentation for explanation.
 
 
 LaTeX Warning: Reference `table:simulations_from_simple' on page 11 undefined o
@@ -683,10 +951,6 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 423.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 423.
-
-LaTeX Warning: Reference `fig:adjacency_all_simple' on page 11 undefined on inp
-ut line 428.
-
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
 (Font)              scaled to size 11.54663pt on input line 436.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
@@ -791,6 +1055,10 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 617.
 
+Package caption Warning: \label without proper reference on input line 1156.
+See the caption package documentation for explanation.
+
+
 LaTeX Warning: Reference `table:simulations_from_simple' on page 15 undefined o
 n input line 623.
 
@@ -810,7 +1078,7 @@ Overfull \hbox (141.49403pt too wide) in paragraph at lines 721--733
  []
 
 
-Overfull \hbox (91.61064pt too wide) in paragraph at lines 742--754
+Overfull \hbox (36.86058pt too wide) in paragraph at lines 742--754
  [][][][] 
  []
 
@@ -973,40 +1241,117 @@ Overfull \hbox (20.43556pt too wide) in paragraph at lines 964--976
  []
 
 
-Overfull \hbox (92.09099pt too wide) in paragraph at lines 985--997
+Overfull \hbox (42.81593pt too wide) in paragraph at lines 985--997
  [][][][] 
  []
 
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1018.
-[19] [20] [21] [22]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1141.
+[19] [20] [21]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png Graphic file (type
+ eps)
 
-Overfull \hbox (5.27441pt too wide) detected at line 1202
-[]
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png Graphic file (type 
+eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/RankvsClust_Est_modelPOMM_K4_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png Graphic file (type 
+eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/RankvsClust_Est_modelPOMM_K5_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
+ults/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png G
+raphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
+processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/adjacency_Tennis_application_Est_model_POMM_K4_N95.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/adjacency_Tennis_application_Est_model_POMM_K4_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/similarity_Tennis_application_Est_model_POMMK4_N95.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/similarity_Tennis_application_Est_model_POMMK4_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png 
+Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1070.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1070.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1070.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1070.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (7.36528pt too wide) in paragraph at lines 1146--1157
+ [][][][] 
  []
 
-[23
+[22
+
+] [23] [24]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 1166.
+ [25
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1236.
- [24] [25] (./Draft.aux)
+(Font)              No change on input line 1289.
+
+Overfull \hbox (5.27441pt too wide) detected at line 1350
+[]
+ []
+
+[26
+
+]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1384.
+ [27] [28] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 7291 strings out of 478716
- 203796 string characters out of 5858226
- 429136 words of memory out of 5000000
- 25315 multiletter control sequences out of 15000+600000
- 485426 words of font info for 106 fonts, out of 8000000 for 9000
+ 7393 strings out of 478716
+ 218217 string characters out of 5858226
+ 428662 words of memory out of 5000000
+ 25409 multiletter control sequences out of 15000+600000
+ 486660 words of font info for 110 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
- 69i,13n,76p,1355b,519s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 69i,13n,76p,1355b,522s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (25 pages, 83084 bytes).
+Output written on Draft.dvi (28 pages, 90372 bytes).

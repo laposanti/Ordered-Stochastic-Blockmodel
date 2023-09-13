@@ -746,8 +746,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &319 & 1219 & 0 & 0.188 & 0.214 & 0 & 20.99667 & 27.7225 & 0 & 1.035 & 1.918 & 0 \\
-$\alpha$ &40 & 126 & 187 & 0.79 & 0.756 & 0.393 & 23.57667 & 22.45417 & 15.74333 & 1.108 & 1.238 & 1.884   \\
+$S$ &319 & 1219 & 0 & 0.188 & 0.214 & 0 & 21.00 & 27.72 & 0 & 1.0 & 1.9 & 0 \\
+$\alpha$ &40 & 126 & 187 & 0.79 & 0.76 & 0.34 & 23.5 & 22.4 & 15.74 & 1.108 & 1.238 & 1.884   \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -989,8 +989,123 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &2362 & 4202 & 0 & -0.009 & 0.001 & 0 & 37.25333 & 46.07417 & 0 & 1 & 1 &0 \\
-$\alpha$ &7 & 13 & 17 & 0.96 & 0.964 & 0.967 & 25.41917 & 33.42167 & 41.46833 & 1.198 & 1.014 & 1.07   \\
+$S$ &2362 & 4202 & 0 & -0.009 & 0.001 & 0 & 37.25 & 46.07 & 0 & 1 & 1 &0 \\
+$\alpha$ &7 & 13 & 17 & 0.96 & 0.964 & 0.967 & 25.42 & 33.42 & 41.47 & 1.198 & 1.014 & 1.07   \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\clearpage
+
+\subsection{Fixing $S$=0.01}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, POMM Model Estimates]{%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model Estimates]{%
+    \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png}%
+        \label{fig:M10000}%
+    }
+    \end{figure}
+
+
+$$\hat{P}^{POMM}=\left[\begin{array}{ccc}
+0.50& 0.65 & 0.79\\
+0.34& 0.50 & 0.64 \\
+0.21& 0.35 & 0.50
+\end{array}\right]
+$$
+
+$$\hat{P}^{POMM}=\left[\begin{array}{cccc}
+0.50 & 0.58 & 0.68 & 0.76 \\
+0.42 & 0.50 & 0.57 & 0.67 \\
+0.32 & 0.43 & 0.50 & 0.57 \\
+0.24 & 0.33 & 0.43 & 0.50 \end{array}\right] 
+$$
+
+$$
+\hat{P}^{POMM}= \left[\begin{array}{ccccc}
+0.50 & 0.58 & 0.67 & 0.72 & 0.79 \\
+0.42 & 0.50 & 0.57 & 0.67 & 0.71 \\
+0.33 & 0.43 & 0.50 & 0.57 & 0.67 \\
+0.28 & 0.33 & 0.43 & 0.50 & 0.58 \\
+0.22 & 0.29 & 0.33 & 0.42 & 0.50\end{array}\right]
+$$
+
+
+
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=4, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/adjacency_Tennis_application_Est_model_POMM_K4_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=4, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/similarity_Tennis_application_Est_model_POMMK4_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=5 POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the POMM Model}
+    \label{fig:all_images}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $z$ summary table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{cccc}
+\toprule
+\multirow{2}{*}{Method}  &\multicolumn{3}{c}{WAIC} \\
+\cmidrule(lr){2-4}
+& $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+POMM model  &$\underset{21.17}{-5220.111}$ & $\underset{19.32}{-5181.395}$ & $\underset{20.07}{-5233.632}$  \\  
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM Hyperparameters summary table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+$\hat{\theta}$} & \multicolumn{3}{c}{
+95$\%$ CI interval}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+S  &0.01 & 0.01 & 0.01 & [0.01	0.01] & [0.01	0.01] & [0.01	0.01]   \\
+$\alpha$ & 0.12 & 1.41 & 0.87 & [0.1	0.15] & [0.1	2.74] & [0.1	1.8] \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -1003,12 +1118,45 @@ $\alpha$ &7 & 13 & 17 & 0.96 & 0.964 & 0.967 & 25.41917 & 33.42167 & 41.46833 & 
 
 
 
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $z$ diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &50.3 & 54.4 & 0 & 0.001 & -0.01 & 0.9 & 8.9 & 20.0 & 0.01 & 1.0 & 8.8 & NaN  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $P$ diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &1282 & 1900 & 3493.6 & 0.01 & 0.02 & 0.01 & 33.8 & 36.7 & 49.6 & 1.0 & 12.3 & 10.8  \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
-
-
-
-
+\clearpage
 
 \subsubsection{Montecarlo algorithm}
 

@@ -15,10 +15,11 @@
 \contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{15}{}%
 \contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{18}{}%
 \contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{19}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.1.1}{Montecarlo algorithm}}{19}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{23}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{23}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{23}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{24}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{24}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{24}{}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $S$=0.01}}{22}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{25}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{26}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{26}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{26}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{27}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{27}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{27}{}%
