@@ -217,17 +217,23 @@ z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N
     # Close the device to save the plot
     dev.off()
   }else{
-    if(label_switch==F){
+    if(label_switch==T){
       runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Yij_matrix)/colSums(Yij_matrix))
       z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
     }
     similarity_matrixPOMMM = pr_cc(z_container_POMM)
+    A_container_POMM <- cbind(test_output$chain1$control_containers$A[-c(1:burnin)],
+                              test_output$chain2$control_containers$A[-c(1:burnin)],
+                              test_output$chain3$control_containers$A[-c(1:burnin)],
+                              test_output$chain4$control_containers$A[-c(1:burnin)]) 
+    
+    z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
     #plotting it
     point_est_POMM = minVI(similarity_matrixPOMMM)$cl
     plot_name <- paste0("adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    similarity_plot(Y_ij, point_est_POMM, point_est_POMM) #checking mixing
+    similarity_plot(Y_ij, z_MAP_POMM, z_MAP_POMM) #checking mixing
     # Close the device to save the plot
     dev.off()
     
@@ -346,7 +352,7 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, burn_in, label
     results$WAIC_se <- WAIC$estimates[3,2]
     
   }
-  return(list(table=results, memb = point_est_POMM))
+  return(list(table=results, memb = z_MAP_POMM))
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){

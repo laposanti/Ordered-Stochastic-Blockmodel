@@ -1,23 +1,16 @@
 
 
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
-source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
-source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
 
 library(EnvStats)
 library(ggplot2)
 library(dplyr)
 library(truncnorm)
 library(fossil)
-
+library(doParallel)
 library(label.switching)
 library(igraph)
 library(ggraph)
-
+library(foreach)
 
 
 
@@ -63,87 +56,115 @@ N_ij = matrix(0, nrow(Y_ij), ncol(Y_ij))
 N_ij[lower.tri(N_ij)] = Y_ij[lower.tri(Y_ij)] + t(Y_ij)[lower.tri(Y_ij)]
 N_ij[upper.tri(N_ij)] = Y_ij[upper.tri(Y_ij)] + t(Y_ij)[upper.tri(Y_ij)]
 
-
-beta_max=.8
-K=5
-N=95
-gamma_vec = rep(1/K,K)
-diag0.5=T
-N_iter=30000
-#-------------------------------------------------------------------------------
-#POMM 
-#------
-cores=4
-cl <- makeCluster(cores)
-registerDoParallel(cl)
-
-chains_POMM <- foreach(iterazione = 1:4) %dopar% { 
-  library(foreach)
-  library(doParallel)
-  library(tidyverse)
-  library(EnvStats)
-  library(truncnorm)
-  library(dplyr)
-
+for(k in c(3,4,5)){
+  
+  
+  K=k
+  N=95
+  gamma_vec = rep(1/K,K)
+  diag0.5=T
+  N_iter=10000*k
+  #-------------------------------------------------------------------------------
+  #POMM 
+  #------
+  
+  chains_POMM <- foreach(iterazione = 1:4) %dopar% { 
+    beta_max=.8
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
+    source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
+    source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
+    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
+    
+    
+    library(foreach)
+    library(doParallel)
+    library(tidyverse)
+    library(EnvStats)
+    library(truncnorm)
+    library(dplyr)
+    
+    seed=123
+    alpha0=runif(1,0.1,3)
+    trunc=improper_prior5(K,beta_max,alpha = alpha0)
+    S0=0.1
+    P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
+    z0=vector()
+    for(i in 1:N){
+      z0=append(z0, sample(1:K,1))
+    }
+    init_POMM =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
+    
+    estimation_control = list(z = 1,alpha=1,S=0,P=1)
+    
+    hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+    TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
+                              estimation_control = estimation_control,ground_truth = list("z"=NA ,  "alpha"=NA ,"S"=S0 ,   "P"=NA ),N = N,
+                              N_iter = N_iter,targ_rate = .22,
+                              hyper_params =hyper_params ,seed = seed)
+  }
   seed=123
-  alpha0=runif(1,0.1,3)
-  trunc=improper_prior5(K,beta_max,alpha = alpha0)
-  S0=runif(1,0.1,.9)
-  P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
-  init_POMM =list(z = rep_len(sample(1:K,K,F), N),alpha=alpha0,S=S0,P=P0_POMM)
-  
-  estimation_control = list(z = 1,alpha=0,S=1,P=1)
-  
-  hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-  TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
-                            estimation_control = estimation_control,N = N,
-                            N_iter = N_iter,targ_rate = .22,
-                            hyper_params =hyper_params ,seed = seed)
- TEST
+  names(chains_POMM) <- c('chain1','chain2','chain3','chain4')
+  setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/')
+  filename <- paste0('Tennis_application_Est_model_POMM_',"_N", N,"_K", K, "_seed", seed,".RDS")
+  saveRDS(chains_POMM, file = filename) #saving results
 }
-stopCluster()
-names(chains_POMM) <- c('chain1','chain2','chain3','chain4')
-setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
-filename <- paste0('Tennis_application_Est_model_POMM_',"_N", N,"_K", K, "_seed", seed,".RDS")
-saveRDS(chains_POMM, file = filename) #saving results
-
 #-------------------------------------------------------------------------------
 #Simple 
 #------
 
-cores=4
-cl <- makeCluster(cores)
-registerDoParallel(cl)
+
 
 
 chains_Simple <- foreach(iterazione = 1:4) %dopar% { 
+  
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
+  source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
+  source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
+  
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
+  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
   library(foreach)
   library(doParallel)
   library(tidyverse)
   library(EnvStats)
   library(truncnorm)
   library(dplyr)
+  beta_max=.8
   seed=123
   P0_Simple= matrix(.5,K,K)
   P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
   P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
-  init_Simple =list(z = rep_len(sample(1:K,K,F), N),P=P0_Simple)
+  z0=vector()
+  for(i in 1:N){
+    z0=append(z0, sample(1:K,1))
+  }
+  init_Simple =list(z = z0,P=P0_Simple)
   
   estimation_control_Simple = list(z = 1,P=1)
   
-  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  hyper_params_Simple = list(K = K,gamma_vec = gamma_vec,diag0.5=diag0.5)
   TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
                               init = init_Simple,estimation_control = estimation_control_Simple,
-                             N = N,N_iter = N_iter,
+                              N = N,N_iter = N_iter,
                               targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
-  TEST
 }
 
-stopCluster()
+seed=123
 names(chains_Simple) <- c('chain1','chain2','chain3','chain4')
 setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
 filename_simple <- paste0('Tennis_application_Est_model_Simple_',"_N", N,"_K", K, "_seed", seed,".RDS")
 saveRDS(chains_Simple, file = filename_simple) #saving results
+
+}
+
 
 
 label_switch = label.switching(method = "DATA-BASED",z = t(z_burn),K = 3, data=rowSums(A))
@@ -182,7 +203,7 @@ ggplot(g_df, aes(x=rank_number, y=log(rank_number), col=as.factor(cluster)))+
   geom_point()
 
 
-  
+
 ggplot(g_df, aes(x = player_slug, y = cluster, color = factor(cluster))) +
   geom_point(size = 3) +
   labs(x = "Player Name", y = "Cluster") +

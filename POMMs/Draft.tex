@@ -103,7 +103,7 @@ Each of these axioms, produces a different $P$ structure. Assuming, without loss
 \label{eq:WST_P}
 P^{WST} = 
 \left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right) =  
-\left(\begin{array}{cccc} 1/2 \leq & 1/2 \leq &  ... & 1/2 \\  1/2 \geq &  1/2 \leq & ... &  1/2  \\ \vdots & \vdots & \vdots & \vdots \\  1/2 \geq&  1/2 \geq& ... &  1/2 \end{array}\right) 
+\left(\begin{array}{cccc} 1/2 \leq & p_{1,2} & ... & p_{1,K} \\  p_{2,1} \leq &  1/2 \leq & ... &  p_{2,K}  \\ \vdots & \vdots & \vdots & \vdots \\  p_{K,1}& p_{K,2 }&  ... &  1/2 \end{array}\right) 
 \end{equation}
 \end{center}
  
@@ -114,7 +114,7 @@ Instead, under SST, we would observe:
 P^{SST} = 
 \left(\begin{array}{cccc}p_{1,1} & p_{1,2} &  ... & p_{1,K} \\ p_{2,1} & p_{2,2} & ... & p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1}& p_{K,2 }& ... & p_{K,K}\end{array}\right) =  
 \left(\begin{array}{cccc} 1/2 \leq & p_{1,2}\leq &  ... &  p_{1,K}  \\ \vertgeq &  \vertgeq &  & \vertgeq \\
- p_{2,1} \geq & 1/2 & ... & \leq p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1} \geq & p_{K,2 } \geq & ... & \geq 1/2 \end{array}\right)  
+ p_{2,1} \leq & 1/2 & ... & \leq p_{2,K} \\ \vdots & \vdots & \vdots & \vdots \\ p_{K,1} \leq & p_{K,2 } \leq & ... & \leq 1/2 \end{array}\right)  
  \end{equation} 
 \end{center}
 
@@ -765,16 +765,27 @@ $\alpha$ &40 & 126 & 187 & 0.79 & 0.756 & 0.393 & 23.57667 & 22.45417 & 15.74333
 
 \begin{figure}[h]
     \centering
-    \subfigure[K=3, POMM Model]{%
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_Simple_K3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=4, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_Simple_K4_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_Simple_K5_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
         \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png}%
         \label{fig:POMM_adjacency_K3}%
     }\hfill
-    \subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png}%
+    \subfigure[K=4, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_POMM_K4_N95.png}%
         \label{fig:POMM_adjacency_K5}%
     }\hfill
-    \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png}%
+    \subfigure[K=5 POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png}%
         \label{fig:POMM_adjacency_K9}%
     }
     \caption{Adjacency Matrices simulated via the POMM Model}
@@ -783,12 +794,207 @@ $\alpha$ &40 & 126 & 187 & 0.79 & 0.756 & 0.393 & 23.57667 & 22.45417 & 15.74333
 
 
 
+\begin{figure}[h]
+    \centering
+    \subfigure[K=3, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=4, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_SimpleK4_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=5, Simple Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_SimpleK5_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_POMMK3_N95.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[K=4, POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_POMMK4_N95.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[K=5 POMM Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the POMM Model}
+    \label{fig:all_images}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Simple Model Estimates]{%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelSimple_K3_N95.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelSimple_K4_N95.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, Simple Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelSimple_K5_N95.png}%
+        \label{fig:M10000}%
+    }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png}%
+        \label{fig:M4000}%
+    }\hfill
+    \subfigure[K=5, POMM Model Estimates]{%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png}%
+        \label{fig:M7000}%
+    }\hfill
+    \subfigure[K=9, POMM Model Estimates]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png}%
+        \label{fig:M10000}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \label{fig:all_images}
+\end{figure}
+
+ $$\hat{P}^{POMM}=\left[\begin{array}{ccc}
+ 0.50 & 0.77 & 0.64\\
+0.22 & 0.50 & 0.76 \\
+0.35 & 0.23 & 0.50
+\end{array}\right] \quad \hat{P}^{Simple}=\left[\begin{array}{ccc}
+ 0.50 & 0.77 & 0.64\\
+0.22 & 0.50 & 0.76 \\
+0.35 & 0.23 & 0.50
+\end{array}\right]
+$$
+
+$$\hat{P}^{POMM}=\left[\begin{array}{cccc}0.50 & 0.78 & 0.74 & 0.76 \\
+0.21 & 0.50& 0.77 & 0.53 \\
+0.25 & 0.22 & 0.50 & 0.77 \\
+0.23 & 0.46 & 0.22 & 0.50 \end{array}\right] \quad \hat{P}^{Simple}=\left[\begin{array}{cccc}0.50 & 0.78 & 0.74 & 0.76 \\
+0.21& 0.50 & 0.77 & 0.53 \\
+0.25 & 0.22 & 0.50 & 0.77 \\
+0.23 & 0.46 & 0.22 & 0.50\end{array}\right]
+$$
+
+$$
+\hat{P}^{POMM}= \left[\begin{array}{ccccc}0.50& 0.78 & 0.74 & 0.79 & 0.76 \\
+0.22 & 0.50 & 0.80 & 0.51 & 0.77 \\
+0.26 & 0.21& 0.50& 0.75 & 0.65 \\
+0.22& 0.49 & 0.25& 0.50 & 0.78 \\
+0.28& 0.23 & 0.35 & 0.22 & 0.50\end{array}\right] \quad \hat{P}^{Simple}= \left[\begin{array}{ccccc}0.50& 0.77 & 0.74 & 0.78 & 0.71 \\
+0.22 & 0.50& 0.79 & 0.51 & 0.76 \\
+0.25& 0.20 & 0.50 & 0.74& 0.65 \\
+0.21& 0.48 & 0.25 & 0.50 & 0.77 \\
+0.28& 0.23 & 0.34 & 0.22& 0.50\end{array}\right]
+$$
 
 
 
 
 
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $z$ summary table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{cccc}
+\toprule
+\multirow{2}{*}{Method}  &\multicolumn{3}{c}{WAIC} \\
+\cmidrule(lr){2-4}
+& $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+POMM model  &$\underset{24.85}{-5410.155}$ & $\underset{24.78}{-5536.495}$ & $\underset{25.51}{-5636.915}$  \\
+Simple model  &$\underset{24.87}{-5410.940}$ & $\underset{24.76}{-5535.890}$ & $\underset{25.48}{-5636.814}$ \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM Hyperparameters summary table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+$\hat{\theta}$} & \multicolumn{3}{c}{
+95$\%$ CI interval}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+S  &0.54 & 0.58 & 0.58 & [0.2	0.9] & [0.25	0.9] & [0.001,	0.0608]   \\
+$\alpha$ & 0.45& 0.50& 0.42 & [0.11	0.84] & [0.15	0.88] & [0.1	0.82] \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+\subsection{POMM model check}
+
+
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $z$ diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &20 & 21 & 6010 & 0.122 & 0.130 & 0.008 & 1.7 & 1.5 & 56 & 1.016 & 1.003 & 1.000  \\
+Simple &21 & 21 & 32 & 0.103 & 0.178 & 0.051 & 1.6 & 1.5 & 1.5 & 1.004 & 1.041 & 1.001   \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large $P$ diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &729 & 1414 & 2378& 0.10& 0.07 & 0.03 & 29.9 & 39.4 & 53.2 & 1.00 & 1.00& 1.00   \\
+Simple &748& 1365 & 2240 & 0.10 & 0.08 & 0.05 & 30.1 & 39.6 & 53.87475 & 1.00 & 1.01 & 1.00 \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\caption*{
+{\large POMM hyperparameters diagnostic table} \\ 
+{\small True Model POMM, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+$S$ &2362 & 4202 & 0 & -0.009 & 0.001 & 0 & 37.25333 & 46.07417 & 0 & 1 & 1 &0 \\
+$\alpha$ &7 & 13 & 17 & 0.96 & 0.964 & 0.967 & 25.41917 & 33.42167 & 41.46833 & 1.198 & 1.014 & 1.07   \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
 
 
 
