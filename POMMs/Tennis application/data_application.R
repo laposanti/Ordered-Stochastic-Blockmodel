@@ -87,10 +87,10 @@ for(k in c(3,4,5)){
     library(truncnorm)
     library(dplyr)
     
-    seed=123
-    alpha0=runif(1,0.1,3)
+    seed= 123
+    alpha0= runif(1,0.1,3)
     trunc=improper_prior5(K,beta_max,alpha = alpha0)
-    S0=0.1
+    S0=0.01
     P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
     z0=vector()
     for(i in 1:N){

@@ -56,11 +56,11 @@ A = as_adjacency_matrix(g)
 
 
 #where the data are stored
-data_wd<-  '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results'
+data_wd<-  '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/'
 
 #where the data will be saved
-tap <- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results'
-plots_dir<- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/processed_results'
+tap <- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/'
+plots_dir<- '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/processed_results/'
 
 
 #Printing all possible results
@@ -95,6 +95,8 @@ while(controller==0){
   P_diagnostic_results= matrix(0,2,12)
   rownames(P_diagnostic_results)<- c("POMM","Simple")
   
+  corr_table = matrix(0,2,3)
+  rownames(corr_table)<- c("POMM","Simple")
   #1: POMM, 0:Simple
   results_control <- data.frame(Est_m =c(0,1))
   for(results_row in c(F,T)){
@@ -102,22 +104,23 @@ while(controller==0){
     
     
     #---------------++++----------------
-    est_model  <- ifelse(results_row, "POMM","Simple")
+    #est_model  <- ifelse(results_row, "POMM","Simple")
+    est_model<- 'POMM'
     filename <- list.files(pattern = paste0('Tennis_application_Est_model_', est_model),path = data_wd)
     print(filename)
     
     
-    N_iter=30000
-    burnin <- 20000
+
     #where to save the results
     
     for(i in 1:length(filename)){
       setwd(tap)
-      uploded_results<- readRDS(paste0(data_wd,"/",filename[i]))
+      uploded_results<- readRDS(paste0(data_wd,"/",filename[3]))
       # Save each table with appropriate filenames and directory
       K<- nrow(uploded_results$chain1$init$P)
       print(K)
-      
+      N_iter=ncol(uploded_results$chain1$est_containers$z)
+      burnin <- N_iter*0.5
       N<- nrow(uploded_results$chain1$Yij_matrix)
       print(N)
       ncol(uploded_results$chain1$est_containers$z)
@@ -136,19 +139,7 @@ while(controller==0){
                                    burn_in = burnin,
                                    label_switch = F)
       P_s_table_save <-P_s_table$table
-      P_s_table_save <- P_s_table_save%>% 
-        summarise(
-          mean_mae = mean(abs(mean_est - true_value)),
-          percentage_in_interval = mean(true_value >= credible_interval_05 & true_value <= credible_interval_95) * 100 ,
-          average_credible_length = mean(abs(credible_interval_95 - credible_interval_05))
-        )
-      if(K==3){
-        P_summary_results[est_model,c(1,4,7)]<- unlist(P_s_table_save)
-      }else if(K==4){
-        P_summary_results[est_model,c(2,5,8)]<- unlist(P_s_table_save)
-      }else{
-        P_summary_results[est_model,c(3,6,9)]<- unlist(P_s_table_save)
-      }
+      
       
       
       P_est_title <- paste0(tap,'/P_est_matrix',true_model,est_model,'_K', K,'_N', N, '.csv')
@@ -222,22 +213,22 @@ while(controller==0){
         )
       
       if(K==3){
-        P_diagnostic_results[est_model,c(1,4,7,10)]<- unlist(P_d_table)
+        P_diagnostic_results[est_model,c(1,4,7,10)]<- round(unlist(P_d_table),2)
       }else if(K==4){
-        P_diagnostic_results[est_model,c(2,5,8,11)]<- unlist(P_d_table)
+        P_diagnostic_results[est_model,c(2,5,8,11)]<- round(unlist(P_d_table),2)
       }else{
-        P_diagnostic_results[est_model,c(3,6,9,12)]<- unlist(P_d_table)
+        P_diagnostic_results[est_model,c(3,6,9,12)]<- round(unlist(P_d_table),2)
       }
       
       z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, z = z, burn_in = burnin, N_iter)
       
       
       if(K==3){
-        z_diagnostic_results[est_model,c(1,4,7,10)]<- unlist(z_d_table)
+        z_diagnostic_results[est_model,c(1,4,7,10)]<- round(unlist(z_d_table),2)
       }else if(K==4){
-        z_diagnostic_results[est_model,c(2,5,8,11)]<- unlist(z_d_table)
+        z_diagnostic_results[est_model,c(2,5,8,11)]<- round(unlist(z_d_table),2)
       }else{
-        z_diagnostic_results[est_model,c(3,6,9,12)]<- unlist(z_d_table)
+        z_diagnostic_results[est_model,c(3,6,9,12)]<- round(unlist(z_d_table),2)
       }
       
       if(est_model == 'POMM'){
@@ -249,14 +240,14 @@ while(controller==0){
           }else if(K==4){
             S_diagnostic_results[1,c(2,5,8,11,14)]<- unlist(S_d_table)
           }else{
-            z_diagnostic_results[1,c(3,6,9,12,15)]<- unlist(S_d_table)
+            S_diagnostic_results[1,c(3,6,9,12,15)]<- unlist(S_d_table)
           }}else{
             if(K==3){
               S_diagnostic_results[1,c(1,4,7,10)]<- unlist(S_d_table)
             }else if(K==4){
               S_diagnostic_results[1,c(2,5,8,11)]<- unlist(S_d_table)
             }else{
-              z_diagnostic_results[1,c(3,6,9,12)]<- unlist(S_d_table)
+              S_diagnostic_results[1,c(3,6,9,12)]<- unlist(S_d_table)
             }
           }
         
@@ -293,10 +284,21 @@ while(controller==0){
         left_join(players_df, by="player_slug") %>%
         mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
         arrange()
+      est_df<- data.frame(player_slug = rownames(uploded_results$chain1$Yij_matrix), est_cl = z_tot_table$memb)
+      combined_df<- inner_join(g_df,est_df,by = 'player_slug')
       png(plot_name,width = 800, height = 627)
-      print(rank_vs_cluster(est_clusters,est_model = est_model))
+      print(rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model))
       # Close the device to save the plot
       dev.off()
+      if(K==3){
+        corr_table[est_model,1]<- round(cor(combined_df$degree_pl,y = combined_df$est_cl),2)
+      }else if(K==4){
+        corr_table[est_model,2]<- round(cor(combined_df$degree_pl,y = combined_df$est_cl),2)
+      }else{
+        corr_table[est_model,3]<- round(cor(combined_df$degree_pl,y = combined_df$est_cl),2)
+      }
+      
+      
       }
     print(paste0('Hang on! Just ', nrow(results_control) - results_row, ' combinations to go!'))
   }
@@ -329,10 +331,6 @@ while(controller==0){
   controller = controller+1
 }
 
-
-
-N_iter=30000
-burnin <- 20000
 #where to save the results
 
 for(i in 1:length(filename)){
@@ -404,8 +402,9 @@ g_df =  data.frame(vertex_attr(g)) %>%
   left_join(players_df, by="player_slug") %>%
   mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
   arrange()
-
-rank_vs_cluster(clust_est,est_model = est_model)
+est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = z_tot_table$memb)
+combined_df<- inner_join(g_df,est_df,by = 'player_slug')
+rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model)
 # Close the device to save the plot
 dev.off()
 

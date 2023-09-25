@@ -1,3 +1,36 @@
+rank_vs_cluster<- function(data_with_statistics, clustering, est_model){
+  
+
+  # Create the ggplot plot with error bars and modifications
+  main_plot<-ggplot(data_with_statistics, aes(x = reorder(player_slug, median_rank), y = median_rank, color = factor(clustering))) +
+    geom_point(size = 3) +
+    geom_errorbar(aes(ymin = min_r, ymax = max_r), size = 1) +
+    labs(x = "Player Name", y = "Ranking", title = paste0(est_model," Estimated Block Membership and Ranking"),
+         subtitle = 'Players are sorted in ascending order relative to their median ranking in 2017') +
+    scale_color_discrete(name = "Cluster") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+      text = element_text(size = 10, family = "Arial"),
+      plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+      plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+      legend.text = element_text(size = 12),
+      plot.margin = margin(20, 20, 20, 20)
+    )
+  degree_plot <- ggplot(data_with_statistics, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(clustering) )) +
+    geom_bar(stat = "identity") +
+    labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
+         subtitle = 'Players are sorted in descending order relative to their percentage of victories') +
+    scale_color_discrete(name = "Cluster") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+      text = element_text(size = 10, family = "Arial"),
+      plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+      plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+      plot.margin = margin(20, 20, 20, 20)
+    )
+  return(plot_grid(main_plot, degree_plot, ncol = 1, align = "v"))}
 
 
 plot_P = function(p_container, p_true, burnin,K){
@@ -242,7 +275,7 @@ z_plot<- function(test_output, true_model, est_model, true_value, diag0.5 , K, N
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
     
-    similarity_plot(similarity_matrixPOMMM, point_est_POMM, point_est_POMM) #checking mixing
+    similarity_plot(similarity_matrixPOMMM, z_MAP_POMM, z_MAP_POMM) #checking mixing
     # Close the device to save the plot
     dev.off()
     return(point_est_POMM)
@@ -363,6 +396,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
   test3<-chains$chain3
   test4<-chains$chain4
   
+  N<- nrow(chains$chain1$Yij_matrix)
   if(true_value == F){
     
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0,Gelman_rubin=0)
@@ -377,9 +411,18 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
                                             mcmc(test3$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test4$control_containers$A[-c(1:burn_in)])))
     #ESS
-    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)/N
+    results$ESS <- round(sum(simplify2array(lapply(mm, effectiveSize))),0)/N
     #Gelman Rubin
-    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    gelman_vector =vector()
+    for(i in 1:N){
+      individual_i_chain<- mcmc.list(chains_list = mcmc.list(mcmc((test1$est_containers$z[i,-c(1:burn_in)])),
+                                                   mcmc((test2$est_containers$z[i,-c(1:burn_in)])),
+                                                   mcmc((test3$est_containers$z[i,-c(1:burn_in)])),
+                                                   mcmc((test4$est_containers$z[i,-c(1:burn_in)]))))
+      gelman_d<-gelman.diag(individual_i_chain)[[1]]
+      gelman_vector<-append(gelman_vector, gelman_d[1])
+    }
+    results$Gelman_rubin <- median(gelman_vector,na.rm = T)
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     
@@ -403,9 +446,19 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
                                             mcmc(test3$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test4$control_containers$A[-c(1:burn_in)])))
     #ESS
-    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    results$ESS <- round(sum(simplify2array(lapply(mm, effectiveSize))),0)/N
     
-    results$Gelman_rubin<-  round(gelman.diag(mm_A)[1]$psrf[1],3)
+    gelman_vector =vector()
+    for(i in 1:N){
+      individual_i_chain<- mcmc.list(chains_list = mcmc.list(mcmc((test1$est_containers$z[i,-c(1:burn_in)])),
+                                                             mcmc((test2$est_containers$z[i,-c(1:burn_in)])),
+                                                             mcmc((test3$est_containers$z[i,-c(1:burn_in)])),
+                                                             mcmc((test4$est_containers$z[i,-c(1:burn_in)]))))
+      gelman_d<-gelman.diag(individual_i_chain)[[1]]
+      gelman_vector<-append(gelman_vector, gelman_d[1])
+    }
+    results$Gelman_rubin <- median(gelman_vector,na.rm = T)
+    
     #Autocorrelation at lag=30
     results$LAG_30 <- round(mean(simplify2array(lapply(mm_A,autocorr.diag,lag=30))),3)
     

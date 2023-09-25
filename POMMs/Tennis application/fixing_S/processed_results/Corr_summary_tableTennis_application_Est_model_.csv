@@ -1,0 +1,12 @@
+\begin{longtable}{rrr}
+\caption*{
+{\large Corrsummarytable}
+} \\ 
+\toprule
+X1 & X2 & X3 \\ 
+\midrule
+-0.87 & -0.91 & -0.89 \\ 
+0.00 & 0.00 & 0.00 \\ 
+\bottomrule
+\end{longtable}
+

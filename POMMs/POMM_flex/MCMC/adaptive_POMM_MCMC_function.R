@@ -20,7 +20,6 @@
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
 adaptive_MCMC_POMM <- function(Yij_matrix, Nij_matrix,init , estimation_control, ground_truth,N, N_iter, targ_rate, hyper_params, seed){
-  browser()
   #validation-------
   if(missing(ground_truth)){
     print("Estimation of real data: no ground truth available")

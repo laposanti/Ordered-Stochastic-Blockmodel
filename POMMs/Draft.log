@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  13 SEP 2023 23:33
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  19 SEP 2023 23:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -897,7 +897,7 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 391.
 
 
-Package caption Warning: \label without proper reference on input line 1156.
+Package caption Warning: \label without proper reference on input line 1158.
 See the caption package documentation for explanation.
 
 
@@ -1055,7 +1055,7 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 617.
 
-Package caption Warning: \label without proper reference on input line 1156.
+Package caption Warning: \label without proper reference on input line 1158.
 See the caption package documentation for explanation.
 
 
@@ -1224,24 +1224,24 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 852.
 
-Overfull \hbox (12.108pt too wide) detected at line 886
+Overfull \hbox (66.85806pt too wide) detected at line 888
 [] \OT1/cmr/m/n/10.95 = []  [] = []
  []
 
 [18
 
 ]
-Overfull \hbox (4.46939pt too wide) in paragraph at lines 944--956
+Overfull \hbox (56.93561pt too wide) in paragraph at lines 946--958
  [][][][] 
  []
 
 
-Overfull \hbox (20.43556pt too wide) in paragraph at lines 964--976
+Overfull \hbox (48.72206pt too wide) in paragraph at lines 966--978
  [][][][] 
  []
 
 
-Overfull \hbox (42.81593pt too wide) in paragraph at lines 985--997
+Overfull \hbox (18.61055pt too wide) in paragraph at lines 987--999
  [][][][] 
  []
 
@@ -1252,18 +1252,18 @@ ing_S/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png Graphic file (type
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
 /processed_results/RankvsClust_Est_modelPOMM_K3_N95.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
-ults/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png Graphic file (type 
-eps)
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png Graphic file (type
+ eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
-processed_results/RankvsClust_Est_modelPOMM_K4_N95.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
-ults/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png Graphic file (type 
-eps)
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/RankvsClust_Est_modelPOMM_K4_N95.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
+ing_S/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png Graphic file (type
+ eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
-processed_results/RankvsClust_Est_modelPOMM_K5_N95.png>
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
+/processed_results/RankvsClust_Est_modelPOMM_K5_N95.png>
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
 ults/processed_results/adjacency_Tennis_application_Est_model_POMM_K3_N95.png G
 raphic file (type eps)
@@ -1301,19 +1301,24 @@ Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
 /processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1070.
+(Font)              No change on input line 1072.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1070.
+(Font)              No change on input line 1072.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1070.
+(Font)              No change on input line 1072.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1070.
+(Font)              No change on input line 1072.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (7.36528pt too wide) in paragraph at lines 1146--1157
+Overfull \hbox (56.78612pt too wide) in paragraph at lines 1129--1140
+ [][][][] 
+ []
+
+
+Overfull \hbox (43.25699pt too wide) in paragraph at lines 1148--1159
  [][][][] 
  []
 
@@ -1321,14 +1326,14 @@ Overfull \hbox (7.36528pt too wide) in paragraph at lines 1146--1157
 
 ] [23] [24]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1166.
+(Font)              No change on input line 1168.
  [25
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1289.
+(Font)              No change on input line 1291.
 
-Overfull \hbox (5.27441pt too wide) detected at line 1350
+Overfull \hbox (5.27441pt too wide) detected at line 1352
 []
  []
 
@@ -1336,7 +1341,7 @@ Overfull \hbox (5.27441pt too wide) detected at line 1350
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1384.
+(Font)              No change on input line 1386.
  [27] [28] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
@@ -1346,12 +1351,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 7393 strings out of 478716
- 218217 string characters out of 5858226
+ 7423 strings out of 478716
+ 222503 string characters out of 5858226
  428662 words of memory out of 5000000
- 25409 multiletter control sequences out of 15000+600000
+ 25439 multiletter control sequences out of 15000+600000
  486660 words of font info for 110 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
  69i,13n,76p,1355b,522s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (28 pages, 90372 bytes).
+Output written on Draft.dvi (28 pages, 90536 bytes).
