@@ -1,5 +1,8 @@
 # Load required libraries
 
+library(doFuture)
+library(progressr)
+library(beepr)
 library(foreach)
 library(doParallel)
 library(tidyverse)
@@ -39,22 +42,13 @@ setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 
 test_grid = expand_grid(K_values, switch_values, N_values)
 
-cl <- makeCluster(cores)
-registerDoParallel(cl)
 
-foreach(iterazione = 1:nrow(test_grid)) %dopar% {
-  library(foreach)
-  library(doParallel)
-  library(tidyverse)
-  library(EnvStats)
-  library(truncnorm)
-  library(dplyr)
+for(iterazione in 1:nrow(test_grid)){
   #-----------------------------------------------------------------------------
   # Generating data
   #-----------------------------------------------------------------------------
   N=100
-  K=9
-  M= 13  
+  M= 13
   N = test_grid$N_values[iterazione]
   N_ij = matrix(M,N,N)
   N_iter = 30000
@@ -111,48 +105,53 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
   #-----------------------------------------------------------------------------
   
   
-
+  
   #------
   #POMMM
   #------
   
-  
-  
-  chains_POMM <- list()
-  for(i in 1:4){
-    seed=123
-    P_POMM = P_true
-    z_POMM = z_true
+  seed=123
+  P_POMM = P_true
+  z_POMM = z_true
+  #initializing each chain
+  init_POMM = list()
+  for(chain in 1:n_chains){
     alpha0=runif(1,0.1,3)
-    trunc=improper_prior5(K,beta_max,alpha = alpha0)
+    
     S0=runif(1,0.1,.9)
+    
+    trunc=improper_prior5(K,beta_max,alpha = alpha0)
     P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
-    z0=vector()
-    for(i in 1:N){
-      z0=append(z0, sample(1:K,1))
+    
+    z0=matrix(0,N,1)
+    for(item in 1:N){
+      z0[item]= sample(1:K,1)
     }
-    init_POMM =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
-
-    estimation_control = list(z = 1,alpha=1,S=1,P=1)
-    ground_truth= list(z = z_true,alpha=alpha,S=S,P=P_true)
-    hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-    TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
-                              estimation_control = estimation_control,
-                              ground_truth = ground_truth,N = N,
-                              N_iter = N_iter,targ_rate = .22,
-                              hyper_params =hyper_params ,seed = seed)
-    chains_POMM[[paste0("chain",i)]]= TEST
+    init_POMM[[chain]] =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
   }
+  
+  estimation_control = list(z = 1,alpha=1,S=1,P=1)
+  ground_truth= list(z = z_true,alpha=alpha,S=S,P=P_true)
+  hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  chains_POMM = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
+                                   estimation_control = estimation_control,
+                                   ground_truth = ground_truth,N = N,n_chains = n_chains,
+                                   N_iter = N_iter,targ_rate = .22,
+                                   hyper_params =hyper_params ,seed = seed)
+  my_names <- paste0("chain", 1:n_chains)
+  names(chains_POMM)<-my_names 
+  
   filename <- paste0("True_Model",model,"Est_model_POMM_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
   saveRDS(chains_POMM, file = filename) #saving results
   
   #------
   #Simple 
   #------
-
-  chains_Simple <- list()
-  for(i in 1:4){
-    seed=123
+  
+  
+  seed=123
+  init_Simple = list()
+  for(chain in 1:n_chains){
     P0_Simple= matrix(.5,K,K)
     P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
     P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
@@ -160,22 +159,23 @@ foreach(iterazione = 1:nrow(test_grid)) %dopar% {
     for(i in 1:N){
       z0=append(z0, sample(1:K,1))
     }
-    init_Simple =list(z = z0,P=P0_Simple)
-    
-    estimation_control_Simple = list(z = 1,P=1)
-    ground_truth_Simple= list(z = z_true,P=P_true)
-    hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-    TEST_simple = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
-                                init = init_Simple,estimation_control = estimation_control_Simple,
-                                ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,
-                                targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
-    chains_Simple[[paste0("chain",i)]]= TEST_simple
+    init_Simple[[chain]]  =list(z = z0,P=P0_Simple)
   }
+
+  
+  estimation_control_Simple = list(z = 1,P=1)
+  ground_truth_Simple= list(z = z_true,P=P_true)
+  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  chains_Simple = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
+                                     init = init_Simple,estimation_control = estimation_control_Simple,
+                                     ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,n_chains = n_chains,
+                                     targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
+  names(chains_Simple)<-my_names 
   filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
   saveRDS(chains_Simple, file = filename_simple) #saving results
   
 }
 
 
-stopCluster(cl)
+
 
