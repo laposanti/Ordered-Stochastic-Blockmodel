@@ -1,0 +1,16 @@
+\begin{longtable}{rrrrr}
+\caption*{
+{\large Pestmatrix} \\ 
+{\small POMMSimple5100}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 \\ 
+\midrule
+0.500 & 0.582 & 0.696 & 0.681 & 0.759 \\ 
+0.418 & 0.500 & 0.627 & 0.604 & 0.717 \\ 
+0.304 & 0.373 & 0.500 & 0.525 & 0.596 \\ 
+0.319 & 0.396 & 0.475 & 0.500 & 0.629 \\ 
+0.241 & 0.283 & 0.404 & 0.371 & 0.500 \\ 
+\bottomrule
+\end{longtable}
+

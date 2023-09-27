@@ -48,7 +48,7 @@ for(iterazione in 1:nrow(test_grid)){
   # Generating data
   #-----------------------------------------------------------------------------
   N=100
-  M= 13
+  M= 5
   N = test_grid$N_values[iterazione]
   N_ij = matrix(M,N,N)
   N_iter = 30000

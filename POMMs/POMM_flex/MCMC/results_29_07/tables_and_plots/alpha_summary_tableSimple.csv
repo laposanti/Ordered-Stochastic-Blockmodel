@@ -1,0 +1,11 @@
+\begin{longtable}{rrrlrlrrr}
+\caption*{
+{\large alphasummarytable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 \\ 
+\midrule
+0.568609267905756 & 0 & 0.371941365193779 & [0.22,0.9] & 0 & [0.1,0.77] & 0 & 0 & 0 \\ 
+\bottomrule
+\end{longtable}
+

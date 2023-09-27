@@ -388,7 +388,7 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, burn_in, label
   return(list(table=results, memb = z_MAP_POMM))
 }
 
-z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
+z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
   
   test1<-chains$chain1
@@ -470,7 +470,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,z,K,burn_in,N_iter){
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
     A_bind = unlist(mm_A)
     brrr <-simplify2array(mm)
-    
+    z<- test1$ground_truth$z
     z_bind= rbind(mm[[1]],mm[[2]],mm[[3]],mm[[4]])
     results$MAP <- vi.dist(z_bind[which(A_bind==max(A_bind))[1],],z)
   }
@@ -705,6 +705,7 @@ S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
                  test4$acceptance_rates$acc.count_S)
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+    S<- test1$ground_truth$S
     results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - S),4)
     
   }
@@ -733,7 +734,7 @@ alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in)
   }
   return(results)}
 
-alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_iter){
+alpha_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
   stopifnot(length(chains)==4)
   
   test1<-chains$chain1
@@ -783,6 +784,7 @@ alpha_diagnostic_table<- function(chains, true_value, diag0.5,alpha,K,burn_in,N_
                  test4$acceptance_rates$acc.count_alpha)
     
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+    alpha<- test1$ground_truth$alpha
     results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - alpha),4)
     
   }

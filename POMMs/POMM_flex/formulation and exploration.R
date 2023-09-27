@@ -5,6 +5,7 @@ library(dbscan)
 library(randnet)
 library(fossil)
 library(dplyr)
+library(ggplot2)
 library(truncnorm)
 
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
@@ -15,13 +16,15 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 
 
 K=5
-n_samples=1000
-S = 0.01
+
+n_samples=10000
+S = 1000
 beta_max = .8
 alpha=1
 diag0.5=T
 true_alpha<-alpha
 
+x_unif = runif(n_samples*(K*(K-1))/2, 0.5,beta_max)
 
 
 #creating a sample of P matrices
@@ -34,15 +37,7 @@ for(i in 1:n_samples){
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
 # Combine the four levels into a list
 
-ggplot(combined_data, aes(x = levels, y = values)) +
-  geom_point() +
-  geom_line(data = mean_values, aes(x = levels, y = values, group=1), color = "red", linewidth = 1.2) +
-  labs(x = "Levels", y = "Values") +
-  scale_x_discrete(labels = c("1", "2", "3", "4")) +
-  stat_summary(fun = mean, geom = "errorbar", color = "red", width = 0.2) +
-  stat_summary(fun = mean, geom = "point", color = "red", size = 3, shape = 18)+
-  labs(x = "Level sets", y = "P_ij", title = paste0("Distribution of ",n_samples,' simulated P matrices with K=', K-1 , " ,alpha=",alpha,",overlap=",overlap))+
-  theme_bw()
+
 
 paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',overlap,'K',K)
 
@@ -58,12 +53,17 @@ mean(overlap_space)/(beta_max- 0.5)
 
 
 blue_purple <- generate_color_gradient_K(K)
+my_data <- unlist(level_list_p_container)
+data_1 <- data.frame(x=level_list_p_container[[1]]) %>% filter(x>0.6) 
+ks.test(my_data, 'punif')
+
+ggplot(data_1, aes(x=x))+geom_density()
 
 #goood plot here
 ggplot() +
   # Add a layer for each level
   lapply(seq_along(level_list_p_container), function(i) {
-    geom_density(data = data.frame(x = level_list_p_container[[i]]), aes(x = x, y = ..density.., fill = paste0("Level ", i)), alpha = .5)
+    geom_histogram(data = data.frame(x = level_list_p_container[[i]]), aes(x = x, y = ..density.., fill = paste0("Level ", i)), alpha = .5)
   }) +
   # Set the x-axis limits
   scale_fill_manual(values=blue_purple)+
@@ -73,6 +73,7 @@ ggplot() +
 
 
 print(paste("Densityplot",K, "Level_sets_alpha_",alpha,"_overlap_",overlap,"_diag_",0.5, sep = "_"))
+
 
 
 #########

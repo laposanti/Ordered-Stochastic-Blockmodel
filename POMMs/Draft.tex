@@ -61,6 +61,46 @@ We propose the BCOR model, which provides a unified framework to accommodate var
 We showcase the versatility of the BCOR model through experiments on real-world datasets, highlighting its superior performance compared to existing methods.
 By integrating block clustering and order-based ranking, the BCOR model offers decision-makers a comprehensive tool to navigate complex decision landscapes
 
+\section{The simple model}
+
+\subsection{Simple Model specification}
+
+This is a model for pairwise count data. We explicitly model the results of the interactions between two individuals $i$ and $j$. Given $N$ observations, the likelihood is 
+\begin{align}
+p(y| z, P, K) &= \prod_{i =2 }^{N-1} \prod_{j =i}^{N} p(y_{ij} | z, P, K) \\ 
+&= \prod_{i =2 }^{N-1} \prod_{j =i}^{N}  {n_{ij} \choose y_{ij}} p_{z_i, z_j}^{y_{ij}}(1- p_{z_i, z_j})^{n_{ij}-y_{ij}}
+\end{align}
+
+where $n_{ij}$ denotes the total number of interactions between the two individuals $i$ and $j$ and $y_{ij}$ is the number of successes of the individual $i$ in interacting with $j$. The probability of success is given by $p_{z_i, z_j}$ which consists of two parameters. The $K\times K$ matrix $P$ and the $N \times 1$ vector $z$.
+
+The vector $z$ has entries $z_i$ taking values over the discrete and finite set $\{ 1 , \ldots, K\}$, and it is an indicator variable such that if $z_i = k$ individual $i$ belongs to block $k$. 
+
+The matrix $P$ contains the probabilities of success for individuals belonging to each possible blocks combination. For this reason $P$ is $K\times K$. Therefore, the parameter $p_{z_i, z_j}$ consists in the probability of success in an interaction between one individual belonging to block $z_i$ and another of block $z_j$. 
+
+\subsection{Prior Specification}
+
+
+Starting with the parameter $P$, we assume that its entries, namely $p_{k,k^\prime}$, are independent and identically $Beta(a,b)$ distributed random variable. By setting $a=b=1$ they collapse to a uniform distribution.
+\begin{equation}
+p_{k,k^\prime} \sim Beta(1,1) \quad \text{for } k,k^\prime = 1, \ldots,K
+\end{equation}
+Second, we assume that the $z_i$s are independent and identically drawn from a multinomial distribution with one trial and probability vector $(\theta_1, \dots, \theta_K)$. We can write then:
+\begin{equation}
+z_i| \boldsymbol{\theta} \sim \operatorname{Multinomial}(1,\boldsymbol{\theta}) \quad \text{for } i = 1, \ldots,N
+\end{equation}
+
+
+To have more flexibility in the blocks sizes, we put an hyper-prior on the $\theta_1, \dots, \theta_K$, assuming that they are drawn from a Dirichlet distribution with parameter the $K\times1$ vector $\boldsymbol{\gamma}$.
+
+
+By marginalizing out $\theta$, following the common practice in the literature, we can express the marginal distribution of $z$ as:
+
+\begin{equation} p(\mathbf{z}|\boldsymbol{\gamma}) = \frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n_k+\gamma_k)}
+\end{equation}
+
+where $n_k$ is the number of players assigned to block $k$.
+
+Finally, we assume that the number of clusters $K$ follow a Poisson distribution $\operatorname{Poisson}(\lambda=1)$, subject to the condition $K>0$.
 
 \section{Connection with Image Recognition}
 
@@ -179,9 +219,12 @@ We also place a uniform hyper-prior on the parameter $\sigma^2$
 \]
 which is the variance of the level sets truncated normal distribution.
 
+Supposition:
+When $\sigma^2 \rightarrow \infty$, the joint distribution of the level sets collapses to a uniform and therefore we are back to a uniform distribution.
+
 \subsection{Some considerations}
 
-This model is very flexible, since for a given number of clusters $K$, it can accommodate for different means across the level sets by changing the slope of $\alpha$. For an $\alpha \in [0,1]$, we will have the clusters concentrated towards $\beta_{\max}$, meaning that the probabilities of victory in the tournament are clear-cut, symptom of an higher predictability overall. Instead, if $\alpha \in [1,3]$, this measn that the probabilities are more concentrated towards 1/2, meaning the chances of victory are not so much clear. 
+This model is very flexible, since for a given number of clusters $K$, it can accommodate for different means across the level sets by changing the slope of $\alpha$. For an $\alpha \in [0,1]$, we will have the clusters concentrated towards $\beta_{\max}$, meaning that the probabilities of victory in the tournament are clear-cut, symptom of an higher predictability overall. Instead, if $\alpha \in [1,3]$, this means that the probabilities are more concentrated towards 1/2, meaning the chances of victory are not so much clear. 
 
 However, the issue is that the number of clusters is not fixed. We would like the model to select by itself the number of clusters and ideally also to place the mean of the distribution wherever it prefers. 
 
@@ -235,33 +278,6 @@ The complete model, combining the Gaussian Process prior on latent skills and th
 \section{additional consideration}
 The LST and the SST and the WST models can all of them being expressed as part of the same class of models.
 
-
-
-
-
-\section{Modelling ordered blocks}
-
-
-Let $Y_{i j} \in {0, 1, \ldots, n_{i j}}$ denote the random outcome of $n_{i j}$ comparisons between items $i$ and $j$, where $Y_{i, j} = y_{i j}$ if item $i$ is chosen $y_{i j}$ times over item $j$.
-
-We introduce an indicator variable $z_i$ such that $z_i = k$ if item $i$ belongs to block $k$, where $k$ ranges over the set of all blocks.
-
-Let $p_{i j}^{(k, k')} = \mathbb{P}\left(Y_{i j} = y_{i j} ,|, z_i = k, z_j = k'\right)$ be the probability that item $i$, belonging to block $k$, is chosen $y_{i j}$ times out of $n_{i j}$ over item $j$, belonging to block $k'$.
-
-The collection of labeled choice probabilities associated with $J$ is then $ \mathcal{P}_J = \{ p_{i j}^{(k, k')} : (i, j) \in J \times J, , k, k' \text{ are block indices} \}$.
-
-
-
-
-We define $i \succeq j$ when $p_{i j} \geq p_{j i}$. We say $i \succ j$ when $p_{i j} > p_{j i}$, and $i \sim j$ when $p_{i j} = p_{j i}$. Given our assumption that $p_{i j} + p_{j i} = 1$, it follows that $i \succeq j$ if and only if $p_{i j} \geq \frac{1}{2}$. Additionally, this implies that $p_{i i} = \frac{1}{2}$ for all $i$ in the set $J$.
-
-This definition ensures that preferences over $J$ are complete but not necessarily transitive. To achieve transitivity, specific constraints on choice probabilities can be imposed. Traditionally, these constraints are referred to as stochastic transitivity axioms or relations (Fishburn, 1973), although, strictly speaking, transitivity axioms simply specify different statistical models (Cavagnaro \& Davis-Stober, 2014).
-
-Here, we study three such axioms denoted as $\mathcal{A}_1, \mathcal{A}_2$, and $\mathcal{A}_3$. These axioms progressively impose more stringent constraints on triplets of choice probabilities $p_{i j}, p_{j k}$, and $p_{i k}$. To facilitate this discussion, let's introduce a few definitions:
-
-A composition rule is a function $H$ that maps $(0, 1) \times (0, 1)$ to $[0, 1]$. A composition rule is said to be strictly monotone if $1 > x > y > 0$, then $H(x, z) \geq H(y, z)$ for all $z \in (0, 1)$, and if $H(x, z) \in (0, 1)$, then $H(x, z) > H(y, z) \iff x > y$. Furthermore, a composition rule is said to be symmetric if $H(x, y) = H(y, x)$ for all $x, y \in (0, 1)$.
-
-Stochastic versions of transitivity include:
 
 
 
@@ -442,8 +458,8 @@ $\%$ within-95\% CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.0211&  0.0735 & 0.0709 & 100$\%$  & 50$\%$   & 69.4$\%$  & 0.1017 & 0.0955 & 0.1788 \\
-Simple model & 0.0036 &  0.0606 & 0.0826 & 100$\%$ &60$\%$  & 55$\%$  & 0.0108 & 0.1077 & 0.1798 \\
+POMM model  &0.03 & 0.06 & 0.07 & 100 & 40 & 63.89 & 0.21 & 0.04 & 0.15 \\
+Simple model & 0.04 & 0.08 & 0.06 & 100 & 60 & 66.67 & 0.10 & 0.14 & 0.16 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -464,8 +480,8 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0&  0 & 0.33 & 0 & 0.4  & 0.44 & $\underset{17.01}{-6418.29}$ & $\underset{18.74}{-6196.77}$ & $\underset{18.58}{6320.08}$  \\
-Simple model & 0 &  0.5 & 0.58 & 0&0 &0.22 & $\underset{17.60}{-6506.41}$ & $\underset{18.54}{-6248.25}$ & $\underset{18.61}{-6285.03}$ \\
+POMM model  &0 & 0 & 0.00 & 0.00 & 0.0 & 0.22  & $\underset{16.90}{-6380.08}$ & $\underset{19.03}{-6242.73}$ & $\underset{18.65}{6358.67}$  \\
+Simple model &0 & 0 & 0.27 & 0.67 & 0.40 & 0.44  & $\underset{17.60}{-6334.84}$ & $\underset{19.04}{-6184.29}$ & $\underset{18.61}{-6356.23}$ \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -486,8 +502,8 @@ $\hat{\theta}$} & \multicolumn{3}{c}{
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
-S  &0.21 & 0.25 & 0.31 & $[0.01	0.79]$ & $[0.04	0.78]$ & $[0.09	0.81]$   \\
-$\alpha$ & 0.58 & 0.41 & 0.38 & $[0.30,0.90]$ & $[0.11,	0.79]$ & $[0.10,	0.80]$  \\
+S  &0.29 & 0.15 & 0.27 & [0.01	0.83] & [0.04	0.55] & [0.07	0.78]  \\
+$\alpha$ & 0.55 & 0.36 & 0.37 & [0.18	0.89] & [0.1	0.61] & [0.1	0.75] \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -516,8 +532,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &232 & 126 & 924 & 0.015 & 0.015 & 0.203 & 0.0066 & 0.0083 & 1.1610 & 319.891 & 92.569 & 50.053 \\
-Simple &0 & 85 & 26 & -0.012 & 0.004 & 0.040 & 0.0058 & 0.0092 & 0.0104 & 1.001 & 163.099 & 17.726 \\
+POMM &374.75 & 719.47 & 862.00 & 0.09 & 0.01 & 0.26 & 0.01 & 0.01 & 31.26 & Inf & 6.26 & 1.42\\
+Simple &1926.61 & 533.16 & 20.64 & 0.03 & 0.21 & 0.06 & 0.01 & 0.01 & 0.01 & Inf & Inf & Inf   \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -536,8 +552,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &1710 & 1413 & 1301 & 0.0513 & 0.0657 & 0.0976 & 16.1023 & 7.2795 & 8.221472 & 30.36944 & 34.39008 & 31.68347 \\
-Simple &2100 & 1767 & 1272 & -0.0003& NaN & 0.0853 & 1.0003 & 9.8198 & 8.3113 & 29.97556 & 33.7189 & 31.3630\\
+POMM &1520 & 1761.6 & 1419.61 & 0.09 & 0.00 & 0.07 & 25.12 & 35.37 & 32.42 & 46.75 & 4.27 & 7.96  \\
+Simple &1265 & 1545.3 & 1493.03 & 0.07 & 0.09 & 0.07 & 30.80 & 33.01 & 32.58 & 14.98 & 12.00 & 8.05 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -557,8 +573,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &716 & 771 & 0 & 0.511 & 0.343 & 0 & 1.698 & 1.446 & 0 & 32.50417 & 32.0075  \\
-$\alpha$ &13 & 13 & 13 & 0.93 & 0.93 & 0.93 & 1.584 & 1.584 & 1.584 & 24.91917 & 24.91917 & 24.91917 \\
+$S$ &1362 & 435 & 0 & 0.32 & 0.4 & 0 & 33.35 & 29.64 & 0 & 2.5 & 1.58 &1.54 \\
+$\alpha$ &11 & 16 & 19 & 0.93 & 0.91 & 0.9 & 24.66 & 25.12 & 24.61 & 1.11 & 1.04 & 1.93 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -636,8 +652,8 @@ $\%$ within-95\%-CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.003 & 0.041 & 0.010 & 100$\%$ & 100$\%$ & 94.4$\%$ & 0.010 & 0.179 & 0.066  \\
-Simple model & 0.060 &  0.027 & 0.014 & 100$\%$ &100$\%$  & 100$\%$  & 0.134 & 0.13 & 0.087 \\
+POMM model  &0.03 & 0.02 & 0.01 & 100\% & 100\% & 94.44\% & 0.13 & 0.08 & 0.06  \\
+Simple model & 0.00 & 0.05 & 0.01 & 100\% & 90\% & 97.22\% & 0.01 & 0.13 & 0.07 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -658,8 +674,8 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0 & 0 & 0 & 0 & 0.0 & 0.38 & $\underset{17.83}{-6553.31}$ & $\underset{17.68}{-6551.36}$ & $\underset{17.78}{6652.43}$  \\
-Simple model & 0 & 0 & 0 & 0 & 0.4 & 0.0  & $\underset{17.60}{-6415.70}$ & $\underset{17.84}{-6536.58}$ & $\underset{17.96}{6667.41}$ \\
+POMM model  &0 & 0 & 0 & 0 & 0.0 & 0  & $\underset{17.55}{-6496.08}$ & $\underset{17.97}{-6620.84}$ & $\underset{17.78}{6658.97}$  \\
+Simple model & 0 & 0 & 0 & 0 & 0.4 & 0.0  & $\underset{17.60}{-6553.32}$ & $\underset{17.84}{-6566.43}$ & $\underset{17.96}{6662.66}$ \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -680,8 +696,8 @@ $\hat{\theta}$} & \multicolumn{3}{c}{
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-S  &0.0178 & 0.312 & 0.0221 & [0.0039,	0.0425] & [0.0015,	0.8294] & [0.001,	0.0608] & 0.01 & 0.01 & 0.01   \\
-$\alpha$ & 0.4214 & 0.5345 & 0.4833 & [0.23,	0.58] & [0.21,	0.89] & [0.43,	0.56] & 0.5 & 0.5 & 0.5 \\
+S  &0.1487 & 0.084 & 0.0196 & [0.0033	0.7575] & [4e-04	0.5602] & [0.0012	0.0625] & 0.01 & 0.01 & 0.01   \\
+$\alpha$ & 0.4237 & 0.5265 & 0.491 & [0.1324	0.6215] & [0.439	0.8733] & [0.4258	0.5934] & 0.5 & 0.5 & 0.5 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -705,8 +721,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &0 & 32 & 336 & 0.001 & 0.081 & 0.473 & 0.008 & 0.009 & 7.280 & 1.000 & 101.742 & 7.268   \\
-Simple &0 & 122 & 670 & 0.109 & 0.030 & 0.007 & 0.005  & 0.008 & 0.079 & 470.471 & 90.074 & 1.969 \\
+POMM &0 & 15.19 & 2167.05 & 0.06 & 0.20 & 0.16 & 0.01 & 0.01 & 0.05 & Inf & Inf & 8.53    \\
+Simple &0 & 670.73 & 2901.09 & -0.01 & 0.04 & 0.02 & 0.01 & 0.01 & 0.03 & NA & Inf & 6.93 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -725,8 +741,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &1948 & 1489.3 & 1015.778 & 0.006& 0.0256 & 0.076 & 29.253 & 32.468 & 33.203& 1.001 & 20.680 & 3.885   \\
-Simple &1807 & 1362.3 & 1439.056 & 0.072& 0.0552 & 0.0105&24.939 & 33.82367 & 32.44970& 54.698 & 11.999 & 2.296  \\
+POMM &1821.67 & 1296.1 & 1035.03 & 0.05 & 0.06 & 0.06 & 27.13 & 33.31 & 32.94 & 32.56 & 10.94 & 4.45   \\
+Simple &2121.33 & 1505.6 & 1350.92 & 0.00 & 0.04 & 0.01 & 29.88 & 33.29 & 32.70 & 1.00 & 12.26 & 3.26   \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -746,8 +762,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &319 & 1219 & 0 & 0.188 & 0.214 & 0 & 21.00 & 27.72 & 0 & 1.0 & 1.9 & 0 \\
-$\alpha$ &40 & 126 & 187 & 0.79 & 0.76 & 0.34 & 23.5 & 22.4 & 15.74 & 1.108 & 1.238 & 1.884   \\
+$S$ &938 & 548 & 316 & 0.1 & 0.27 & 0.54 & 25.42 & 12.03 & 6.71 & 3.5 & 2.15 & 8.15 \\
+$\alpha$ &33 & 341 & 180 & 0.82 & 0.3 & 0.41 & 23.83 & 17.82 & 13.81 & 1.07 & 1.44 & 2.41   \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}

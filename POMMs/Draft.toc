@@ -1,25 +1,27 @@
 \contentsline {section}{\tocsection {}{1}{Introduction}}{2}{}%
-\contentsline {section}{\tocsection {}{2}{Connection with Image Recognition}}{3}{}%
-\contentsline {section}{\tocsection {}{3}{The SST model}}{5}{}%
-\contentsline {subsection}{\tocsubsection {}{3.1}{Some considerations}}{6}{}%
-\contentsline {section}{\tocsection {}{4}{The LST model}}{6}{}%
-\contentsline {section}{\tocsection {}{5}{additional consideration}}{7}{}%
-\contentsline {section}{\tocsection {}{6}{Modelling ordered blocks}}{7}{}%
-\contentsline {section}{\tocsection {}{7}{Estimation}}{8}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{7.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{8}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{7.0.2}{Adaptive Algorithm for $\theta = { z }$}}{9}{}%
-\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and inference}}{10}{}%
-\contentsline {section}{\tocsection {}{9}{Simulation Study from the Simple Model N=100}}{11}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Simple Model check}}{14}{}%
-\contentsline {section}{\tocsection {}{10}{Simulation Study from the POMM Model N=100}}{15}{}%
-\contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{15}{}%
-\contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{18}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{19}{}%
-\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $S$=0.01}}{22}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{25}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{26}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{26}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{26}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{27}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{27}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{27}{}%
+\contentsline {section}{\tocsection {}{2}{The simple model}}{3}{}%
+\contentsline {subsection}{\tocsubsection {}{2.1}{Simple Model specification}}{3}{}%
+\contentsline {subsection}{\tocsubsection {}{2.2}{Prior Specification}}{3}{}%
+\contentsline {section}{\tocsection {}{3}{Connection with Image Recognition}}{4}{}%
+\contentsline {section}{\tocsection {}{4}{The SST model}}{6}{}%
+\contentsline {subsection}{\tocsubsection {}{4.1}{Some considerations}}{7}{}%
+\contentsline {section}{\tocsection {}{5}{The LST model}}{7}{}%
+\contentsline {section}{\tocsection {}{6}{additional consideration}}{8}{}%
+\contentsline {section}{\tocsection {}{7}{Estimation}}{9}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{7.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{9}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{7.0.2}{Adaptive Algorithm for $\theta = { z }$}}{10}{}%
+\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and inference}}{11}{}%
+\contentsline {section}{\tocsection {}{9}{Simulation Study from the Simple Model N=100}}{12}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Simple Model check}}{15}{}%
+\contentsline {section}{\tocsection {}{10}{Simulation Study from the POMM Model N=100}}{16}{}%
+\contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{16}{}%
+\contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{19}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{20}{}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $S$=0.01}}{23}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{26}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{27}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{27}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{27}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{28}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{28}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{28}{}%
