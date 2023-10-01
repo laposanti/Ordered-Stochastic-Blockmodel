@@ -86,13 +86,11 @@ while(controller==0){
       if(true_model == 'POMM'){
         S<-uploded_results$chain1$ground_truth$S
         alpha<-uploded_results$chain1$ground_truth$alpha
-        Y_ij_POMM[[paste0(est_model, K)]]<- uploded_results$chain1$Yij_matrix
-        z_true_POMM[[paste0(est_model, K)]] <- uploded_results$chain1$ground_truth$z
+        
       }else{
         S<-'na'
         alpha<-'na'
-        Y_ij_Simple[[paste0(est_model, K)]]<- uploded_results$chain1$Yij_matrix
-        z_true_Simple[[paste0(est_model, K)]] <- uploded_results$chain1$ground_truth$z
+        
       }
     
       
@@ -203,7 +201,7 @@ while(controller==0){
         P_diagnostic_results[est_model,c(3,6,9,12)]<- round(unlist(P_d_table),2)
       }
       
-      z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burn_in = burnin, N_iter=N_iter)
+      z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burn_in = burnin, N_iter=N_iter,label_switch=T)
 
       
       if(K==3){

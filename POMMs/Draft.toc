@@ -13,15 +13,15 @@
 \contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and inference}}{11}{}%
 \contentsline {section}{\tocsection {}{9}{Simulation Study from the Simple Model N=100}}{12}{}%
 \contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Simple Model check}}{19}{}%
-\contentsline {section}{\tocsection {}{10}{Simulation Study from the POMM Model N=100}}{20}{}%
-\contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{22}{}%
-\contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{25}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{26}{}%
-\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $S$=0.01}}{29}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{32}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{33}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{33}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{34}{}%
+\contentsline {section}{\tocsection {}{10}{Simulation Study from the POMM Model N=100}}{21}{}%
+\contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{23}{}%
+\contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{26}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{27}{}%
+\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $\Sigma $=0.01}}{30}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{33}{}%
+\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{34}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{34}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{35}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{35}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{35}{}%
