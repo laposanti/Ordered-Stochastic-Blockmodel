@@ -1,6 +1,6 @@
 rank_vs_cluster<- function(data_with_statistics, clustering, est_model){
   
-
+  
   # Create the ggplot plot with error bars and modifications
   main_plot<-ggplot(data_with_statistics, aes(x = reorder(player_slug, median_rank), y = median_rank, color = factor(clustering))) +
     geom_point(size = 3) +
@@ -388,7 +388,8 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, burn_in, label
   return(list(table=results, memb = z_MAP_POMM))
 }
 
-z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
+ 
+z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter,label_switch){
   stopifnot(length(chains)==4)
   
   test1<-chains$chain1
@@ -416,9 +417,9 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
     gelman_vector =vector()
     for(i in 1:N){
       individual_i_chain<- mcmc.list(chains_list = mcmc.list(mcmc((test1$est_containers$z[i,-c(1:burn_in)])),
-                                                   mcmc((test2$est_containers$z[i,-c(1:burn_in)])),
-                                                   mcmc((test3$est_containers$z[i,-c(1:burn_in)])),
-                                                   mcmc((test4$est_containers$z[i,-c(1:burn_in)]))))
+                                                             mcmc((test2$est_containers$z[i,-c(1:burn_in)])),
+                                                             mcmc((test3$est_containers$z[i,-c(1:burn_in)])),
+                                                             mcmc((test4$est_containers$z[i,-c(1:burn_in)]))))
       gelman_d<-gelman.diag(individual_i_chain)[[1]]
       gelman_vector<-append(gelman_vector, gelman_d[1])
     }
@@ -435,25 +436,34 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
   }else if(true_value == T){
     
     results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0, Gelman_rubin=0,MAP=0)
-    
+
     mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(test1$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test2$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test3$est_containers$z[,-c(1:burn_in)])),
                                           mcmc(t(test4$est_containers$z[,-c(1:burn_in)]))))
     
+    
     mm_A<-mcmc.list(chains_list = mcmc.list(mcmc(test1$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test2$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test3$control_containers$A[-c(1:burn_in)]),
                                             mcmc(test4$control_containers$A[-c(1:burn_in)])))
+    
+    if(label_switch==T){
+      for(i in 1:length(mm)){
+
+        z<- test1$ground_truth$z
+        z_container_POMM <- t(mm[[i]])
+        runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
+        mm[[i]]<- t(z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR))
+    }
+    }
+    
     #ESS
     results$ESS <- round(sum(simplify2array(lapply(mm, effectiveSize))),0)/N
     
     gelman_vector =vector()
     for(i in 1:N){
-      individual_i_chain<- mcmc.list(chains_list = mcmc.list(mcmc((test1$est_containers$z[i,-c(1:burn_in)])),
-                                                             mcmc((test2$est_containers$z[i,-c(1:burn_in)])),
-                                                             mcmc((test3$est_containers$z[i,-c(1:burn_in)])),
-                                                             mcmc((test4$est_containers$z[i,-c(1:burn_in)]))))
+      individual_i_chain<- mcmc.list(mcmc(mm[[1]][,i]),mcmc(mm[[2]][,i]),mcmc(mm[[3]][,i]),mcmc(mm[[4]][,i]))
       gelman_d<-gelman.diag(individual_i_chain)[[1]]
       gelman_vector<-append(gelman_vector, gelman_d[1])
     }
@@ -470,6 +480,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
     results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
     A_bind = unlist(mm_A)
     brrr <-simplify2array(mm)
+    browser()
     z<- test1$ground_truth$z
     z_bind= rbind(mm[[1]],mm[[2]],mm[[3]],mm[[4]])
     results$MAP <- vi.dist(z_bind[which(A_bind==max(A_bind))[1],],z)

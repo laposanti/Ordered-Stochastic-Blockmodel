@@ -29,7 +29,7 @@ M_values <- c(4000,10000,40000)
 N <- 100
 targ_rate <-0.22
 beta_max <- 0.85
-
+n_chains<-4
 diag0.5 <- T
 
 # Set up parallel computing
@@ -38,9 +38,10 @@ cores <- 5
 # Iterate over parameter combinations using foreach
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/raw_results")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/")
 
 test_grid = expand_grid(K_values, switch_values, N_values)
+test_grid = test_grid %>% filter(switch_values ==1)
 
 
 for(iterazione in 1:nrow(test_grid)){
@@ -48,10 +49,10 @@ for(iterazione in 1:nrow(test_grid)){
   # Generating data
   #-----------------------------------------------------------------------------
   N=100
-  M= 5
+  M= 3
   N = test_grid$N_values[iterazione]
   N_ij = matrix(M,N,N)
-  N_iter = 30000
+  N_iter = 10000
   alpha=.5
   S=.01
   K= test_grid$K_values[iterazione]
@@ -114,6 +115,7 @@ for(iterazione in 1:nrow(test_grid)){
   P_POMM = P_true
   z_POMM = z_true
   #initializing each chain
+  print(paste0("Estimation of POMM model, K=",K))
   init_POMM = list()
   for(chain in 1:n_chains){
     alpha0=runif(1,0.1,3)
@@ -142,7 +144,7 @@ for(iterazione in 1:nrow(test_grid)){
   names(chains_POMM)<-my_names 
   
   filename <- paste0("True_Model",model,"Est_model_POMM_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
-  saveRDS(chains_POMM, file = filename) #saving results
+  #saveRDS(chains_POMM, file = filename) #saving results
   
   #------
   #Simple 
@@ -150,6 +152,7 @@ for(iterazione in 1:nrow(test_grid)){
   
   
   seed=123
+  print(paste0("Estimation of Simple model, K=",K))
   init_Simple = list()
   for(chain in 1:n_chains){
     P0_Simple= matrix(.5,K,K)
@@ -172,7 +175,7 @@ for(iterazione in 1:nrow(test_grid)){
                                      targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
   names(chains_Simple)<-my_names 
   filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
-  saveRDS(chains_Simple, file = filename_simple) #saving results
+  #saveRDS(chains_Simple, file = filename_simple) #saving results
   
 }
 

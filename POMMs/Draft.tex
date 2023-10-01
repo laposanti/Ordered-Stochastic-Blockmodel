@@ -192,15 +192,32 @@ We saw above that the correspondence is many-to-one. Given a finite poset, one m
 We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L^{(k)}$, where $L^{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
 
 \[
-p_{ij} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu^{(k)}, \sigma^{2(k)}; 0.5, \beta_{\max})
+p_{ij}^{(k)} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu^{(k)}, \sigma^{2(k)}; 0.5, \beta_{\max})
 \]
 
+The full prior is given by:
+\[
+p(P) = \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu}{\sigma}\right)^2 }dt}
+\]
 Here:
 \begin{itemize}
 \item $\mu^{(k)}$ is the mean, which corresponds to the midpoint of the level set $L^{(k)}$, defined as $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
 \item $\sigma^{2}$ is the variance parameter constant across the level sets $L^{(1)},\ldots,L^{(K)}$.
 \item $0.5$ and $\beta_{\max}$ are the lower and upper truncation bounds.
 \end{itemize}
+
+It is interesting to see what happens when $\sigma \rightarrow \infty$
+\begin{align}
+&\lim_{\sigma \rightarrow \infty} \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu^{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt} = \\
+&\lim_{\sigma \rightarrow \infty} \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt} = 
+\end{align}
+
+
+If we substitute in the expression for $y^{(k)}$, we can simplify the following expression:
+
+
+
+
 We also place a uniform hyper-prior on the parameter $\alpha$:
 
 \[
@@ -388,87 +405,222 @@ where $z_j^{(t)} \sim p(z|Y)$
 
 \section{Simulation Study from the Simple Model N=100}
 
-In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. We want to compare how it performs compared to the POMM extension and other state-of-the-art alternatives. Each tournament had a different number of blocks in the underlying structure. We set the total number of games $M := 0.5* \sum_{i,j}^N n_{ij}= \sum_{i,j}^N y_{ij} = 4000$, which is the average number of matches played in one year of tennis tournaments. We divided the players into three, five and nine blocks ($K = 3,5,9$ respectively). In Figure (\ref{fig:simple_adjacency}), we display the three simulated tournaments, where the difficulty of accurately determining the group membership increases as the number of games increases with the number of blocks.
+In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. 
+
+We want to compare the quality of the Simple model in recovering the ground truth from some data generated from the Simple model itself. We compare its recovery performance with the one of the POMM model, which in the present context qualifies as a sort of 'mis-specified model', since the blocks do not present an inherent ordering.
+
+Below, in figure \eqref{fig:simple_adjacency}, you may see the adjacency matrix of the simulated data. The darker is the pixel $(i,j)$, the more are the victories of player $i$ vs player $j$.
+
+On the side, the different colours testify the different block membership of each single player.
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large Time performance}} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
+Seconds per iteration } & \multicolumn{3}{c}{
+Expected time for 30000 iterations}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+POMM model  &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} & 7.5 \text{min} & 9 \text{min} \\
+Simple model &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} &  7.5 \text{min} & 9  \text{min}\\
+\bottomrule
+\end{tabular}
+\label{table:performance}
+\end{table}
+
+For the estimation purposes, we run 4 different chains of 30000 iterations each. We report in table \eqref{table:performance} the execution time for the MCMC. Within that table, and in all other tables that will follow in the simulation study column (a) refers to the case $K=3$, column (b) refers to the case $K=5$, and column (c) to the case $K=9$.
+
+
 
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model]{%
-\includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K3_N100.png}%
+\includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K3_N100.png}%
         \label{fig:simple_adjacency_K3}%
     }\hfill
     \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K5_N100.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K5_N100.png}%
         \label{fig:simple_adjacency_K5}%
     }\hfill
     \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelSimpleEst_model_Simple_K9_N100.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K9_N100.png}%
         \label{fig:simple_adjacency_K9}%
     }
     \caption{Adjacency Matrices simulated via the Simple Model}
     \label{fig:simple_adjacency}
 \end{figure}
 
-We compare the performance of the Simple model with the POMM one. We fixed arbitrarily $\beta_{\max} = .75$.
-In table (\ref{table:simulations_from_simple}) we report the results of the simulation. In the three cases, for the Simple and the POMM model, we compare the WAIC, the VI distance and the misclassification error, obtained by considering 100 new incoming players which get to play just with 10 players each. We also compare the labels estimated against the regularised spectral clustering algorithm and the Louvain algorithm. The Simple model is the best performing relative to the other three alternatives.
+Each chain is initiated with different starting values and different seeds. The initiation values are saved in order to guarantee the reproducibility of the results.
+
+For the POMM model, we need to choose an appropriate value for $\beta_{\max}$, which controls the maximum attainable value within the matrix $P$. Here we fix it arbitrarily at 0.85.
+
+
 
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K3_N100.png}%
-        \label{fig:M4000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimpleSimpleK3_N100.png}%
+        \label{fig:SimpleSimpleK3}%
     }\hfill
     \subfigure[K=5, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K5_N100.png}%
-        \label{fig:M7000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimpleSimpleK5_N100.png}%
+        \label{fig:SimpleSimpleK5}%
     }\hfill
     \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_Simple_K9_N100.png}%
-        \label{fig:M10000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_SimpleSimpleK9_N100.png}%
+        \label{fig:SimpleSimpleK9}%
     }\\[2ex]\subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K3_N100.png}%
-        \label{fig:M4000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK3_N100.png}%
+        \label{fig:SimplePOMMK3}%
     }\hfill
     \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K5_N100.png}%
-        \label{fig:M7000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK5_N100.png}%
+        \label{fig:SimplePOMMK5}%
     }\hfill
     \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelSimpleEst_model_POMM_K9_N100.png}%
-        \label{fig:M10000}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK9_N100.png}%
+        \label{fig:SimplePOMMK9}%
     }
     \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:adjacency_all_simple}
+    \label{fig:similarity_all_simple}
 \end{figure}
 
+The first results' plot we report is the one in figure \eqref{fig:similarity_all_simple}. Each box contains a co-clustering matrix. Each pixel $(i,j)$ represents the probability that two individuals are placed within the same cluster. The darker the pixel, the higher the probability. Colours on the side signal the true membership of each player.
 
-In figure (\ref{fig:adjacency_all_simple}) we report the estimated co-clustering matrices resulting from the simulation process.
+In the first row, containing figure \ref{fig:SimpleSimpleK3},figure \ref{fig:SimpleSimpleK5}, and figure \ref{fig:SimpleSimpleK9}, we have the co-clustering matrix for the Simple model estimated on the data generated according to the Simple model itself. This means that the blocks have no inherent ordering, and the model here is correctly specified. We can notice a very good recovery of the true membership.
+
+In the second row instead, the one which contains figure \ref{fig:SimplePOMMK3},figure \ref{fig:SimplePOMMK5}, and \ref{fig:SimplePOMMK9}, we may observe the co-clustering matrix for the POMM model estimated on the data generated via the Simple one. Therefore, the model is misspecified, but we may notice that the recovery performance is quite competitive with the Simple one.
+
 
 
 \begin{table}[htbp]
 \centering
-\caption*{
+\caption{
 {\large $P$ summary table} \\ 
 {\small True Model Simple, $N=100$}
 } 
 \begin{tabular}{cccccccccc}
 \toprule
 \multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
-$\overline{MAE}$ } & \multicolumn{3}{c}{
+$MAE$ } & \multicolumn{3}{c}{
 $\%$ within-95\% CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval length}}$} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.03 & 0.06 & 0.07 & 100 & 40 & 63.89 & 0.21 & 0.04 & 0.15 \\
-Simple model & 0.04 & 0.08 & 0.06 & 100 & 60 & 66.67 & 0.10 & 0.14 & 0.16 \\
+POMM model  &0.02 & 0.06 & 0.06 & 100 & 40 & 72.22 & 0.12 & 0.04 & 0.16 \\
+Simple model & 0.00 & 0.06 & 0.06 & 100 & 50 & 69.44 & 0.02 & 0.10 & 0.15 \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:Psummary_simple}
 \end{table}
+
+In table \eqref{table:Psummary_simple}, we report the summary table of the estimates for the $P$ matrix, both obtained via the Simple model and the POMM model. For each value of $K$ (again, reported in the sub-columns (a), (b) and (c), respectively), we report the mean absolute error, meaning the mean absolute error $MAE = \frac{1}{(K\cdot(K-1))/2} \sum_{i=1}^{K-1}\sum_{j=i+1}^K \left(\hat{p}_{ij} - p^\star_{ij}\right)$ where $p^\star_{ij}$ is the true value of that particular entry. Then we also report the percentage of the upper triangular entries of $P$ that are contained by the estimated 95\% credible intervals, obtained by computing the 95\% higher posterior density region, and the average 95\% credible interval length. 
+
+Here below, we report the ground truth of the $P$ matrix for each case $K=3,5,9$. Then, next and below we report the estimates, both for the POMM and the Simple model, within the $\hat{P}^{K=k}_{\text{POMM}}$, $\hat{P}^{K=k}_{\text{Simple}}$, respectively.
+
+\newpage
+\[
+P^{K=3}_{true} = 
+\left[\begin{array}{ccc}
+0.500 & 0.586 & 0.736 \\
+0.414 & 0.500 & 0.623 \\
+0.264 & 0.377 & 0.500 \\
+\end{array}\right] \quad 
+\hat{P}^{K=3}_{\text{POMM}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.600 & 0.754 \\
+0.400 & 0.500 & 0.622 \\
+0.246 & 0.378 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=3}_{\text{Simple}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.592 & 0.739 \\
+0.408 & 0.500 & 0.627 \\
+0.261 & 0.373 & 0.500 \\ 
+\end{array}\right]
+\]
+
+\[
+P^{K=5}_{true} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.586 & 0.736 & 0.765 & 0.658 \\
+0.414 & 0.500 & 0.623 & 0.782 & 0.768 \\
+0.264 & 0.218 & 0.500 & 0.514 & 0.665 \\
+0.377 & 0.486 & 0.232 & 0.500 & 0.637 \\
+0.235 & 0.342 & 0.335 & 0.363 & 0.500 \\
+\end{array}\right] \quad 
+\hat{P}^{K=5}_{\text{POMM}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.589 & 0.731 & 0.687 & 0.718 \\
+0.411 & 0.500 & 0.703 & 0.640 & 0.700 \\
+0.269 & 0.297 & 0.500 & 0.643 & 0.658 \\
+0.313 & 0.360 & 0.357 & 0.500 & 0.653 \\
+0.282 & 0.300 & 0.342 & 0.347 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=5}_{\text{Simple}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.566 & 0.660 & 0.700 & 0.710 \\
+0.434 & 0.500 & 0.646 & 0.675 & 0.703 \\
+0.340 & 0.354 & 0.500 & 0.666 & 0.665 \\
+0.300 & 0.325 & 0.334 & 0.500 & 0.652 \\
+0.290 & 0.297 & 0.335 & 0.348 & 0.500 \\
+\end{array}\right]
+\]
+
+\[
+P^{K=9}_{true} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.586 & 0.736 & 0.765 & 0.658 & 0.787 & 0.770 & 0.708 & 0.587 \\
+0.414 & 0.500 & 0.623 & 0.782 & 0.768 & 0.636 & 0.574 & 0.692 & 0.544 \\
+0.264 & 0.335 & 0.500 & 0.514 & 0.665 & 0.703 & 0.513 & 0.798 & 0.789 \\
+0.377 & 0.363 & 0.230 & 0.500 & 0.637 & 0.672 & 0.598 & 0.697 & 0.771 \\
+0.235 & 0.213 & 0.426 & 0.292 & 0.500 & 0.531 & 0.786 & 0.713 & 0.707 \\
+0.218 & 0.364 & 0.487 & 0.308 & 0.337 & 0.500 & 0.767 & 0.663 & 0.739 \\
+0.486 & 0.297 & 0.402 & 0.202 & 0.322 & 0.211 & 0.500 & 0.678 & 0.507 \\
+0.342 & 0.328 & 0.214 & 0.303 & 0.413 & 0.229 & 0.261 & 0.500 & 0.643 \\
+0.232 & 0.469 & 0.233 & 0.287 & 0.456 & 0.293 & 0.493 & 0.357 & 0.500 \\\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{POMM}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.572 & 0.666 & 0.707 & 0.723 & 0.712 & 0.705 & 0.626 & 0.695 \\
+0.428 & 0.500 & 0.646 & 0.689 & 0.716 & 0.725 & 0.667 & 0.656 & 0.635 \\
+0.334 & 0.354 & 0.500 & 0.645 & 0.649 & 0.656 & 0.614 & 0.701 & 0.729 \\
+0.293 & 0.311 & 0.355 & 0.500 & 0.651 & 0.666 & 0.666 & 0.687 & 0.751 \\
+0.277 & 0.284 & 0.351 & 0.349 & 0.500 & 0.631 & 0.714 & 0.669 & 0.692 \\
+0.288 & 0.275 & 0.344 & 0.334 & 0.369 & 0.500 & 0.667 & 0.732 & 0.674 \\
+0.295 & 0.333 & 0.386 & 0.334 & 0.286 & 0.333 & 0.500 & 0.687 & 0.668 \\
+0.374 & 0.344 & 0.299 & 0.313 & 0.331 & 0.268 & 0.313 & 0.500 & 0.603 \\
+0.305 & 0.365 & 0.271 & 0.249 & 0.308 & 0.326 & 0.332 & 0.397 & 0.500 \\\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{Simple}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.601 & 0.675 & 0.711 & 0.702 & 0.744 & 0.702 & 0.659 & 0.709 \\
+0.399 & 0.500 & 0.623 & 0.671 & 0.734 & 0.702 & 0.653 & 0.647 & 0.581 \\
+0.325 & 0.377 & 0.500 & 0.652 & 0.640 & 0.653 & 0.624 & 0.691 & 0.720 \\
+0.289 & 0.329 & 0.348 & 0.500 & 0.666 & 0.659 & 0.656 & 0.661 & 0.771 \\
+0.298 & 0.266 & 0.360 & 0.334 & 0.500 & 0.631 & 0.709 & 0.671 & 0.686 \\
+0.256 & 0.298 & 0.347 & 0.341 & 0.369 & 0.500 & 0.668 & 0.738 & 0.669 \\
+0.298 & 0.347 & 0.376 & 0.344 & 0.291 & 0.332 & 0.500 & 0.734 & 0.617 \\
+0.341 & 0.353 & 0.309 & 0.339 & 0.329 & 0.262 & 0.266 & 0.500 & 0.646 \\
+0.291 & 0.419 & 0.280 & 0.229 & 0.314 & 0.331 & 0.383 & 0.354 & 0.500 \\\end{array}\right]
+\]
 
 
 \begin{table}[htbp]
 \centering
-\caption*{
+\caption{
 {\large $z$ summary table} \\ 
 {\small True Model Simple, $N=100$}
 } 
@@ -480,34 +632,107 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0 & 0 & 0.00 & 0.00 & 0.0 & 0.22  & $\underset{16.90}{-6380.08}$ & $\underset{19.03}{-6242.73}$ & $\underset{18.65}{6358.67}$  \\
-Simple model &0 & 0 & 0.27 & 0.67 & 0.40 & 0.44  & $\underset{17.60}{-6334.84}$ & $\underset{19.04}{-6184.29}$ & $\underset{18.61}{-6356.23}$ \\
+POMM model  &0 & 0.42 & 0.1 & 0 & 0.42 & 0.32   & $\underset{30.89}{-13237.20}$ & $\underset{30.77}{-13352.68}$ & $\underset{31.35}{13657.35}$  \\
+Simple model &0 & 0.42 & 0.1 & 0 & 0.42 & 0.32  & $\underset{31.16}{-13273.59}$ & $\underset{ 30.37}{-13293.26}$ & $\underset{31.34}{-13673.15}$ \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:z_summary_Simple}
 \end{table}
+
+In table \eqref{table:z_summary_Simple}, we report some summary statistics for the parameter $z$. As above, we have columns (a),(b) and (c) representing the case $K=3,5,9$ respectively.
+
+The first indicator is the $VI \text{distance}_{\text{MAP}}$ computed between the true partition $z^\star$ and the point estimate $\hat{z}^{\text{MAP}}$ obtained with the maximum a posteriori estimate (MAP).
+
+The second one is $VI \text{distance}_{\text{VI lb}}$ computed between the true partition $z^\star$ and the point estimate $\hat{z}^{\text{VI lb}}$ obtained with the partition attaining the VI lower bound.
+
+The third one is the WAIC estimate, along with its standard error below.
+
 
 
 \begin{table}[htbp]
 \centering
-\caption*{
+\caption{
 {\large POMM hyperparameters summary table} \\ 
 {\small True Model Simple, $N=100$}
 } 
 \begin{tabular}{ccccccc}
 \toprule
 \multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
-$\hat{\theta}$} & \multicolumn{3}{c}{
-95$\%$ CI interval} \\
+$\hat{\theta}$} & \multicolumn{3}{c}{95$\%$ CI} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
-S  &0.29 & 0.15 & 0.27 & [0.01	0.83] & [0.04	0.55] & [0.07	0.78]  \\
-$\alpha$ & 0.55 & 0.36 & 0.37 & [0.18	0.89] & [0.1	0.61] & [0.1	0.75] \\
+$\Sigma$  & 0.19 & 0.18 & 0.15 & [0.01	0.79] & [0.04	0.65] & [0.07	0.27]   \\
+$\alpha$ & 0.60 & 0.41 & 0.23 & [0.24	0.9] & [0.11	0.75] & [0.1	0.4] \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:hyperparameters_SIMPLE}
 \end{table}
+
+
+In table \eqref{table:hyperparameters_SIMPLE}, we report the results for the hyperparameters of the $POMM$ model. In the $\hat{\theta}$ column we report the estimates both for $\alpha$ and $\Sigma$, while on the right we have their $95\%$ Credible Interval.
+Given that the data were generated according the Simple model, we do not have a ground truth to which these results should be compared. However, we can still try to make sense of these values by inspecting the properties of the induced $P^{\text{POMM}}$ matrix resulting from the estimates.
+
+The Simple model has a prior over $P^{\text{Simple}} \sim Beta(1,1)$, then we may expect $P^{\text{POMM}}$ itself to get as closer as needed to a uniform distribution by selecting the appropriate combination of $(\alpha, \Sigma)$. 
+
+Therefore, we simulate $n=10000$ $P^{\text{POMM}}$ matrices via the estimated parameters $\hat{\theta}$ in \eqref{table:hyperparameters_SIMPLE}. Then we extract 1000 points from each level set to avoid sample biases, and we compare them with an equally-sized set simulated via the Simple model, using the Kolmogorov-Smirnov test, where the null hypothesis is that two sets of points are sampled from the same distribution.
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large Kolmogorov-Smirnov test} \\ 
+{\small Data are generated via the estimated parameters}
+} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+p-value} & \multicolumn{3}{c}{
+$\%$ overlap between level sets} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+POMM model  &0.26& 0.05 & 0.00 & 82\% & 86\% & 89\% \\
+\bottomrule
+\end{tabular}
+\label{table:ks_test}
+\end{table}
+
+In table \eqref{table:ks_test} we report first the Kolmogorov-Smirnov test p-values, and we may notice that for $K=3,5$ we do not reject with an $\alpha = 5\%$ that the $P^{\text{POMM}}$ is compatible with being extracted from the Simple model.
+
+Instead with $K=9$ we cannot say that $P^{\text{POMM}}$ has collapsed to a uniform, but at the same time, if we look at the area of overlap between the densities of the level sets, we may notice that there is a significant amount of overlap between them, allowing the POMM model to effectively replicate the unordered entries of the $P^{\text{Simple}}$ matrix.
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, $\alpha = 0.60, \Sigma =0.19$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K3_simple.png}%
+        \label{fig:Density_K3_simple}%
+    }\hfill
+    \subfigure[K=5, $\alpha = 0.41, \Sigma =0.18$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K5_simple.png}%
+        \label{fig:Density_K5_simple}%
+    }\hfill
+    \subfigure[K=9, $\alpha = 0.23, \Sigma =0.15$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K9_simple.png}%
+        \label{fig:Density_K9_simple}%
+    }\\[2ex]\subfigure[K=3, $\alpha = 0.60, \Sigma =0.19$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K3.png}%
+        \label{fig:Joint_K3}%
+    }\hfill
+    \subfigure[K=5, $\alpha = 0.41, \Sigma =0.18$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K5.png}%
+        \label{fig:Joint_K5}%
+    }\hfill
+    \subfigure[K=9, $\alpha = 0.23, \Sigma =0.15$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K9.png}%
+        \label{fig:Joint_K9}%
+    }
+    \caption{These are the densities of the entries of 10000 $P$ matrices generated according to the parameters within brackets, that is, the parameters estimated according the POMM model on the data generated via the Simple one. In figures  \eqref{fig:Density_K3_simple}, \eqref{fig:Density_K5_simple}, \eqref{fig:Density_K9_simple} we have the densities of the level sets coloured differently. In figures  \eqref{fig:Joint_K3}, \eqref{fig:Joint_K5}, \eqref{fig:Joint_K9} we put together 1000 points extracted from each level sets and we compute the density, so to have an overview of the joint distribution. We also compare the $P$'s entries simulated via the POMM and the Simple model}    
+    \label{fig:overlapping_simple}
+\end{figure}
+
+In figure \eqref{fig:overlapping_simple} we report the densities of the points generated via the estimated hyper-parameters. We may notice the difference for the case $K=9$ with respect to the other two. In this case, we have very significant distributions for the POMM and the Simple one.
+
 
 \clearpage
 
@@ -516,32 +741,44 @@ $\alpha$ & 0.55 & 0.36 & 0.37 & [0.18	0.89] & [0.1	0.61] & [0.1	0.75] \\
 
 \subsubsection{Simple Model check}
 
+In this subsection, we report some diagnostic checks for the algorithm of the Markov Chains, to assess convergence, quality of mixing, and the overall behaviour of the Metropolis-within-Gibbs algorithm.
+
 
 
 
 \begin{table}[h]
 \centering
-\caption*{
+\caption{
 {\large $z$ diagnostic table} \\ 
 {\small True Model Simple, $N=100$}
 } 
 \begin{tabular}{ccccccccccccc}
 \toprule
-\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
-ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{$\overline{ESS}$} & \multicolumn{3}{c}{
+$\overline{ACF_{30}}$} & \multicolumn{3}{c}{$\overline{\% accepted}$} & \multicolumn{3}{c}{$\overline{Gelman-Rubin}$}\\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &374.75 & 719.47 & 862.00 & 0.09 & 0.01 & 0.26 & 0.01 & 0.01 & 31.26 & Inf & 6.26 & 1.42\\
-Simple &1926.61 & 533.16 & 20.64 & 0.03 & 0.21 & 0.06 & 0.01 & 0.01 & 0.01 & Inf & Inf & Inf   \\
+POMM &7558.60 & 7988.02 & 2880.01 & 0 & 0.01 & 0.08 & 0.02 & 0.04 & 0.15 & 17.80 & 1.03 & 5.99 \\
+Simple &6544.85 & 6688.51 & 2438.17 & 0 & 0.03 & 0.11 & 0.01 & 0.56 & 0.15 & 1.04 & 1.76 & 23.47   \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:z_diagnostics_simple}
 \end{table}
+
+In table \eqref{table:z_diagnostics_simple} we report the diagnostics for the $z$ parameter. Since the parameter is a label vector with 100 entries in this case, we compute the relevant statistics for each single entry an then we report the average.
+
+The first statistics is the average Effective Sample Size (ESS), which is particularly good.
+
+Then, we report the average autocorrelation computed with a lag of 30 iterations. This values are close to zero, meaning that there is very little correlation within the chain.
+
+In the third columns we report the average acceptance rate for the labels
+
+Finally, we compute the Gelman-Rubin statistics 
 
 \begin{table}[h]
 \centering
-\caption*{
+\caption{
 {\large $P$ diagnostic table} \\ 
 {\small True Model Simple, $N=100$}
 } 
@@ -552,17 +789,17 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &1520 & 1761.6 & 1419.61 & 0.09 & 0.00 & 0.07 & 25.12 & 35.37 & 32.42 & 46.75 & 4.27 & 7.96  \\
-Simple &1265 & 1545.3 & 1493.03 & 0.07 & 0.09 & 0.07 & 30.80 & 33.01 & 32.58 & 14.98 & 12.00 & 8.05 \\
+POMM &2234.00 & 2101.1 & 1454.08 & 0.02 & 0.00 & 0.15 & 34.52 & 31.55 & 29.98 & 12.74 & 1.00 & 3.32  \\
+Simple &2742.67 & 1446.9 & 1565.14 & 0.00 & 0.13 & 0.17 & 36.85 & 31.01 & 30.06 & 1.00 & 2.52 & 3.01 \ \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:P_diagnostics_Simple}
 \end{table}
 
 
 \begin{table}[h]
 \centering
-\caption*{
+\caption{
 {\large POMM hyperparameters diagnostic table} \\ 
 {\small True Model Simple, $N=100$}
 } 
@@ -573,11 +810,11 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &1362 & 435 & 0 & 0.32 & 0.4 & 0 & 33.35 & 29.64 & 0 & 2.5 & 1.58 &1.54 \\
-$\alpha$ &11 & 16 & 19 & 0.93 & 0.91 & 0.9 & 24.66 & 25.12 & 24.61 & 1.11 & 1.04 & 1.93 \\
+$S$ &985 & 155 & 162 & 0.5 & 0.55 & 0.55 & 31.47 & 29.96 & 29.81 & 1.96 & 1.02 & 1.18 \\
+$\alpha$ &13 & 17 & 45 & 0.95 & 0.94 & 0.84 & 24.74 & 24.93 & 24.38 & 1.21 & 1.62 & 1.01 \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:P_diagnostics_Simple}
 \end{table}
 
 \clearpage
@@ -590,15 +827,15 @@ In this section we reverse the exercise performed in previous one. Before we wer
 \begin{figure}[h]
     \centering
     \subfigure[K=3, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K3_N100.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_POMMPOMM_K3_N100.png}%
         \label{fig:POMM_adjacency_K3}%
     }\hfill
     \subfigure[K=5, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K5_N100.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_POMMPOMM_K5_N100.png}%
         \label{fig:POMM_adjacency_K5}%
     }\hfill
     \subfigure[K=9, POMM Model]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/adjacency_True_ModelPOMMEst_model_POMM_K9_N100.png}%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_POMMPOMM_K9_N100.png}%
         \label{fig:POMM_adjacency_K9}%
     }
     \caption{Adjacency Matrices simulated via the POMM Model}
@@ -608,26 +845,26 @@ In this section we reverse the exercise performed in previous one. Before we wer
 \begin{figure}[htbp]
     \centering
     \subfigure[K=3, Simple Model Estimates]{%
-\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K3_N100.png}%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K5_N100.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMSimpleK5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, Simple Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMSimpleK9_N100.png}%
         \label{fig:M10000}%
     }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_POMM_K3_N100.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK3_N100.png}%
         \label{fig:M4000}%
     }\hfill
     \subfigure[K=5, POMM Model Estimates]{%
-\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_POMM_K5_N100.png}%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK5_N100.png}%
         \label{fig:M7000}%
     }\hfill
     \subfigure[K=9, POMM Model Estimates]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_True_ModelPOMMEst_model_Simple_K9_N100.png}%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK9_N100.png}%
         \label{fig:M10000}%
     }
     \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
@@ -652,12 +889,108 @@ $\%$ within-95\%-CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0.03 & 0.02 & 0.01 & 100\% & 100\% & 94.44\% & 0.13 & 0.08 & 0.06  \\
-Simple model & 0.00 & 0.05 & 0.01 & 100\% & 90\% & 97.22\% & 0.01 & 0.13 & 0.07 \\
+POMM model  &0.02 & 0.02 & 0.01 & 100\% & 90\% & 61.11\% & 0.14 & 0.08 & 0.02  \\
+Simple model & 0.00 & 0.04 & 0.02 & 100\% & 90\% & 100.00\% & 0.02 & 0.11 & 0.15 \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
 \end{table}
+
+\newpage
+\[
+P^{K=3}_{true} = 
+\left[\begin{array}{ccc}
+0.500 & 0.600 & 0.754 \\
+0.400 & 0.500 & 0.622 \\
+0.246 & 0.378 & 0.500 \\ 
+\end{array}\right] \quad 
+\hat{P}^{K=3}_{\text{POMM}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.582 & 0.726 \\
+0.418 & 0.500 & 0.649 \\
+0.274 & 0.351 & 0.500 \\ 
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=3}_{\text{Simple}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.606 & 0.758 \\
+0.394 & 0.500 & 0.623 \\
+0.242 & 0.377 & 0.500 \\ 
+\end{array}\right]
+\]
+
+\[
+P^{K=5}_{true} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.569 & 0.679 & 0.752 & 0.781 \\
+0.431 & 0.500 & 0.576 & 0.698 & 0.741 \\
+0.321 & 0.424 & 0.500 & 0.562 & 0.674 \\
+0.248 & 0.302 & 0.438 & 0.500 & 0.571 \\
+0.219 & 0.259 & 0.326 & 0.429 & 0.500 \\
+\end{array}\right] \quad   
+\hat{P}^{K=5}_{\text{POMM}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.575 & 0.694 & 0.723 & 0.775 \\
+0.425 & 0.500 & 0.604 & 0.655 & 0.736 \\
+0.306 & 0.396 & 0.500 & 0.555 & 0.655 \\
+0.277 & 0.345 & 0.445 & 0.500 & 0.597 \\
+0.225 & 0.264 & 0.345 & 0.403 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=5}_{\text{Simple}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.557 & 0.681 & 0.703 & 0.761 \\
+0.443 & 0.500 & 0.659 & 0.641 & 0.744 \\
+0.319 & 0.341 & 0.500 & 0.532 & 0.625 \\
+0.297 & 0.359 & 0.468 & 0.500 & 0.622 \\
+0.239 & 0.256 & 0.375 & 0.378 & 0.500 \\
+\end{array}\right]
+\]
+
+\[
+P^{K=9}_{true} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.547 & 0.626 & 0.682 & 0.699 & 0.726 & 0.766 & 0.775 & 0.778 \\
+0.453 & 0.500 & 0.546 & 0.624 & 0.679 & 0.702 & 0.729 & 0.750 & 0.765 \\
+0.374 & 0.454 & 0.500 & 0.571 & 0.633 & 0.647 & 0.705 & 0.720 & 0.738 \\
+0.318 & 0.376 & 0.429 & 0.500 & 0.551 & 0.618 & 0.660 & 0.692 & 0.708 \\
+0.301 & 0.321 & 0.367 & 0.449 & 0.500 & 0.561 & 0.630 & 0.655 & 0.710 \\
+0.274 & 0.298 & 0.353 & 0.382 & 0.439 & 0.500 & 0.557 & 0.625 & 0.676 \\
+0.234 & 0.271 & 0.295 & 0.340 & 0.370 & 0.443 & 0.500 & 0.562 & 0.636 \\
+0.225 & 0.250 & 0.280 & 0.308 & 0.345 & 0.375 & 0.438 & 0.500 & 0.560 \\
+0.222 & 0.235 & 0.262 & 0.292 & 0.290 & 0.324 & 0.364 & 0.440 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{POMM}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.559 & 0.637 & 0.674 & 0.704 & 0.729 & 0.754 & 0.773 & 0.791 \\
+0.441 & 0.500 & 0.558 & 0.637 & 0.675 & 0.704 & 0.730 & 0.751 & 0.772 \\
+0.363 & 0.442 & 0.500 & 0.559 & 0.637 & 0.674 & 0.704 & 0.730 & 0.752 \\
+0.326 & 0.363 & 0.441 & 0.500 & 0.557 & 0.636 & 0.675 & 0.704 & 0.729 \\
+0.296 & 0.325 & 0.363 & 0.443 & 0.500 & 0.557 & 0.638 & 0.676 & 0.705 \\
+0.271 & 0.296 & 0.326 & 0.364 & 0.443 & 0.500 & 0.557 & 0.637 & 0.675 \\
+0.246 & 0.270 & 0.296 & 0.325 & 0.362 & 0.443 & 0.500 & 0.558 & 0.638 \\
+0.227 & 0.249 & 0.270 & 0.296 & 0.324 & 0.363 & 0.442 & 0.500 & 0.558 \\
+0.209 & 0.228 & 0.248 & 0.271 & 0.295 & 0.325 & 0.362 & 0.442 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{Simple}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.547 & 0.626 & 0.682 & 0.699 & 0.726 & 0.766 & 0.775 & 0.778 \\
+0.453 & 0.500 & 0.546 & 0.624 & 0.679 & 0.702 & 0.729 & 0.750 & 0.765 \\
+0.374 & 0.454 & 0.500 & 0.571 & 0.633 & 0.647 & 0.705 & 0.720 & 0.738 \\
+0.318 & 0.376 & 0.429 & 0.500 & 0.551 & 0.618 & 0.660 & 0.692 & 0.708 \\
+0.301 & 0.321 & 0.367 & 0.449 & 0.500 & 0.561 & 0.630 & 0.655 & 0.710 \\
+0.274 & 0.298 & 0.353 & 0.382 & 0.439 & 0.500 & 0.557 & 0.625 & 0.676 \\
+0.234 & 0.271 & 0.295 & 0.340 & 0.370 & 0.443 & 0.500 & 0.562 & 0.636 \\
+0.225 & 0.250 & 0.280 & 0.308 & 0.345 & 0.375 & 0.438 & 0.500 & 0.560 \\
+0.222 & 0.235 & 0.262 & 0.292 & 0.290 & 0.324 & 0.364 & 0.440 & 0.500 \\ \\\end{array}\right]
+\]
+
 
 
 \begin{table}[htbp]
@@ -674,8 +1007,8 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM model  &0 & 0 & 0 & 0 & 0.0 & 0  & $\underset{17.55}{-6496.08}$ & $\underset{17.97}{-6620.84}$ & $\underset{17.78}{6658.97}$  \\
-Simple model & 0 & 0 & 0 & 0 & 0.4 & 0.0  & $\underset{17.60}{-6553.32}$ & $\underset{17.84}{-6566.43}$ & $\underset{17.96}{6662.66}$ \\
+POMM model  &0.13 & 0.53 & 1.9 & 0.13 & 0.42 & 1.73  & $\underset{30.98}{-13361.79}$ & $\underset{31.45}{-13510.00}$ & $\underset{31.03}{-13645.28}$  \\
+Simple model & 0.13 & 0.31 & 2.0 & 0.13 & 0.48 & 1.71 & $\underset{30.74}{-13409.44}$ & $\underset{31.71}{-13496.19}$ & $\underset{30.71}{-13659.10}$ \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -721,8 +1054,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &0 & 15.19 & 2167.05 & 0.06 & 0.20 & 0.16 & 0.01 & 0.01 & 0.05 & Inf & Inf & 8.53    \\
-Simple &0 & 670.73 & 2901.09 & -0.01 & 0.04 & 0.02 & 0.01 & 0.01 & 0.03 & NA & Inf & 6.93 \\
+POMM &3418.94 & 10354.90 & 4800.38 & 0.11 & 0.02 & 0.09 & 0.01 & 0.33 & 4.50 & 83.84 & 1.12 & 1.00    \\
+Simple &1778.56 & 10191.58 & 598.43 & 0.00 & 0.01 & 0.36 & 0.01 & 0.50 & 2.64 & 1.02 & 3.03 & 1.22  \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -741,8 +1074,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-POMM &1821.67 & 1296.1 & 1035.03 & 0.05 & 0.06 & 0.06 & 27.13 & 33.31 & 32.94 & 32.56 & 10.94 & 4.45   \\
-Simple &2121.33 & 1505.6 & 1350.92 & 0.00 & 0.04 & 0.01 & 29.88 & 33.29 & 32.70 & 1.00 & 12.26 & 3.26   \\
+POMM &626.67 & 672.7 & 308.22 & 0.29 & 0.22 & 0.34 & 20.89 & 29.75 & 29.55 & 21.96 & 6.14 & 1.15   \\
+Simple &2798.00 & 1659.7 & 121.94 & 0.00 & 0.02 & 0.53 & 36.70 & 30.99 & 29.78 & 1.00 & 5.56 & 1.16    \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}
@@ -762,8 +1095,8 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$S$ &938 & 548 & 316 & 0.1 & 0.27 & 0.54 & 25.42 & 12.03 & 6.71 & 3.5 & 2.15 & 8.15 \\
-$\alpha$ &33 & 341 & 180 & 0.82 & 0.3 & 0.41 & 23.83 & 17.82 & 13.81 & 1.07 & 1.44 & 2.41   \\
+$S$ &981 & 480 & 13 & 0.4 & 0.58 & 0.94 & 15.78 & 11.38 & 1.72 & 3.55 & 2.15 & 1.96  \\
+$\alpha$ &59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 & 1.25    \\
 \bottomrule
 \end{tabular}
 \label{table:simulations_from_simple}

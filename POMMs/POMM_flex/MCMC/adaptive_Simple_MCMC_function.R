@@ -120,7 +120,7 @@ adaptive_MCMC_simple <- function(Yij_matrix, Nij_matrix,init , estimation_contro
       #READY TO BOMB!
       
       
-      
+      iteration_time= vector()
       for(j in 1:N_iter){
         
        
@@ -197,8 +197,9 @@ adaptive_MCMC_simple <- function(Yij_matrix, Nij_matrix,init , estimation_contro
         z_container[,j] <- z_current
         p_container[,,j] = p_current
         end_time <- Sys.time()
+        iteration_time<-append(iteration_time,as.numeric(difftime(end_time, start_time, units = "secs")))
         if(j%%5000==0){
-          avg_iteration<- as.numeric(difftime(end_time, start_time, units = "secs"))
+          avg_iteration<- mean(iteration_time)
           current_time <- Sys.time() # Get the current time
           
           # Calculate the expected finishing time

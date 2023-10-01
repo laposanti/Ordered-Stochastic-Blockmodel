@@ -13,12 +13,13 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adapti
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
 
 #where the data are stored
-data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/raw_results"
+data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M"
 
 
 #where the data will be saved
-tap <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots"
-plots_dir<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots"
+tap <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/"
+plots_dir<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/"
+
 
 
 
@@ -52,6 +53,9 @@ while(controller==0){
   
   corr_table = matrix(0,2,3)
   rownames(corr_table)<- c("POMM","Simple")
+  
+
+  
   #1: POMM, 0:Simple
   results_control <- data.frame(Est_m =c(0,1))
   for(results_row in c(F,T)){
@@ -79,88 +83,108 @@ while(controller==0){
       N<- nrow(uploded_results$chain1$Yij_matrix)
       print(N)
       ncol(uploded_results$chain1$est_containers$z)
-      if(true_model == 'True_ModelPOMMEst_model_'){
+      if(true_model == 'POMM'){
         S<-uploded_results$chain1$ground_truth$S
         alpha<-uploded_results$chain1$ground_truth$alpha
+        Y_ij_POMM[[paste0(est_model, K)]]<- uploded_results$chain1$Yij_matrix
+        z_true_POMM[[paste0(est_model, K)]] <- uploded_results$chain1$ground_truth$z
       }else{
         S<-'na'
         alpha<-'na'
+        Y_ij_Simple[[paste0(est_model, K)]]<- uploded_results$chain1$Yij_matrix
+        z_true_Simple[[paste0(est_model, K)]] <- uploded_results$chain1$ground_truth$z
       }
+    
       
-      P_true<- uploded_results$chain4$ground_truth$P
-      
-      
-      
-      P_s_table <- P_summary_table(test_output = uploded_results, 
-                                   true_value = simulated, 
-                                   diag0.5 = TRUE, 
-                                   K = K, P = P_true, 
-                                   burn_in = burnin,
-                                   label_switch = F)
-      P_s_table_save <-P_s_table$table
-      
-      
-      
-      P_est_title <- paste0(tap,'/P_est_matrix',true_model,est_model,'_K', K,'_N', N, '.csv')
-      P_est <- round(P_s_table$P_hat,3) %>% data.frame()
-      save_table_to_file(P_est, P_est_title,title = 'Pestmatrix',subtitle = paste0(true_model,est_model,K,N))
-      
-      z_tot_table<- z_summary_table(test_output = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burn_in = burnin,label_switch = F)
-      
-      z_s_table<- z_tot_table$table
-      
-      if(K==3){
-        z_summary_results[est_model,c(1,4,7,10)]<- round(unlist(z_s_table),2)
-      }else if(K==4){
-        z_summary_results[est_model,c(2,5,8,11)]<- round(unlist(z_s_table),2)
-      }else{
-        z_summary_results[est_model,c(3,6,9,12)]<- round(unlist(z_s_table),2)
-      }
-      
-      
-      if(est_model == 'POMM'){
-        
-        true_value<- ifelse(true_model == 'True_ModelPOMMEst_model_',T,F)
-        
-        S_s_table<- S_summary_table(test_output = uploded_results, true_value = true_value , diag0.5 = TRUE, S = S, K = K, burn_in = burnin)
-        
-        if(true_value==T){
-          if(K==3){
-            S_summary_results[1,c(1,4,7)]<- unlist(S_s_table)
-          }else if(K==4){
-            S_summary_results[1,c(2,5,8)]<- unlist(S_s_table)
-          }else{
-            S_summary_results[1,c(3,6,9)]<- unlist(S_s_table)
-          }}else{
-            if(K==3){
-              S_summary_results[1,c(1,4)]<- unlist(S_s_table)
-            }else if(K==4){
-              S_summary_results[1,c(2,5)]<- unlist(S_s_table)
-            }else{
-              S_summary_results[1,c(3,6)]<- unlist(S_s_table)
-            }
-          }
-        
-        alpha_s_table<- alpha_summary_table(test_output = uploded_results, true_value = true_value, diag0.5 = TRUE, alpha = alpha, K = K, burn_in = burnin)
-        if(true_value == T){
-          if(K==3){
-            alpha_summary_results[1,c(1,4,7)]<- unlist(alpha_s_table)
-          }else if(K==4){
-            alpha_summary_results[1,c(2,5,8)]<- unlist(alpha_s_table)
-          }else{
-            alpha_summary_results[1,c(3,6,9)]<- unlist(alpha_s_table)
-          }
-        }else{
-          if(K==3){
-            alpha_summary_results[1,c(1,4)]<- unlist(alpha_s_table)
-          }else if(K==4){
-            alpha_summary_results[1,c(2,5)]<- unlist(alpha_s_table)
-          }else{
-            alpha_summary_results[1,c(3,6)]<- unlist(alpha_s_table)
-          }
-        }
-        
-      }
+      # 
+      # 
+      # P_true_title <- paste0(tap,'/P_true_matrix',true_model,est_model,'_K', K,'_N', N, '.csv')
+      # P_true<- uploded_results$chain4$ground_truth$P
+      # P_true <- round(P_true,3) %>% data.frame()
+      # save_table_to_file(P_true, P_true_title,title = 'Ptruematrix',subtitle = paste0(true_model,est_model,K,N))
+      # 
+      # 
+      # P_s_table <- P_summary_table(test_output = uploded_results, 
+      #                              true_value = simulated, 
+      #                              diag0.5 = TRUE, 
+      #                              K = K, P = P_true, 
+      #                              burn_in = burnin,
+      #                              label_switch = F)
+      # P_s_table_save <-P_s_table$table
+      # P_s_table_save <- P_s_table_save%>% 
+      #   summarise(
+      #     mean_mae = mean(abs(mean_est - true_value)),
+      #     percentage_in_interval = mean(true_value >= credible_interval_05 & true_value <= credible_interval_95) * 100 ,
+      #     average_credible_length = mean(abs(credible_interval_95 - credible_interval_05))
+      #   )
+      # if(K==3){
+      #   P_summary_results[est_model,c(1,4,7)]<- round(unlist(P_s_table_save),2)
+      # }else if(K==5){
+      #   P_summary_results[est_model,c(2,5,8)]<- round(unlist(P_s_table_save),2)
+      # }else{
+      #   P_summary_results[est_model,c(3,6,9)]<- round(unlist(P_s_table_save),2)
+      # }
+      # 
+      # P_est_title <- paste0(tap,'/P_est_matrix',true_model,est_model,'_K', K,'_N', N, '.csv')
+      # P_est <- round(P_s_table$P_hat,3) %>% data.frame()
+      # save_table_to_file(P_est, P_est_title,title = 'Pestmatrix',subtitle = paste0(true_model,est_model,K,N))
+      # 
+      # z_tot_table<- z_summary_table(test_output = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burn_in = burnin,label_switch = F)
+      # 
+      # z_s_table<- z_tot_table$table
+      # 
+      # if(K==3){
+      #   z_summary_results[est_model,c(1,4,7,10)]<- round(unlist(z_s_table),2)
+      # }else if(K==5){
+      #   z_summary_results[est_model,c(2,5,8,11)]<- round(unlist(z_s_table),2)
+      # }else{
+      #   z_summary_results[est_model,c(3,6,9,12)]<- round(unlist(z_s_table),2)
+      # }
+      # 
+      # 
+      # if(est_model == 'POMM'){
+      #   
+      #   true_value<- ifelse(true_model == 'True_ModelPOMMEst_model_',T,F)
+      #   
+      #   S_s_table<- S_summary_table(test_output = uploded_results, true_value = true_value , diag0.5 = TRUE, S = S, K = K, burn_in = burnin)
+      #   
+      #   if(true_value==T){
+      #     if(K==3){
+      #       S_summary_results[1,c(1,4,7)]<- unlist(S_s_table)
+      #     }else if(K==5){
+      #       S_summary_results[1,c(2,5,8)]<- unlist(S_s_table)
+      #     }else{
+      #       S_summary_results[1,c(3,6,9)]<- unlist(S_s_table)
+      #     }}else{
+      #       if(K==3){
+      #         S_summary_results[1,c(1,4)]<- unlist(S_s_table)
+      #       }else if(K==5){
+      #         S_summary_results[1,c(2,5)]<- unlist(S_s_table)
+      #       }else{
+      #         S_summary_results[1,c(3,6)]<- unlist(S_s_table)
+      #       }
+      #     }
+      #   
+      #   alpha_s_table<- alpha_summary_table(test_output = uploded_results, true_value = true_value, diag0.5 = TRUE, alpha = alpha, K = K, burn_in = burnin)
+      #   if(true_value == T){
+      #     if(K==3){
+      #       alpha_summary_results[1,c(1,4,7)]<- unlist(alpha_s_table)
+      #     }else if(K==5){
+      #       alpha_summary_results[1,c(2,5,8)]<- unlist(alpha_s_table)
+      #     }else{
+      #       alpha_summary_results[1,c(3,6,9)]<- unlist(alpha_s_table)
+      #     }
+      #   }else{
+      #     if(K==3){
+      #       alpha_summary_results[1,c(1,4)]<- unlist(alpha_s_table)
+      #     }else if(K==5){
+      #       alpha_summary_results[1,c(2,5)]<- unlist(alpha_s_table)
+      #     }else{
+      #       alpha_summary_results[1,c(3,6)]<- unlist(alpha_s_table)
+      #     }
+      #   }
+      #   
+      # }
       
       P_d_table<- P_diagnostic_table(chains = uploded_results, true_value = simulated, diag0.5 = TRUE,K = K, P = P_true, burn_in = burnin,N_iter = N_iter)
       P_d_table <- P_d_table%>% 
@@ -173,18 +197,18 @@ while(controller==0){
       
       if(K==3){
         P_diagnostic_results[est_model,c(1,4,7,10)]<- round(unlist(P_d_table),2)
-      }else if(K==4){
+      }else if(K==5){
         P_diagnostic_results[est_model,c(2,5,8,11)]<- round(unlist(P_d_table),2)
       }else{
         P_diagnostic_results[est_model,c(3,6,9,12)]<- round(unlist(P_d_table),2)
       }
       
       z_d_table <- z_diagnostic_table(chains = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burn_in = burnin, N_iter=N_iter)
-      
+
       
       if(K==3){
         z_diagnostic_results[est_model,c(1,4,7,10,13)]<- round(unlist(z_d_table),2)
-      }else if(K==4){
+      }else if(K==5){
         z_diagnostic_results[est_model,c(2,5,8,11,14)]<- round(unlist(z_d_table),2)
       }else{
         z_diagnostic_results[est_model,c(3,6,9,12,15)]<- round(unlist(z_d_table),2)
@@ -196,7 +220,7 @@ while(controller==0){
         if(true_model=='POMM'){
           if(K==3){
             S_diagnostic_results[1,c(1,4,7,10,13)]<- round(unlist(S_d_table),2)
-          }else if(K==4){
+          }else if(K==5){
             S_diagnostic_results[1,c(2,5,8,11,14)]<- round(unlist(S_d_table),2)
           }else{
             S_diagnostic_results[1,c(3,6,9,12,15)]<- round(unlist(S_d_table),2)
@@ -204,7 +228,7 @@ while(controller==0){
         }else{
           if(K==3){
             S_diagnostic_results[1,c(1,4,7,10)]<- round(unlist(S_d_table),2)
-          }else if(K==4){
+          }else if(K==5){
             S_diagnostic_results[1,c(2,5,8,11)]<- round(unlist(S_d_table),2)
           }else{
             S_diagnostic_results[1,c(3,6,9,12)]<- round(unlist(S_d_table),2)
@@ -215,7 +239,7 @@ while(controller==0){
         if(true_model== 'POMM'){
           if(K==3){
             alpha_diagnostic_results[1,c(1,4,7,10,13)]<- round(unlist(alpha_d_table),2)
-          }else if(K==4){
+          }else if(K==5){
             alpha_diagnostic_results[1,c(2,5,8,11,14)]<- round(unlist(alpha_d_table),2)
           }else{
             alpha_diagnostic_results[1,c(3,6,9,12,15)]<- round(unlist(alpha_d_table),2)
@@ -223,7 +247,7 @@ while(controller==0){
         }else{
           if(K==3){
             alpha_diagnostic_results[1,c(1,4,7,10)]<- round(unlist(alpha_d_table),2)
-          }else if(K==4){
+          }else if(K==5){
             alpha_diagnostic_results[1,c(2,5,8,11)]<- round(unlist(alpha_d_table),2)
           }else{
             alpha_diagnostic_results[1,c(3,6,9,12)]<- round(unlist(alpha_d_table),2)
@@ -272,7 +296,7 @@ while(controller==0){
   
   controller = controller+1
 }
-T
+
 
 
 

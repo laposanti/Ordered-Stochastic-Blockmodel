@@ -1,0 +1,12 @@
+\begin{longtable}{rrrrrrrrrrrrrrr}
+\caption*{
+{\large zdiagnosticstable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 & X10 & X11 & X12 & X13 & X14 & X15 \\ 
+\midrule
+7558.60 & 7988.02 & 2880.01 & 0 & 0.01 & 0.08 & 0.02 & 0.04 & 0.15 & 17.80 & 1.03 & 5.99 & 0 & 0.42 & 0.1 \\ 
+6544.85 & 6688.51 & 2438.17 & 0 & 0.03 & 0.11 & 0.01 & 0.56 & 0.15 & 1.04 & 1.76 & 23.47 & 0 & 0.42 & 0.1 \\ 
+\bottomrule
+\end{longtable}
+

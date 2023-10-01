@@ -1,0 +1,11 @@
+\begin{longtable}{rrrrrrrrrrrrrrr}
+\caption*{
+{\large alphadiagnosticstable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 & X10 & X11 & X12 & X13 & X14 & X15 \\ 
+\midrule
+59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 & 1.25 & 0.06 & 0 & 0.04 \\ 
+\bottomrule
+\end{longtable}
+
