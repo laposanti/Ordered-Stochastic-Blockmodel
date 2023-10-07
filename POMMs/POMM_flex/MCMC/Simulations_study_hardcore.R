@@ -85,7 +85,7 @@ for(iterazione in 1:nrow(test_grid)){
     model<- 'Simple'
     set.seed(123)
     P_true= matrix(.5,K,K)
-    P_true[upper.tri(P_true)]<- runif(K*(K-1)/2,0.5,beta_max)
+    P_true[upper.tri(P_true)]<- runif(K*(K-1)/2,0,beta_max)
     P_true[lower.tri(P_true)]<- 1- P_true[upper.tri(P_true)]
     
     z_true = rep_len(1:K, N)

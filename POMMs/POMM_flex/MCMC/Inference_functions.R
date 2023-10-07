@@ -162,20 +162,23 @@ calculate_misclassification_rate <- function(N_new, z_new, N, p_true, z_true, sa
 
 
 calculate_waic_matrix <- function(n_ij_matrix, z_container, N_iter, p_container, y_ij_matrix) {
-  
+
   upper.tri.non.zero.waic <- which(n_ij_matrix > 0, arr.ind = TRUE)
   waic_matrix_container <- matrix(0, nrow = N_iter, ncol = length(upper.tri.non.zero.waic))
-  
+
   for (ii in 1:N_iter) {
     z_mat_waic <- vec2mat(z_container[, ii])
     p_ij_waic <- calculate_victory_probabilities(z_mat_waic, p_container[,, ii])
-    waic_matrix_container[ii, ] <- dbinom(y_ij_matrix[upper.tri.non.zero.waic], 
-                                          size = n_ij_matrix[upper.tri.non.zero.waic], 
-                                          p_ij_waic[upper.tri.non.zero.waic])
+    waic_matrix_container[ii, ] <- dbinom(y_ij_matrix[upper.tri.non.zero.waic],
+                                          size = n_ij_matrix[upper.tri.non.zero.waic],
+                                          p_ij_waic[upper.tri.non.zero.waic],log = T)
   }
-  
+
+
   waic.matrix(waic_matrix_container)
 }
+
+
 
 MSE_p_matrix = function(burnin, p_container, p_true){
   K<- nrow(p_true)
@@ -667,192 +670,191 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burn_in,N_iter, la
     return(results)
   }
 }
+
+#S inference and diagnostics
+S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
   
-  d#S inference and diagnostics
-  S_summary_table<- function(test_output, true_value, diag0.5,S,K,burn_in){
-    
-    MCMC_samples<- c(test_output$chain1$est_containers$S[-c(1:burn_in)],
-                     test_output$chain2$est_containers$S[-c(1:burn_in)],
-                     test_output$chain3$est_containers$S[-c(1:burn_in)],
-                     test_output$chain4$est_containers$S[-c(1:burn_in)])
-    
-    m<-mcmc(MCMC_samples)
-    if(true_value == F){
-      results = data.frame(mean_est = 0, credible_interval_95 =0)
-      
-      results$mean_est <- mean(m)
-      HPD <- round(cbind(coda::HPDinterval(m)),2)
-      results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-    }else if(true_value == T){
-      results = data.frame(mean_est = 0, credible_interval_95 =0, true_value =0)
-      
-      results$mean_est<- round(mean(m),4)
-      HPD <- round(cbind(coda::HPDinterval(m)),4)
-      results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-      results$true_value<- ifelse(S=='na','na',round(S,4))
-      
-    }
-    return(results)}
+  MCMC_samples<- c(test_output$chain1$est_containers$S[-c(1:burn_in)],
+                   test_output$chain2$est_containers$S[-c(1:burn_in)],
+                   test_output$chain3$est_containers$S[-c(1:burn_in)],
+                   test_output$chain4$est_containers$S[-c(1:burn_in)])
   
-  
-  
-  S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
-    stopifnot(length(chains)==4)
+  m<-mcmc(MCMC_samples)
+  if(true_value == F){
+    results = data.frame(mean_est = 0, credible_interval_95 =0)
     
-    test1<-chains$chain1
-    test2<-chains$chain2
-    test3<-chains$chain3
-    test4<-chains$chain4
+    results$mean_est <- mean(m)
+    HPD <- round(cbind(coda::HPDinterval(m)),2)
+    results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
+  }else if(true_value == T){
+    results = data.frame(mean_est = 0, credible_interval_95 =0, true_value =0)
     
-    mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$S[-c(1:burn_in)]),
-                                          mcmc(test2$est_containers$S[-c(1:burn_in)]),
-                                          mcmc(test3$est_containers$S[-c(1:burn_in)]),
-                                          mcmc(test4$est_containers$S[-c(1:burn_in)])))
+    results$mean_est<- round(mean(m),4)
+    HPD <- round(cbind(coda::HPDinterval(m)),4)
+    results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
+    results$true_value<- ifelse(S=='na','na',round(S,4))
     
-    if(true_value == F){
-      results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0,Gelman_rubin=0)
-      
-      
-      #ESS
-      results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
-      #Gelman Rubin
-      results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
-      #Autocorrelation at lag=30
-      results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
-      
-      mm_acc<-list(test1$acceptance_rates$acc.count_S,
-                   test2$acceptance_rates$acc.count_S,
-                   test3$acceptance_rates$acc.count_S,
-                   test4$acceptance_rates$acc.count_S)
-      
-      results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
-    }else if(true_value == T){
-      results = data.frame(ESS = 0,
-                           LAG_30=0,
-                           acceptance_rate=0,
-                           Gelman_rubin=0,
-                           MAE = 0)
-      
-      
-      
-      #ESS
-      results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
-      #Gelman Rubin
-      results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
-      #Autocorrelation at lag=30
-      results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
-      
-      mm_acc<-list(test1$acceptance_rates$acc.count_S,
-                   test2$acceptance_rates$acc.count_S,
-                   test3$acceptance_rates$acc.count_S,
-                   test4$acceptance_rates$acc.count_S)
-      
-      results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
-      S<- test1$ground_truth$S
-      results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - S),4)
-      
-    }
-    return(results)}
-  #alpha inference and diagnosics
-  alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in){
-    alpha_all_chain <- c(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
-                         test_output$chain2$est_containers$alpha[-c(1:burn_in)],
-                         test_output$chain3$est_containers$alpha[-c(1:burn_in)],
-                         test_output$chain4$est_containers$alpha[-c(1:burn_in)])
-    
-    MCMC_samples = alpha_all_chain
-    m<-mcmc(MCMC_samples)
-    if(true_value == F){
-      results = data.frame(mean_est = 0, credible_interval_95 =0)
-      results$mean_est <- mean(m)
-      HPD <- round(cbind(coda::HPDinterval(m)),2)
-      results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-    }else if(true_value == T){
-      results = data.frame(mean_est = 0, credible_interval_95 =0, true_value =0)
-      results$mean_est<- round(mean(m),4)
-      HPD <- round(cbind(coda::HPDinterval(m)),4)
-      results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
-      results$true_value<- round(alpha,4)
-      
-    }
-    return(results)}
-  
-  alpha_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
-    stopifnot(length(chains)==4)
-    
-    test1<-chains$chain1
-    test2<-chains$chain2
-    test3<-chains$chain3
-    test4<-chains$chain4
-    mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$alpha[-c(1:burn_in)]),
-                                          mcmc(test2$est_containers$alpha[-c(1:burn_in)]),
-                                          mcmc(test3$est_containers$alpha[-c(1:burn_in)]),
-                                          mcmc(test4$est_containers$alpha[-c(1:burn_in)])))
-    
-    if(true_value == F){
-      results = data.frame(ESS = 0, LAG_30=0,acceptance_rate=0, Gelman_rubin=0 )
-      
-      
-      #ESS
-      results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
-      #Gelman Rubin
-      results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
-      #Autocorrelation at lag=30
-      results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
-      
-      mm_acc<-list(test1$acceptance_rates$acc.count_alpha,
-                   test2$acceptance_rates$acc.count_alpha,
-                   test3$acceptance_rates$acc.count_alpha,
-                   test4$acceptance_rates$acc.count_alpha)
-      
-      results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
-    }else if(true_value == T){
-      results = data.frame(ESS = 0,
-                           LAG_30=0,
-                           acceptance_rate=0,
-                           Gelman_rubin=0,
-                           MAE = 0)
-      
-      
-      #ESS
-      results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
-      #Gelman Rubin
-      results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
-      #Autocorrelation at lag=30
-      results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
-      
-      mm_acc<-list(test1$acceptance_rates$acc.count_alpha,
-                   test2$acceptance_rates$acc.count_alpha,
-                   test3$acceptance_rates$acc.count_alpha,
-                   test4$acceptance_rates$acc.count_alpha)
-      
-      results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
-      alpha<- test1$ground_truth$alpha
-      results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - alpha),4)
-      
-    }
-    return(results)}
-  
-  assembling_chains <- function(chains, burnin, parameter){
-    test1<-chains[[1]]
-    test2<-chains[[2]]
-    test3<-chains[[3]]
-    test4<-chains[[4]]
-    if(parameter == 'S'){
-      assembled<- c(test1$est_containers$S[-c(1:burnin)],test2$est_containers$S[-c(1:burnin)],test3$est_containers$S[-c(1:burnin)],test4$est_containers$S[-c(1:burnin)])
-      return(assembled)
-    }else if(parameter == 'alpha'){
-      assembled<- c(test1$est_containers$alpha[-c(1:burnin)],test2$est_containers$alpha[-c(1:burnin)],test3$est_containers$alpha[-c(1:burnin)],test4$est_containers$alpha[-c(1:burnin)])
-      return(assembled)
-    }else if(parameter == 'P'){
-      assembled<- abind::abind(test1$est_containers$P[,,-c(1:burnin)],test2$est_containers$P[,,-c(1:burnin)],test3$est_containers$P[,,-c(1:burnin)],test4$est_containers$P[,,-c(1:burnin)],along = 3)
-      return(assembled)
-    }else if(parameter == 'z'){
-      assembled<- cbind(test1$est_containers$z[,-c(1:burnin)],test2$est_containers$z[,-c(1:burnin)],test3$est_containers$z[,-c(1:burnin)],test4$est_containers$z[,-c(1:burnin)])
-      return(assembled)
-    }else{
-      print('Please provide a valide name for the parameters: alpha,S,P,Z')
-    }
   }
+  return(results)}
+
+
+
+S_diagnostic_table<- function(chains, true_value, diag0.5,S,K,burn_in,N_iter){
+  stopifnot(length(chains)==4)
   
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
   
+  mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$S[-c(1:burn_in)]),
+                                        mcmc(test2$est_containers$S[-c(1:burn_in)]),
+                                        mcmc(test3$est_containers$S[-c(1:burn_in)]),
+                                        mcmc(test4$est_containers$S[-c(1:burn_in)])))
+  
+  if(true_value == F){
+    results = data.frame(ESS = 0, LAG_30=0, acceptance_rate=0,Gelman_rubin=0)
+    
+    
+    #ESS
+    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    #Gelman Rubin
+    results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
+    #Autocorrelation at lag=30
+    results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
+    
+    mm_acc<-list(test1$acceptance_rates$acc.count_S,
+                 test2$acceptance_rates$acc.count_S,
+                 test3$acceptance_rates$acc.count_S,
+                 test4$acceptance_rates$acc.count_S)
+    
+    results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+  }else if(true_value == T){
+    results = data.frame(ESS = 0,
+                         LAG_30=0,
+                         acceptance_rate=0,
+                         Gelman_rubin=0,
+                         MAE = 0)
+    
+    
+    
+    #ESS
+    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    #Gelman Rubin
+    results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
+    #Autocorrelation at lag=30
+    results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
+    
+    mm_acc<-list(test1$acceptance_rates$acc.count_S,
+                 test2$acceptance_rates$acc.count_S,
+                 test3$acceptance_rates$acc.count_S,
+                 test4$acceptance_rates$acc.count_S)
+    
+    results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+    S<- test1$ground_truth$S
+    results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - S),4)
+    
+  }
+  return(results)}
+#alpha inference and diagnosics
+alpha_summary_table<- function(test_output, true_value, diag0.5,alpha,K,burn_in){
+  alpha_all_chain <- c(test_output$chain1$est_containers$alpha[-c(1:burn_in)],
+                       test_output$chain2$est_containers$alpha[-c(1:burn_in)],
+                       test_output$chain3$est_containers$alpha[-c(1:burn_in)],
+                       test_output$chain4$est_containers$alpha[-c(1:burn_in)])
+  
+  MCMC_samples = alpha_all_chain
+  m<-mcmc(MCMC_samples)
+  if(true_value == F){
+    results = data.frame(mean_est = 0, credible_interval_95 =0)
+    results$mean_est <- mean(m)
+    HPD <- round(cbind(coda::HPDinterval(m)),2)
+    results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
+  }else if(true_value == T){
+    results = data.frame(mean_est = 0, credible_interval_95 =0, true_value =0)
+    results$mean_est<- round(mean(m),4)
+    HPD <- round(cbind(coda::HPDinterval(m)),4)
+    results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
+    results$true_value<- round(alpha,4)
+    
+  }
+  return(results)}
+
+alpha_diagnostic_table<- function(chains, true_value, diag0.5,K,burn_in,N_iter){
+  stopifnot(length(chains)==4)
+  
+  test1<-chains$chain1
+  test2<-chains$chain2
+  test3<-chains$chain3
+  test4<-chains$chain4
+  mm<-mcmc.list(chains_list = mcmc.list(mcmc(test1$est_containers$alpha[-c(1:burn_in)]),
+                                        mcmc(test2$est_containers$alpha[-c(1:burn_in)]),
+                                        mcmc(test3$est_containers$alpha[-c(1:burn_in)]),
+                                        mcmc(test4$est_containers$alpha[-c(1:burn_in)])))
+  
+  if(true_value == F){
+    results = data.frame(ESS = 0, LAG_30=0,acceptance_rate=0, Gelman_rubin=0 )
+    
+    
+    #ESS
+    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    #Gelman Rubin
+    results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
+    #Autocorrelation at lag=30
+    results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
+    
+    mm_acc<-list(test1$acceptance_rates$acc.count_alpha,
+                 test2$acceptance_rates$acc.count_alpha,
+                 test3$acceptance_rates$acc.count_alpha,
+                 test4$acceptance_rates$acc.count_alpha)
+    
+    results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+  }else if(true_value == T){
+    results = data.frame(ESS = 0,
+                         LAG_30=0,
+                         acceptance_rate=0,
+                         Gelman_rubin=0,
+                         MAE = 0)
+    
+    
+    #ESS
+    results$ESS <- round(mean(simplify2array(lapply(mm, effectiveSize))),0)
+    #Gelman Rubin
+    results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[1],3)
+    #Autocorrelation at lag=30
+    results$LAG_30 <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
+    
+    mm_acc<-list(test1$acceptance_rates$acc.count_alpha,
+                 test2$acceptance_rates$acc.count_alpha,
+                 test3$acceptance_rates$acc.count_alpha,
+                 test4$acceptance_rates$acc.count_alpha)
+    
+    results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
+    alpha<- test1$ground_truth$alpha
+    results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - alpha),4)
+    
+  }
+  return(results)}
+
+assembling_chains <- function(chains, burnin, parameter){
+  test1<-chains[[1]]
+  test2<-chains[[2]]
+  test3<-chains[[3]]
+  test4<-chains[[4]]
+  if(parameter == 'S'){
+    assembled<- c(test1$est_containers$S[-c(1:burnin)],test2$est_containers$S[-c(1:burnin)],test3$est_containers$S[-c(1:burnin)],test4$est_containers$S[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'alpha'){
+    assembled<- c(test1$est_containers$alpha[-c(1:burnin)],test2$est_containers$alpha[-c(1:burnin)],test3$est_containers$alpha[-c(1:burnin)],test4$est_containers$alpha[-c(1:burnin)])
+    return(assembled)
+  }else if(parameter == 'P'){
+    assembled<- abind::abind(test1$est_containers$P[,,-c(1:burnin)],test2$est_containers$P[,,-c(1:burnin)],test3$est_containers$P[,,-c(1:burnin)],test4$est_containers$P[,,-c(1:burnin)],along = 3)
+    return(assembled)
+  }else if(parameter == 'z'){
+    assembled<- cbind(test1$est_containers$z[,-c(1:burnin)],test2$est_containers$z[,-c(1:burnin)],test3$est_containers$z[,-c(1:burnin)],test4$est_containers$z[,-c(1:burnin)])
+    return(assembled)
+  }else{
+    print('Please provide a valide name for the parameters: alpha,S,P,Z')
+  }
+}
+

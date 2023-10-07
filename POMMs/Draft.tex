@@ -38,32 +38,28 @@
 
 \section{Introduction}
 
+In the present work, we specify and estimate a model for pairwise or binary data capable of clustering the data  within blocks. The novelty lies in the fact that these blocks are ordered, meaning that they present a hierarchical relationship of some sort.
 
+We start by presenting the unordered model, which is essentially a traditional Stochastic Block Models (SBMs). 
+Pairwise data are modelled as binomially distributed, where the probability of success depends both on the membership of the two pair members, stored within the parameter $z$, and on a blocks-related probabilities matrix $P$.
 
-When faced with a multitude of alternatives, individuals often strive to organize them into coherent blocks or groups to better understand the decision landscape. Furthermore, they aim to establish a meaningful order within these blocks, enabling them to prioritize alternatives based on preference. This process involves two fundamental tasks: block clustering and order-based ranking. While clustering involves categorizing alternatives into distinct blocks, ranking focuses on arranging these blocks in a specific order. These tasks are typically accomplished through human judgments, often in the form of pairwise comparisons.
+The classical SBM models $P$ with a Beta(1,1) prior. In the present work instead we model this $P$ matrix in different ways in order to induce an ordering among the clusters.
 
-In block clustering, the aim is to determine the inherent similarities among alternatives and group them accordingly. By comparing pairs of alternatives, individuals can identify common characteristics, shared attributes, or comparable features that contribute to their clustering. This process helps unveil the underlying structure of the alternatives, allowing decision-makers to comprehend the relationships and associations between them. Several techniques, such as hierarchical clustering and k-means clustering, have been employed to address this task effectively.
+We start by reviewing the unordered model, then, by drawing inspiration from the literature on image recognition, we start representing the matrix $P$ as an ordered poset, meaning a discrete set where we impose an ordering structure. This structure is strongly influence by the properties that we would like our ranked cluster to have. 
 
-Conversely, in order-based ranking, the primary objective is to establish a preference-based order among the identified blocks of alternatives. By comparing pairs of blocks, individuals can discern the relative favorability of one block over another. These pairwise comparisons generate a ranking list that encapsulates the perceived preference or priority of each block. Various methodologies, including the Bradley-Terry model and pairwise comparison matrices, have been utilized to derive meaningful rankings from the collected preferences.
+For example, if we work under the Strong Stochastic Transitivity (SST) axiom, we are asking that if the individual $i$ is ranked higher than $j$ and $j$ is ranked higher than $q$, then i must be ranked higher than the higher between i and $j$. There are other axioms that we might choose, like the Weak Stochastic Transitivity one (WST), which is less stringent than the SST, or the Linear Stochastic Transitivity one (LST), which encompasses both the two aforementioned ones.
 
-In this article, we propose a novel approach, termed Block Clustering and Order-based Ranking (BCOR), which unifies the tasks of block clustering and order-based ranking into a cohesive framework. The BCOR model introduces a dynamic parameter that governs the granularity of block clustering, allowing decision-makers to explore a spectrum of clustering options. By iteratively adjusting this parameter, the model can encompass a wide range of decision-making scenarios, from finely differentiated blocks to coarser groupings.
+However, assuming the SST axiom and imposing it over the poset defined on $P$ lets emerge an interesting structure, meaning that of the Level Sets $L_{(k)}$. Each Level Set is defined as the set of entries on a specific diagonal of the upper triangular matrix $P$, starting from $L_{(0)}$ which is the main diagonal, $L_{(1)}$ is the diagonal above and so on, until $L_{(K-1)}$. We impose that $L_{(0)}$ is always equal to $\frac{1}{2}$, since we assume that individuals within the same block have equal probability of being preferred.
 
-A key insight of the BCOR model lies in its ability to relate the number of blocks to the underlying ranking structure. As the number of blocks converges to the total number of alternatives, the model effectively transitions into a traditional ranking approach, providing a complete ordering of the alternatives. Conversely, by intentionally reducing the number of blocks, decision-makers are presented with distinct groups of choices, each requiring preference considerations within its own subset. This approach offers a nuanced perspective on decision-making, allowing individuals to differentiate between highly favored groups and those that are comparatively less preferred.
+We proceed to specify over each Level Set a prior probability distribution, which governs the probability law of the entries within that diagonal. The probability distribution is a truncated normal distribution $TRUNCNORM(\mu^{(k)}| \alpha, \beta_{\max}, \sigma)$. 
 
-The BCOR model provides a flexible and adaptive solution for organizing and prioritizing alternatives in various decision-making contexts. Its application extends beyond conventional clustering and ranking tasks, empowering decision-makers to explore the continuum between comprehensive rankings and granular groupings. Additionally, the model can be tailored to incorporate different types of pairwise comparisons, enabling its utilization in diverse domains and decision scenarios.
+Each distribution is endowed with a specific and increasing $\mu^{(k)}| \alpha, \beta_{\max}$, which effectively induces a hierarchical model, given that  $\alpha, \beta_{\max}$ are parameters common to each level set. While $\alpha$ specifies the rate of increase of the Level Sets' means $\{ \mu^{(k)} \ , k=0,\ldots,K-1 \}$, $\beta_{\max}$ specifies the maximum attainable probability within the matrix $P$. 
 
-To evaluate the effectiveness of the BCOR model, we conducted experiments using real-world datasets encompassing a wide range of decision contexts. The results demonstrate the model's ability to generate meaningful block clusters and order-based rankings, outperforming traditional approaches that solely focus on clustering or ranking tasks.
+The last and most important hyperparameter $\sigma$ is common to each distribution over the level sets. As $\sigma$ increases, the truncated normals become more and more flat, and therefore we are back to a case where the entries of $P$ are not distributed in a way that is not significantly different from a uniform.
 
-The contributions of this work can be summarized as follows:
+This model should therefore encompass the unordered one, for values of $\sigma$ that are large enough.
 
-We introduce the novel problem of block clustering and order-based ranking, bridging the gap between these two fundamental decision tasks.
-We propose the BCOR model, which provides a unified framework to accommodate various levels of granularity in decision-making, from complete rankings to distinct preference-based groups.
-We showcase the versatility of the BCOR model through experiments on real-world datasets, highlighting its superior performance compared to existing methods.
-By integrating block clustering and order-based ranking, the BCOR model offers decision-makers a comprehensive tool to navigate complex decision landscapes
-
-\section{The simple model}
-
-\subsection{Simple Model specification}
+\section{The Unordered model specification}
 
 This is a model for pairwise count data. We explicitly model the results of the interactions between two individuals $i$ and $j$. Given $N$ observations, the likelihood is 
 \begin{align}
@@ -84,6 +80,7 @@ Starting with the parameter $P$, we assume that its entries, namely $p_{k,k^\pri
 \begin{equation}
 p_{k,k^\prime} \sim Beta(1,1) \quad \text{for } k,k^\prime = 1, \ldots,K
 \end{equation}
+
 Second, we assume that the $z_i$s are independent and identically drawn from a multinomial distribution with one trial and probability vector $(\theta_1, \dots, \theta_K)$. We can write then:
 \begin{equation}
 z_i| \boldsymbol{\theta} \sim \operatorname{Multinomial}(1,\boldsymbol{\theta}) \quad \text{for } i = 1, \ldots,N
@@ -184,12 +181,22 @@ z \neq y_i, y_j \text { such that } y_i \prec z \prec y_j \text {. }
 $$
 We saw above that the correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; the correspondence described above is in a sense the minimal directed acyclic graph since it has the smallest possible directed edge set. However, if one starts with a directed acyclic graph, the corresponding poset is unique. From the point of view of image modeling, we arc more interested in the directed-acyclic-graph description because we are able to specify directly the spatial relations between pixel locations.
 
+[to be finished]
 
+\section{The WST model}
+
+This model implements the Weak Stochastic Transitivity assumption.
+
+To have the WST axiom satisfied, we need the upper triangular entries of the $P$ matrix to be always greater than 0.5
+
+Therefore, to implement this model a Bayesian setting, we must change little with respect to the Unordered model.
+
+We leave everything the same, but we force the upper triangular entries to be greater than 0.5. We can enforce effectively this condition by modifying the proposal distribution, and also the prior distribution.
 
 \section{The SST model}
 
 
-We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L^{(k)}$, where $L^{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
+We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L_{(k)}$, where $L_{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
 
 \[
 p_{ij}^{(k)} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu^{(k)}, \sigma^{2(k)}; 0.5, \beta_{\max})
@@ -201,19 +208,11 @@ p(P) = \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2
 \]
 Here:
 \begin{itemize}
-\item $\mu^{(k)}$ is the mean, which corresponds to the midpoint of the level set $L^{(k)}$, defined as $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
-\item $\sigma^{2}$ is the variance parameter constant across the level sets $L^{(1)},\ldots,L^{(K)}$.
+\item $\mu^{(k)}$ is the mean, which corresponds to the midpoint of the level set $L_{(k)}$, defined as $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
+\item $\sigma^{2}$ is the variance parameter constant across the level sets $L_{(1)},\ldots,L_{(k)}$.
 \item $0.5$ and $\beta_{\max}$ are the lower and upper truncation bounds.
 \end{itemize}
 
-It is interesting to see what happens when $\sigma \rightarrow \infty$
-\begin{align}
-&\lim_{\sigma \rightarrow \infty} \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu^{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt} = \\
-&\lim_{\sigma \rightarrow \infty} \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt} = 
-\end{align}
-
-
-If we substitute in the expression for $y^{(k)}$, we can simplify the following expression:
 
 
 
@@ -239,19 +238,7 @@ which is the variance of the level sets truncated normal distribution.
 Supposition:
 When $\sigma^2 \rightarrow \infty$, the joint distribution of the level sets collapses to a uniform and therefore we are back to a uniform distribution.
 
-\subsection{Some considerations}
 
-This model is very flexible, since for a given number of clusters $K$, it can accommodate for different means across the level sets by changing the slope of $\alpha$. For an $\alpha \in [0,1]$, we will have the clusters concentrated towards $\beta_{\max}$, meaning that the probabilities of victory in the tournament are clear-cut, symptom of an higher predictability overall. Instead, if $\alpha \in [1,3]$, this means that the probabilities are more concentrated towards 1/2, meaning the chances of victory are not so much clear. 
-
-However, the issue is that the number of clusters is not fixed. We would like the model to select by itself the number of clusters and ideally also to place the mean of the distribution wherever it prefers. 
-
-One question may be: what is the difference between a model with a very high $\alpha$, meaning with the probabilities concentrated towards 1/2 but with three clusters, and a model with just one cluster, and all the players having the same mean?
-
-Maybe the parameter $\alpha$ is redundant and we should find a clever way so that, when we add or remove a cluster, we assign a mean of victory to that given level set.
-
-However, the means of the level sets $\mu_1 ,...,\mu_K$ should be ordered as well and we should put a constraint on them.
-
-Another point that I have is the following:
 
 
 \section{The LST model}
@@ -292,8 +279,6 @@ The complete model, combining the Gaussian Process prior on latent skills and th
 
 
 
-\section{additional consideration}
-The LST and the SST and the WST models can all of them being expressed as part of the same class of models.
 
 
 
@@ -301,83 +286,203 @@ The LST and the SST and the WST models can all of them being expressed as part o
 
 
 
-
-
-
-
-
-
-
-\newpage
 
 
 
 \clearpage
 \section{Estimation}
 
-For the moment, we want to infer just $\theta = \{ z, P, \alpha, S \}$, meaning that we treat $K$ as a known constant. The estimation strategy is a Hybrid MCMC algorithm. Since simulating from the conditional distribution $p(\theta_i| \theta_j, j\neq i)$ is unfeasible or computationally expensive, we substitute the simulation from the full conditional distribution with a simulation from a proposal distribution $q_i$. Referencing Muller's (1991) work, the Hybrid modification is as follows:
+For the moment, we want to infer just $\theta = \{ z, P, \alpha, \sigma^2 \}$, meaning that we treat $K$ as a known constant. We report below the posterior distribution that we want to estimate:
+\begin{align}\label{eqn:general_posterior}
+p(z,\alpha,\sigma^2,P\mid y) &= \frac{p( y \mid \alpha,\sigma^2,P) \cdot p(P \mid \alpha, \sigma^2) \cdot p(\alpha) \cdot p(\sigma^2)}{\int p( y, \alpha,\sigma^2,P) dz \ d\alpha \ d\sigma^2 \ dP} \\
+&\propto p( y \mid \alpha,\sigma^2,P) \cdot p(P \mid \alpha, \sigma^2) \cdot p(\alpha) \cdot p(\sigma^2) \nonumber
+\end{align}
+
+The estimation strategy for \eqref{eqn:general_posterior} is a Metropolis-within-Gibbs MCMC algorithm. MCMC techniques are designed precisely for scenarios like ours, where direct estimation of the posterior is infeasible or analytically intractable. By generating a sequence of samples through a carefully constructed Markov chain, MCMC allows us to navigate the complex parameter space in a data-driven manner.
+
+Referencing Muller's (1991) work, we present here below an hybrid version of a classical Metropolis-within-Gibbs algorithm that has some self-tuning, or adaptive, features in the variance of the proposal distribution, the parameter $\tau^2_{\theta}$
+
+We start by reviewing the MCMC step for $z$, and the we move on exploring the other continuous parameters in the remaining of this section.
+
+
+\begin{algorithm}
+\begin{algorithmic}[t]
+\State $\texttt{Given} \quad \left(z^{(t),\alpha^{(t)},\sigma^{2(t)},P^{(t)}}\right)  $
+\State
+\State \texttt{1. Randomly sample an order} \begin{equation}\label{eqn_random_order}
+\pi \sim \text{Random permutation of } \{1,2,\ldots,n\} \nonumber
+\end{equation}
+\For{$i = 1$ to $N$}
+    \State \texttt{1. Compute the difference $\{d_{k,z_{\pi(i)}^{(t)}}\}$ between each label $k=1,\ldots,K$ and the current state $z_{\pi(i)}^{(t)}$}
+    \begin{equation}\label{eqn:actual_proposal}
+d_{k,z_{\pi(i)}^{(t)}} =  k - z_{\pi(i)}^{(t)}  \nonumber
+\end{equation}
+    \State \texttt{2. Compute and normalize the probabilities}
+    \begin{equation}\label{eqn:adjusted_probabilities}
+p_{k} = \frac{p \left( d_{k,z_{\pi(i)}^{(t)}} \right) }{\sum_{k=1}^Kp \left( d_{k,z_{\pi(i)}^{(t)}} \right) }  \quad \texttt{where} \quad d_{k,z_{\pi(i)}^{(t)}} \sim \operatorname{Normal}\left( 0, \tau^2_{z_{\pi(i)}} \right) \nonumber
+\end{equation}
+    
+    \State \texttt{3. $z^{\prime}_{\pi(i)} \gets k^{\prime}$ sampled from $\{ k = 1,...,K \} \setminus \{ z_{\pi(i)}^{(t)} \}$ with probability $p_k$} 
+
+    
+    \State \texttt{4. Take} \begin{equation}\label{eqn_acc_reject_z}
+    z^{(t+1)}_{\pi(i)} = 
+    \begin{cases}
+    z^{(t)}_{\pi(i)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+    z^{\prime}_{\pi(i)} \quad &\texttt{with probability} \quad r^\prime,
+    \end{cases}\nonumber
+    \end{equation}
+    \State $\texttt{where}$ \begin{align}\label{eqn:z_ratio}
+    r^\prime &= \log(1) \ \vertg \nonumber \\ 
+    &\log{p \left(z^{\prime}_{\pi(i)} \mid \alpha^{(t+1)},\sigma^{2(t+1)},P^{(t)}, \left\{ z_{\pi(j)}^{(t+1)} \mid j < i \right\} , \left\{ z_{\pi(j)}^{(t)} \mid j > i \right\} \right)}    \\ 
+    &- \log{p \left(z^{(t)}_{\pi(i)} \mid \left\{ z_{\pi(j)}^{(t+1)} \mid j < i \right\}, \left\{ z_{\pi(j)}^{(t)} \mid j > i \right\} \alpha^{(t)},\sigma^{2(t)},P^{(t)},  \right)}  \nonumber
+    \end{align}
+\EndFor
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for \(z\)}
+\label{alg_general_algorithm_z}
+\end{algorithm}
+
+In algorithm \eqref{alg_general_algorithm_z} we have that \eqref{eqn:z_ratio} is equal to:
+\begin{align}
+&\sum_{i =2 }^{N-1} \sum_{j =i}^{N} \operatorname{LogBinomial}\left(y_{ij} \mid n_{ij}, p^{(t)}_{z^{\prime}_i z^{\prime}_j} \right)- \sum_{i =2 }^{N-1} \sum_{j =i}^{N} \operatorname{LogBinomial}\left( y_{ij} \mid n_{ij}, p^{(t)}_{z^{(t)}_i z^{(t)}_j} \right) \\&+  \log{ \left(\frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n^{\prime}_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n^{\prime}_k+\gamma_k)} \right) } 
+- \log{\left( \frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n^{(t)}_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n^{(t)}_k+\gamma_k)} \right)}
+\end{align}
+
+since the joint prior on the level sets, that is $$ \sum_{k=1}^{K-1} \text{LogTruncatedNormal} \left(L_{(k)} \mid  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{\prime}}} \times  \left(  k^{\alpha^{\prime}} + (k+1)^{\alpha^{\prime}} \right) +\frac{1}{2} \right], \sigma^{2(t)}, 0.5, \beta_{\max}\right)$$, the log prior probability on $\sigma^2$, namely $\log{p\left(\sigma \right)}$, and the log prior probability on $\alpha$ are not affected by the new proposed value of $z$ and therefore they subtract out.
+
+This algorithm is meant to propose with higher probability those labels that are adjacent to the current one, and the Normal distribution centred on zero implies that the further the distance. Furthermore, the adaptive variance of the proposal $\tau^2_{z_{\pi(i)}}$ distribution controls the probability of labels that are more far apart from the current one.  
+
+Choosing a correct $\tau^2_{z_{\pi(i)}}$ value is not straightforward, and we choose to resort to an adaptive algorithm to elicitate a correct proposal variance. We proceed as in Roberts, Rosenthal 2012. For each of the $i$-th labels we create an associated variable \(ls_i\) giving the logarithm of the standard deviation to be used when proposing a normal increment to variable \(i\). We begin with \(ls_i = \log{(0.04)}\) for all \(i\) (corresponding to 0.2 proposal standard deviation). After the \(n\)-th "batch" of 50 iterations, we update each \(ls_i\) by adding or subtracting an adaption amount \(\delta(n)\). The adapting attempts to make the acceptance rate of proposals for variable \(i\) as close as possible to 0.234, following the literature practice Chris Sherlock12009. Specifically, we increase \(ls_i\) by \(\delta(n)\) if the fraction of acceptances of variable \(i\) was more than 0.234 on the \(n\)-th batch, or decrease \(ls_i\) by \(\delta(n)\) if it was less.
+
+Intuitively, if the acceptance rate for a particular label $i$ is too low, we want the proposal to explore neighboring labels. Conversely, if the acceptance rate is too high, we aim to sample labels further away. 
+
+Now, let us investigate the MCMC move for $\alpha$ and the remaining parameters. The adaptive structure is maintained as for the parameter $z$, with the required adaptation to a continuous context. The fact that $\alpha, \sigma^2$ and $P$ are continuous parameters actually simplifies the notation and the expressions, since there is no need of the intermediate passage in which we compute the difference 
+\begin{algorithm}
+\begin{algorithmic}[h]
+\State $\texttt{Given} \quad \left( z^{(t+1)},P^{(t)},\sigma^{2(t)}\right)  $
+\State
+\State \texttt{1. Sample} \begin{equation}\label{eqn_general_proposal}
+\alpha^{\prime} \texttt{from}  \operatorname{Normal}\left( \alpha^{(t-1)}, (\tau_{\alpha}^2)^{(t-1)} \right)
+\end{equation}
+\State \texttt{2. Take} \begin{equation}\label{eqn_acc_reject}
+\alpha^{(t+1)} = 
+\begin{cases}
+\alpha^{(t)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+\alpha^{\prime} \quad &\texttt{with probability} \quad r^\prime,
+\end{cases}
+\end{equation}
+\State $\texttt{where}$ \begin{align}\label{eqn:alpha_ratio}
+r_i^\prime &= \log(1) \ \vertg \nonumber \\ 
+ &\log{p \left( \alpha^{\prime}| z^{(t+1)},\alpha^{(t)}, P^{(t)},\sigma^{2(t)}\right)} 
+ - \log{p\left( \alpha^{(t)}|z^{(t+1)},\alpha^{(t)},P^{(t)},\sigma^{2(t)}\right)}  
+\end{align}
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for $\alpha$}
+\label{alg_general_algortm_alpha}
+\end{algorithm}
+
+In algorithm \eqref{alg_general_algortm_alpha} we have \eqref{eqn:alpha_ratio} which is given by
+\begin{align}
+& \sum_{k=1}^{K-1} \text{LogTruncatedNormal} \left(L_{(k)}^{(t)} \mid  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{\prime}}} \times  \left(  k^{\alpha^{\prime}} + (k+1)^{\alpha^{\prime}} \right) +\frac{1}{2} \right], (\sigma^{2})^{(t)}, 0.5, \beta_{\max}\right) \nonumber \\ 
+&- \sum_{k=1}^{K-1} \text{LogTruncatedNormal}\left(L_{(k)}^{(t)} \mid \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{(t)}}} \times  \left(  k^{\alpha^{(t)}} + (k+1)^{\alpha^{(t)}} \right) +\frac{1}{2} \right], (\sigma^{2})^{(t)}, 0.5, \beta_{\max} \right) \nonumber \\  &+ \text{LogUnif}\left(\alpha^{\prime} \mid 0, 3\right) - \text{LogUnif}\left((\sigma^2)^{(t)} \mid 0, 1\right) 
+\end{align}
+since the log-likelihood $\log{\left(p(y\mid z,P\right)}$, the log prior probability on $z$, namely $\log{p\left(z \mid \gamma \right)}$, and the log prior prior probability on $\sigma^2$, namely $\log{p\left(\sigma \right)}$, are not affected by the new proposed value of $\alpha$ and therefore they subtract out.
 
 \begin{algorithm}
 \begin{algorithmic}[h]
-\For{$i = 1,\ldots, p \quad \texttt{given} \quad \left( \theta_1^{(t+1)}, \dots,\theta_{i-1}^{(t+1)},\theta_i^{(t)}, \dots,\theta_{p}^{(t)}\right)  $}
-\State \texttt{1. Simulate} \begin{equation}\label{eqn_general_proposal}
-\theta_i^{\prime} \sim q_i \left(\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)} \right)
+\State $\texttt{Given} \quad \left( z^{(t+1)},\alpha^{(t+1)},P^{(t)} \right)  $
+\State
+\State \texttt{1. Sample} \begin{equation}\label{eqn_general_proposal}
+(\sigma^{2})^{\prime} \texttt{from}  \operatorname{Normal}\left( (\sigma^{2})^{(t-1)}, (\tau^2_{\sigma^2})^{(t-1)} \right)
 \end{equation}
 \State \texttt{2. Take} \begin{equation}\label{eqn_acc_reject}
-\theta_i^{(t+1)} = 
+(\sigma^{2})^{(t+1)} = 
 \begin{cases}
-\theta_{i}^{(t)} \quad &\texttt{with probability} \quad 1 - r_i, \\
-\theta_{i}^{\prime} \quad &\texttt{with probability} \quad 1 - r_i,
+(\sigma^{2})^{(t)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+(\sigma^{2})^{\prime} \quad &\texttt{with probability} \quad r^\prime,
 \end{cases}
 \end{equation}
-\State \texttt{where} \begin{equation}\label{eqn_gen_ratio}
-r_i = 1 \vertg \left\{
-\frac{\left(p(\theta_i^{\prime}|\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)}\right)}{\left(p(\theta_i^{(t)}|\theta_i^{(t)} | \theta_1^{(t+1)}, \dots,\theta_{i}^{(t)},\theta_{i+1}^{(t)}, \dots,\theta_{p}^{(t)}\right)}\right\}
-\end{equation}
+\State $\texttt{where}$ \begin{align}\label{eqn:sigma_ratio}
+r^\prime &= \log(1) \ \vertg \nonumber \\ 
+&\log{p \left( (\sigma^{2})^{\prime}| z^{(t+1)},\alpha^{(t+1)}, (\sigma^{2})^{(t)}, P^{(t)} \right)} 
+ - \log{p\left( (\sigma^{2})^{(t)}|z^{(t+1)},\alpha^{(t+1)},(\sigma^{2})^{(t)},P^{(t)},\right)}  
+\end{align}
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for \( \sigma^2 \)}
+\label{alg_general_algorithm_sigma}
+\end{algorithm}
+
+In algorithm \eqref{alg_general_algorithm_sigma} we have that \eqref{eqn:sigma_ratio} is given by
+\begin{align}
+& \sum_{k=1}^{K-1} \text{LogTruncatedNormal} \left(L_{(k)}^{(t)} \mid  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{(t)}}} \times  \left(  k^{\alpha^{(t)}} + (k+1)^{\alpha^{(t)}} \right) +\frac{1}{2} \right], (\sigma^{2})^{\prime}, 0.5, \beta_{\max}\right) \nonumber \\ 
+&- \sum_{k=1}^{K-1} \text{LogTruncatedNormal}\left(L_{(k)}^{(t)} \mid \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{(t)}}} \times  \left(  k^{\alpha^{(t)}} + (k+1)^{\alpha^{(t)}} \right) +\frac{1}{2} \right], (\sigma^{2})^{(t)}, 0.5, \beta_{\max} \right) \nonumber \\  
+&+ \text{LogUnif}\left(\alpha^{(t)} \mid 0, 3\right) - \text{LogUnif}\left((\sigma^{2})^{(t)} \mid 0, 1\right) 
+\end{align}
+
+since the log-likelihood $\log{\left(p(y\mid z,P\right)}$, the log prior probability on $z$, namely $\log{p\left(z \mid \gamma \right)}$, and the log prior prior probability on $\alpha^2$, namely $\log{p\left(\alpha \right)}$, are not affected by the new proposed value of $\alpha$ and therefore they subtract out.
+
+\begin{algorithm}
+\begin{algorithmic}[h]
+\State $\texttt{Given} \quad \left(z^{(t+1)},\alpha^{(t+1)},\sigma^{2(t+1)},P^{(t)}\right)  $
+\State
+\For{$i = 1$ to $K-1$}
+    \For{$j = i + 1$ to $K$}
+        \State \texttt{1. Sample} \begin{equation}\label{eqn_general_proposal_P}
+        p^{\prime}_{ij} \texttt{from} \operatorname{Normal}\left( p^{(t)}_{ij}, (\tau^2_{p_{ij}})^{(t-1)} \right)
+        \end{equation}
+        \State \texttt{2. Take} \begin{equation}\label{eqn_acc_reject_P}
+        p^{(t+1)}_{ij} = 
+        \begin{cases}
+        p^{(t)}_{ij} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+        p^{\prime}_{ij} \quad &\texttt{with probability} \quad r^\prime,
+        \end{cases}
+        \end{equation}
+        \State $\texttt{where}$ \begin{align}\label{eqn:P_ratio}
+        r^\prime &= \log(1) \ \vertg \nonumber \\ 
+        &\log{p \left(p^{\prime}_{i,j} \mid z^{(t+1)},\alpha^{(t+1)},\sigma^{2(t+1)}, \left\{ p_{i^\star,j^{\star}}^{(t+1)} \mid i^\star < i, j^{\star} < j \right\},  \left\{ p_{i^\star,j^{\star}}^{(t)} \mid i^\star > i, j^{\star} > j \right\} \right)}    \\ 
+        &- \log{p \left(p^{(t)}_{i,j} |z^{(t+1)},\alpha^{(t+1)},\sigma^{2(t+1)}, \left\{ p_{i^\star,j^{\star}}^{(t+1)} \mid i^\star < i, j^{\star} < j \right\},  \left\{ p_{i^\star,j^{\star}}^{(t)} \mid i^\star > i, j^{\star} > j \right\}  \right)}  \nonumber
+        \end{align}
+    \EndFor
 \EndFor
 \end{algorithmic}
-\label{alg_general_algortm}
-\caption{Metropolis-within-Gibbs MCMC}
+\caption{Metropolis-within-Gibbs update for \(P\)}
+\label{alg_general_algorithm_P}
 \end{algorithm}
 
 
-\subsubsection{Adaptive algorithm for $\theta = \{ P, \alpha, S \}$}
+In algorithm \eqref{alg_general_algorithm_P},  \eqref{eqn:P_ratio} is given by:
 
-We specify the proposal distributions in \eqref{eqn_general_proposal} above as $$\theta_i^{\prime} \sim \operatorname{Normal}\left( \theta_i^{(t-1)}, \sigma_{\theta_i}^2 \right)$$ whose sampled value is accepted or rejected by evaluating the logarithm of \eqref{eqn_gen_ratio}. Choosing a correct $\sigma_{\theta_i}^2 $ value is not straightforward, and we choose to resort to an adaptive algorithm to elicitate a correct proposal variance. We proceed as in Roberts, Rosenthal 2012. For each of the $K(K-1)/2 + 2$ parameters \(i\) \((1 \leq i \leq K(K-1)/2 + 2)\), we create an associated variable \(ls_i\) giving the logarithm of the standard deviation to be used when proposing a normal increment to variable \(i\). We begin with \(ls_i = \log{(0.04)}\) for all \(i\) (corresponding to 0.2 proposal standard deviation). After the \(n\)-th "batch" of 50 iterations, we update each \(ls_i\) by adding or subtracting an adaption amount \(\delta(n)\). The adapting attempts to make the acceptance rate of proposals for variable \(i\) as close as possible to 0.234, following the literature practice Chris Sherlock12009. Specifically, we increase \(ls_i\) by \(\delta(n)\) if the fraction of acceptances of variable \(i\) was more than 0.234 on the \(n\)-th batch, or decrease \(ls_i\) by \(\delta(n)\) if it was less.
+\begin{align}
+&\sum_{i =2 }^{N-1} \sum_{j =i}^{N} \operatorname{LogBinomial}\left(y_{ij} \mid n_{ij}, p^{\prime}_{z^{(t)}_i z^{(t)}_j} \right)-\sum_{i =2 }^{N-1} \sum_{j =i}^{N} \operatorname{LogBinomial}\left( y_{ij} \mid n_{ij}, p^{(t)}_{z^{(t)}_i z^{(t)}_j} \right) \\
+& \sum_{k=1}^{K-1} \text{LogTruncatedNormal} \left(L_{(k)}^{\prime} \mid  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{(t)}}} \times  \left(  k^{\alpha^{(t)}} + (k+1)^{\alpha^{(t)}} \right) +\frac{1}{2} \right], (\sigma^{2})^{(t)}, 0.5, \beta_{\max}\right) \nonumber \\ 
+&- \sum_{k=1}^{K-1} \text{LogTruncatedNormal}\left(L_{(k)}^{(t)} \mid \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha^{(t)}}} \times  \left(  k^{\alpha^{(t)}} + (k+1)^{\alpha^{(t)}} \right) +\frac{1}{2} \right], (\sigma^{2})^{(t)}, 0.5, \beta_{\max} \right) \nonumber \\  
+\end{align}
+
+As before, the adaptive proposal variance is specific to each upper-triangular entry of $P$. Therefore, each entry's acceptance rate is monitored and the variance is adjusted accordingly.m
 
 $\rightarrow$ Insert here plots of convergence to the acceptance ratio
-
-We specify in the Appendix the full expression for the ratio of $\theta = \{ P, \alpha, S \}$ in \eqref{eqn_gen_ratio}.
-
-\subsubsection{Adaptive Algorithm for $\theta = { z }$}
-
-When dealing with $\theta = { z }$, a discrete parameter, we need to adapt the formulation while maintaining the underlying concept. In the case of the POMM model, the labels $k = 1, \ldots, K$ are ordered, and therefore, we can define a distance metric between these labels. Let us denote the distance between $k$ and $k'$ as $d(k, k')$, which can be expressed as:
-
-\begin{equation}
-d(k, k^\prime) = |k - k^\prime|
-\end{equation}
-
-If the acceptance rate for a particular player $i$ is too low, we want the proposal to explore neighboring labels. Conversely, if the acceptance rate is too high, we aim to sample labels further away. To achieve this, we assign a sampling probability to each label that is inversely related to its distance from the current label. Specifically, we define $p(k') = p(|k' - k|) = \operatorname{Normal}(0, \sigma_i^2)$, where $\sigma_i^2$ is adapted as above. A larger variance assigns higher probabilities to distant labels, while a smaller variance favors closer labels. Finally, we employ a multinomial distribution to sample the next label $k'$:
-
-\begin{equation}
-k' \sim \operatorname{Multinomial}(1, K, p(|k' - k|))
-\end{equation}
-
-By using this approach, we can adapt the algorithm to explore labels based on their distances from the current label. 
-
-We specify in the Appendix the full expression for the ratio of $\theta = \{z\}$ in \eqref{eqn_gen_ratio}.
 
 
 
 
 \clearpage
 
-\section{Point Estimate, Model Selection,  and inference}
+\section{Point Estimate, Model Selection,  and Inference}
 
-While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. We are comparing the results from the simulation study via the following three main measures:
+While algorithmic methods produce a single estimated partition, our model offers the entire posterior distribution across different node partitions. We are comparing the results from the simulation study via the following measures
 
-\begin{itemize}
-\item Variation of Inforamation (VI): to fully utilise this posterior and engage in inference directly within the partition space, we adopt the decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modelling. This involves summarizing posterior distributions using the variation of information (VI) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The VI metric ranges from 0 to $\log 2 N$, where $N$ represents the number of nodes. Intuitively, the VI metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. 
+We obtain the point estimate $\hat{z}$ from the MCMC samples in two ways. The first one is via the MAP estimate, meaning that partition which maximises the a posteriori distribution. 
+
+\begin{align}
+\hat{z}_{\mathrm{MAP}}(y) &= \underset{\theta}{\operatorname{arg\,max}} \ f(\theta \mid y) \nonumber \\
+& = \underset{\theta}{\operatorname{arg\,max}} \frac{f(y \mid \theta) , g(\theta)}{\int_{\Theta} f(x \mid \vartheta) , g(\vartheta) \, d\vartheta} \nonumber \\
+& = \underset{\theta}{\operatorname{arg\,max}} \ f(x \mid \theta) \, g(\theta)
+\end{align}
+
+The second one is the partition that minimises the lowest averaged variation of information (VI distance) from the other clusterings, denoted in the following as $\hat{z}_{lb VI}$.
+
+The VI fully utilise this posterior and it founded on a decision-theoretic approach introduced by Wade and Ghahramani (2018) for block modelling. This involves summarizing posterior distributions using the variation of information (VI) metric, developed by Meilă (2007), which measures the distance between two clusterings by comparing their individual and joint entropies. The VI metric ranges from 0 to $\log 2 N$, where $N$ represents the number of nodes. Intuitively, the VI metric quantifies the amount of information contained in two clusterings relative to the shared information between them. As a result, it decreases towards 0 as the overlap between two partitions increases. 
 The variation of information is a true distance since  it obeys the triangle inequality.
 
 Suppose we have two partitions of a set $X$ and $Y$ of a set $A$ into disjoint subsets, namely  $X = \{X_{1}, X_{2}, \ldots, X_{k}\}$ and $Y = \{Y_{1}, Y_{2}, \ldots, Y_{l}\}$. 
@@ -389,13 +494,17 @@ $r_{ij} = |X_i\cap Y_{j}| / n$
 
 Then the variation of information between the two partitions is:
 
-$\mathrm{VI}(X; Y ) = - \sum_{i,j} r_{ij} \left[\log(r_{ij}/p_i)+\log(r_{ij}/q_j) \right]$.
+$$\mathrm{VI}(X; Y ) = - \sum_{i,j} r_{ij} \left[\log(r_{ij}/p_i)+\log(r_{ij}/q_j) \right]$$.
+
+To compare different models we use the WAIC loss, which yields practical and theoretical advantages with respect to other losses and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy. 
+
+Moreover, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:$
+\log p(y_{ij} | z, P, \alpha) = y_{ij} \log p_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - p_{z_i, z_j}), \quad i = 2, \ldots, N,  j = 1, \ldots, i - 1$. 
+These quantities are already available to the user, since the MCMC chain provides sample both of $z$ and $P$.
+The use of the WAIC in a context similar to the present one is documented in Durante and Legramanti (2020).
 
 
-Within this framework, a formal Bayesian point estimate for z is obtained by selecting the partition with the lowest averaged vi distance from the other clusterings
-\item WAIC: While the WAIC yields practical and theoretical advantages  and has direct connections with Bayesian leave-one-out cross-validation, thus providing a measure of edge predictive accuracy, the calculation of the WAIC only requires posterior samples of the log-likelihoods for the edges:$
-\log p(y_{ij} | z, P, \alpha) = y_{ij} \log p_{z_i, z_j} + (n_{ij}- y_{ij}) \log(1 - p_{z_i, z_j}), \quad i = 2, \ldots, N,  j = 1, \ldots, i - 1$.
-
+\begin{comment}
 \item Misclassification error: predicting the group membership $z_{N+1}$ of a new player may also be of interest. We can derive the estimate of the block probabilities for new players based on their early matches with some of the existing players.
 \begin{align}
 p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z}) &\propto p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k ) \cdot p(z_{N+1} = k | \hat{z}) \nonumber \\
@@ -403,7 +512,7 @@ p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z}) &\propto p(y_{N+1} | \textbf{Y}, \
 \end{align}
 where $p(z_{N+1} = k | \textbf{Y}, y_{N+1}, \hat{z})$ is the posterior probability of the new node $N+1$ to belong to the block $k$, given the previously observed data $Y$, the new node's data $y_{N+1}$ and the estimated labels $\hat{z}$. On the right hand side of the expression above, $p(y_{N+1} | \textbf{Y}, \hat{z}, z_{N+1} = k )$ represents the likelihood of observing $y_{N+1}$ given the previously observed data $Y$ and the estimated labels $\hat{z}$, which, due to conditional independence, is the same as conditioning just on $\hat{z}$. Finally, $p(z_{N+1} = k | \hat{z})$ represents the prior probability of label $k$ for the new node $N+1$ given $\hat{z}$, which we can approximate with the relative size of the blocks $n_k$.
 \end{itemize}
-\begin{comment}
+
 \item Prediction error: making prediction on the match score between two players is also possible within this framework. Once we have obtained the MCMC samples, we can retrieve the posterior predictive distribution.
 
 Let us assume $i^\star$ is a new player . The posterior predictive is:
@@ -417,12 +526,11 @@ where $z_j^{(t)} \sim p(z|Y)$
 \end{comment}
 
 \clearpage
+\section{Simulation Study from the Unordered Model N=100}
 
-\section{Simulation Study from the Simple Model N=100}
+In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Unordered Model. 
 
-In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Simple Model. 
-
-We want to compare the quality of the Simple model in recovering the ground truth from some data generated from the Simple model itself. We compare its recovery performance with the one of the POMM model, which in the present context qualifies as a sort of 'mis-specified model', since the blocks do not present an inherent ordering.
+We want to compare the quality of the Unordered model in recovering the ground truth from some data generated from the Unordered model itself. We compare its recovery performance with the one of the POMM model, which in the present context qualifies as a sort of 'mis-specified model', since the blocks do not present an inherent ordering.
 
 Below, in figure \eqref{fig:simple_adjacency}, you may see the adjacency matrix of the simulated data. The darker is the pixel $(i,j)$, the more are the victories of player $i$ vs player $j$.
 
@@ -443,7 +551,389 @@ Expected time for 30000 iterations}  \\
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
 POMM model  &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} & 7.5 \text{min} & 9 \text{min} \\
-Simple model &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} &  7.5 \text{min} & 9  \text{min}\\
+Unordered model &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} &  7.5 \text{min} & 9  \text{min}\\
+\bottomrule
+\end{tabular}
+\label{table:performance_Unordered}
+\end{table}
+
+For the estimation purposes, we run 4 different chains of 30000 iterations each. We report in table \eqref{table:performance_Unordered} the execution time for the MCMC. Within that table, and in all other tables that will follow in the simulation study column (a) refers to the case $K=3$, column (b) refers to the case $K=5$, and column (c) to the case $K=9$.
+
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Unordered Model]{%
+\includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/adjacency_SimplePOMM_K3_N100.png}%
+        \label{fig:Unordered_adjacency_K3}%
+    }\hfill
+    \subfigure[K=5, Unordered Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/adjacency_SimplePOMM_K5_N100.png}%
+        \label{fig:Unordered_adjacency_K5}%
+    }\hfill
+    \subfigure[K=9, Unordered Model]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/adjacency_SimplePOMM_K9_N100.png}%
+        \label{fig:Unordered_adjacency_K9}%
+    }
+    \caption{Adjacency Matrices simulated via the Unordered Model}
+    \label{fig:Unordered_adjacency}
+\end{figure}
+
+Each chain is initiated with different starting values and different seeds. The initiation values are saved in order to guarantee the reproducibility of the results.
+
+For the POMM model, we need to choose an appropriate value for $\beta_{\max}$, which controls the maximum attainable value within the matrix $P$. Here we fix it arbitrarily at 0.85.
+
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[K=3, Unordered Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimpleSimpleK3_N100.png}%
+        \label{fig:UnorderedSimpleK3}%
+    }\hfill
+    \subfigure[K=5, Unordered Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimpleSimpleK5_N100.png}%
+        \label{fig:UnorderedSimpleK5}%
+    }\hfill
+    \subfigure[K=9, Unordered Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimpleSimpleK9_N100.png}%
+        \label{fig:UnorderedSimpleK9}%
+    }\\[2ex]\subfigure[K=3, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimplePOMMK3_N100.png}%
+        \label{fig:UnorderedPOMMK3}%
+    }\hfill
+    \subfigure[K=5, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimplePOMMK5_N100.png}%
+        \label{fig:UnorderedPOMMK5}%
+    }\hfill
+    \subfigure[K=9, POMM Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/processed/similarity_SimplePOMMK9_N100.png}%
+        \label{fig:UnorderedPOMMK9}%
+    }
+    \caption{Co-Clustering Matrices obtained via the Unordered Model(above) and the POMM model (below).}
+    \label{fig:similarity_all_simple}
+\end{figure}
+
+The first results' plot we report is the one in figure \eqref{fig:similarity_all_simple}. Each box contains a co-clustering matrix. Each pixel $(i,j)$ represents the probability that two individuals are placed within the same cluster. The darker the pixel, the higher the probability. Colours on the side signal the true membership of each player.
+
+In the first row, containing figure \ref{fig:UnorderedSimpleK3},figure \ref{fig:UnorderedSimpleK5}, and figure \ref{fig:UnorderedSimpleK9}, we have the co-clustering matrix for the Simple model estimated on the data generated according to the Simple model itself. This means that the blocks have no inherent ordering, and the model here is correctly specified. We can notice a very good recovery of the true membership.
+
+In the second row instead, the one which contains figure \ref{fig:UnorderedPOMMK3},figure \ref{fig:UnorderedPOMMK5}, and \ref{fig:UnorderedPOMMK9}, we may observe the co-clustering matrix for the POMM model estimated on the data generated via the Simple one. Therefore, the model is misspecified, but we may notice that the recovery performance is quite competitive with the Simple one.
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large $P$ summary table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
+$MAE$ } & \multicolumn{3}{c}{
+$\%$ within-95\% CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval length}}$} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM model  &0.07 & 0.15 & 0.15 & 66.67 & 40 & 25.00 & 0.07 & 0.12 & 0.09 \\
+Unordered model & 0.01 & 0.13 & 0.13 & 100.00 & 40 & 41.67 & 0.02 & 0.05 & 0.19  \\
+\bottomrule
+\end{tabular}
+\label{table:Psummary_Unordered}
+\end{table}
+
+In table \eqref{table:Psummary_Unordered}, we report the summary table of the estimates for the $P$ matrix, both obtained via the Unordered model and the POMM model. For each value of $K$ (again, reported in the sub-columns (a), (b) and (c), respectively), we report the mean absolute error, meaning the mean absolute error $MAE = \frac{1}{(K\cdot(K-1))/2} \sum_{i=1}^{K-1}\sum_{j=i+1}^K \left(\hat{p}_{ij} - p^\star_{ij}\right)$ where $p^\star_{ij}$ is the true value of that particular entry. Then we also report the percentage of the upper triangular entries of $P$ that are contained by the estimated 95\% credible intervals, obtained by computing the 95\% higher posterior density region, and the average 95\% credible interval length. 
+
+Here below, we report the ground truth of the $P$ matrix for each case $K=3,5,9$. Then, next and below we report the estimates, both for the POMM and the Unordered model, within the $\hat{P}^{K=k}_{\text{POMM}}$, $\hat{P}^{K=k}_{\text{Unordered}}$, respectively.
+
+\newpage
+\[
+P^{K=3}_{true} = 
+\left[\begin{array}{ccc}
+0.500 & 0.230 & 0.631 \\
+0.770 & 0.500 & 0.327 \\
+0.369 & 0.673 & 0.500 \\
+\end{array}\right] \quad 
+\hat{P}^{K=3}_{\text{POMM}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.222 & 0.50 \\
+0.778 & 0.500 & 0.41 \\
+0.500 & 0.590 & 0.50 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=3}_{\text{Unordered}} = 
+\left[\begin{array}{ccc}
+0.500 & 0.222 & 0.639 \\
+0.778 & 0.500 & 0.321 \\
+0.361 & 0.679 & 0.500 \\
+\end{array}\right]
+\]
+
+\[
+P^{K=5}_{true} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.230 & 0.631 & 0.706 & 0.422 \\
+0.770 & 0.500 & 0.327 & 0.752 & 0.714 \\
+0.369 & 0.248 & 0.500 & 0.036 & 0.441 \\
+0.673 & 0.964 & 0.286 & 0.500 & 0.365 \\
+0.294 & 0.578 & 0.559 & 0.635 & 0.500 \\
+\end{array}\right] \quad 
+\hat{P}^{K=5}_{\text{POMM}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.228 & 0.614 & 0.438 & 0.532 \\
+0.772 & 0.500 & 0.515 & 0.473 & 0.562 \\
+0.386 & 0.485 & 0.500 & 0.403 & 0.421 \\
+0.562 & 0.527 & 0.597 & 0.500 & 0.467 \\
+0.468 & 0.438 & 0.579 & 0.533 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=5}_{\text{Unordered}} = 
+\left[\begin{array}{ccccc}
+0.500 & 0.226 & 0.622 & 0.522 & 0.560 \\
+0.774 & 0.500 & 0.511 & 0.427 & 0.571 \\
+0.378 & 0.439 & 0.500 & 0.372 & 0.435 \\
+0.478 & 0.591 & 0.628 & 0.500 & 0.350 \\
+0.440 & 0.429 & 0.565 & 0.650 & 0.500 \\
+\end{array}\right]
+\]
+
+\[
+P^{K=9}_{true} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.230 & 0.631 & 0.706 & 0.422 & 0.765 & 0.720 & 0.554 & 0.231 \\
+0.770 & 0.500 & 0.327 & 0.752 & 0.714 & 0.363 & 0.197 & 0.512 & 0.118 \\
+0.369 & 0.559 & 0.500 & 0.036 & 0.441 & 0.542 & 0.034 & 0.795 & 0.770 \\
+0.673 & 0.635 & 0.280 & 0.500 & 0.365 & 0.458 & 0.262 & 0.525 & 0.722 \\
+0.294 & 0.235 & 0.803 & 0.446 & 0.500 & 0.082 & 0.764 & 0.567 & 0.553 \\
+0.248 & 0.637 & 0.966 & 0.488 & 0.565 & 0.500 & 0.712 & 0.435 & 0.636 \\
+0.964 & 0.458 & 0.738 & 0.205 & 0.525 & 0.230 & 0.500 & 0.475 & 0.020 \\
+0.578 & 0.542 & 0.236 & 0.475 & 0.769 & 0.278 & 0.364 & 0.500 & 0.382 \\
+0.286 & 0.918 & 0.288 & 0.433 & 0.882 & 0.447 & 0.980 & 0.618 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{POMM}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.293 & 0.559 & 0.488 & 0.518 & 0.499 & 0.404 & 0.485 & 0.453 \\
+0.707 & 0.500 & 0.503 & 0.496 & 0.615 & 0.340 & 0.466 & 0.504 & 0.202 \\
+0.441 & 0.497 & 0.500 & 0.385 & 0.316 & 0.302 & 0.203 & 0.638 & 0.498 \\
+0.512 & 0.504 & 0.615 & 0.500 & 0.509 & 0.501 & 0.523 & 0.549 & 0.632 \\
+0.482 & 0.385 & 0.684 & 0.491 & 0.500 & 0.264 & 0.631 & 0.503 & 0.332 \\
+0.501 & 0.660 & 0.698 & 0.499 & 0.736 & 0.500 & 0.714 & 0.586 & 0.532 \\
+0.596 & 0.534 & 0.797 & 0.477 & 0.369 & 0.286 & 0.500 & 0.535 & 0.201 \\
+0.515 & 0.496 & 0.362 & 0.451 & 0.497 & 0.414 & 0.465 & 0.500 & 0.358 \\
+0.547 & 0.798 & 0.502 & 0.368 & 0.668 & 0.468 & 0.799 & 0.642 & 0.500 \\
+\end{array}\right] 
+\]
+\[ 
+\hat{P}^{K=9}_{\text{Unordered}} = 
+\left[\begin{array}{ccccccccc}
+0.500 & 0.351 & 0.620 & 0.484 & 0.576 & 0.756 & 0.371 & 0.449 & 0.456 \\
+0.649 & 0.500 & 0.445 & 0.466 & 0.713 & 0.371 & 0.432 & 0.519 & 0.210 \\
+0.380 & 0.555 & 0.500 & 0.458 & 0.325 & 0.302 & 0.149 & 0.761 & 0.739 \\
+0.516 & 0.534 & 0.542 & 0.500 & 0.481 & 0.474 & 0.582 & 0.536 & 0.652 \\
+0.424 & 0.287 & 0.675 & 0.519 & 0.500 & 0.290 & 0.616 & 0.401 & 0.375 \\
+0.244 & 0.629 & 0.698 & 0.526 & 0.710 & 0.500 & 0.717 & 0.595 & 0.568 \\
+0.629 & 0.568 & 0.851 & 0.418 & 0.384 & 0.283 & 0.500 & 0.559 & 0.058 \\
+0.551 & 0.481 & 0.239 & 0.464 & 0.599 & 0.405 & 0.441 & 0.500 & 0.323 \\
+0.544 & 0.790 & 0.261 & 0.348 & 0.625 & 0.432 & 0.942 & 0.677 & 0.500 \\
+\end{array}\right]
+\]
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large $z$ summary table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{cccccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+VI $\text{distance}_{\text{MAP}}$} & \multicolumn{3}{c}{
+VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM model  &0 & 0 & 0 & 0 & 0.56 & 0   & $\underset{145.40}{48883.71}$ & $\underset{152.84}{53337.62}$ & $\underset{153.63}{51244.98}$  \\
+Unordered model &0 & 0 & 0 & 0 & 0.00 & 0 & $\underset{144.55}{46521.89}$& $\underset{153.98}{52382.24}$ & $\underset{ 164.65}{49144.47}$  \\
+\bottomrule
+\end{tabular}
+\label{table:z_summary_Unordered}
+\end{table}
+
+In table \eqref{table:z_summary_Unordered}, we report some summary statistics for the parameter $z$. As above, we have columns (a),(b) and (c) representing the case $K=3,5,9$ respectively.
+
+The first indicator is the $VI \text{distance}_{\text{MAP}}$ computed between the true partition $z^\star$ and the point estimate $\hat{z}^{\text{MAP}}$ obtained with the maximum a posteriori estimate (MAP).
+
+The second one is $VI \text{distance}_{\text{VI lb}}$ computed between the true partition $z^\star$ and the point estimate $\hat{z}^{\text{VI lb}}$ obtained with the partition attaining the VI lower bound.
+
+The third one is the WAIC estimate, along with its standard error below. We see that the Unordered Model is the one preferred in this case.
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large POMM hyperparameters summary table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
+$\hat{\theta}$} & \multicolumn{3}{c}{95$\%$ CI} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+$\sigma$  & 0.51 & 0.57 & 0.64 & [0.13	0.89] & [0.24	0.9] & [0.34	0.9]   \\
+$\alpha$ & 0.48 & 0.52 & 0.59 & [0.12	0.87] & [0.15	0.88] & [0.19	0.9] \\
+\bottomrule
+\end{tabular}
+\label{table:hyperparameters_Unordered}
+\end{table}
+
+
+In table \eqref{table:hyperparameters_Unordered}, we report the results for the hyperparameters of the $POMM$ model. In the $\hat{\theta}$ column we report the estimates both for $\alpha$ and $\sigma$, while on the right we have their $95\%$ Credible Interval.
+Given that the data were generated according the Unordered model, we do not have a ground truth to which these results should be compared. However, we can still try to make sense of these values by inspecting the properties of the induced $P^{\text{POMM}}$ matrix resulting from the estimates.
+
+The Unordered model has a prior over $P^{\text{Unordered}} \sim Beta(1,1)$, then we may expect $P^{\text{POMM}}$ itself to get as closer as needed to a uniform distribution by selecting the appropriate combination of $(\alpha, \sigma)$. 
+
+
+\clearpage
+
+
+
+
+\subsubsection{Unordered Model check}
+
+In this subsection, we report some diagnostic checks for the algorithm of the Markov Chains, to assess convergence, quality of mixing, and the overall behaviour of the Metropolis-within-Gibbs algorithm.
+
+
+
+
+\begin{table}[h]
+\centering
+\caption{
+{\large $z$ diagnostic table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{$\overline{ESS}$} & \multicolumn{3}{c}{
+$\overline{ACF_{30}}$} & \multicolumn{3}{c}{$\overline{\% accepted}$} & \multicolumn{3}{c}{$\overline{Gelman-Rubin}$}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &7558.60 & 301.04 & 2880.01 & 0 & 0.01 & 0.08 & 0.02 & 0.04 & 0.15 &  1.61 & 1.29 & 1.31  \\
+Unordered &6544.85 & 253.85 & 140.78 & 0 & 0.03 & 0.11 & 0.01 & 0.56 & 0.15 & 1.04 & 1.23 & 1.26   \\
+\bottomrule
+\end{tabular}
+\label{table:z_diagnostics_Unordered}
+\end{table}
+
+In table \eqref{table:z_diagnostics_Unordered} we report the diagnostics for the $z$ parameter. Since the parameter is a label vector with 100 entries in this case, we compute the relevant statistics for each single entries an then we report the average.
+\begin{itemize}
+
+\item The first statistics is the Effective Sample Size (ESS) averaged over individuals $i=1,\dots,N$, which denotes a fairly good sample size. The average is taken as follows:
+
+$$
+\overline{ESS} = \frac{1}{n} \sum_{i=1}^N ESS_i
+$$
+
+The same is applied also to the other diagnostic metrics.
+
+\item Then, we report the average autocorrelation, $\overline{ACF_{30}}$, computed with a lag of 30 iterations. This values are close to zero, meaning that there is very little correlation within the chain.
+
+\item In the third column, we report the average acceptance rate $\overline{\% accepted}$. These are significantly lower than the target acceptance rate that should be hit by the adaptive MCMC, which is 22\%. However, the estimates are capable of correctly recovering the true partition. Combining the two facts, we may hypothesise that the simulation study has too "many" data, and proposing for a given individual $i$, who has already been assigned to the true block, a block different from the true one, leads to a drop in the likelihood which is too large, and as a consequence, we always reject the other labels. 
+
+\item Finally, we compute the median Gelman-Rubin statistics for each entry, $\overline{Gelman-Rubin}$. Gelman and Rubin (1992) propose a general approach to monitoring convergence of MCMC output in which $m >1$ parallel chains are run with starting values that are overdispersed relative to the posterior distribution. Convergence is diagnosed when the chains have ‘forgotten’ their initial values, and the output from all chains is indistinguishable. The Gelman-Rubin diagnostic is applied to a single variable from the chain. It is based a comparison of within-chain and between-chain variances, and is similar to a classical analysis of variance. Values substantially above 1 indicate lack of convergence. If the chains have not converged,
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{
+{\large $P$ diagnostic table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{$\overline{ESS}$} & \multicolumn{3}{c}{
+$\overline{ACF_{30}}$} & \multicolumn{3}{c}{$\overline{\% accepted}$} & \multicolumn{3}{c}{$\overline{Gelman-Rubin}$}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+POMM &345.67 & 639.8 & 704.53 & 0.35 & 0.05 & 0.06 & 7.53 & 19.06 & 21.60 & 1.03 & 4.23 & 1.01  \\
+Unordered &570.00 & 828.1 & 937.67 & 0.00 & 0.04 & 0.03 & 11.66 & 18.40 & 29.06 & 1.00 & 1.01 & 2.23 \ \\
+\bottomrule
+\end{tabular}
+\label{table:P_diagnostics_Unordered}
+\end{table}
+
+
+In table \eqref{table:P_diagnostics_Unordered} we report the same diagnostics checks for the $z$ parameter. The only difference is that here we do not average the diagnostics indicators over the individuals $i= 1,\ldots,N$, but instead over the upper-triangular $P$ indices: $\{ i =1,\ldots, K-1, \quad j = i+1, \ldots, K \}$.
+
+Just as an example, the average ESS in this case is obtained as
+$$
+\overline{ESS} = \frac{1}{(K \cdot (K-1))/2} \sum_{i=1}^{N-1} \sum_{j=i+1}^N ESS_{i,j}
+$$
+
+
+
+
+\begin{table}[h]
+\centering
+\caption{
+{\large POMM hyperparameters diagnostic table} \\ 
+{\small True Model Unordered, $N=100$}
+} 
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{ESS} & \multicolumn{3}{c}{
+ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubin}\\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
+\midrule
+$\sigma$ &981 & 1041 & 842 & 0.01 & 0.01 & 0.01 & 39.03 & 36.59 & 32 & 1.08 & 1 & 1.02  \\
+$\alpha$ &26 & 17 & 19 & 0.82 & 0.82 & 0.82 & 25.36 & 25.18 & 24.74 & 1.33 & 1.21 & 1.19 \\
+\bottomrule
+\end{tabular}
+\label{table:P_hyper_Unordered}
+\end{table}
+
+Finally, in table \eqref{table:P_hyper_Unordered} we report again the same diagnostics, but since both $\alpha$ and $\sigma$ are one-dimensional, we are presenting the diagnostics itself, without any average.
+
+
+\clearpage
+
+\section{Simulation Study from the WST Model N=100}
+
+Differing from the Unordered model, the WST model has the constraint that the upper triangular entries of the matrix $P$ are all greater than 0.5.
+
+We want to compare the quality of the POMM model in recovering the ground truth from some data generated from the WST model itself. We compare its recovery performance with the one of the POMM model, which in the present context qualifies as a sort of 'mis-specified model', since the blocks do not present an inherent ordering.
+
+Below, in figure \eqref{fig:WST_adjacency}, you may see the adjacency matrix of the simulated data. The darker is the pixel $(i,j)$, the more are the victories of player $i$ vs player $j$.
+
+On the side, the different colours testify the different block membership of each single player.
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large Time performance}} 
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Fitted Model} & \multicolumn{3}{c}{
+Seconds per iteration } & \multicolumn{3}{c}{
+Expected time for 30000 iterations}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} 
+& $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
+\midrule
+POMM model  &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} & 7.5 \text{min} & 9 \text{min} \\
+WST model &0.013 \text{sec} & 0.015 \text{sec} & 0.018 \text{sec} & 6.5 \text{min} &  7.5 \text{min} & 9  \text{min}\\
 \bottomrule
 \end{tabular}
 \label{table:performance}
@@ -455,20 +945,20 @@ For the estimation purposes, we run 4 different chains of 30000 iterations each.
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[K=3, Simple Model]{%
+    \subfigure[K=3, WST Model]{%
 \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K3_N100.png}%
-        \label{fig:simple_adjacency_K3}%
+        \label{fig:WST_adjacency_K3}%
     }\hfill
-    \subfigure[K=5, Simple Model]{%
+    \subfigure[K=5, WST Model]{%
         \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K5_N100.png}%
-        \label{fig:simple_adjacency_K5}%
+        \label{fig:WST_adjacency_K5}%
     }\hfill
-    \subfigure[K=9, Simple Model]{%
+    \subfigure[K=9, WST Model]{%
         \includegraphics[width=.33\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/adjacency_SimplePOMM_K9_N100.png}%
-        \label{fig:simple_adjacency_K9}%
+        \label{fig:WST_adjacency_K9}%
     }
-    \caption{Adjacency Matrices simulated via the Simple Model}
-    \label{fig:simple_adjacency}
+    \caption{Adjacency Matrices simulated via the WST Model}
+    \label{fig:WST_adjacency}
 \end{figure}
 
 Each chain is initiated with different starting values and different seeds. The initiation values are saved in order to guarantee the reproducibility of the results.
@@ -479,38 +969,38 @@ For the POMM model, we need to choose an appropriate value for $\beta_{\max}$, w
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[K=3, Simple Model]{%
+    \subfigure[K=3, WST Model]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimpleSimpleK3_N100.png}%
-        \label{fig:SimpleSimpleK3}%
+        \label{fig:WSTWSTK3}%
     }\hfill
-    \subfigure[K=5, Simple Model]{%
+    \subfigure[K=5, WST Model]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimpleSimpleK5_N100.png}%
-        \label{fig:SimpleSimpleK5}%
+        \label{fig:WSTWSTK5}%
     }\hfill
-    \subfigure[K=9, Simple Model]{%
-        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_29_07/tables_and_plots/plots/similarity_SimpleSimpleK9_N100.png}%
-        \label{fig:SimpleSimpleK9}%
+    \subfigure[K=9, WST Model]{%
+        \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{  /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimpleSimpleK9_N100.png}%
+        \label{fig:WSTWSTK9}%
     }\\[2ex]\subfigure[K=3, POMM Model]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{ /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK3_N100.png}%
-        \label{fig:SimplePOMMK3}%
+        \label{fig:WSTPOMMK3}%
     }\hfill
     \subfigure[K=5, POMM Model]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK5_N100.png}%
-        \label{fig:SimplePOMMK5}%
+        \label{fig:WSTPOMMK5}%
     }\hfill
     \subfigure[K=9, POMM Model]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_SimplePOMMK9_N100.png}%
-        \label{fig:SimplePOMMK9}%
+        \label{fig:WSTPOMMK9}%
     }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
-    \label{fig:similarity_all_simple}
+    \caption{Co-Clustering Matrices obtained via the WST Model(above) and the POMM model (below).}
+    \label{fig:similarity_all_WST}
 \end{figure}
 
-The first results' plot we report is the one in figure \eqref{fig:similarity_all_simple}. Each box contains a co-clustering matrix. Each pixel $(i,j)$ represents the probability that two individuals are placed within the same cluster. The darker the pixel, the higher the probability. Colours on the side signal the true membership of each player.
+The first results' plot we report is the one in figure \eqref{fig:similarity_all_WST}. Each box contains a co-clustering matrix. Each pixel $(i,j)$ represents the probability that two individuals are placed within the same cluster. The darker the pixel, the higher the probability. Colours on the side signal the true membership of each player.
 
-In the first row, containing figure \ref{fig:SimpleSimpleK3},figure \ref{fig:SimpleSimpleK5}, and figure \ref{fig:SimpleSimpleK9}, we have the co-clustering matrix for the Simple model estimated on the data generated according to the Simple model itself. This means that the blocks have no inherent ordering, and the model here is correctly specified. We can notice a very good recovery of the true membership.
+In the first row, containing figure \ref{fig:WSTWSTK3},figure \ref{fig:WSTWSTK5}, and figure \ref{fig:WSTWSTK9}, we have the co-clustering matrix for the WST model estimated on the data generated according to the WST model itself. This means that the blocks have no inherent ordering, and the model here is correctly specified. We can notice a very good recovery of the true membership.
 
-In the second row instead, the one which contains figure \ref{fig:SimplePOMMK3},figure \ref{fig:SimplePOMMK5}, and \ref{fig:SimplePOMMK9}, we may observe the co-clustering matrix for the POMM model estimated on the data generated via the Simple one. Therefore, the model is misspecified, but we may notice that the recovery performance is quite competitive with the Simple one.
+In the second row instead, the one which contains figure \ref{fig:WSTPOMMK3},figure \ref{fig:WSTPOMMK5}, and \ref{fig:WSTPOMMK9}, we may observe the co-clustering matrix for the POMM model estimated on the data generated via the WST one. Therefore, the model is misspecified, but we may notice that the recovery performance is quite competitive with the WST one.
 
 
 
@@ -518,7 +1008,7 @@ In the second row instead, the one which contains figure \ref{fig:SimplePOMMK3},
 \centering
 \caption{
 {\large $P$ summary table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{cccccccccc}
 \toprule
@@ -529,15 +1019,15 @@ $\%$ within-95\% CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
 POMM model  &0.02 & 0.06 & 0.06 & 100 & 40 & 72.22 & 0.12 & 0.04 & 0.16 \\
-Simple model & 0.00 & 0.06 & 0.06 & 100 & 50 & 69.44 & 0.02 & 0.10 & 0.15 \\
+WST model & 0.00 & 0.06 & 0.06 & 100 & 50 & 69.44 & 0.02 & 0.10 & 0.15 \\
 \bottomrule
 \end{tabular}
-\label{table:Psummary_simple}
+\label{table:Psummary_WST}
 \end{table}
 
-In table \eqref{table:Psummary_simple}, we report the summary table of the estimates for the $P$ matrix, both obtained via the Simple model and the POMM model. For each value of $K$ (again, reported in the sub-columns (a), (b) and (c), respectively), we report the mean absolute error, meaning the mean absolute error $MAE = \frac{1}{(K\cdot(K-1))/2} \sum_{i=1}^{K-1}\sum_{j=i+1}^K \left(\hat{p}_{ij} - p^\star_{ij}\right)$ where $p^\star_{ij}$ is the true value of that particular entry. Then we also report the percentage of the upper triangular entries of $P$ that are contained by the estimated 95\% credible intervals, obtained by computing the 95\% higher posterior density region, and the average 95\% credible interval length. 
+In table \eqref{table:Psummary_WST}, we report the summary table of the estimates for the $P$ matrix, both obtained via the WST model and the POMM model. For each value of $K$ (again, reported in the sub-columns (a), (b) and (c), respectively), we report the mean absolute error, meaning the mean absolute error $MAE = \frac{1}{(K\cdot(K-1))/2} \sum_{i=1}^{K-1}\sum_{j=i+1}^K \left(\hat{p}_{ij} - p^\star_{ij}\right)$ where $p^\star_{ij}$ is the true value of that particular entry. Then we also report the percentage of the upper triangular entries of $P$ that are contained by the estimated 95\% credible intervals, obtained by computing the 95\% higher posterior density region, and the average 95\% credible interval length. 
 
-Here below, we report the ground truth of the $P$ matrix for each case $K=3,5,9$. Then, next and below we report the estimates, both for the POMM and the Simple model, within the $\hat{P}^{K=k}_{\text{POMM}}$, $\hat{P}^{K=k}_{\text{Simple}}$, respectively.
+Here below, we report the ground truth of the $P$ matrix for each case $K=3,5,9$. Then, next and below we report the estimates, both for the POMM and the WST model, within the $\hat{P}^{K=k}_{\text{POMM}}$, $\hat{P}^{K=k}_{\text{WST}}$, respectively.
 
 \newpage
 \[
@@ -555,7 +1045,7 @@ P^{K=3}_{true} =
 \end{array}\right] 
 \]
 \[ 
-\hat{P}^{K=3}_{\text{Simple}} = 
+\hat{P}^{K=3}_{\text{WST}} = 
 \left[\begin{array}{ccc}
 0.500 & 0.592 & 0.739 \\
 0.408 & 0.500 & 0.627 \\
@@ -582,7 +1072,7 @@ P^{K=5}_{true} =
 \end{array}\right] 
 \]
 \[ 
-\hat{P}^{K=5}_{\text{Simple}} = 
+\hat{P}^{K=5}_{\text{WST}} = 
 \left[\begin{array}{ccccc}
 0.500 & 0.566 & 0.660 & 0.700 & 0.710 \\
 0.434 & 0.500 & 0.646 & 0.675 & 0.703 \\
@@ -619,7 +1109,7 @@ P^{K=9}_{true} =
 0.305 & 0.365 & 0.271 & 0.249 & 0.308 & 0.326 & 0.332 & 0.397 & 0.500 \\\end{array}\right] 
 \]
 \[ 
-\hat{P}^{K=9}_{\text{Simple}} = 
+\hat{P}^{K=9}_{\text{WST}} = 
 \left[\begin{array}{ccccccccc}
 0.500 & 0.601 & 0.675 & 0.711 & 0.702 & 0.744 & 0.702 & 0.659 & 0.709 \\
 0.399 & 0.500 & 0.623 & 0.671 & 0.734 & 0.702 & 0.653 & 0.647 & 0.581 \\
@@ -637,7 +1127,7 @@ P^{K=9}_{true} =
 \centering
 \caption{
 {\large $z$ summary table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{cccccccccc}
 \toprule
@@ -648,13 +1138,13 @@ VI $\text{distance}_{\text{VI lb}}$} & \multicolumn{3}{c}{WAIC} \\
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
 POMM model  &0 & 0.42 & 0.1 & 0 & 0.42 & 0.32   & $\underset{30.89}{-13237.20}$ & $\underset{30.77}{-13352.68}$ & $\underset{31.35}{13657.35}$  \\
-Simple model &0 & 0.42 & 0.1 & 0 & 0.42 & 0.32  & $\underset{31.16}{-13273.59}$ & $\underset{ 30.37}{-13293.26}$ & $\underset{31.34}{-13673.15}$ \\
+WST model &0 & 0.42 & 0.1 & 0 & 0.42 & 0.32  & $\underset{31.16}{-13273.59}$ & $\underset{ 30.37}{-13293.26}$ & $\underset{31.34}{-13673.15}$ \\
 \bottomrule
 \end{tabular}
-\label{table:z_summary_Simple}
+\label{table:z_summary_WST}
 \end{table}
 
-In table \eqref{table:z_summary_Simple}, we report some summary statistics for the parameter $z$. As above, we have columns (a),(b) and (c) representing the case $K=3,5,9$ respectively.
+In table \eqref{table:z_summary_WST}, we report some summary statistics for the parameter $z$. As above, we have columns (a),(b) and (c) representing the case $K=3,5,9$ respectively.
 
 The first indicator is the $VI \text{distance}_{\text{MAP}}$ computed between the true partition $z^\star$ and the point estimate $\hat{z}^{\text{MAP}}$ obtained with the maximum a posteriori estimate (MAP).
 
@@ -668,7 +1158,7 @@ The third one is the WAIC estimate, along with its standard error below.
 \centering
 \caption{
 {\large POMM hyperparameters summary table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{ccccccc}
 \toprule
@@ -677,20 +1167,20 @@ $\hat{\theta}$} & \multicolumn{3}{c}{95$\%$ CI} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
-$\Sigma$  & 0.19 & 0.18 & 0.15 & [0.01	0.79] & [0.04	0.65] & [0.07	0.27]   \\
+$\sigma$  & 0.19 & 0.18 & 0.15 & [0.01	0.79] & [0.04	0.65] & [0.07	0.27]   \\
 $\alpha$ & 0.60 & 0.41 & 0.23 & [0.24	0.9] & [0.11	0.75] & [0.1	0.4] \\
 \bottomrule
 \end{tabular}
-\label{table:hyperparameters_SIMPLE}
+\label{table:hyperparameters_WST}
 \end{table}
 
 
-In table \eqref{table:hyperparameters_SIMPLE}, we report the results for the hyperparameters of the $POMM$ model. In the $\hat{\theta}$ column we report the estimates both for $\alpha$ and $\Sigma$, while on the right we have their $95\%$ Credible Interval.
-Given that the data were generated according the Simple model, we do not have a ground truth to which these results should be compared. However, we can still try to make sense of these values by inspecting the properties of the induced $P^{\text{POMM}}$ matrix resulting from the estimates.
+In table \eqref{table:hyperparameters_WST}, we report the results for the hyperparameters of the $POMM$ model. In the $\hat{\theta}$ column we report the estimates both for $\alpha$ and $\sigma$, while on the right we have their $95\%$ Credible Interval.
+Given that the data were generated according the WST model, we do not have a ground truth to which these results should be compared. However, we can still try to make sense of these values by inspecting the properties of the induced $P^{\text{POMM}}$ matrix resulting from the estimates.
 
-The Simple model has a prior over $P^{\text{Simple}} \sim Beta(1,1)$, then we may expect $P^{\text{POMM}}$ itself to get as closer as needed to a uniform distribution by selecting the appropriate combination of $(\alpha, \Sigma)$. 
+The WST model has a prior over $P^{\text{WST}} \sim Beta(1,1)$, then we may expect $P^{\text{POMM}}$ itself to get as closer as needed to a uniform distribution by selecting the appropriate combination of $(\alpha, \sigma)$. 
 
-Therefore, we simulate $n=10000$ $P^{\text{POMM}}$ matrices via the estimated parameters $\hat{\theta}$ in \eqref{table:hyperparameters_SIMPLE}. Then we extract 1000 points from each level set to avoid sample biases, and we compare them with an equally-sized set simulated via the Simple model, using the Kolmogorov-Smirnov test, where the null hypothesis is that two sets of points are sampled from the same distribution.
+Therefore, we simulate $n=10000$ $P^{\text{POMM}}$ matrices via the estimated parameters $\hat{\theta}$ in \eqref{table:hyperparameters_WST}. Then we extract 1000 points from each level set to avoid sample biases, and we compare them with an equally-sized set simulated via the WST model, using the Kolmogorov-Smirnov test, where the null hypothesis is that two sets of points are sampled from the same distribution.
 
 \begin{table}[htbp]
 \centering
@@ -712,41 +1202,41 @@ POMM model  &0.26& 0.05 & 0.00 & 82\% & 86\% & 89\% \\
 \label{table:ks_test}
 \end{table}
 
-In table \eqref{table:ks_test} we report first the Kolmogorov-Smirnov test p-values, and we may notice that for $K=3,5$ we do not reject with an $\alpha = 5\%$ that the $P^{\text{POMM}}$ is compatible with being extracted from the Simple model.
+In table \eqref{table:ks_test} we report first the Kolmogorov-Smirnov test p-values, and we may notice that for $K=3,5$ we do not reject with an $\alpha = 5\%$ that the $P^{\text{POMM}}$ is compatible with being extracted from the WST model.
 
-Instead with $K=9$ we cannot say that $P^{\text{POMM}}$ has collapsed to a uniform, but at the same time, if we look at the area of overlap between the densities of the level sets, we may notice that there is a significant amount of overlap between them, allowing the POMM model to effectively replicate the unordered entries of the $P^{\text{Simple}}$ matrix.
+Instead with $K=9$ we cannot say that $P^{\text{POMM}}$ has collapsed to a uniform, but at the same time, if we look at the area of overlap between the densities of the level sets, we may notice that there is a significant amount of overlap between them, allowing the POMM model to effectively replicate the Unordered entries of the $P^{\text{WST}}$ matrix.
 
 
 \begin{figure}[htbp]
     \centering
-    \subfigure[K=3, $\alpha = 0.60, \Sigma =0.19$]{%
+    \subfigure[K=3, $\alpha = 0.60, \sigma =0.19$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K3_simple.png}%
-        \label{fig:Density_K3_simple}%
+        \label{fig:Density_K3_WST}%
     }\hfill
-    \subfigure[K=5, $\alpha = 0.41, \Sigma =0.18$]{%
+    \subfigure[K=5, $\alpha = 0.41, \sigma =0.18$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K5_simple.png}%
-        \label{fig:Density_K5_simple}%
+        \label{fig:Density_K5_WST}%
     }\hfill
-    \subfigure[K=9, $\alpha = 0.23, \Sigma =0.15$]{%
+    \subfigure[K=9, $\alpha = 0.23, \sigma =0.15$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Density_K9_simple.png}%
-        \label{fig:Density_K9_simple}%
-    }\\[2ex]\subfigure[K=3, $\alpha = 0.60, \Sigma =0.19$]{%
+        \label{fig:Density_K9_WST}%
+    }\\[2ex]\subfigure[K=3, $\alpha = 0.60, \sigma =0.19$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K3.png}%
         \label{fig:Joint_K3}%
     }\hfill
-    \subfigure[K=5, $\alpha = 0.41, \Sigma =0.18$]{%
+    \subfigure[K=5, $\alpha = 0.41, \sigma =0.18$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K5.png}%
         \label{fig:Joint_K5}%
     }\hfill
-    \subfigure[K=9, $\alpha = 0.23, \Sigma =0.15$]{%
+    \subfigure[K=9, $\alpha = 0.23, \sigma =0.15$]{%
         \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/Joint_K9.png}%
         \label{fig:Joint_K9}%
     }
-    \caption{These are the densities of the entries of 10000 $P$ matrices generated according to the parameters within brackets, that is, the parameters estimated according the POMM model on the data generated via the Simple one. In figures  \eqref{fig:Density_K3_simple}, \eqref{fig:Density_K5_simple}, \eqref{fig:Density_K9_simple} we have the densities of the level sets coloured differently. In figures  \eqref{fig:Joint_K3}, \eqref{fig:Joint_K5}, \eqref{fig:Joint_K9} we put together 1000 points extracted from each level sets and we compute the density, so to have an overview of the joint distribution. We also compare the $P$'s entries simulated via the POMM and the Simple model}    
-    \label{fig:overlapping_simple}
+    \caption{These are the densities of the entries of 10000 $P$ matrices generated according to the parameters within brackets, that is, the parameters estimated according the POMM model on the data generated via the WST one. In figures  \eqref{fig:Density_K3_WST}, \eqref{fig:Density_K5_WST}, \eqref{fig:Density_K9_WST} we have the densities of the level sets coloured differently. In figures  \eqref{fig:Joint_K3}, \eqref{fig:Joint_K5}, \eqref{fig:Joint_K9} we put together 1000 points extracted from each level sets and we compute the density, so to have an overview of the joint distribution. We also compare the $P$'s entries simulated via the POMM and the WST model}    
+    \label{fig:overlapping_WST}
 \end{figure}
 
-In figure \eqref{fig:overlapping_simple} we report the densities of the points generated via the estimated hyper-parameters. We may notice the difference for the case $K=9$ with respect to the other two. In this case, we have very significant distributions for the POMM and the Simple one.
+In figure \eqref{fig:overlapping_WST} we report the densities of the points generated via the estimated hyper-parameters. We may notice the difference for the case $K=9$ with respect to the other two. In this case, we have very significant distributions for the POMM and the WST one.
 
 
 \clearpage
@@ -754,7 +1244,7 @@ In figure \eqref{fig:overlapping_simple} we report the densities of the points g
 
 
 
-\subsubsection{Simple Model check}
+\subsubsection{WST Model check}
 
 In this subsection, we report some diagnostic checks for the algorithm of the Markov Chains, to assess convergence, quality of mixing, and the overall behaviour of the Metropolis-within-Gibbs algorithm.
 
@@ -765,7 +1255,7 @@ In this subsection, we report some diagnostic checks for the algorithm of the Ma
 \centering
 \caption{
 {\large $z$ diagnostic table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{ccccccccccccc}
 \toprule
@@ -775,13 +1265,13 @@ $\overline{ACF_{30}}$} & \multicolumn{3}{c}{$\overline{\% accepted}$} & \multico
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
 POMM &7558.60 & 7988.02 & 2880.01 & 0 & 0.01 & 0.08 & 0.02 & 0.04 & 0.15 &  1.29 & 1.03 & 1.31  \\
-Simple &6544.85 & 6688.51 & 2438.17 & 0 & 0.03 & 0.11 & 0.01 & 0.56 & 0.15 & 1.04 & 1.29 & 1.26   \\
+WST &6544.85 & 6688.51 & 2438.17 & 0 & 0.03 & 0.11 & 0.01 & 0.56 & 0.15 & 1.04 & 1.29 & 1.26   \\
 \bottomrule
 \end{tabular}
-\label{table:z_diagnostics_simple}
+\label{table:z_diagnostics_WST}
 \end{table}
 
-In table \eqref{table:z_diagnostics_simple} we report the diagnostics for the $z$ parameter. Since the parameter is a label vector with 100 entries in this case, we compute the relevant statistics for each single entries an then we report the average.
+In table \eqref{table:z_diagnostics_WST} we report the diagnostics for the $z$ parameter. Since the parameter is a label vector with 100 entries in this case, we compute the relevant statistics for each single entries an then we report the average.
 \begin{itemize}
 
 \item The first statistics is the Effective Sample Size (ESS) averaged over individuals $i=1,\dots,N$, which denotes a fairly good sample size. The average is taken as follows:
@@ -803,7 +1293,7 @@ The same is applied also to the other diagnostic metrics.
 \centering
 \caption{
 {\large $P$ diagnostic table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{ccccccccccccc}
 \toprule
@@ -813,14 +1303,14 @@ $\overline{ACF_{30}}$} & \multicolumn{3}{c}{$\overline{\% accepted}$} & \multico
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
 POMM & 2234.00 & 2101.1 & 1454.08 & 0.02 & 0.00 & 0.15 & 34.52 & 31.55 & 29.98 & 1.06 & 1.0 & 1.04  \\
-Simple &2742.67 & 1446.9 & 1565.14 & 0.00 & 0.13 & 0.17 & 36.85 & 31.01 & 30.06 & 1.00 & 1.9 & 1.03 \ \\
+WST &2742.67 & 1446.9 & 1565.14 & 0.00 & 0.13 & 0.17 & 36.85 & 31.01 & 30.06 & 1.00 & 1.9 & 1.03 \ \\
 \bottomrule
 \end{tabular}
-\label{table:P_diagnostics_Simple}
+\label{table:P_diagnostics_WST}
 \end{table}
 
 
-In table \eqref{table:P_diagnostics_Simple} we report the same diagnostics checks for the $z$ parameter. The only difference is that here we do not average the diagnostics indicators over the individuals $i= 1,\ldots,N$, but instead over the upper-triangular $P$ indices: $\{ i =1,\ldots, K-1, \quad j = i+1, \ldots, K \}$.
+In table \eqref{table:P_diagnostics_WST} we report the same diagnostics checks for the $z$ parameter. The only difference is that here we do not average the diagnostics indicators over the individuals $i= 1,\ldots,N$, but instead over the upper-triangular $P$ indices: $\{ i =1,\ldots, K-1, \quad j = i+1, \ldots, K \}$.
 
 Just as an example, the average ESS in this case is obtained as
 $$
@@ -834,7 +1324,7 @@ $$
 \centering
 \caption{
 {\large POMM hyperparameters diagnostic table} \\ 
-{\small True Model Simple, $N=100$}
+{\small True Model WST, $N=100$}
 } 
 \begin{tabular}{ccccccccccccc}
 \toprule
@@ -843,14 +1333,14 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$\Sigma$ &985 & 155 & 162 & 0.5 & 0.55 & 0.55 & 31.47 & 29.96 & 29.81 & 1.96 & 1.02 & 1.18 \\
+$\sigma$ &985 & 155 & 162 & 0.5 & 0.55 & 0.55 & 31.47 & 29.96 & 29.81 & 1.96 & 1.02 & 1.18 \\
 $\alpha$ &13 & 17 & 45 & 0.95 & 0.94 & 0.84 & 24.74 & 24.93 & 24.38 & 1.21 & 1.62 & 1.01 \\
 \bottomrule
 \end{tabular}
-\label{table:P_hyper_Simple}
+\label{table:P_hyper_WST}
 \end{table}
 
-Finally, in table \eqref{table:P_hyper_Simple} we report again the same diagnostics, but since both $\alpha$ and $\Sigma$ are one-dimensional, we are presenting the diagnostics itself, without any average.
+Finally, in table \eqref{table:P_hyper_WST} we report again the same diagnostics, but since both $\alpha$ and $\sigma$ are one-dimensional, we are presenting the diagnostics itself, without any average.
 
 
 
@@ -860,8 +1350,7 @@ Finally, in table \eqref{table:P_hyper_Simple} we report again the same diagnost
 
 \section{Simulation Study from the POMM Model N=100}
 
-In this section we reverse the exercise performed in previous one. Before we were simulating from the Simple model, now we are doing the same, with similar parameters ($K=3,5,9, M=4000 \text{ and } \beta_{\max} = .75)$. Here are the results.
-
+In this section we reverse the exercise performed in previous one. Before we were simulating from the WST model, now we are simulating from the POMM, with $K=3,5,9$.  The metrics, indices and summaries are the same as before, so we avoid replicating the same explanations.
 \begin{figure}[h]
     \centering
     \subfigure[K=3, POMM Model]{%
@@ -880,17 +1369,18 @@ In this section we reverse the exercise performed in previous one. Before we wer
     \label{fig:all_images}
 \end{figure}
 
+
 \begin{figure}[htbp]
     \centering
-    \subfigure[K=3, Simple Model Estimates]{%
-\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK3_N100.png}%
+    \subfigure[K=3, WST Model Estimates]{%
+\includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMSimpleK3_N100.png}%
         \label{fig:M4000}%
     }\hfill
-    \subfigure[K=5, Simple Model Estimates]{%
+    \subfigure[K=5, WST Model Estimates]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMSimpleK5_N100.png}%
         \label{fig:M7000}%
     }\hfill
-    \subfigure[K=9, Simple Model Estimates]{%
+    \subfigure[K=9, WST Model Estimates]{%
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMSimpleK9_N100.png}%
         \label{fig:M10000}%
     }\\[2ex]\subfigure[K=3, POMM Model Estimates]{%
@@ -905,7 +1395,7 @@ In this section we reverse the exercise performed in previous one. Before we wer
         \includegraphics[width=.3333\textwidth,natwidth=800,natheight=800]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/similarity_POMMPOMMK9_N100.png}%
         \label{fig:M10000}%
     }
-    \caption{Co-Clustering Matrices obtained via the Simple Model(above) and the POMM model (below).}
+    \caption{Co-Clustering Matrices obtained via the WST Model(above) and the POMM model (below).}
     \label{fig:all_images}
 \end{figure}
 
@@ -927,10 +1417,10 @@ $\%$ within-95\%-CI interval} & \multicolumn{3}{c}{ $\overline{\text{CI interval
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
 POMM model  &0.02 & 0.02 & 0.01 & 100\% & 90\% & 61.11\% & 0.14 & 0.08 & 0.02  \\
-Simple model & 0.00 & 0.04 & 0.02 & 100\% & 90\% & 100.00\% & 0.02 & 0.11 & 0.15 \\
+WST model & 0.00 & 0.04 & 0.02 & 100\% & 90\% & 100.00\% & 0.02 & 0.11 & 0.15 \\
 \bottomrule
 \end{tabular}
-\label{table:simulations_from_simple}
+\label{table:simulations_from_POMM}
 \end{table}
 
 \newpage
@@ -1066,7 +1556,7 @@ $\hat{\theta}$} & \multicolumn{3}{c}{
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$\Sigma$ &0.1487 & 0.084 & 0.0196 & [0.0033	0.7575] & [4e-04	0.5602] & [0.0012	0.0625] & 0.01 & 0.01 & 0.01   \\
+$\sigma$ &0.1487 & 0.084 & 0.0196 & [0.0033	0.7575] & [4e-04	0.5602] & [0.0012	0.0625] & 0.01 & 0.01 & 0.01   \\
 $\alpha$ & 0.4237 & 0.5265 & 0.491 & [0.1324	0.6215] & [0.439	0.8733] & [0.4258	0.5934] & 0.5 & 0.5 & 0.5 \\
 \bottomrule
 \end{tabular}
@@ -1134,7 +1624,7 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$\Sigma$ &981 & 480 & 13 & 0.4 & 0.58 & 0.94 & 15.78 & 11.38 & 1.72 & 3.55 & 2.15 & 1.96  \\
+$\sigma$ &981 & 480 & 13 & 0.4 & 0.58 & 0.94 & 15.78 & 11.38 & 1.72 & 3.55 & 2.15 & 1.96  \\
 $\alpha$ &59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 & 1.25    \\
 \bottomrule
 \end{tabular}
@@ -1313,7 +1803,7 @@ $\hat{\theta}$} & \multicolumn{3}{c}{
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
-$\Sigma$  &0.54 & 0.58 & 0.58 & [0.2	0.9] & [0.25	0.9] & [0.001,	0.0608]   \\
+$\sigma$  &0.54 & 0.58 & 0.58 & [0.2	0.9] & [0.25	0.9] & [0.001,	0.0608]   \\
 $\alpha$ & 0.45& 0.50& 0.42 & [0.11	0.84] & [0.15	0.88] & [0.1	0.82] \\
 \bottomrule
 \end{tabular}
@@ -1379,7 +1869,7 @@ ACF$_{30}$} & \multicolumn{3}{c}{$\%$ accepted} & \multicolumn{3}{c}{Gelman-Rubi
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$ \\
 \midrule
-$\Sigma$ &3504 & 4202 & 5078 & -0.01 & 0 & 0.01 & 37.25 & 34.56 & 34.16 & 1 & 1 & 1 \\
+$\sigma$ &3504 & 4202 & 5078 & -0.01 & 0 & 0.01 & 37.25 & 34.56 & 34.16 & 1 & 1 & 1 \\
 $\alpha$ &10 & 13 & 15 & 0.96 & 0.96 & 0.97 & 25.42 & 25.07 & 24.88 & 1.19 & 1.01 & 1.1     \\
 \bottomrule
 \end{tabular}
@@ -1388,7 +1878,7 @@ $\alpha$ &10 & 13 & 15 & 0.96 & 0.96 & 0.97 & 25.42 & 25.07 & 24.88 & 1.19 & 1.0
 
 \clearpage
 
-\subsection{Fixing $\Sigma$=0.01}
+\subsection{Fixing $\sigma$=0.01}
 
 \begin{figure}[htbp]
     \centering
@@ -1494,7 +1984,7 @@ $\hat{\theta}$} & \multicolumn{3}{c}{
 \cmidrule(lr){2-4} \cmidrule(lr){5-7} 
 & $(a)$ & $(b)$ & $(c)$ & $(a)$ & $(b)$ & $(c)$  \\
 \midrule
-$\Sigma$ &0.01 & 0.01 & 0.01 & [0.01	0.01] & [0.01	0.01] & [0.01	0.01]   \\
+$\sigma$ &0.01 & 0.01 & 0.01 & [0.01	0.01] & [0.01	0.01] & [0.01	0.01]   \\
 $\alpha$ & 0.12 & 1.41 & 0.87 & [0.1	0.15] & [0.1	2.74] & [0.1	1.8] \\
 \bottomrule
 \end{tabular}
@@ -1588,7 +2078,7 @@ To begin with, we select all rows with the first pair of players, regardless of 
 \item $n_{victories}$: the total number of victories of player A against player B, which can be calculated as the number of times player A appears before player B on the same row.
 \end{itemize}
 
-Then, I retain just the first pair observation, e.g. player A and player B, and disregard all the others. This process is repeated for all unique unordered pairs of players. In this way, I obtain a dataset storing, for each pair of players who have played at least once, all the relevant information in one single entry.
+Then, I retain just the first pair observation, e.g. player A and player B, and disregard all the others. This process is repeated for all unique Unordered pairs of players. In this way, I obtain a dataset storing, for each pair of players who have played at least once, all the relevant information in one single entry.
 
 What about the observations in which player B won against player A? These will no longer be entries in the dataframe. However, this data will still be indirectly available by computing the total number of games between player A and player B (available in column $n_{games}$, at the corresponding row) minus the total number of victories of player A against player B (available in $n_{victories}$, at the corresponding row).
 
@@ -1728,15 +2218,15 @@ log(r) &= \log{ \left( \prod_{i<j}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (
 To update $P$ and $\alpha$ we propose a new label for each node, we evaluate the accept/reject move by computing the ratio $r$ as follows:
 
 \begin{align}
-r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{\prime y_{ij}} \cdot (1 - p^{\prime}_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{\prime (k+1)} - y^{\prime(k)}}\right)^{|L^{\prime(k)}|}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{y_{ij}} \cdot (1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{(k+1)} - y^{(k)}}\right)^{|L^{(k)}|}} \\
+r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{\prime y_{ij}} \cdot (1 - p^{\prime}_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{\prime (k+1)} - y^{\prime(k)}}\right)^{|L_{\prime(k)}|}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{y_{ij}} \cdot (1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{(k+1)} - y^{(k)}}\right)^{|L_{(k)}|}} \\
 \end{align}
 
 
 Passing to the log:
 
 \begin{align}
-log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p^{\prime}_{z_i z_j}) } \right)  - \sum_{k=1}^K |L^{\prime(k)}| \cdot \log{\left( y^{\prime(k+1)} - y^{\prime(k)} \right)}\\
- &\qquad - \sum_{i<j} \left(  y_{ij} \cdot \log{ p_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p_{z_i z_j}) } \right)  + \sum_{k=1}^K |L^{(k)}| \cdot \log{\left( y^{(k+1)} - y^{(k)} \right) }
+log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p^{\prime}_{z_i z_j}) } \right)  - \sum_{k=1}^K |L_{\prime(k)}| \cdot \log{\left( y^{\prime(k+1)} - y^{\prime(k)} \right)}\\
+ &\qquad - \sum_{i<j} \left(  y_{ij} \cdot \log{ p_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p_{z_i z_j}) } \right)  + \sum_{k=1}^K |L_{(k)}| \cdot \log{\left( y^{(k+1)} - y^{(k)} \right) }
 \end{align}
 
 
@@ -1771,11 +2261,92 @@ log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij}
 \caption{Updating $P$ step}
 \end{algorithm}
 
-\section{Appendix II: POMM prior checks}
+\clearpage
+\section{Appendix II: Limiting case for $\sigma$}
 
-\subsection{Prior predictive check}
+It is interesting to see what happens to the POMM prior when $\sigma \rightarrow \infty$. The idea is that,as the variance of the normals increase, the POMM prior should collapse on the Simple prior. 
 
-\subsection{MLE check}
+To prove this argument, first we check empirically and visually if the POMM prior distribution really converges to the Simple model distribution. Empirically we can run the Kolmogorov-Smirnov test to assess if there is a statistically significant difference between points $p_{ij} \sim POMM(\beta:\alpha;\sigma = \{0.01,0.10,0.50\}$ and the Simple prior $p_{ij} \sim Beta(1,1)$. Then, we check visually the two distributions. Finally, we try to check analytically a convergence.
+
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large Kolmogorov-Smirnov test} \\ 
+{\small Data are generated via $p_{ij} \sim POMM(\alpha=1,\beta_{max}=.8,\sigma)$} }
+\begin{tabular}{ccccccc}
+\toprule
+\multirow{2}{*}{Method} & \multicolumn{3}{c}{
+p-value}  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+& $\sigma = 0.01$ & $\sigma = 0.15$  & $\sigma = 0.50$    \\
+\midrule
+POMM model  &4.643e-09& 3.998e-13 & 0.4163 \\
+\bottomrule
+\end{tabular}
+\label{table:ks_test_appendix}
+\end{table}
+
+In \eqref{table:ks_test_appendix} we see that with values of $\sigma$ equal to 0.5, we are unable to statistically distinguish points sampled from the Simple model and points sampled from the POMM model
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.01$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/level_appendix_sigma0.01.png}%
+        \label{fig:Density_K3_simple}%
+    }\hfill
+    \subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.15$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/level_appendix_sigma0.15.png}%
+        \label{fig:Density_K5_simple}%
+    }\hfill
+    \subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.5$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/level_appendix_sigma0.5.png}%
+        \label{fig:Density_K9_simple}%
+    }\\[4ex]\subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.01$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/general_appendix_sigma0.01.png}%
+        \label{fig:Joint_K3}%
+    }\hfill
+    \subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.15$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/general_appendix_sigma0.15.png}%
+        \label{fig:Joint_K5}%
+    }\hfill
+    \subfigure[$K=5, \alpha = 1, \beta_{max} = 0.8, \sigma =0.5$]{%
+        \includegraphics[width=.3333\textwidth,natwidth=528,natheight=350]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/processed/LevelSets/general_appendix_sigma0.5.png}%
+        \label{fig:Joint_K9}%
+    }
+    \caption{As $\sigma$ increases, the distribution of the level sets of the POMM prior becomes indistinguishable from the distribution of the Simple model prior}    
+    \label{fig:overlapping_simple}
+\end{figure}
+
+
+
+
+\begin{align}
+&\lim_{\sigma \rightarrow \infty} \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu^{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt} = \\
+&\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt} 
+\end{align}
+
+
+If we substitute in the expression for $y^{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5$, we can simplify the following expression:
+\begin{align}
+\frac{y^{(k)} + y^{(k+1)}}{2} &= \frac{1}{2} \left[ \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 + \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k+1) \right)^\alpha + 0.5 \right] \\
+&= \frac{1}{2} \left[ \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha  +\left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k+1) \right)^\alpha + 1 \right] \\
+&=\left[\frac{1}{2} \left( \frac{(\beta_{\max} - 0.5)}{K^{\alpha}} \times k^{\alpha} \right)  +\left( \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times (k+1)^{\alpha} \right) + \frac{1}{2} \right] \\
+&=  \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} 
+\end{align}
+
+Substituting back in the simplified expression:
+
+\begin{align}
+&\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2}\right]  }{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right] }{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right] }{\sigma}\right)^2 }dt} \\
+& \lim_{\sigma \rightarrow \infty} 
+\prod_{k=1}^K  \text{TruncatedNormal}(\left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right], \sigma^{2}; 0.5, \beta_{\max})
+\end{align}
+
+
+
+
 
 
 \begin{comment}

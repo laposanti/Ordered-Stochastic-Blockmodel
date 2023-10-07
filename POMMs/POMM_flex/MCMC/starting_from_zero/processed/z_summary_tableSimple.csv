@@ -1,0 +1,12 @@
+\begin{longtable}{rrrrrrrrrrrr}
+\caption*{
+{\large zsummarytable}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 & X6 & X7 & X8 & X9 & X10 & X11 & X12 \\ 
+\midrule
+0 & 0 & 0 & 0 & 0.56 & 0 & 48883.71 & 53337.62 & 51244.98 & 145.40 & 152.84 & 153.63 \\ 
+0 & 0 & 0 & 0 & 0.00 & 0 & 46521.89 & 52382.24 & 49144.47 & 144.55 & 153.98 & 164.65 \\ 
+\bottomrule
+\end{longtable}
+

@@ -25,7 +25,7 @@ P_simple_update = function(z_current, p_current,
       
       #proposing a new p_ij
       p_scanning = p_prime
-      p_scanning[p_i,p_j] <- rtruncnorm(1, mean = p_prime[p_i,p_j],sd = sigma_p[p_i,p_j], a =   0.5, b  = beta_max)
+      p_scanning[p_i,p_j] <- rtruncnorm(1, mean = p_prime[p_i,p_j],sd = sigma_p[p_i,p_j], a =   0, b  = beta_max)
       p_scanning[p_j,p_i] <- 1 - p_scanning[p_i,p_j]
       
       #updating P_NbyN_prime for all players in cluster ii and cluster jj

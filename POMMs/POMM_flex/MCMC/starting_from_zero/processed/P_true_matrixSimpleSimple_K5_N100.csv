@@ -1,0 +1,16 @@
+\begin{longtable}{rrrrr}
+\caption*{
+{\large Ptruematrix} \\ 
+{\small SimpleSimple5100}
+} \\ 
+\toprule
+X1 & X2 & X3 & X4 & X5 \\ 
+\midrule
+0.500 & 0.230 & 0.631 & 0.706 & 0.422 \\ 
+0.770 & 0.500 & 0.327 & 0.752 & 0.714 \\ 
+0.369 & 0.248 & 0.500 & 0.036 & 0.441 \\ 
+0.673 & 0.964 & 0.286 & 0.500 & 0.365 \\ 
+0.294 & 0.578 & 0.559 & 0.635 & 0.500 \\ 
+\bottomrule
+\end{longtable}
+

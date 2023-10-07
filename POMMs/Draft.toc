@@ -1,27 +1,23 @@
 \contentsline {section}{\tocsection {}{1}{Introduction}}{2}{}%
-\contentsline {section}{\tocsection {}{2}{The simple model}}{3}{}%
-\contentsline {subsection}{\tocsubsection {}{2.1}{Simple Model specification}}{3}{}%
-\contentsline {subsection}{\tocsubsection {}{2.2}{Prior Specification}}{3}{}%
+\contentsline {section}{\tocsection {}{2}{The Unordered model specification}}{3}{}%
+\contentsline {subsection}{\tocsubsection {}{2.1}{Prior Specification}}{3}{}%
 \contentsline {section}{\tocsection {}{3}{Connection with Image Recognition}}{4}{}%
-\contentsline {section}{\tocsection {}{4}{The SST model}}{6}{}%
-\contentsline {subsection}{\tocsubsection {}{4.1}{Some considerations}}{7}{}%
-\contentsline {section}{\tocsection {}{5}{The LST model}}{8}{}%
-\contentsline {section}{\tocsection {}{6}{additional consideration}}{8}{}%
-\contentsline {section}{\tocsection {}{7}{Estimation}}{9}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{7.0.1}{Adaptive algorithm for $\theta = \{ P, \alpha , S \}$}}{9}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{7.0.2}{Adaptive Algorithm for $\theta = { z }$}}{10}{}%
-\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and inference}}{11}{}%
-\contentsline {section}{\tocsection {}{9}{Simulation Study from the Simple Model N=100}}{12}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Simple Model check}}{19}{}%
-\contentsline {section}{\tocsection {}{10}{Simulation Study from the POMM Model N=100}}{21}{}%
-\contentsline {subsection}{\tocsubsection {}{10.1}{POMM model check}}{23}{}%
-\contentsline {section}{\tocsection {}{11}{Application to Tennis Data}}{26}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{27}{}%
-\contentsline {subsection}{\tocsubsection {}{11.2}{Fixing $\Sigma $=0.01}}{30}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{11.2.1}{Montecarlo algorithm}}{33}{}%
-\contentsline {section}{\tocsection {}{12}{Appendix I: Estimation Details}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Updating z}}{34}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Updating $\mathbf {P}$}}{34}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix II: POMM prior checks}}{35}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Prior predictive check}}{35}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{MLE check}}{35}{}%
+\contentsline {section}{\tocsection {}{4}{The WST model}}{6}{}%
+\contentsline {section}{\tocsection {}{5}{The SST model}}{6}{}%
+\contentsline {section}{\tocsection {}{6}{The LST model}}{7}{}%
+\contentsline {section}{\tocsection {}{7}{Estimation}}{8}{}%
+\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and Inference}}{13}{}%
+\contentsline {section}{\tocsection {}{9}{Simulation Study from the Unordered Model N=100}}{14}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Unordered Model check}}{20}{}%
+\contentsline {section}{\tocsection {}{10}{Simulation Study from the WST Model N=100}}{22}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{10.0.1}{WST Model check}}{29}{}%
+\contentsline {section}{\tocsection {}{11}{Simulation Study from the POMM Model N=100}}{31}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{33}{}%
+\contentsline {section}{\tocsection {}{12}{Application to Tennis Data}}{36}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{POMM model check}}{37}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Fixing $\sigma $=0.01}}{40}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{12.2.1}{Montecarlo algorithm}}{43}{}%
+\contentsline {section}{\tocsection {}{13}{Appendix I: Estimation Details}}{44}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{Updating z}}{44}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{Updating $\mathbf {P}$}}{44}{}%
+\contentsline {section}{\tocsection {}{14}{Appendix II: Limiting case for $\sigma $}}{47}{}%
