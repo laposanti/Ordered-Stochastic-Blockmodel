@@ -469,7 +469,7 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
     # PROPOSE A Z_PRIME for z_prime
     
     # Calculate distances between labels
-    label_distances <- abs(labels_available - k_prime)
+    label_distances <- labels_available - k_prime
     
     # Calculate probabilities based on label distances and sigma.z
     probabilities <- label_probability(label_distances, sigma_z[ii])

@@ -110,7 +110,7 @@ while(controller==0){
                                    diag0.5 = TRUE,
                                    K = K, P = P_true,
                                    burn_in = burnin,
-                                   label_switch = F)
+                                   label_switch = T)
       P_s_table_save <-P_s_table$table
       P_s_table_save <- P_s_table_save%>%
         summarise(
@@ -258,7 +258,7 @@ while(controller==0){
 
       # setwd(plots_dir)
       z_plot(test_output =uploded_results , true_model= true_model,
-             est_model = est_model, true_value =F , diag0.5 =diag0.5 , K=K, N=N, z = z ,burn_in =  burnin ,label_switch = F)
+             est_model = est_model, true_value =T , diag0.5 =diag0.5 , K=K, N=N, z = uploded_results$chain1$ground_truth$z ,burn_in =  burnin ,label_switch = F)
 
       est_clusters<-z_tot_table$memb
       

@@ -1634,156 +1634,182 @@ $\alpha$ &59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 
 
 \section{Exploratory analysis of the Tennis Data}
 
-In this section we check if there any evidence in the dataset to support the hypothesis that players can be separated into ordered blocks etc. 
+\subsection{Focus on the top 10 Ranked Players}
 
-We will use two main approaches, one based on the graph-representation of the tennis data, the other one based on a distance matrix of the same data.
+\begin{longtable}{lrrrrr}
+\caption*{
+{\large Range [1-10].csv}
+} \\
+\toprule
+Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+\midrule
+Rank [1-10] & 6.5 & 3.0 & 0.3961039 & 0.3486111 & 0.2609968 \\
+Rank [21-30] & 7.0 & 5.5 & 0.8333333 & 0.4000000 & 0.1796782 \\
+Rank [51-60] & 3.0 & 2.5 & 1.0000000 & 0.1500000 & 0.1441878 \\
+Rank [71-80] & 2.5 & 2.0 & 1.0000000 & 0.2500000 & 0.1872890 \\
+\bottomrule
+\end{longtable}
 
-\subsection{Clustering as network}
-The first one consists in representing the games between players $(i,j)$ as a directed and weighted network.
-
-We show below a plot of the network itself clustered according to 3 different methods.
-\begin{figure}[h]
-    \centering
-    \subfigure[Poisson SBM clustered Graph]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/SBM_clustered_graph.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Bernoulli SBM clustered Graph]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/sbm_binary_g.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Spectral clustering algorithm Graph]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/spectral_clust_g.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\\[2ex]\subfigure[Ranking coloured according to the Poisson SBM]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_vs_clust_SBM.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Ranking coloured according to the Bernoulli SBM]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/sbm_binary_rank.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\hfill
-    \subfigure[Ranking coloured according to the Spectral clustering]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }
-    \caption{At the top row, we present a network plot where nodes represent players. The size of each node is directly proportional to the total number of victories achieved by that player. The colors of the nodes indicate the clusters assigned by different algorithms.
-\\
-In the row below, there is a bar plot displaying information for 95 players. Along the x-axis, each player is represented, and on the y-axis, the height of each bar corresponds to the percentage of victories for that particular player. The bars are color-coded based on the cluster assignment of the player.
-\\
-Each column provides the results obtained from applying three different algorithms: Poisson SBM, Bernoulli SBM, and Spectral clustering.}
-    \label{fig:all_images}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png}
+\caption{ }
+\label{ }
+\end{center}
 \end{figure}
 
-This table summarizes the outcomes of various graph-clustering algorithms. For each fitted model, we report the estimated number of clusters ($\hat{K}$), the average number of clusters in 50 randomly rewired Erdos networks with fixed node degrees ($\overline{K}_{degree}$), and with fixed graph density ($\overline{K}_{desnity}$). Additionally, we provide the correlation ($\rho$) between the identified clusters and the player rankings.
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png}
+\caption{ }
+\label{ }
 
-
-
-\begin{table}[htbp]
-\centering
-\caption{{\large Graph-Clustering Algorithm Results} \\
-{\small 50 MonteCarlo Erdos-Renyi simulated graphs to estimate $\overline{\rho(\hat{z},R)}$}}
-\begin{tabular}{ccccccccccccc}
-\toprule
-\multirow{1}{*}{Fitted Model} & $\hat{K}$ & $\overline{K}_{degree}$ & $\overline{K}_{desnity}$& $\rho(\hat{z},R)$ &$\overline{\rho(\hat{z},R)_{degree}} $& $\overline{\rho(\hat{z},ranking)_{density}}$  \\
-\midrule
-Poisson SBM & $3$ & $2$ & $1$ & $-0.38$ & $0.42$ & NA \\
-Bernoulli SBM & $3$ & $2$ & $1$ & $0.78$ & $0.74$ & NA \\
-Spectral Clustering & $3$ & $2.45$ & $3$ & $0.09$ & $0.33$ & $-0.003$ \\
-\bottomrule
-\end{tabular}
-\label{table:simulations_from_simple}
-\end{table}
+\end{center}
+\end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
 
 \clearpage
 
-\subsection{Clustering as a distance matrix}
-
-\begin{figure}[h]
-    \centering
-    \subfigure[Spectral clustering- Euclidean Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_euc.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Spectral clustering- Manhattan Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_man.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Spectral clustering- Jaccard Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_jac.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\\[2ex]\subfigure[Ranking coloured according to Spectral clustering- Euclidean Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_euc.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Ranking coloured according to Spectral clustering- Manhattan Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_man.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\hfill
-    \subfigure[Ranking coloured according to Spectral clustering- Jaccard Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_jac.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }
-    \caption{This figure presents a set of visualizations for clustering tennis data using three different distance metrics and hierarchical algorithms. The first row displays the distance matrices computed using various distances, rearranged according to the clustering method applied.
-(a) Spectral clustering with Euclidean Distance Matrix.
-(b) Spectral clustering with Manhattan Distance Matrix.
-(c) Spectral clustering with Jaccard Distance Matrix.
-The second row depicts the ranking of players, color-coded according to the clusters identified by spectral clustering using the respective distance matrices.
-(d) Ranking colored according to Spectral clustering with Euclidean Distance Matrix.
-(e) Ranking colored according to Spectral clustering with Manhattan Distance Matrix.
-(f) Ranking colored according to Spectral clustering with Jaccard Distance Matrix.}
-    \label{fig:all_images}
-\end{figure}
-
-\begin{table}[htbp]
-\centering
-\caption{
-{\large Graph-clustering algorithms} \\ 
-{\small }
-} 
-\begin{tabular}{ccccccccc}
+\subsection{Focus on players ranked from the 21st to the 30th position}
+\begin{longtable}{lrrrrr}
+\caption*{
+{\large Range [21-30].csv}
+} \\
 \toprule
-\multirow{1}{*}{Fitted Model} &$\hat{K}_{sil}$ & $\rho(\hat{z},R)$  \\
+Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
 \midrule
-Hierarchical  - Euclidean &$\underset{1=0.649, 2= 0.448, 3 = 0.811}{3}$  & -0.02 \\
-Hierarchical  - Manhattan  &$\underset{1=0.741,2=0.537,3=0.347}{3}$  &-0.26 \\
-Hierarchical  - Jaccard  &$\underset{1=0.477=0.392=0}{3}$  & 0.24 \\
-Spectral  - Euclidean  &$\underset{1=0.638=0.337=0.508}{3}$  & 0.78 &\\
-Spectral  - Manhattan  &$\underset{1=0.467, 2= 0.600, 3 = 0.326}{3}$ & 0.37    \\
-Spectral  - Jaccard  &$\underset{1=0.384, 2= 0.558, 3 = 0.325}{3}$ & 0.36    \\
+Rank [1-10] & 6.5 & 1 & 0.2111111 & 0.1011905 & 0.1377395 \\
+Rank [21-30] & 2.5 & 1 & 0.5000000 & 0.6041667 & 0.3833937 \\
+Rank [51-60] & 4.0 & 2 & 0.6333333 & 0.5000000 & 0.2842113 \\
+Rank [71-80] & 3.0 & 2 & 1.0000000 & 0.5000000 & 0.2900085 \\
 \bottomrule
-\end{tabular}
-\label{table:simulations_from_simple}
-\end{table}
+\end{longtable}
 
-\begin{figure}[h]
-    \centering
-    \subfigure[Hierarchical clustering- Euclidean Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_euc.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Hierarchical clustering- Manhattan Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_man.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Hierarchical clustering- Jaccard Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_jac.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\\[2ex]\subfigure[Ranking coloured according to Hierarchical clustering- Euclidean Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_euc.png}%
-        \label{fig:POMM_adjacency_K3}%
-    }\hfill
-    \subfigure[Ranking coloured according to Hierarchical clustering- Manhattan Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_man.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }\hfill
-    \subfigure[Ranking coloured according to Hierarchical clustering- Jaccard Distance Matrix]{%
-        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_jac.png}%
-        \label{fig:POMM_adjacency_K5}%
-    }
-    \caption{Clustering Tennis data via 3 different distances matrix-hierarchical algorithms}
-    \label{fig:all_images}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png}
+\caption{ }
+\label{ }
+\end{center}
 \end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png}
+\caption{ }
+\label{ }
+
+\end{center}
+\end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
+
+
+\clearpage
+
+\subsection{Focus on players ranked from the 51st to the 60th position}
+
+\begin{longtable}{lrrrrr}
+\caption*{
+{\large Range [51-60].csv}
+} \\
+\toprule
+Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+\midrule
+Rank [1-10] & 3.5 & 0.0 & 0.0000000 & 0.0000000 & 0.1883981 \\
+Rank [21-30] & 3.5 & 1.5 & 0.3666667 & 0.5750000 & 0.3473400 \\
+Rank [51-60] & 2.0 & 1.0 & 0.3750000 & 1.0000000 & 0.4779877 \\
+Rank [71-80] & 2.0 & 1.0 & 0.5000000 & 0.3333333 & 0.3227486 \\
+\bottomrule
+\end{longtable}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png}
+\caption{ }
+\label{ }
+
+\end{center}
+\end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
+
+
+
+\clearpage
+
+\subsection{Focus on players ranked from the 71st to the 80th position}
+
+
+\begin{longtable}{lrrrrr}
+\caption*{
+{\large Range [71-80].csv}
+} \\
+\toprule
+Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+\midrule
+Rank [1-10] & 3.0 & 0.0 & 0.0000000 & 0.2916667 & 0.3186585 \\
+Rank [21-30] & 3.0 & 0.5 & 0.1250000 & 0.3333333 & 0.2461117 \\
+Rank [51-60] & 1.5 & 1.0 & 0.5000000 & 1.0000000 & 0.4750731 \\
+Rank [71-80] & 1.0 & 0.0 & 0.3333333 & 0.6666667 & 0.4430534 \\
+\bottomrule
+\end{longtable}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png}
+\caption{ }
+\label{ }
+
+\end{center}
+\end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png}
+\caption{ }
+\label{ }
+\end{center}
+\end{figure}
+
+
+
+
+
+
 
 \clearpage
 

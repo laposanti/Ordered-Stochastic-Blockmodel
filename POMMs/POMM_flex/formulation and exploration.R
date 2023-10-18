@@ -14,17 +14,17 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 
 
 
-
-K=5
-
+K_list = c(3,5,9)
+K=K_list[2]
+S_list = c(0.01,0.5,3)
+alpha_list = c(1, 1, 1)
 n_samples=10000
-S = 1000
+S = .5
 beta_max = .8
-alpha=1
+alpha=.5
 diag0.5=T
 true_alpha<-alpha
 
-x_unif = runif(n_samples*(K*(K-1))/2, 0.5,beta_max)
 
 
 #creating a sample of P matrices
@@ -37,9 +37,15 @@ for(i in 1:n_samples){
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
 # Combine the four levels into a list
 
+p_container_simple = array(0, dim=c(K,K,n_samples))
+for(i in 1:n_samples){
+  p_container_simple[,,i] = matrix(runif(K*K, 0.5, beta_max), K, K)
+}
+
+level_list_p_container_simple<- generalized_levels(p_container_simple,K,n_samples, diag0.5 = diag0.5)
 
 
-paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',overlap,'K',K)
+paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',S,'K',K)
 
 #interpretation of overlap
 
@@ -51,24 +57,46 @@ mean(overlap_space)/(beta_max- 0.5)
 
 
 
-
 blue_purple <- generate_color_gradient_K(K)
-my_data <- unlist(level_list_p_container)
-data_1 <- data.frame(x=level_list_p_container[[1]]) %>% filter(x>0.6) 
-ks.test(my_data, 'punif')
 
-ggplot(data_1, aes(x=x))+geom_density()
+my_sample_1<- vector()
+for(i in 1:(K-1)){
+my_data <- sample(x = level_list_p_container[[i]],size = 1000,replace = F)
+my_sample_1<- append(my_sample_1,my_data)
+}
+
+my_sample_2<- vector()
+for(i in 1:(K-1)){
+  my_data <- sample(x = level_list_p_container_simple[[i]],size = 1000,replace = F)
+  my_sample_2<- append(my_sample_2,my_data)
+}
+
+
+#computing ks test
+ks.test(my_sample_1, my_sample_2)
+
+
+compute_S(S,truncations = trunc,K = K,n_samples = n_samples)
+
+data_1<- data.frame(x= c(my_sample_1,my_sample_2),model =c(rep("POMM", length(my_sample_1)),rep("Simple", length(my_sample_1)) ))
+
+ggplot(data_1, aes(x=x))+
+  geom_density(aes(fill = model), alpha=.75)+
+  labs(fill = "Levels", x = "Points", y = "Density", title = "Density Plot across the level sets", 
+       subtitle = '500 points extracted from each level set')+
+  theme_bw()
 
 #goood plot here
 ggplot() +
   # Add a layer for each level
   lapply(seq_along(level_list_p_container), function(i) {
-    geom_histogram(data = data.frame(x = level_list_p_container[[i]]), aes(x = x, y = ..density.., fill = paste0("Level ", i)), alpha = .5)
+    geom_density(data = data.frame(x = level_list_p_container[[i]]), aes(x = x, y = ..density.., fill = paste0("Level ", i)), alpha = .5)
   }) +
   # Set the x-axis limits
   scale_fill_manual(values=blue_purple)+
   # Set the legend title
-  labs(fill = "Levels", x = "Points", y = "Density", title = paste("Density Plot of the ", K, " Level sets [alpha=",alpha,", overlap=",S,", diag=",0.5,"]", sep = ""))+
+  labs(fill = "Levels", x = "Points", y = "Density", title = paste("Density Plot of the ", K, " Level sets over ", n_samples, " P samples", sep=""), 
+                                                                   subtitle = paste("Hyperarameters: alpha=",alpha,", Sigma=",S, sep = ""))+
   theme_bw()
 
 

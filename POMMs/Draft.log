@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  17 OCT 2023 22:34
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  18 OCT 2023 15:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -454,127 +454,37 @@ LaTeX Warning: Label `sub@fig:M10000' multiply defined.
 LaTeX Warning: Label `fig:all_images' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:all_images' multiply defined.
-
-
-LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:all_images' multiply defined.
-
-
-LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
-
-
-LaTeX Warning: Label `fig:all_images' multiply defined.
+LaTeX Warning: Label ` ' multiply defined.
 
 
 LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
@@ -1464,177 +1374,191 @@ Overfull \hbox (51.4606pt too wide) in paragraph at lines 1591--1603
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 1635.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/SBM_clustered_graph.png Graphic file (type 
-eps)
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png Grap
+hic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/SBM_clustered_graph.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/sbm_binary_g.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/sbm_binary_g.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/spectral_clust_g.png Graphic file (type eps
-)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/spectral_clust_g.png>
-Underfull \hbox (badness 1472) in paragraph at lines 1658--1658
-[]\OT1/cmr/m/n/9 (c) Spec-tral clus-ter-ing al-go-rithm
- []
-
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_vs_clust_SBM.png Graphic file (type ep
-s)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_vs_clust_SBM.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/sbm_binary_rank.png Graphic file (type eps)
-
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/sbm_binary_rank.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_spectral.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_spectral.png>
+s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1674.
+(Font)              No change on input line 1656.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1674.
+(Font)              No change on input line 1656.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1674.
+(Font)              No change on input line 1656.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1674.
+(Font)              No change on input line 1656.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png Grap
+hic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1664.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1664.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1664.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1664.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png Grap
+hic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1672.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1672.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1672.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1672.
  [37
 
 ]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1685.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1685.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1685.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1685.
- [38]
+[38]
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_spectral_euc.png Graphic file (type ep
-s)
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png Gra
+phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_spectral_euc.png>
+s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1697.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1697.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1697.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1697.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_spectral_man.png Graphic file (type ep
-s)
+graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png Gra
+phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_spectral_man.png>
+s_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1705.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1705.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1705.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1705.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_spectral_jac.png Graphic file (type ep
-s)
+graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png Gra
+phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_spectral_jac.png>
-Underfull \hbox (badness 5274) in paragraph at lines 1715--1715
-[]\OT1/cmr/m/n/9 (c) Spec-tral clustering- Jac-card
- []
-
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_spectral_euc.png Graphic file (type ep
-s)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_spectral_euc.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_spectral_man.png Graphic file (type ep
-s)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_spectral_man.png>
-Underfull \hbox (badness 5359) in paragraph at lines 1722--1722
-[]\OT1/cmr/m/n/9 (e) Rank-ing coloured ac-cord-ing
- []
-
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_spectral_jac.png Graphic file (type ep
-s)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_spectral_jac.png>
+s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1734.
+(Font)              No change on input line 1713.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1734.
+(Font)              No change on input line 1713.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1734.
+(Font)              No change on input line 1713.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1734.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1743.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1743.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1743.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1743.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_hier_euc.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_hier_euc.png>
-Underfull \hbox (badness 6173) in paragraph at lines 1764--1764
-[]\OT1/cmr/m/n/9 (a) Hi-er-ar-chi-cal clustering- Eu-
- []
-
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_hier_man.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_hier_man.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/dist_hier_jac.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/dist_hier_jac.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_hier_euc.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_hier_euc.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_hier_man.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_hier_man.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/rank_hier_jac.png Graphic file (type eps)
-
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/rank_hier_jac.png>
-Underfull \hbox (badness 6032) in paragraph at lines 1783--1783
-[]\OT1/cmr/m/n/9 (f) Rank-ing coloured ac-cord-ing
- []
-
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1784.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1784.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1784.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1784.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
+(Font)              No change on input line 1713.
 
 [39
 
 ] [40]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1790.
+(Font)              No change on input line 1740.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1740.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1740.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1740.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1748.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1748.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1748.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1748.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1756.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1756.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1756.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1756.
+
+[41
+
+] [42]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1786.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1786.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1786.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1786.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1795.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1795.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1795.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1795.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png Gra
+phic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1803.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1803.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1803.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1803.
+
+[43
+
+] [44]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1816.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
 ults/processed_results/adjacency_Tennis_application_Est_model_Simple_K3_N95.png
  Graphic file (type eps)
@@ -1672,13 +1596,13 @@ raphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1818.
+(Font)              No change on input line 1844.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1818.
+(Font)              No change on input line 1844.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1818.
+(Font)              No change on input line 1844.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1818.
+(Font)              No change on input line 1844.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
 ults/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png
  Graphic file (type eps)
@@ -1716,13 +1640,13 @@ raphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1849.
+(Font)              No change on input line 1875.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1849.
+(Font)              No change on input line 1875.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1849.
+(Font)              No change on input line 1875.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1849.
+(Font)              No change on input line 1875.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1764,36 +1688,36 @@ eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/RankvsClust_Est_modelPOMM_K5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1879.
+(Font)              No change on input line 1905.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1879.
+(Font)              No change on input line 1905.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1879.
+(Font)              No change on input line 1905.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1879.
+(Font)              No change on input line 1905.
 
-Overfull \hbox (66.85806pt too wide) detected at line 1915
+Overfull \hbox (66.85806pt too wide) detected at line 1941
 [] \OT1/cmr/m/n/10.95 = []  [] = []
  []
 
-[41
+[45
 
 ]
-Overfull \hbox (56.93561pt too wide) in paragraph at lines 1973--1985
+Overfull \hbox (56.93561pt too wide) in paragraph at lines 1999--2011
  [][][][] 
  []
 
 
-Overfull \hbox (48.72206pt too wide) in paragraph at lines 1993--2005
+Overfull \hbox (48.72206pt too wide) in paragraph at lines 2019--2031
  [][][][] 
  []
 
 
-Overfull \hbox (18.61055pt too wide) in paragraph at lines 2014--2026
+Overfull \hbox (18.61055pt too wide) in paragraph at lines 2040--2052
  [][][][] 
  []
 
-[42] [43] [44]
+[46] [47] [48]
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
 ing_S/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png Graphic file (type
  eps)
@@ -1849,55 +1773,55 @@ Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
 /processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2099.
+(Font)              No change on input line 2125.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2099.
+(Font)              No change on input line 2125.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2099.
+(Font)              No change on input line 2125.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2099.
+(Font)              No change on input line 2125.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (56.78612pt too wide) in paragraph at lines 2156--2167
+Overfull \hbox (56.78612pt too wide) in paragraph at lines 2182--2193
  [][][][] 
  []
 
 
-Overfull \hbox (43.25699pt too wide) in paragraph at lines 2175--2186
+Overfull \hbox (43.25699pt too wide) in paragraph at lines 2201--2212
  [][][][] 
- []
-
-[45
-
-] [46] [47]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 2195.
- [48
-
-]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2318.
-
-Overfull \hbox (5.27441pt too wide) detected at line 2379
-[]
  []
 
 [49
 
 ] [50] [51]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 2221.
+ [52
+
+]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2414.
+(Font)              No change on input line 2344.
+
+Overfull \hbox (5.27441pt too wide) detected at line 2405
+[]
+ []
+
+[53
+
+] [54] [55]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2425.
+(Font)              No change on input line 2440.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2425.
+(Font)              No change on input line 2451.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2425.
+(Font)              No change on input line 2451.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2425.
+(Font)              No change on input line 2451.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2451.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/LevelSets/level_appendix_sigma0.01.png Graphic file (type ep
 s)
@@ -1935,29 +1859,29 @@ ps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/LevelSets/general_appendix_sigma0.5.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2467.
+(Font)              No change on input line 2493.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2467.
+(Font)              No change on input line 2493.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2467.
+(Font)              No change on input line 2493.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2467.
+(Font)              No change on input line 2493.
 
-Overfull \hbox (13.44827pt too wide) detected at line 2486
+Overfull \hbox (13.44827pt too wide) detected at line 2512
 []
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [52
+ [56
 
 ]
-Overfull \hbox (71.0944pt too wide) detected at line 2494
+Overfull \hbox (71.0944pt too wide) detected at line 2520
 []
  []
 
-[53] [54] (./Draft.aux)
+[57] [58] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1966,12 +1890,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 8238 strings out of 478716
- 298210 string characters out of 5858226
- 456799 words of memory out of 5000000
- 26120 multiletter control sequences out of 15000+600000
+ 8130 strings out of 478716
+ 289228 string characters out of 5858226
+ 457205 words of memory out of 5000000
+ 26036 multiletter control sequences out of 15000+600000
  488235 words of font info for 113 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
- 69i,15n,76p,2110b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 69i,15n,76p,1290b,574s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (54 pages, 189244 bytes).
+Output written on Draft.dvi (58 pages, 184744 bytes).
