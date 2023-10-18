@@ -1,23 +1,26 @@
 \contentsline {section}{\tocsection {}{1}{Introduction}}{2}{}%
-\contentsline {section}{\tocsection {}{2}{The Unordered model specification}}{3}{}%
-\contentsline {subsection}{\tocsubsection {}{2.1}{Prior Specification}}{3}{}%
-\contentsline {section}{\tocsection {}{3}{Connection with Image Recognition}}{4}{}%
-\contentsline {section}{\tocsection {}{4}{The WST model}}{6}{}%
-\contentsline {section}{\tocsection {}{5}{The SST model}}{6}{}%
-\contentsline {section}{\tocsection {}{6}{The LST model}}{7}{}%
+\contentsline {section}{\tocsection {}{2}{Literature Review}}{3}{}%
+\contentsline {section}{\tocsection {}{3}{The Unordered model specification}}{3}{}%
+\contentsline {subsection}{\tocsubsection {}{3.1}{Prior Specification}}{3}{}%
+\contentsline {section}{\tocsection {}{4}{Connection with Image Recognition}}{4}{}%
+\contentsline {section}{\tocsection {}{5}{The WST model}}{6}{}%
+\contentsline {section}{\tocsection {}{6}{The SST model}}{6}{}%
 \contentsline {section}{\tocsection {}{7}{Estimation}}{8}{}%
-\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and Inference}}{13}{}%
-\contentsline {section}{\tocsection {}{9}{Simulation Study from the Unordered Model N=100}}{14}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Unordered Model check}}{20}{}%
-\contentsline {section}{\tocsection {}{10}{Simulation Study from the WST Model N=100}}{22}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{10.0.1}{WST Model check}}{29}{}%
-\contentsline {section}{\tocsection {}{11}{Simulation Study from the POMM Model N=100}}{31}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{33}{}%
-\contentsline {section}{\tocsection {}{12}{Application to Tennis Data}}{36}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{POMM model check}}{37}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Fixing $\sigma $=0.01}}{40}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{12.2.1}{Montecarlo algorithm}}{43}{}%
-\contentsline {section}{\tocsection {}{13}{Appendix I: Estimation Details}}{44}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{Updating z}}{44}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{Updating $\mathbf {P}$}}{44}{}%
-\contentsline {section}{\tocsection {}{14}{Appendix II: Limiting case for $\sigma $}}{47}{}%
+\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and Inference}}{14}{}%
+\contentsline {section}{\tocsection {}{9}{Simulation Study from the Unordered Model N=100}}{15}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Unordered Model check}}{21}{}%
+\contentsline {section}{\tocsection {}{10}{Simulation Study from the WST Model N=100}}{23}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{10.0.1}{WST Model check}}{30}{}%
+\contentsline {section}{\tocsection {}{11}{Simulation Study from the POMM Model N=100}}{32}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{34}{}%
+\contentsline {section}{\tocsection {}{12}{Exploratory analysis of the Tennis Data}}{37}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Clustering as network}}{37}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Clustering as a distance matrix}}{39}{}%
+\contentsline {section}{\tocsection {}{13}{Application to Tennis Data}}{41}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{POMM model check}}{42}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{Fixing $\sigma $=0.01}}{45}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{13.2.1}{Montecarlo algorithm}}{48}{}%
+\contentsline {section}{\tocsection {}{14}{Appendix I: Estimation Details}}{49}{}%
+\contentsline {subsection}{\tocsubsection {}{14.1}{Updating z}}{49}{}%
+\contentsline {subsection}{\tocsubsection {}{14.2}{Updating $\mathbf {P}$}}{49}{}%
+\contentsline {section}{\tocsection {}{15}{Appendix II: Limiting case for $\sigma $}}{52}{}%

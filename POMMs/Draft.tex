@@ -51,13 +51,18 @@ For example, if we work under the Strong Stochastic Transitivity (SST) axiom, we
 
 However, assuming the SST axiom and imposing it over the poset defined on $P$ lets emerge an interesting structure, meaning that of the Level Sets $L_{(k)}$. Each Level Set is defined as the set of entries on a specific diagonal of the upper triangular matrix $P$, starting from $L_{(0)}$ which is the main diagonal, $L_{(1)}$ is the diagonal above and so on, until $L_{(K-1)}$. We impose that $L_{(0)}$ is always equal to $\frac{1}{2}$, since we assume that individuals within the same block have equal probability of being preferred.
 
-We proceed to specify over each Level Set a prior probability distribution, which governs the probability law of the entries within that diagonal. The probability distribution is a truncated normal distribution $TRUNCNORM(\mu^{(k)}| \alpha, \beta_{\max}, \sigma)$. 
+We proceed to specify over each Level Set a prior probability distribution, which governs the probability law of the entries within that diagonal. The probability distribution is a truncated normal distribution $TRUNCNORM(\mu_{(k)}| \alpha, \beta_{\max}, \sigma)$. 
 
-Each distribution is endowed with a specific and increasing $\mu^{(k)}| \alpha, \beta_{\max}$, which effectively induces a hierarchical model, given that  $\alpha, \beta_{\max}$ are parameters common to each level set. While $\alpha$ specifies the rate of increase of the Level Sets' means $\{ \mu^{(k)} \ , k=0,\ldots,K-1 \}$, $\beta_{\max}$ specifies the maximum attainable probability within the matrix $P$. 
+Each distribution is endowed with a specific and increasing $\mu_{(k)}| \alpha, \beta_{\max}$, which effectively induces a hierarchical model, given that  $\alpha, \beta_{\max}$ are parameters common to each level set. While $\alpha$ specifies the rate of increase of the Level Sets' means $\{ \mu_{(k)} \ , k=0,\ldots,K-1 \}$, $\beta_{\max}$ specifies the maximum attainable probability within the matrix $P$. 
 
 The last and most important hyperparameter $\sigma$ is common to each distribution over the level sets. As $\sigma$ increases, the truncated normals become more and more flat, and therefore we are back to a case where the entries of $P$ are not distributed in a way that is not significantly different from a uniform.
 
 This model should therefore encompass the unordered one, for values of $\sigma$ that are large enough.
+\section{Literature Review}
+
+The present work lies at the intersections of at least three well defined streams of literature. The first one is the prolific literature on Stochastic Block Models. 
+The second one is the ranking literature, based on the Bradley Terry model
+The final one is the partial order literature
 
 \section{The Unordered model specification}
 
@@ -181,7 +186,18 @@ z \neq y_i, y_j \text { such that } y_i \prec z \prec y_j \text {. }
 $$
 We saw above that the correspondence is many-to-one. Given a finite poset, one may construct a class of directed acyclic graphs; the correspondence described above is in a sense the minimal directed acyclic graph since it has the smallest possible directed edge set. However, if one starts with a directed acyclic graph, the corresponding poset is unique. From the point of view of image modeling, we arc more interested in the directed-acyclic-graph description because we are able to specify directly the spatial relations between pixel locations.
 
-[to be finished]
+Let us introduce the notion of level set (also known as indifference set [ref:shah2016]). Imagine to partition the $\frac{K*(K-1)}{2}+K$ elements of the upper triangular $P$ matrix into the union of $K$ disjoin level sets $\{L_{(k)}\}_{k=0}^{K-1}$ of sizes $\left| L_{(k)} \right|$ such that $\sum_{k=0}^{K-1}\left| L_{(k)} \right| =\frac{K*(K-1)}{2}+K$. We write that the pair $(i,j) \sim (i^\prime,j^\prime)$ of they belong to the same level set. 
+
+$L_{(0)}$ corresponds to the main diagonal, and it has size $K$. $L_{(1)}$ corresponds to the diagonal above the main one, and it has size $K-1$, and so on up to $L_{(K-1)}$, which just a single element, corresponding to the upper-right entry of the matrix $P$.
+
+We say that a matrix $P^\prime$ respects the level set partition $\{L_{(k)}\}_{k=0}^{K-1}$  if
+\begin{equation}\label{eqn:levelsets}
+p(P^\prime) = p(P) \ \text{for all quadruples} \ \left(i,j,i^\prime,j^\prime \right) \ \text{such that} \  i\sim i^\prime \ \text{and} \ i \sim j^\prime
+\end{equation}
+
+In the literature we typically have the level sets defined directly over the $p_{ij}$ that is, the probability of individual $i$ to be preferred over individual $j$, without any block partition. If instead, a block partition is introduced, this satisfies the definition of level set \eqref{eqn:levelsets}, and it has a very natural interpretation in the context of ranking. For instance, in buying cars, frugal customers may be indifferent between high-priced cars; or in ranking news items, people from a certain country may be indifferent to the domestic news from other countries
+
+What we are doing here is somewhat a grouping of the blocks, which as we said can be seen as level sets, again into a higher-tier level sets. The interpretation is not as straightforward, but it induces a kind of regularity among the relations between blocks, meaning that the probability of block 1 to be preferred to block 2 is drawn from the same distribution of the probability of block 2 being preferred to block 3, since they belong to the same diagonal of $P$, i.e. the same level set.
 
 \section{The WST model}
 
@@ -199,7 +215,7 @@ We leave everything the same, but we force the upper triangular entries to be gr
 We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L_{(k)}$, where $L_{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
 
 \[
-p_{ij}^{(k)} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu^{(k)}, \sigma^{2(k)}; 0.5, \beta_{\max})
+p_{ij}^{(k)} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu_{(k)}, \sigma^{2}; 0.5, \beta_{\max})
 \]
 
 The full prior is given by:
@@ -208,11 +224,19 @@ p(P) = \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2
 \]
 Here:
 \begin{itemize}
-\item $\mu^{(k)}$ is the mean, which corresponds to the midpoint of the level set $L_{(k)}$, defined as $\mu^{(k)} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
+\item $\mu_{(k)}$ is the mean, which corresponds to the midpoint of the level set $L_{(k)}$, defined as $\mu_{k} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
 \item $\sigma^{2}$ is the variance parameter constant across the level sets $L_{(1)},\ldots,L_{(k)}$.
 \item $0.5$ and $\beta_{\max}$ are the lower and upper truncation bounds.
 \end{itemize}
 
+Let us provide a physical interpretation of $\alpha$
+\begin{itemize}
+    \item For \(\alpha\) values exceeding 1, a convex power-law function emerges, engendering a steady but accelerating increase in the level set truncations toward \(\beta_{\max}\).
+    
+    \item When \(\alpha\) is between 0 and 1, the power-law function becomes concave, promptly pushing values toward \(\beta_{\max}\). This reflects a pronounced bias toward higher probabilities.
+    
+    \item Notably, in the limit as \(\alpha\) converges to 1, the power-law function becomes linear, leading to a constant increment in the level set truncations.
+\end{itemize}
 
 
 
@@ -241,48 +265,6 @@ When $\sigma^2 \rightarrow \infty$, the joint distribution of the level sets col
 
 
 
-\section{The LST model}
-
-
-
-The latent skill variables for clusters are denoted by $s_c$ for cluster $c$. We model these latent skills using a Gaussian Process (GP) prior:
-
-\[
-s_c \sim \mathcal{GP}(0, k(\cdot, \cdot))
-\]
-
-Here, $\mathcal{GP}$ is the Gaussian Process distribution, and $k(\cdot, \cdot)$ is the covariance (kernel) function that captures the relationships between clusters.
-
-The victory probability for a player from cluster $A$ against a player from cluster $B$ is modeled using a logistic function $f$ that takes the difference in latent skills into account:
-
-\[
-p_{A,B} = f(s_A - s_B) = \frac{1}{1 + \exp(-\beta \cdot (s_A - s_B))}
-\]
-
-Where $\beta$ is a parameter that controls the slope of the logistic function and affects how fast the probability changes with the difference in skills.
-
-The likelihood of observing $y_{ij}$ victories out of $n_{ij}$ matches between clusters $i$ and $j$ is given by a binomial distribution:
-
-\[
-y_{ij} \sim \text{Binomial}(n_{ij}, p_{i,j})
-\]
-
-The complete model, combining the Gaussian Process prior on latent skills and the logistic function for victory probabilities, can be written as:
-
-\begin{align*}
-&\text{For each cluster } c: \\
-&s_c \sim \mathcal{GP}(0, k(\cdot, \cdot)) \\
-&\text{For each match between clusters } i \text{ and } j: \\
-&p_{i,j} = \frac{1}{1 + \exp(-\beta \cdot (s_i - s_j))} \\
-&y_{ij} \sim \text{Binomial}(n_{ij}, p_{i,j})
-\end{align*}
-
-
-
-
-
-
-
 
 
 
@@ -290,14 +272,26 @@ The complete model, combining the Gaussian Process prior on latent skills and th
 
 
 \clearpage
+
 \section{Estimation}
 
 For the moment, we want to infer just $\theta = \{ z, P, \alpha, \sigma^2 \}$, meaning that we treat $K$ as a known constant. We report below the posterior distribution that we want to estimate:
 \begin{align}\label{eqn:general_posterior}
-p(z,\alpha,\sigma^2,P\mid y) &= \frac{p( y \mid \alpha,\sigma^2,P) \cdot p(P \mid \alpha, \sigma^2) \cdot p(\alpha) \cdot p(\sigma^2)}{\int p( y, \alpha,\sigma^2,P) dz \ d\alpha \ d\sigma^2 \ dP} \\
-&\propto p( y \mid \alpha,\sigma^2,P) \cdot p(P \mid \alpha, \sigma^2) \cdot p(\alpha) \cdot p(\sigma^2) \nonumber
+p(z,\alpha,\sigma^2,P\mid y) &= \frac{p( y \mid \alpha,\sigma^2,P) \cdot p(z \mid \gamma) \cdot p(\alpha)  \cdot p(\sigma^2) \cdot p(P \mid \alpha, \sigma^2) }{\int p( y, \alpha,\sigma^2,P) dz \ d\alpha \ d\sigma^2 \ dP} \nonumber \\
+&\propto p( y \mid \alpha,\sigma^2,P)  \cdot p(z \mid \gamma) \cdot p(\alpha)  \cdot p(\sigma^2) \cdot p(P \mid \alpha, \sigma^2) \nonumber\\
+&= \prod_{i =2 }^{N-1} \prod_{j =i}^{N} \operatorname{Binomial}\left(y_{ij} \mid n_{ij}, p_{z_i z_j} \right)  \cdot \operatorname{DirichletMultinomial} \left(z \mid n,\gamma \right) \nonumber\\
+&\cdot \operatorname{Unif}\left(\alpha \mid 0, 3\right) - \operatorname{Unif} \left( \sigma^{2} \mid 0, 1\right) \nonumber \\
+&\cdot \prod_{k=1}^{K-1} \operatorname{TruncatedNormal}\left( L_{(k)} \mid \mu_k, \sigma^{2}, 0.5, \beta_{\max} \right) \nonumber \\
+&= \prod_{i =2 }^{N-1} \prod_{j =i}^{N} \binom{n_{ij}}{y_{ij}} (p_{z_i z_j})^{y_{ij}}(1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \frac{\Gamma(\sum_{k=1}^K \gamma_k)}{\prod_{k=1}^K \Gamma(\gamma_k)}\frac{\prod_{k=1}^K \Gamma(n^{\prime}_k+\gamma_k)}{\Gamma(\sum_{k=1}^K (n_k+\gamma_k)}  \\
+&\cdot \mathbb{I}_{0 \leq \alpha \leq 3} \cdot \frac{1}{3} \cdot \mathbb{I}_{0 \leq \sigma^2 \leq 1} \nonumber  \nonumber \\
+&\cdot \prod_{k=1}^{K-1} \prod_{\{i^\star, j^\star\}}  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{i^\star j^\star} -  \mu_k}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \mu_k}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \mu_k}{\sigma}\right)^2 }dt}  \mathbb{I}_{0.5 \leq p_{i^\star j^\star} \leq \beta_{\max}}\nonumber
 \end{align}
 
+ 
+ where $\{i^\star, j^\star\}$ is the set of entries in $P$ such that $ j-i=k $, that is they belong to the diagonal $k$, and in turn the level set $L_{(k)}$. On the other hand,$\mu_k$, the mean for each level set is equal to 
+ \[ \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right]
+ \]
+ 
 The estimation strategy for \eqref{eqn:general_posterior} is a Metropolis-within-Gibbs MCMC algorithm. MCMC techniques are designed precisely for scenarios like ours, where direct estimation of the posterior is infeasible or analytically intractable. By generating a sequence of samples through a carefully constructed Markov chain, MCMC allows us to navigate the complex parameter space in a data-driven manner.
 
 Referencing Muller's (1991) work, we present here below an hybrid version of a classical Metropolis-within-Gibbs algorithm that has some self-tuning, or adaptive, features in the variance of the proposal distribution, the parameter $\tau^2_{\theta}$
@@ -475,9 +469,9 @@ While algorithmic methods produce a single estimated partition, our model offers
 We obtain the point estimate $\hat{z}$ from the MCMC samples in two ways. The first one is via the MAP estimate, meaning that partition which maximises the a posteriori distribution. 
 
 \begin{align}
-\hat{z}_{\mathrm{MAP}}(y) &= \underset{\theta}{\operatorname{arg\,max}} \ f(\theta \mid y) \nonumber \\
-& = \underset{\theta}{\operatorname{arg\,max}} \frac{f(y \mid \theta) , g(\theta)}{\int_{\Theta} f(x \mid \vartheta) , g(\vartheta) \, d\vartheta} \nonumber \\
-& = \underset{\theta}{\operatorname{arg\,max}} \ f(x \mid \theta) \, g(\theta)
+\hat{z}_{\mathrm{MAP}}(y) &= \underset{z}{\operatorname{arg\,max}} \ f(z \mid y) \nonumber \\
+& = \underset{z}{\operatorname{arg\,max}} \frac{f(y \mid z) , g(z)}{\int_{Z} f(x \mid z) , g(z) \, d z} \nonumber \\
+& = \underset{z}{\operatorname{arg\,max}} \ f(x \mid z) \, g(z)
 \end{align}
 
 The second one is the partition that minimises the lowest averaged variation of information (VI distance) from the other clusterings, denoted in the following as $\hat{z}_{lb VI}$.
@@ -1638,6 +1632,161 @@ $\alpha$ &59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 
 
 \clearpage
 
+\section{Exploratory analysis of the Tennis Data}
+
+In this section we check if there any evidence in the dataset to support the hypothesis that players can be separated into ordered blocks etc. 
+
+We will use two main approaches, one based on the graph-representation of the tennis data, the other one based on a distance matrix of the same data.
+
+\subsection{Clustering as network}
+The first one consists in representing the games between players $(i,j)$ as a directed and weighted network.
+
+We show below a plot of the network itself clustered according to 3 different methods.
+\begin{figure}[h]
+    \centering
+    \subfigure[Poisson SBM clustered Graph]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/SBM_clustered_graph.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Bernoulli SBM clustered Graph]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/sbm_binary_g.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Spectral clustering algorithm Graph]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/spectral_clust_g.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\\[2ex]\subfigure[Ranking coloured according to the Poisson SBM]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_vs_clust_SBM.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Ranking coloured according to the Bernoulli SBM]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/sbm_binary_rank.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[Ranking coloured according to the Spectral clustering]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }
+    \caption{At the top row, we present a network plot where nodes represent players. The size of each node is directly proportional to the total number of victories achieved by that player. The colors of the nodes indicate the clusters assigned by different algorithms.
+\\
+In the row below, there is a bar plot displaying information for 95 players. Along the x-axis, each player is represented, and on the y-axis, the height of each bar corresponds to the percentage of victories for that particular player. The bars are color-coded based on the cluster assignment of the player.
+\\
+Each column provides the results obtained from applying three different algorithms: Poisson SBM, Bernoulli SBM, and Spectral clustering.}
+    \label{fig:all_images}
+\end{figure}
+
+This table summarizes the outcomes of various graph-clustering algorithms. For each fitted model, we report the estimated number of clusters ($\hat{K}$), the average number of clusters in 50 randomly rewired Erdos networks with fixed node degrees ($\overline{K}_{degree}$), and with fixed graph density ($\overline{K}_{desnity}$). Additionally, we provide the correlation ($\rho$) between the identified clusters and the player rankings.
+
+
+
+\begin{table}[htbp]
+\centering
+\caption{{\large Graph-Clustering Algorithm Results} \\
+{\small 50 MonteCarlo Erdos-Renyi simulated graphs to estimate $\overline{\rho(\hat{z},R)}$}}
+\begin{tabular}{ccccccccccccc}
+\toprule
+\multirow{1}{*}{Fitted Model} & $\hat{K}$ & $\overline{K}_{degree}$ & $\overline{K}_{desnity}$& $\rho(\hat{z},R)$ &$\overline{\rho(\hat{z},R)_{degree}} $& $\overline{\rho(\hat{z},ranking)_{density}}$  \\
+\midrule
+Poisson SBM & $3$ & $2$ & $1$ & $-0.38$ & $0.42$ & NA \\
+Bernoulli SBM & $3$ & $2$ & $1$ & $0.78$ & $0.74$ & NA \\
+Spectral Clustering & $3$ & $2.45$ & $3$ & $0.09$ & $0.33$ & $-0.003$ \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\clearpage
+
+\subsection{Clustering as a distance matrix}
+
+\begin{figure}[h]
+    \centering
+    \subfigure[Spectral clustering- Euclidean Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_euc.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Spectral clustering- Manhattan Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_man.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Spectral clustering- Jaccard Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_spectral_jac.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\\[2ex]\subfigure[Ranking coloured according to Spectral clustering- Euclidean Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_euc.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Ranking coloured according to Spectral clustering- Manhattan Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_man.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[Ranking coloured according to Spectral clustering- Jaccard Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_spectral_jac.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }
+    \caption{This figure presents a set of visualizations for clustering tennis data using three different distance metrics and hierarchical algorithms. The first row displays the distance matrices computed using various distances, rearranged according to the clustering method applied.
+(a) Spectral clustering with Euclidean Distance Matrix.
+(b) Spectral clustering with Manhattan Distance Matrix.
+(c) Spectral clustering with Jaccard Distance Matrix.
+The second row depicts the ranking of players, color-coded according to the clusters identified by spectral clustering using the respective distance matrices.
+(d) Ranking colored according to Spectral clustering with Euclidean Distance Matrix.
+(e) Ranking colored according to Spectral clustering with Manhattan Distance Matrix.
+(f) Ranking colored according to Spectral clustering with Jaccard Distance Matrix.}
+    \label{fig:all_images}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{
+{\large Graph-clustering algorithms} \\ 
+{\small }
+} 
+\begin{tabular}{ccccccccc}
+\toprule
+\multirow{1}{*}{Fitted Model} &$\hat{K}_{sil}$ & $\rho(\hat{z},R)$  \\
+\midrule
+Hierarchical  - Euclidean &$\underset{1=0.649, 2= 0.448, 3 = 0.811}{3}$  & -0.02 \\
+Hierarchical  - Manhattan  &$\underset{1=0.741,2=0.537,3=0.347}{3}$  &-0.26 \\
+Hierarchical  - Jaccard  &$\underset{1=0.477=0.392=0}{3}$  & 0.24 \\
+Spectral  - Euclidean  &$\underset{1=0.638=0.337=0.508}{3}$  & 0.78 &\\
+Spectral  - Manhattan  &$\underset{1=0.467, 2= 0.600, 3 = 0.326}{3}$ & 0.37    \\
+Spectral  - Jaccard  &$\underset{1=0.384, 2= 0.558, 3 = 0.325}{3}$ & 0.36    \\
+\bottomrule
+\end{tabular}
+\label{table:simulations_from_simple}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \subfigure[Hierarchical clustering- Euclidean Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_euc.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Hierarchical clustering- Manhattan Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_man.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Hierarchical clustering- Jaccard Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/dist_hier_jac.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\\[2ex]\subfigure[Ranking coloured according to Hierarchical clustering- Euclidean Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_euc.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[Ranking coloured according to Hierarchical clustering- Manhattan Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=750,natheight=433]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_man.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[Ranking coloured according to Hierarchical clustering- Jaccard Distance Matrix]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=461]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/rank_hier_jac.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }
+    \caption{Clustering Tennis data via 3 different distances matrix-hierarchical algorithms}
+    \label{fig:all_images}
+\end{figure}
+
+\clearpage
+
 \section{Application to Tennis Data}
 
 
@@ -2323,7 +2472,7 @@ In \eqref{table:ks_test_appendix} we see that with values of $\sigma$ equal to 0
 
 
 \begin{align}
-&\lim_{\sigma \rightarrow \infty} \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu^{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu^{(k)}}{\sigma}\right)^2 }dt} = \\
+&\lim_{\sigma \rightarrow \infty} \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu_{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu_{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu_{(k)}}{\sigma}\right)^2 }dt} = \\
 &\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt} 
 \end{align}
 
