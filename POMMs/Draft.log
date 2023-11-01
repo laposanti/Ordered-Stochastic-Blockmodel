@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  18 OCT 2023 15:39
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  26 OCT 2023 00:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -166,42 +166,69 @@ File: dvips.def 2017/06/20 v3.1d Graphics/color driver for dvips
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 )
+(/usr/local/texlive/2022/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2020/01/04 v1.0e Color table columns (DPC)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen176
+\ar@mcellbox=\box70
+\extrarowheight=\dimen177
+\NC@list=\toks30
+\extratabsurround=\skip57
+\backup@length=\skip58
+\ar@cellbox=\box71
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2021/12/07 v1.3c Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: dvips.def on input line 149.
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
+))
+\everycr=\toks31
+\minrowclearance=\skip59
+)
 (/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/lscape.sty
 Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen176
-\lightrulewidth=\dimen177
-\cmidrulewidth=\dimen178
-\belowrulesep=\dimen179
-\belowbottomsep=\dimen180
-\aboverulesep=\dimen181
-\abovetopsep=\dimen182
-\cmidrulesep=\dimen183
-\cmidrulekern=\dimen184
-\defaultaddspace=\dimen185
+\heavyrulewidth=\dimen178
+\lightrulewidth=\dimen179
+\cmidrulewidth=\dimen180
+\belowrulesep=\dimen181
+\belowbottomsep=\dimen182
+\aboverulesep=\dimen183
+\abovetopsep=\dimen184
+\cmidrulesep=\dimen185
+\cmidrulekern=\dimen186
+\defaultaddspace=\dimen187
 \@cmidla=\count274
 \@cmidlb=\count275
-\@aboverulesep=\dimen186
-\@belowrulesep=\dimen187
+\@aboverulesep=\dimen188
+\@belowrulesep=\dimen189
 \@thisruleclass=\count276
 \@lastruleclass=\count277
-\@thisrulewidth=\dimen188
+\@thisrulewidth=\dimen190
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2022/03/01 v3.6b Customizing captions (AR)
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2022/03/17 v2.3b caption3 kernel (AR)
-\caption@tempdima=\dimen189
-\captionmargin=\dimen190
-\caption@leftmargin=\dimen191
-\caption@rightmargin=\dimen192
-\caption@width=\dimen193
-\caption@indent=\dimen194
-\caption@parindent=\dimen195
-\caption@hangindent=\dimen196
+\caption@tempdima=\dimen191
+\captionmargin=\dimen192
+\caption@leftmargin=\dimen193
+\caption@rightmargin=\dimen194
+\caption@width=\dimen195
+\caption@indent=\dimen196
+\caption@parindent=\dimen197
+\caption@hangindent=\dimen198
 Package caption Info: AMS or SMF document class detected.
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/caption/caption-ams-smf.sto
@@ -213,22 +240,22 @@ e AMS and SMF document classes (AR)
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2021-09-01 v4.17 Multi-page Table package (DPC)
-\LTleft=\skip57
-\LTright=\skip58
-\LTpre=\skip59
-\LTpost=\skip60
+\LTleft=\skip60
+\LTright=\skip61
+\LTpre=\skip62
+\LTpost=\skip63
 \LTchunksize=\count280
-\LTcapwidth=\dimen197
-\LT@head=\box70
-\LT@firsthead=\box71
-\LT@foot=\box72
-\LT@lastfoot=\box73
-\LT@gbox=\box74
+\LTcapwidth=\dimen256
+\LT@head=\box72
+\LT@firsthead=\box73
+\LT@foot=\box74
+\LT@lastfoot=\box75
+\LT@gbox=\box76
 \LT@cols=\count281
 \LT@rows=\count282
 \c@LT@tables=\count283
 \c@LT@chunks=\count284
-\LT@p@ftn=\toks30
+\LT@p@ftn=\toks32
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/epstopdf-pkg/epstopdf.sty
 Package: epstopdf 2020-01-24 v2.11 Conversion with epstopdf on the fly (HO)
@@ -266,8 +293,8 @@ orted.
 
 )) (/usr/local/texlive/2022/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2020-07-07 v1.5u LaTeX2e package for verbatim enhancements
-\every@verbatim=\toks31
-\verbatim@line=\toks32
+\every@verbatim=\toks33
+\verbatim@line=\toks34
 \verbatim@in@stream=\read2
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/graphics/rotating.sty
@@ -277,43 +304,41 @@ Package: rotating 2016/08/11 v2.16d rotated objects in LaTeX
 Package: ifthen 2020/11/24 v1.1c Standard LaTeX ifthen package (DPC)
 )
 \c@r@tfl@t=\count285
-\rotFPtop=\skip61
-\rotFPbot=\skip62
-\rot@float@box=\box75
-\rot@mess@toks=\toks33
+\rotFPtop=\skip64
+\rotFPbot=\skip65
+\rot@float@box=\box77
+\rot@mess@toks=\toks35
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
-\multirow@colwidth=\skip63
+\multirow@colwidth=\skip66
 \multirow@cntb=\count286
-\multirow@dima=\skip64
-\bigstrutjot=\dimen198
+\multirow@dima=\skip67
+\bigstrutjot=\dimen257
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/tools/multicol.sty
 Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \c@tracingmulticols=\count287
-\mult@box=\box76
-\multicol@leftmargin=\dimen256
+\mult@box=\box78
+\multicol@leftmargin=\dimen258
 \c@unbalance=\count288
 \c@collectmore=\count289
 \doublecol@number=\count290
 \multicoltolerance=\count291
 \multicolpretolerance=\count292
-\full@width=\dimen257
-\page@free=\dimen258
-\premulticols=\dimen259
-\postmulticols=\dimen260
-\multicolsep=\skip65
-\multicolbaselineskip=\skip66
-\partial@page=\box77
-\last@line=\box78
-\maxbalancingoverflow=\dimen261
-\mult@rightbox=\box79
-\mult@grightbox=\box80
-\mult@firstbox=\box81
-\mult@gfirstbox=\box82
-\@tempa=\box83
-\@tempa=\box84
+\full@width=\dimen259
+\page@free=\dimen260
+\premulticols=\dimen261
+\postmulticols=\dimen262
+\multicolsep=\skip68
+\multicolbaselineskip=\skip69
+\partial@page=\box79
+\last@line=\box80
+\maxbalancingoverflow=\dimen263
+\mult@rightbox=\box81
+\mult@grightbox=\box82
+\mult@firstbox=\box83
+\mult@gfirstbox=\box84
 \@tempa=\box85
 \@tempa=\box86
 \@tempa=\box87
@@ -348,24 +373,26 @@ Package: multicol 2021/10/28 v1.9b multicolumn formatting (FMi)
 \@tempa=\box116
 \@tempa=\box117
 \@tempa=\box118
+\@tempa=\box119
+\@tempa=\box120
 \c@minrows=\count293
 \c@columnbadness=\count294
 \c@finalcolumnbadness=\count295
-\last@try=\dimen262
-\multicolovershoot=\dimen263
-\multicolundershoot=\dimen264
-\mult@nat@firstbox=\box119
-\colbreak@box=\box120
+\last@try=\dimen264
+\multicolovershoot=\dimen265
+\multicolundershoot=\dimen266
+\mult@nat@firstbox=\box121
+\colbreak@box=\box122
 \mc@col@check@num=\count296
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/subfigure/subfigure.sty
 Package: subfigure 2002/03/15 v2.1.5 subfigure package
-\subfigtopskip=\skip67
-\subfigcapskip=\skip68
-\subfigcaptopadj=\dimen265
-\subfigbottomskip=\skip69
-\subfigcapmargin=\dimen266
-\subfiglabelskip=\skip70
+\subfigtopskip=\skip70
+\subfigcapskip=\skip71
+\subfigcaptopadj=\dimen267
+\subfigbottomskip=\skip72
+\subfigcapmargin=\dimen268
+\subfiglabelskip=\skip73
 \c@subfigure=\count297
 \c@lofdepth=\count298
 \c@subtable=\count299
@@ -375,23 +402,321 @@ Package: subfigure 2002/03/15 v2.1.5 subfigure package
 * Local config file subfigure.cfg used *
 ****************************************
 (/usr/local/texlive/2022/texmf-dist/tex/latex/subfigure/subfigure.cfg)
-\subfig@top=\skip71
-\subfig@bottom=\skip72
+\subfig@top=\skip74
+\subfig@bottom=\skip75
 )
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+\pgfutil@everybye=\toks36
+\pgfutil@tempdima=\dimen269
+\pgfutil@tempdimb=\dimen270
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-li
+sts.tex))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box123
+) (/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/pgf.revision.tex)
+Package: pgfrcs 2021/05/15 v3.1.9a (3.1.9a)
+))
+Package: pgf 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2021/05/15 v3.1.9a (3.1.9a)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks37
+\pgfkeys@temptoks=\toks38
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex
+\pgfkeys@tmptoks=\toks39
+))
+\pgf@x=\dimen271
+\pgf@y=\dimen272
+\pgf@xa=\dimen273
+\pgf@ya=\dimen274
+\pgf@xb=\dimen275
+\pgf@yb=\dimen276
+\pgf@xc=\dimen277
+\pgf@yc=\dimen278
+\pgf@xd=\dimen279
+\pgf@yd=\dimen280
+\w@pgf@writea=\write3
+\r@pgf@reada=\read3
+\c@pgf@counta=\count301
+\c@pgf@countb=\count302
+\c@pgf@countc=\count303
+\c@pgf@countd=\count304
+\t@pgf@toka=\toks40
+\t@pgf@tokb=\toks41
+\t@pgf@tokc=\toks42
+\pgf@sys@id@count=\count305
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2021/05/15 v3.1.9a (3.1.9a)
+)
+Driver file for pgf: pgfsys-dvips.def
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-dvips.de
+f
+File: pgfsys-dvips.def 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+ostscript.def
+File: pgfsys-common-postscript.def 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@objectcount=\count306
+)))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex
+File: pgfsyssoftpath.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfsyssoftpath@smallbuffer@items=\count307
+\pgfsyssoftpath@bigbuffer@items=\count308
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex
+File: pgfsysprotocol.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)) (/usr/local/texlive/2022/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2022/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: dvips.def on input line 227.
+LaTeX Info: Redefining \color on input line 711.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2021/05/15 v3.1.9a (3.1.9a)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen281
+\pgfmath@count=\count309
+\pgfmath@box=\box124
+\pgfmath@toks=\toks43
+\pgfmath@stack@operand=\toks44
+\pgfmath@stack@operation=\toks45
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integ
+erarithmetics.code.tex)))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count310
+)) (/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex
+File: pgfcorepoints.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@picminx=\dimen282
+\pgf@picmaxx=\dimen283
+\pgf@picminy=\dimen284
+\pgf@picmaxy=\dimen285
+\pgf@pathminx=\dimen286
+\pgf@pathmaxx=\dimen287
+\pgf@pathminy=\dimen288
+\pgf@pathmaxy=\dimen289
+\pgf@xx=\dimen290
+\pgf@xy=\dimen291
+\pgf@yx=\dimen292
+\pgf@yy=\dimen293
+\pgf@zx=\dimen294
+\pgf@zy=\dimen295
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex
+File: pgfcorepathconstruct.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@path@lastx=\dimen296
+\pgf@path@lasty=\dimen297
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex
+File: pgfcorepathusage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@shorten@end@additional=\dimen298
+\pgf@shorten@start@additional=\dimen299
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex
+File: pgfcorescopes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfpic=\box125
+\pgf@hbox=\box126
+\pgf@layerbox@main=\box127
+\pgf@picture@serial@count=\count311
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex
+File: pgfcoregraphicstate.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgflinewidth=\dimen300
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex
+File: pgfcoretransformations.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@pt@x=\dimen301
+\pgf@pt@y=\dimen302
+\pgf@pt@temp=\dimen303
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex
+File: pgfcorequick.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex
+File: pgfcoreobjects.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex
+File: pgfcorepathprocessing.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex
+File: pgfcorearrows.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfarrowsep=\dimen304
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex
+File: pgfcoreshade.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@max=\dimen305
+\pgf@sys@shading@range@num=\count312
+\pgf@shadingcount=\count313
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+File: pgfcoreimage.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex
+File: pgfcoreexternal.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfexternal@startupbox=\box128
+))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex
+File: pgfcorelayers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex
+File: pgfcoretransparency.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex
+File: pgfcorepatterns.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.
+tex
+File: pgfcorerdf.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfnodeparttextbox=\box129
+)
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@nodesepstart=\dimen306
+\pgf@nodesepend=\dimen307
+)
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2021/05/15 v3.1.9a (3.1.9a)
+))
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2022/texmf-dist/tex/latex/pgf/math/pgfmath.sty
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
+\pgffor@iter=\dimen308
+\pgffor@skip=\dimen309
+\pgffor@stack=\toks46
+\pgffor@toks=\toks47
+))
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2021/05/15 v3.1.9a (3.1.9a)
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgf@plot@mark@count=\count314
+\pgfplotmarksize=\dimen310
+)
+\tikz@lastx=\dimen311
+\tikz@lasty=\dimen312
+\tikz@lastxsaved=\dimen313
+\tikz@lastysaved=\dimen314
+\tikz@lastmovetox=\dimen315
+\tikz@lastmovetoy=\dimen316
+\tikzleveldistance=\dimen317
+\tikzsiblingdistance=\dimen318
+\tikz@figbox=\box130
+\tikz@figbox@bg=\box131
+\tikz@tempbox=\box132
+\tikz@tempbox@bg=\box133
+\tikztreelevel=\count315
+\tikznumberofchildren=\count316
+\tikznumberofcurrentchild=\count317
+\tikz@fig@count=\count318
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+\pgfmatrixcurrentrow=\count319
+\pgfmatrixcurrentcolumn=\count320
+\pgf@matrix@numberofcolumns=\count321
+)
+\tikz@expandcount=\count322
+
+(/usr/local/texlive/2022/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2021/05/15 v3.1.9a (3.1.9a)
+)))
 (/usr/local/texlive/2022/texmf-dist/tex/latex/algorithms/algorithm.sty
 Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
 nment
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count301
-\float@exts=\toks34
-\float@box=\box121
-\@float@everytoks=\toks35
-\@floatcapt=\box122
+\c@float@type=\count323
+\float@exts=\toks48
+\float@box=\box134
+\@float@everytoks=\toks49
+\@floatcapt=\box135
 )
-\@float@every@algorithm=\toks36
-\c@algorithm=\count302
+\@float@every@algorithm=\toks50
+\c@algorithm=\count324
 )
 (/usr/local/texlive/2022/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
 Package: algpseudocode 
@@ -400,37 +725,133 @@ Package: algpseudocode
 Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
 
 Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
-\c@ALG@line=\count303
-\c@ALG@rem=\count304
-\c@ALG@nested=\count305
-\ALG@tlm=\skip73
-\ALG@thistlm=\skip74
-\c@ALG@Lnr=\count306
-\c@ALG@blocknr=\count307
-\c@ALG@storecount=\count308
-\c@ALG@tmpcounter=\count309
-\ALG@tmplength=\skip75
+\c@ALG@line=\count325
+\c@ALG@rem=\count326
+\c@ALG@nested=\count327
+\ALG@tlm=\skip76
+\ALG@thistlm=\skip77
+\c@ALG@Lnr=\count328
+\c@ALG@blocknr=\count329
+\c@ALG@storecount=\count330
+\c@ALG@tmpcounter=\count331
+\ALG@tmplength=\skip78
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
 )
-\c@proposition=\count310
-\c@definition=\count311
+\c@proposition=\count332
+\c@definition=\count333
  (/usr/local/texlive/2022/texmf-dist/tex/latex/l3backend/l3backend-dvips.def
 File: l3backend-dvips.def 2022-02-07 L3 backend support: dvips
-\l__pdf_internal_box=\box123
-\g__pdf_backend_object_int=\count312
-\l__pdf_backend_content_box=\box124
-\l__pdf_backend_model_box=\box125
-\g__pdf_backend_annotation_int=\count313
-\g__pdf_backend_link_int=\count314
-\g__pdf_backend_link_sf_int=\count315
+\l__pdf_internal_box=\box136
+\g__pdf_backend_object_int=\count334
+\l__pdf_backend_content_box=\box137
+\l__pdf_backend_model_box=\box138
+\g__pdf_backend_annotation_int=\count335
+\g__pdf_backend_link_int=\count336
+\g__pdf_backend_link_sf_int=\count337
 )
 (./Draft.aux
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
 
 LaTeX Warning: Label `eqn_general_proposal' multiply defined.
 
 
 LaTeX Warning: Label `eqn_acc_reject' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
 
 
 LaTeX Warning: Label `fig:M4000' multiply defined.
@@ -452,6 +873,18 @@ LaTeX Warning: Label `sub@fig:M10000' multiply defined.
 
 
 LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label ` ' multiply defined.
+
+
+LaTeX Warning: Label ` ' multiply defined.
+
+
+LaTeX Warning: Label ` ' multiply defined.
+
+
+LaTeX Warning: Label ` ' multiply defined.
 
 
 LaTeX Warning: Label ` ' multiply defined.
@@ -705,34 +1138,34 @@ LaTeX Warning: Label `sub@fig:Joint_K9' multiply defined.
 )
 \openout1 = `Draft.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for JY2/mc/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
-LaTeX Font Info:    Checking defaults for JT2/mc/m/n on input line 31.
-LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for JY2/mc/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for JT2/mc/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 8.65997pt on input line 31.
+(Font)              scaled to size 8.65997pt on input line 39.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 8.65997pt on input line 31.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 31.
+(Font)              scaled to size 8.65997pt on input line 39.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 39.
 
  (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 31.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 39.
 
 
 (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -782,77 +1215,180 @@ Package caption Info: rotating package is loaded.
 Package caption Info: subfigure package is loaded.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `JT2/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JT2/gt/m/n' tried instead on input line 32.
+(Font)              Font shape `JT2/gt/m/n' tried instead on input line 40.
 LaTeX Font Info:    Font shape `JT2/gt/m/n' will be
-(Font)              scaled to size 10.53629pt on input line 32.
+(Font)              scaled to size 10.53629pt on input line 40.
 LaTeX Font Info:    Font shape `JY2/mc/bx/n' in size <10.95> not available
-(Font)              Font shape `JY2/gt/m/n' tried instead on input line 32.
+(Font)              Font shape `JY2/gt/m/n' tried instead on input line 40.
 LaTeX Font Info:    Font shape `JY2/gt/m/n' will be
-(Font)              scaled to size 10.53629pt on input line 32.
+(Font)              scaled to size 10.53629pt on input line 40.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 35.
+(Font)              No change on input line 43.
 
 (./Draft.toc)
-\tf@toc=\write3
-\openout3 = `Draft.toc'.
+\tf@toc=\write4
+\openout4 = `Draft.toc'.
 
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 37.
+(Font)              scaled to size 7.69775pt on input line 45.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 7.69775pt on input line 37.
+(Font)              scaled to size 7.69775pt on input line 45.
  [1]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 39.
+(Font)              No change on input line 47.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 61.
+(Font)              No change on input line 69.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 67.
+(Font)              No change on input line 75.
 
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 73.
+(amsmath)                 on input line 81.
 
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 5.77332pt on input line 86.
+(Font)              scaled to size 5.77332pt on input line 94.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 5.77332pt on input line 86.
+(Font)              scaled to size 5.77332pt on input line 94.
 [3]
-Overfull \hbox (6.17139pt too wide) in paragraph at lines 105--106
+Overfull \hbox (6.17139pt too wide) in paragraph at lines 113--114
 []\OT1/cmr/m/n/10.95 Finally, we as-sume that the num-ber of clus-ters $\OML/cm
 m/m/it/10.95 K$ \OT1/cmr/m/n/10.95 fol-low a Pois-son dis-tri-bu-tion $[](\OML/
 cmm/m/it/10.95 ^^U \OT1/cmr/m/n/10.95 =
  []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 107.
+(Font)              No change on input line 115.
 LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 1
-20.
+28.
 (/usr/local/texlive/2022/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 120.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 128.
  [4] [5]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 202.
+(Font)              No change on input line 210.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 212.
+(Font)              No change on input line 220.
  [6]
 [7]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 276.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha0.1.png Graphic file (type eps)
 
-Overfull \hbox (12.62291pt too wide) detected at line 288
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha0.1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha3.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha3.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.4alpha0.1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.4alpha0.1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.4alpha1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.4alpha1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.4alpha3.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.4alpha3.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 321.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 321.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 321.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 321.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[8] [9]
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha0.1phi1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha0.1phi1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha1phi1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha1phi1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha3phi1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha3phi1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha0.1phi0.5.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha0.1phi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha1phi0.5.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha1phi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha3phi0.5.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha3phi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha0.1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha0.1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha1.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha1.png>
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
+ation/plot_sigma0.01alpha3.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
+/plot_sigma0.01alpha3.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 382.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 382.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 382.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 382.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[10
+
+] [11]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 397.
+
+Overfull \hbox (12.62291pt too wide) detected at line 409
 []
  []
 
 
-Underfull \hbox (badness 5119) in paragraph at lines 310--311
+Underfull \hbox (badness 5119) in paragraph at lines 431--432
 [] \OT1/cmtt/m/n/10.95 1. Compute the difference $\OMS/cmsy/m/n/10.95 f\OML/cmm
 /m/it/10.95 d[]\OMS/cmsy/m/n/10.95 g$ \OT1/cmtt/m/n/10.95 between each label $\
 OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 = 1\OML/cmm/m/it/10.95 ; [] ; K$
@@ -861,56 +1397,56 @@ OML/cmm/m/it/10.95 k \OT1/cmr/m/n/10.95 = 1\OML/cmm/m/it/10.95 ; [] ; K$
 
 Underfull \vbox (badness 1418) has occurred while \output is active []
 
- [8
+ [12
 
 ]
-Overfull \hbox (3.35196pt too wide) detected at line 346
+Overfull \hbox (3.35196pt too wide) detected at line 467
 [] [] []
  []
 
 
-Underfull \vbox (badness 3557) has occurred while \output is active []
+Underfull \vbox (badness 5622) has occurred while \output is active []
 
- [9]
-Overfull \hbox (38.64063pt too wide) detected at line 383
+ [13]
+Overfull \hbox (38.64063pt too wide) detected at line 504
 []
  []
 
 
-Overfull \hbox (38.64063pt too wide) detected at line 415
+Overfull \hbox (38.64063pt too wide) detected at line 536
 []
  []
 
-[10] [11]
-Overfull \hbox (38.64063pt too wide) detected at line 454
+[14] [15]
+Overfull \hbox (38.64063pt too wide) detected at line 575
 []
  []
 
-[12] [13]
+[16] [17]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 465.
- [14
+(Font)              No change on input line 586.
+ [18
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 523.
+(Font)              No change on input line 644.
 
 
-LaTeX Warning: Reference `fig:simple_adjacency' on page 15 undefined on input l
-ine 529.
+LaTeX Warning: Reference `fig:simple_adjacency' on page 19 undefined on input l
+ine 650.
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 538.
+(Font)              No change on input line 659.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 538.
+(Font)              No change on input line 659.
 LaTeX Font Info:    Font shape `JT2/mc/m/n' will be
-(Font)              scaled to size 11.54663pt on input line 538.
+(Font)              scaled to size 11.54663pt on input line 659.
 LaTeX Font Info:    Font shape `JY2/mc/m/n' will be
-(Font)              scaled to size 11.54663pt on input line 538.
+(Font)              scaled to size 11.54663pt on input line 659.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 538.
+(Font)              No change on input line 659.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 538.
+(Font)              No change on input line 659.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/startin
 g_from_zero/processed/adjacency_SimplePOMM_K3_N100.png Graphic file (type eps)
 
@@ -927,13 +1463,13 @@ g_from_zero/processed/adjacency_SimplePOMM_K9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_fro
 m_zero/processed/adjacency_SimplePOMM_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 572.
+(Font)              No change on input line 693.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 572.
+(Font)              No change on input line 693.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 572.
+(Font)              No change on input line 693.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 572.
+(Font)              No change on input line 693.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/startin
 g_from_zero/processed/similarity_SimpleSimpleK3_N100.png Graphic file (type eps
 )
@@ -968,114 +1504,114 @@ g_from_zero/processed/similarity_SimplePOMMK9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_fro
 m_zero/processed/similarity_SimplePOMMK9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 607.
+(Font)              No change on input line 728.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 607.
+(Font)              No change on input line 728.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 607.
+(Font)              No change on input line 728.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 607.
+(Font)              No change on input line 728.
 
-Underfull \hbox (badness 10000) in paragraph at lines 607--607
-[]\OT1/cmr/m/sc/10.95 Figure 2.|\OT1/cmr/m/n/10.95 Co-Clustering Ma-tri-ces ob-
+Underfull \hbox (badness 10000) in paragraph at lines 728--728
+[]\OT1/cmr/m/sc/10.95 Figure 4.|\OT1/cmr/m/n/10.95 Co-Clustering Ma-tri-ces ob-
 tained via the Un-ordered
  []
 
-[15
+[19
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 624.
+(Font)              No change on input line 745.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 624.
+(Font)              No change on input line 745.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 624.
+(Font)              No change on input line 745.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 624.
- [16] [17]
-Overfull \hbox (53.7216pt too wide) detected at line 685
+(Font)              No change on input line 745.
+ [20] [21]
+Overfull \hbox (53.7216pt too wide) detected at line 806
 \OML/cmm/m/it/10.95 P[] \OT1/cmr/m/n/10.95 = []  [] = []
- []
-
-[18]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 746.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 746.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 746.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 746.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 777.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 777.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 777.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 777.
- [19] [20]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 806.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 816.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 816.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 816.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 816.
-
-Overfull \hbox (39.209pt too wide) in paragraph at lines 817--829
- [][][][] 
- []
-
-
-Overfull \hbox (28.97897pt too wide) in paragraph at lines 846--847
-[]\OT1/cmr/m/n/10.95 Finally, we com-pute the me-dian Gelman-Rubin sta-tis-tics
- for each en-try, $[]$.
- []
-
-[21
-
-]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 854.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 854.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 854.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 854.
-
-Overfull \hbox (44.37094pt too wide) in paragraph at lines 855--867
- [][][][] 
- []
-
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 885.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 885.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 885.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 885.
-
-Overfull \hbox (9.48555pt too wide) in paragraph at lines 886--898
- [][][][] 
  []
 
 [22]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 905.
+(Font)              No change on input line 867.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 920.
+(Font)              No change on input line 867.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 920.
+(Font)              No change on input line 867.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 920.
+(Font)              No change on input line 867.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 920.
+(Font)              No change on input line 898.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 898.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 898.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 898.
+ [23] [24]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 927.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 937.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 937.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 937.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 937.
+
+Overfull \hbox (39.20883pt too wide) in paragraph at lines 938--950
+ [][] 
+ []
+
+
+Overfull \hbox (28.97897pt too wide) in paragraph at lines 967--968
+[]\OT1/cmr/m/n/10.95 Finally, we com-pute the me-dian Gelman-Rubin sta-tis-tics
+ for each en-try, $[]$.
+ []
+
+[25
+
+]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 975.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 975.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 975.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 975.
+
+Overfull \hbox (44.37077pt too wide) in paragraph at lines 976--988
+ [][] 
+ []
+
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1006.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1006.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1006.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1006.
+
+Overfull \hbox (9.48535pt too wide) in paragraph at lines 1007--1019
+ [][] 
+ []
+
+[26]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1026.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1041.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1041.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1041.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1041.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/adjacency_SimplePOMM_K3_N100.png Graphic file (type eps)
 
@@ -1092,13 +1628,13 @@ _small_M/processed/adjacency_SimplePOMM_K9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/adjacency_SimplePOMM_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 954.
+(Font)              No change on input line 1075.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 954.
+(Font)              No change on input line 1075.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 954.
+(Font)              No change on input line 1075.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 954.
+(Font)              No change on input line 1075.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/similarity_SimpleSimpleK3_N100.png Graphic file (type eps)
 
@@ -1130,55 +1666,55 @@ _small_M/processed/similarity_SimplePOMMK9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/similarity_SimplePOMMK9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 989.
+(Font)              No change on input line 1110.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 989.
+(Font)              No change on input line 1110.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 989.
+(Font)              No change on input line 1110.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 989.
- [23
+(Font)              No change on input line 1110.
+ [27
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1006.
+(Font)              No change on input line 1127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1006.
+(Font)              No change on input line 1127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1006.
+(Font)              No change on input line 1127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1006.
- [24] [25]
-Overfull \hbox (53.7216pt too wide) detected at line 1067
+(Font)              No change on input line 1127.
+ [28] [29]
+Overfull \hbox (53.7216pt too wide) detected at line 1188
 \OML/cmm/m/it/10.95 P[] \OT1/cmr/m/n/10.95 = []  [] = []
  []
 
-[26]
+[30]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1125.
+(Font)              No change on input line 1246.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1125.
+(Font)              No change on input line 1246.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1125.
+(Font)              No change on input line 1246.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1125.
+(Font)              No change on input line 1246.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1156.
+(Font)              No change on input line 1277.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1156.
+(Font)              No change on input line 1277.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1156.
+(Font)              No change on input line 1277.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1156.
- [27]
+(Font)              No change on input line 1277.
+ [31]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1184.
+(Font)              No change on input line 1305.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1184.
+(Font)              No change on input line 1305.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1184.
+(Font)              No change on input line 1305.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1184.
+(Font)              No change on input line 1305.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/LevelSets/Density_K3_simple.png Graphic file (type eps)
 
@@ -1210,67 +1746,67 @@ _small_M/processed/LevelSets/Joint_K9.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/LevelSets/Joint_K9.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1229.
+(Font)              No change on input line 1350.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1229.
+(Font)              No change on input line 1350.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1229.
+(Font)              No change on input line 1350.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1229.
- [28] [29]
+(Font)              No change on input line 1350.
+ [32] [33]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 1243.
+(Font)              No change on input line 1364.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1253.
+(Font)              No change on input line 1374.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1253.
+(Font)              No change on input line 1374.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1253.
+(Font)              No change on input line 1374.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1253.
+(Font)              No change on input line 1374.
 
-Overfull \hbox (44.684pt too wide) in paragraph at lines 1254--1266
- [][][][] 
+Overfull \hbox (44.68384pt too wide) in paragraph at lines 1375--1387
+ [][] 
  []
 
 
-Overfull \hbox (28.97897pt too wide) in paragraph at lines 1283--1284
+Overfull \hbox (28.97897pt too wide) in paragraph at lines 1404--1405
 []\OT1/cmr/m/n/10.95 Finally, we com-pute the me-dian Gelman-Rubin sta-tis-tics
  for each en-try, $[]$.
  []
 
-[30
+[34
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1291.
+(Font)              No change on input line 1412.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1291.
+(Font)              No change on input line 1412.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1291.
+(Font)              No change on input line 1412.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1291.
+(Font)              No change on input line 1412.
 
-Overfull \hbox (60.79596pt too wide) in paragraph at lines 1292--1304
- [][][][] 
+Overfull \hbox (60.79579pt too wide) in paragraph at lines 1413--1425
+ [][] 
  []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1322.
+(Font)              No change on input line 1443.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1322.
+(Font)              No change on input line 1443.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1322.
+(Font)              No change on input line 1443.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1322.
+(Font)              No change on input line 1443.
 
-Overfull \hbox (4.01054pt too wide) in paragraph at lines 1323--1335
- [][][][] 
+Overfull \hbox (4.01035pt too wide) in paragraph at lines 1444--1456
+ [][] 
  []
 
-[31]
+[35]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1345.
+(Font)              No change on input line 1466.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/adjacency_POMMPOMM_K3_N100.png Graphic file (type eps)
 
@@ -1287,13 +1823,13 @@ _small_M/processed/adjacency_POMMPOMM_K9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/adjacency_POMMPOMM_K9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1362.
+(Font)              No change on input line 1483.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1362.
+(Font)              No change on input line 1483.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1362.
+(Font)              No change on input line 1483.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1362.
+(Font)              No change on input line 1483.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/similarity_POMMSimpleK3_N100.png Graphic file (type eps)
 
@@ -1325,240 +1861,210 @@ _small_M/processed/similarity_POMMPOMMK9_N100.png Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/similarity_POMMPOMMK9_N100.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1392.
+(Font)              No change on input line 1513.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1392.
+(Font)              No change on input line 1513.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1392.
+(Font)              No change on input line 1513.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1392.
- [32
+(Font)              No change on input line 1513.
+ [36
 
 ]
-Overfull \hbox (53.7216pt too wide) detected at line 1461
+Overfull \hbox (53.7216pt too wide) detected at line 1582
 \OML/cmm/m/it/10.95 P[] \OT1/cmr/m/n/10.95 = []  [] = []
  []
 
 
 Underfull \vbox (badness 2932) has occurred while \output is active []
 
- [33]
-Overfull \hbox (1.87721pt too wide) in paragraph at lines 1523--1536
- [][][][] 
+ [37]
+Overfull \hbox (1.87709pt too wide) in paragraph at lines 1644--1657
+ [][] 
  []
 
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1544.
+(Font)              No change on input line 1665.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1544.
+(Font)              No change on input line 1665.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1544.
+(Font)              No change on input line 1665.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1544.
+(Font)              No change on input line 1665.
 
-Overfull \hbox (62.97932pt too wide) in paragraph at lines 1545--1558
- [][][][] 
+Overfull \hbox (62.97917pt too wide) in paragraph at lines 1666--1679
+ [][] 
  []
 
 
-Overfull \hbox (51.4606pt too wide) in paragraph at lines 1571--1583
- [][][][] 
+Overfull \hbox (51.4604pt too wide) in paragraph at lines 1692--1704
+ [][] 
  []
 
 
-Overfull \hbox (51.4606pt too wide) in paragraph at lines 1591--1603
- [][][][] 
+Overfull \hbox (51.4604pt too wide) in paragraph at lines 1712--1724
+ [][] 
  []
 
-[34] [35] [36]
+[38] [39] [40]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1635.
+(Font)              No change on input line 1756.
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].pn
+g Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1765.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1765.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1765.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 1765.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [41
+
+]
+Overfull \hbox (49.10028pt too wide) in alignment at lines 1790--1802
+ [] [] [] [] [] [] 
+ []
+
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].pn
+g Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].png>
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png Grap
 hic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1656.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1656.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1656.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1656.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png Grap
 hic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1664.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1664.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1664.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1664.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png Grap
 hic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1672.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1672.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1672.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1672.
- [37
 
-]
-[38]
+LaTeX Warning: Float too large for page by 60.91542pt on input line 1839.
+
+[42] [43] [44]
+Overfull \hbox (49.10028pt too wide) in alignment at lines 1848--1859
+ [] [] [] [] [] [] 
+ []
+
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].p
+ng Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].png>
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1697.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1697.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1697.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1697.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1705.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1705.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1705.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1705.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1713.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1713.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1713.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1713.
 
-[39
+LaTeX Warning: Float too large for page by 60.91542pt on input line 1896.
 
-] [40]
+[45
+
+] [46] [47]
+Overfull \hbox (49.10028pt too wide) in alignment at lines 1904--1916
+ [] [] [] [] [] [] 
+ []
+
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].p
+ng Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].png>
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1740.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1740.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1740.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1740.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1748.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1748.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1748.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1748.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1756.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1756.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1756.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1756.
 
-[41
+LaTeX Warning: Float too large for page by 60.91542pt on input line 1953.
 
-] [42]
+[48
+
+] [49] [50]
+Overfull \hbox (49.10028pt too wide) in alignment at lines 1961--1973
+ [] [] [] [] [] [] 
+ []
+
+File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
+graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].p
+ng Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
+s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].png>
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1786.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1786.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1786.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1786.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1795.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1795.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1795.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1795.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
 graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png Gra
 phic file (type eps)
 
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
 s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png>
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1803.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1803.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1803.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1803.
 
-[43
+LaTeX Warning: Float too large for page by 60.91542pt on input line 2010.
 
-] [44]
+[51
+
+] [52] [53]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1816.
+(Font)              No change on input line 2020.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
 ults/processed_results/adjacency_Tennis_application_Est_model_Simple_K3_N95.png
  Graphic file (type eps)
@@ -1596,13 +2102,13 @@ raphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/adjacency_Tennis_application_Est_model_POMM_K5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1844.
+(Font)              No change on input line 2048.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1844.
+(Font)              No change on input line 2048.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1844.
+(Font)              No change on input line 2048.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1844.
+(Font)              No change on input line 2048.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/res
 ults/processed_results/similarity_Tennis_application_Est_model_SimpleK3_N95.png
  Graphic file (type eps)
@@ -1640,13 +2146,13 @@ raphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1875.
+(Font)              No change on input line 2079.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1875.
+(Font)              No change on input line 2079.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1875.
+(Font)              No change on input line 2079.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1875.
+(Font)              No change on input line 2079.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1688,36 +2194,37 @@ eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results/
 processed_results/RankvsClust_Est_modelPOMM_K5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1905.
+(Font)              No change on input line 2109.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1905.
+(Font)              No change on input line 2109.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1905.
+(Font)              No change on input line 2109.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 1905.
+(Font)              No change on input line 2109.
 
-Overfull \hbox (66.85806pt too wide) detected at line 1941
+Overfull \hbox (66.85806pt too wide) detected at line 2145
 [] \OT1/cmr/m/n/10.95 = []  [] = []
  []
 
-[45
+[54
+
 
 ]
-Overfull \hbox (56.93561pt too wide) in paragraph at lines 1999--2011
- [][][][] 
+Overfull \hbox (56.93541pt too wide) in paragraph at lines 2203--2215
+ [][] 
  []
 
 
-Overfull \hbox (48.72206pt too wide) in paragraph at lines 2019--2031
- [][][][] 
+Overfull \hbox (48.7219pt too wide) in paragraph at lines 2223--2235
+ [][] 
  []
 
 
-Overfull \hbox (18.61055pt too wide) in paragraph at lines 2040--2052
- [][][][] 
+Overfull \hbox (18.61035pt too wide) in paragraph at lines 2244--2256
+ [][] 
  []
 
-[46] [47] [48]
+[55] [56] [57]
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fix
 ing_S/processed_results/RankvsClust_Est_modelPOMM_K3_N95.png Graphic file (type
  eps)
@@ -1773,55 +2280,45 @@ Graphic file (type eps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S
 /processed_results/similarity_Tennis_application_Est_model_POMMK5_N95.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2125.
+(Font)              No change on input line 2329.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2125.
+(Font)              No change on input line 2329.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2125.
+(Font)              No change on input line 2329.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2125.
+(Font)              No change on input line 2329.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (56.78612pt too wide) in paragraph at lines 2182--2193
- [][][][] 
+Overfull \hbox (56.78592pt too wide) in paragraph at lines 2386--2397
+ [][] 
  []
 
 
-Overfull \hbox (43.25699pt too wide) in paragraph at lines 2201--2212
- [][][][] 
+Overfull \hbox (43.25679pt too wide) in paragraph at lines 2405--2416
+ [][] 
  []
 
-[49
+[58
 
-] [50] [51]
+] [59] [60]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 2221.
- [52
+(Font)              No change on input line 2425.
+ [61
 
 ]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2344.
-
-Overfull \hbox (5.27441pt too wide) detected at line 2405
-[]
- []
-
-[53
-
-] [54] [55]
+(Font)              No change on input line 2652.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2440.
+(Font)              No change on input line 2663.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2451.
+(Font)              No change on input line 2663.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2451.
+(Font)              No change on input line 2663.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2451.
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2451.
+(Font)              No change on input line 2663.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/LevelSets/level_appendix_sigma0.01.png Graphic file (type ep
 s)
@@ -1859,29 +2356,30 @@ ps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/LevelSets/general_appendix_sigma0.5.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2493.
+(Font)              No change on input line 2705.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2493.
+(Font)              No change on input line 2705.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2493.
+(Font)              No change on input line 2705.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2493.
+(Font)              No change on input line 2705.
 
-Overfull \hbox (13.44827pt too wide) detected at line 2512
+Overfull \hbox (12.66254pt too wide) detected at line 2724
 []
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [56
+ [62
+
 
 ]
-Overfull \hbox (71.0944pt too wide) detected at line 2520
+Overfull \hbox (71.0944pt too wide) detected at line 2732
 []
  []
 
-[57] [58] (./Draft.aux)
+[63] [64] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1890,12 +2388,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 8130 strings out of 478716
- 289228 string characters out of 5858226
- 457205 words of memory out of 5000000
- 26036 multiletter control sequences out of 15000+600000
+ 19139 strings out of 478716
+ 554267 string characters out of 5858226
+ 692666 words of memory out of 5000000
+ 36748 multiletter control sequences out of 15000+600000
  488235 words of font info for 113 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
- 69i,15n,76p,1290b,574s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,15n,89p,1290b,552s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (58 pages, 184744 bytes).
+Output written on Draft.dvi (64 pages, 224448 bytes).

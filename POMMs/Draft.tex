@@ -5,6 +5,8 @@
 %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage{graphicx}
 \usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{colortbl}
 \usepackage{lscape}
 \usepackage{booktabs}
 \usepackage{caption}
@@ -16,6 +18,8 @@
 \usepackage{multicol}
 \usepackage{booktabs}
 \usepackage{subfigure}
+\usepackage{tikz}
+
 
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -24,6 +28,10 @@
 \newtheorem{definition}{Definition}
 \newcommand{\vertgeq}{\rotatebox{90}{$\leq$}}
 \newcommand{\vertg}{\rotatebox{90}{$>$}}
+\newcommand{\tikzmark}[2]{
+    \tikz[overlay,remember picture,baseline] 
+    \node[anchor=base] (#1) {$#2$};
+}
 \title{Draft}
 \author{Lapo Santi}
 %\date{}                                           % Activate to display a given date or no date
@@ -211,56 +219,169 @@ We leave everything the same, but we force the upper triangular entries to be gr
 
 \section{The SST model}
 
+We want to model our matrix $P$ according to the SST axiom. If we assume that block 1 is the first ranked block, meaning the one having the highest chance of being preferred versus the others, this implies that the upper triangular entries of $P$ must be increasing as we move from the main diagonal towards the top-right corner. At the same time, we want some flexibility, in order to allow for the some variability within the same level set. 
 
-We consider a Partially Ordered Markov Model (POMM) for a set of entries $p_{ij} \in L_{(k)}$, where $L_{(k)}$ represents a level set. These entries are assumed to be identically and independently distributed according to a truncated normal distribution:
+In \eqref{eq_SST_3sets} we provide an example of a $\underset{4\times4}{P^{SST }}$ matrix, that is a connection probability matrix for $K=4$ which satisfies the SST condition.
 
-\[
-p_{ij}^{(k)} \mid (y^{(k)}, y^{(k+1)}) \sim \text{TruncatedNormal}(\mu_{(k)}, \sigma^{2}; 0.5, \beta_{\max})
-\]
+\vspace{.5cm}
+\begin{equation}
+\left[
+\begin{array}{ccccccc||c}
+\cellcolor{red!25} p_{11} &\leq & \cellcolor{green!25} p_{1,2} &\leq & \cellcolor{blue!25} p_{1,3} &\leq & \cellcolor{purple!25} p_{1,4} & \textcolor{purple!70!black}{L_{(3)} := \{p_{ij} \mid j-i = 3\}}\\
+\vertgeq  & &\vertgeq  & & \vertgeq  & & \vertgeq  &\\
+1-p_{1,2}&\leq & \cellcolor{red!25} p_{2,2} &\leq & \cellcolor{green!25} p_{2,3} &\leq & \cellcolor{blue!25} p_{2,4} &\textcolor{blue!70!black}{L_{(2)} := \{p_{ij} \mid j-i = 2\}}\\
+\vertgeq  & &\vertgeq  & & \vertgeq &  & \vertgeq & \\
+1-p_{1,3} &\leq &  1-p_{2,3} &\leq & \cellcolor{red!25} p_{3,3} &\leq & \cellcolor{green!25} p_{3,4} &\textcolor{green!70!black}{L_{(1)} := \{p_{ij} \mid j-i = 1\}}\\
+\vertgeq  & &\vertgeq  & & \vertgeq  & & \vertgeq  &\\
+1-p_{1,4} &\leq &  1-p_{2,4}& \leq &  1-p_{3,4}& \leq & \cellcolor{red!25} p_{4,4} &\textcolor{red!70!black}{L_{(0)}} := \{p_{ij} \mid j-i = 0\}\\
+\end{array}\right]  
+\label{eq_SST_3sets}
+\end{equation}
 
-The full prior is given by:
-\[
-p(P) = \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu}{\sigma}\right)^2 }dt}
-\]
-Here:
-\begin{itemize}
-\item $\mu_{(k)}$ is the mean, which corresponds to the midpoint of the level set $L_{(k)}$, defined as $\mu_{k} = \frac{y^{(k)}+y^{(k+1)}}{2}$.
-\item $\sigma^{2}$ is the variance parameter constant across the level sets $L_{(1)},\ldots,L_{(k)}$.
-\item $0.5$ and $\beta_{\max}$ are the lower and upper truncation bounds.
-\end{itemize}
+\vspace{.5cm}
 
-Let us provide a physical interpretation of $\alpha$
+The entries \(p_{ij} \in L_{(k)} \subset P\), where \(L_{(k)}\) denotes a level set, satisfy the condition \(j - i = k\). In other words, they correspond to the entries on the \(k\)-th diagonal above the main diagonal in the upper triangular matrix \(P\). Entries within the same level set \(L_{(k)}\) are bounded both above and below by the entries in \(L_{(k+1)}\) and \(L_{(k-1)}\) respectively. Additionally, we set the probabilities within the main diagonal to be 0.5, reflecting an equal chance of preference if two items belong to the same block. The maximum attainable probability is determined by the user and denoted as \(\beta_{\max}\). This constraint is imposed to prevent extreme probabilities, such as values near 0 or 1.
+
+Lastly, we assume that \(p_{ij} \in L_{(k)}\) for \(k = 1, \ldots, K-1\) are identically and independently distributed according to a truncated normal distribution. The truncations are set at 0.5 and \(\beta_{\max}\), with mean \(\mu_{(k)}\) and variance \(\sigma^2\) denoted as parameters:
+
+\begin{equation}
+p_{ij}^{(k)} \sim \operatorname{TruncatedNormal}(\mu_{(k)}, \sigma^{2}; 0.5, \beta_{\max})
+\end{equation}
+
+where $0.5 < \mu_{(1)} < \mu_{(2)} < \ldots < \mu_{(K-1)}< \beta_{max}$, so that the inequality constraints are respected. Going back to the $\underset{4\times4}{P^{SST }}$ matrix example, the prior structure will look as follows:
+
+\vspace{.5cm}
+\begin{equation}
+\left[
+\begin{array}{cccc || c}
+\cellcolor{red!25} p_{11} & \cellcolor{green!25} p_{12} & \cellcolor{blue!25} p_{13} & \cellcolor{purple!25} p_{14} &\textcolor{purple!70!black}{p_{ij}^{(3)} \sim \operatorname{TruncatedNormal}(\mu_{(3)}, \sigma^{2}; 0.5, \beta_{\max})}  \\
+1- p_{12} & \cellcolor{red!25} p_{22} & \cellcolor{green!25} p_{23} & \cellcolor{blue!25} p_{24} &\textcolor{blue!70!black}{p_{ij}^{(2)} \sim \operatorname{TruncatedNormal}(\mu_{(2)}, \sigma^{2}; 0.5, \beta_{\max})}\\
+1- p_{13}  & 1- p_{23}  & \cellcolor{red!25} p_{33} & \cellcolor{green!25} p_{34} & \textcolor{green!70!black}{p_{ij}^{(1)} \sim \operatorname{TruncatedNormal}(\mu_{(1)}, \sigma^{2}; 0.5, \beta_{\max})}\\
+1- p_{14} & 1- p_{24}  & 1- p_{34}  & \cellcolor{red!25} p_{44} &\textcolor{red!70!black}{p_{ii}^{(0)}=0.5}  \\
+\end{array}
+\right]
+\label{eq_matrix_example}
+\end{equation}
+
+\vspace{.5cm}
+
+To enforce the constraint $0.5 < \mu_{(1)} < \mu_{(2)} < \ldots < \mu_{(K-1)}< \beta_{max}$, we consider a power-law function $y_{(k)} = 0.5 + g(k)^\alpha \mathbb{I}\left(0.5,\beta_{\max}\right)$. This power law is monotonically increasing in $g(k)$, and it is flexible enough to account for different increasing rates by modulating accordingly the $\alpha$ values.
+
 \begin{itemize}
     \item For \(\alpha\) values exceeding 1, a convex power-law function emerges, engendering a steady but accelerating increase in the level set truncations toward \(\beta_{\max}\).
     
     \item When \(\alpha\) is between 0 and 1, the power-law function becomes concave, promptly pushing values toward \(\beta_{\max}\). This reflects a pronounced bias toward higher probabilities.
     
-    \item Notably, in the limit as \(\alpha\) converges to 1, the power-law function becomes linear, leading to a constant increment in the level set truncations.
+    \item Notably, as \(\alpha\) is equal to 1, the power-law function becomes linear, leading to a constant increment in the $\mu_{(k)}$ parameter.
 \end{itemize}
 
+We have that
+\begin{align}
+\mu_{(k)} &= \frac{y_{(k)}+y_{(k+1)}}{2}  \quad \text{where } \\ 
+y_{(k)} &= \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 \quad \text{for } k = 0, \ldots, K
+\end{align}
 
 
-
-We also place a uniform hyper-prior on the parameter $\alpha$:
+We place a uniform hyper-prior on the parameter $\alpha$ in order to estimate this important parameter, upon which the means of the level sets entries hinge:
 
 \[
 \alpha \sim \text{Uniform}(0, 3)
 \]
 
-which in turn, together with $\beta_{\max}$, it provides the truncations of the level sets as follows:
-\begin{equation}
-\label{eq:truncations}
-y^{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 \quad \text{for } k = 0, \ldots, K
-\end{equation}
-
-We also place a uniform hyper-prior on the parameter $\sigma^2$
+We also place a uniform hyper-prior on the parameter $\sigma^2$, which stays constant across the level sets:
 \[
 \sigma^2 \sim \text{Uniform}(0, 1)
 \]
-which is the variance of the level sets truncated normal distribution.
 
-Supposition:
-When $\sigma^2 \rightarrow \infty$, the joint distribution of the level sets collapses to a uniform and therefore we are back to a uniform distribution.
+\begin{figure}[h]
+    \centering
+    \subfigure[$\sigma^2 = 0.01,\alpha=0.1$]{%
+   \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha0.1.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.01,\alpha=1$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha1.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.01,\alpha=3$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha3.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[$\sigma^2 = 0.4,\alpha=0.1$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.4alpha0.1.png}%
+             \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=1$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.4alpha1.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=3$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.4alpha3.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+    \caption{In the upper triangular side of each box above, we have the density of the $p_{ij}$, estimated over $n=1000$ samples generated according to the combination of parameters $\sigma^2 ,\alpha$ reported below each box. $K$ is set to 5. In the lower triangular part of each box, we have tables with some summary statics, namely the mean, the interquartile range, and the standard deviation.}
+    \label{fig:all_images}
+\end{figure}
+
+\clearpage
+
+\subsection{Heteroskedastic variance}
+
+In the prior above, we are assuming that each entry of the $P$ matrix has the same dispersion around the mean. However, in applications like Tennis, we witness a self-reinforcing mechanism according to which stronger players tend to play more. Therefore, we collect more data on them, and our estimates are more precise. This phenomenon does not need to be circumstanced just to Tennis. We may also think about certain goods being preferred by customers, located in the best position in the supermarket, and therefore being bought ever more. This would also lead to less data on the less preferred goods, and therefore, to higher variance.
+
+To model also this aspect of the reality, we introduce another hyper parameter, namely $phi$, which allows the model to interpolate between a perfectly homoskedastic model to a perfectly heteroskedastic one. 
+
+The new distribution of the $p_{ij}$ will look like: 
+
+
+\begin{equation}
+p_{ij}^{(k)} \sim \operatorname{TruncatedNormal}(\mu_{(k)}, \tilde{\sigma}^{2}; 0.5, \beta_{\max})
+\end{equation}
+where 
+\[
+\tilde{\sigma}^{2} = \sigma^2 \left( \phi (j+i) + (1-\phi) \right)
+\]
+which will induce higher variance as we move from the top left corner of the $P$ matrix, where the higher ranked block is, towards the bottom right corner, where the least preferred block is.
+
+\begin{figure}[h]
+    \centering
+    \subfigure[$\sigma^2 = 0.01,\alpha=0.1,\phi=1$]{%
+   \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha0.1phi1.png}%
+        \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.01,\alpha=1,\phi=1$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha1phi1.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.01,\alpha=3,\phi=1$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha3phi1.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[$\sigma^2 = 0.4,\alpha=0.1,\phi=0.5$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha0.1phi0.5.png}%
+             \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=1,\phi=0.5$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha1phi0.5.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=3,\phi=0.5$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha3phi0.5.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }\\[2ex]\subfigure[$\sigma^2 = 0.4,\alpha=0.1,\phi=0$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha0.1.png}%
+             \label{fig:POMM_adjacency_K3}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=1,\phi=0$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha1.png}%
+        \label{fig:POMM_adjacency_K5}%
+    }\hfill
+    \subfigure[$\sigma^2 = 0.4,\alpha=3,\phi=0$]{%
+        \includegraphics[width=.33\textwidth,natwidth=800,natheight=569]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration/plot_sigma0.01alpha3.png}%
+        \label{fig:POMM_adjacency_K9}%
+    }
+
+    \caption{In the upper triangular side of each box above, we have the density of the $p_{ij}$, estimated over $n=1000$ samples generated according to the combination of parameters $\sigma^2 ,\alpha, \phi$ reported below each box. $K$ is set to 5. In the lower triangular part of each box, we have tables with some summary statics, namely the mean, the interquartile range, and the standard deviation.}
+    \label{fig:all_images}
+\end{figure}
 
 
 
@@ -1634,14 +1755,44 @@ $\alpha$ &59 & 85 & 29 & 0.8 & 0.71 & 0.88 & 16.32 & 15.41 & 6.33 & 1.26 & 1.35 
 
 \section{Exploratory analysis of the Tennis Data}
 
+\subsection{Overview of data}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].png}
+\caption{Adjacency matrix of the top 90 ranked players. Players on the $x$-axis are ordered in ascending rank order (from 1st to 90th), while one the $y$-axis they are sorted in descending order (from 90th to 1st). Each entry of the matrix above is coloured according to a scale of colours from white to red, which gets toward the red as the ratio $\hat{p}_{ij}= \frac{\text{victories}_{ij}}{\text{matches}_{ij}}$, where $i$ is the row index and $j$ is the column index, grows. 
+On the sides we have the marginal probabilities. On the $x$-axis, we have bars that are proportional to $\bar{p}_{ij^\star}=\frac{\sum_{i=1}^{90}  \text{victories}_{ij^\star}}{\sum_{i=1}^{90}\text{matches}_{i j^\star}}$
+On the $y$-axis, we have bars that are proportional to $\bar{p}_{i^\star j}=\frac{\sum_{j=1}^{90}  \text{victories}_{i^\star j}}{\sum_{j=1}^{90}\text{matches}_{i^\star j}}$}
+\label{fig:FullAdjacency_probabilities}
+\end{center}
+\end{figure}
+
+In figure \eqref{fig:FullAdjacency_probabilities} we have the adjacency matrix representing the interactions between the top 90 ranked players. The $x$-axis lists players in ascending rank order (from 1st to 90th), while the $y$-axis lists players in descending order (from 90th to 1st). Each cell in the matrix is shaded according to a color scale from white to red, indicating the ratio $\hat{p}_{ij} = \frac{\text{victories}_{ij}}{\text{matches}_{ij}}$. This ratio, where $i$ is the row index and $j$ is the column index, becomes redder as the player $i$ has more victories relative to matches against player $j$.
+
+The side margins display marginal probabilities. On the $x$-axis, we have bars proportional to $\bar{p}_{ij^\star} = \frac{\sum_{i=1}^{90} \text{victories}_{ij^\star}}{\sum_{i=1}^{90}\text{matches}_{ij^\star}}$, representing the average probability of player $i$ winning against player $j^\star$ across all players. 
+
+On the $y$-axis, we have bars proportional to $\bar{p}_{i^\star j} = \frac{\sum_{j=1}^{90} \text{victories}_{i^\star j}}{\sum_{j=1}^{90}\text{matches}_{i^\star j}}$, representing the average probability of player $i^\star$ winning against player $j$ across all players.
+
+
+
+
+
+
+
+
+
+
+
 \subsection{Focus on the top 10 Ranked Players}
+
+Here we take a closer look at the players ranked from 1 to 10.
 
 \begin{longtable}{lrrrrr}
 \caption*{
 {\large Range [1-10].csv}
 } \\
 \toprule
-Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+Range Rank players  & Mean $n_{\text{Matches}}$  & Mean $n_{\text{Victories}}$  & Median $\frac{n_{\text{Victories}}}{n_{\text{Matches}}}$ & IQR Median & sd Median\\
 \midrule
 Rank [1-10] & 6.5 & 3.0 & 0.3961039 & 0.3486111 & 0.2609968 \\
 Rank [21-30] & 7.0 & 5.5 & 0.8333333 & 0.4000000 & 0.1796782 \\
@@ -1651,162 +1802,215 @@ Rank [71-80] & 2.5 & 2.0 & 1.0000000 & 0.2500000 & 0.1872890 \\
 \end{longtable}
 
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Adjacency of 1-10th ranked players versus the other 1-90th players.]{%
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].png}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[Adjacency of 1-10th ranked players versus 1-10th players (upper-left quadrant), 21-30th players (upper-right quadrant),51-60th players (bottom-left quadrant),71-80th players (bottom-right quadrant)]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
+
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Bar plot comparing the performance of players ranked 1-10 with other player groups. The x-axis displays the 1st-10th ranked players repeated four times. Each panel provides data on the number of victories and total number of games played. These statistics are compared between the 1-10th ranked players and players ranked 21-30, 51-60, and 71-80.
+\
+In each panel, the red bar represents the total number of games played by each player in the 1-10 position against all players in one of the specific rank blocks mentioned above. The green bar corresponds to the number of victories achieved by the same player in these matchups.
+]{%
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png}
-\caption{ }
-\label{ }
-
-\end{center}
-\end{figure}
-\begin{figure}
-\begin{center}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[This box plot illustrates the distribution of the quantity $\frac{victories}{games}$ for players ranked 1-10 playing agains other players ranked 21-30, 51-60, and 71-80, arranged from left to right. 
+\
+The vertical axis represents the ratio of victories to games of the players in the group 1-10, providing insights into the performance of these players across various rank ranges. The boxes indicate the interquartile range (IQR) of the data, while the whiskers extend to the minimum and maximum values within 1.5 times the IQR. Outliers, if present, are shown as individual data points beyond this range.
+]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
+
 
 \clearpage
 
-\subsection{Focus on players ranked from the 21st to the 30th position}
+\subsection{Focus on the 21st-30th Ranked Players}
+
+Here we take a closer look at the players ranked from the 21st position to the 30th.
+
 \begin{longtable}{lrrrrr}
 \caption*{
-{\large Range [21-30].csv}
+{\large Range [1-10].csv}
 } \\
 \toprule
-Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+Range Rank players  & Mean $n_{\text{Matches}}$  & Mean $n_{\text{Victories}}$  & Median $\frac{n_{\text{Victories}}}{n_{\text{Matches}}}$ & IQR Median & sd Median\\
 \midrule
-Rank [1-10] & 6.5 & 1 & 0.2111111 & 0.1011905 & 0.1377395 \\
-Rank [21-30] & 2.5 & 1 & 0.5000000 & 0.6041667 & 0.3833937 \\
-Rank [51-60] & 4.0 & 2 & 0.6333333 & 0.5000000 & 0.2842113 \\
-Rank [71-80] & 3.0 & 2 & 1.0000000 & 0.5000000 & 0.2900085 \\
-\bottomrule
+Range [1-10] & 6.5 & 1 & 0.21 & 0.10& 0.14 \\
+Range [21-30] & 2.5 & 1 & 0.50 & 0.60 & 0.38 \\
+Range [51-60] & 4.0 & 2 & 0.63 & 0.50 & 0.28 \\
+Range [71-80] & 3.0 & 2 & 1.00 & 0.50 & 0.29 \\\bottomrule
 \end{longtable}
 
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Adjacency of 21-30th ranked players versus the other 1-90th players.]{%
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].png}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[Adjacency of 21-30th ranked players versus 1st-10th players (upper-left quadrant), 21-30th players (upper-right quadrant),51-60th players (bottom-left quadrant),71-80th players (bottom-right quadrant)]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
+
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Bar plot comparing the performance of players ranked 21-30 with other player groups. The x-axis displays the 21st-30th ranked players repeated four times. Each panel provides data on the number of victories and total number of games played. These statistics are compared between the 21st-30th ranked players and players ranked 1-10, 21-30, 51-60, and 71-80.
+\
+In each panel, the red bar represents the total number of games played by each player in the 21-30 position against all players in one of the specific rank blocks mentioned above. The green bar corresponds to the number of victories achieved by the same player in these matchups.
+]{%
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png}
-\caption{ }
-\label{ }
-
-\end{center}
-\end{figure}
-\begin{figure}
-\begin{center}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[This box plot illustrates the distribution of the quantity $\frac{victories}{games}$ for players ranked 21-30 playing agains other players ranked 1-10, 21-30, 51-60, and 71-80, arranged from left to right. 
+\
+The vertical axis represents the ratio of victories to games of the players in the group 21-30, providing insights into the performance of these players across various rank ranges. The boxes indicate the interquartile range (IQR) of the data, while the whiskers extend to the minimum and maximum values within 1.5 times the IQR. Outliers, if present, are shown as individual data points beyond this range.
+]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
 
 \clearpage
+\subsection{Focus on the 51st-60th Ranked Players}
 
-\subsection{Focus on players ranked from the 51st to the 60th position}
+Here we take a closer look at the players ranked from the 51th to the 60th position.
 
 \begin{longtable}{lrrrrr}
 \caption*{
 {\large Range [51-60].csv}
 } \\
 \toprule
-Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+Range Rank players  & Mean $n_{\text{Matches}}$  & Mean $n_{\text{Victories}}$  & Median $\frac{n_{\text{Victories}}}{n_{\text{Matches}}}$ & IQR Median & sd Median\\
 \midrule
-Rank [1-10] & 3.5 & 0.0 & 0.0000000 & 0.0000000 & 0.1883981 \\
-Rank [21-30] & 3.5 & 1.5 & 0.3666667 & 0.5750000 & 0.3473400 \\
-Rank [51-60] & 2.0 & 1.0 & 0.3750000 & 1.0000000 & 0.4779877 \\
-Rank [71-80] & 2.0 & 1.0 & 0.5000000 & 0.3333333 & 0.3227486 \\
+Range [1-10] & 3.5 & 0.0 & 0.00 & 0.00 & 0.19 \\
+Range [21-30] & 3.5 & 1.5 & 0.37 & 0.58 & 0.35 \\
+Range [51-60] & 2.0 & 1.0 & 0.38 & 1.00 & 0.48 \\
+Range [71-80] & 2.0 & 1.0 & 0.50 & 0.33 & 0.32 \\
 \bottomrule
 \end{longtable}
 
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Adjacency of 51-60th ranked players versus the other 1-90th players.]{%
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].png}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[Adjacency of 51-60th ranked players versus 1-10th players (upper-left quadrant), 21-30th players (upper-right quadrant),51-60th players (bottom-left quadrant),71-80th players (bottom-right quadrant)]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
+
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Bar plot comparing the performance of players ranked 51-60 with other player groups. The x-axis displays the 51st-60th ranked players repeated four times. Each panel provides data on the number of victories and total number of games played. These statistics are compared between the 51st-60th ranked players and players ranked 1-10, 21-30, 51-60, and 71-80.
+\
+In each panel, the red bar represents the total number of games played by each player in the 51-60 position against all players in one of the specific rank blocks mentioned above. The green bar corresponds to the number of victories achieved by the same player in these matchups.
+]{%
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png}
-\caption{ }
-\label{ }
-
-\end{center}
-\end{figure}
-\begin{figure}
-\begin{center}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[This box plot illustrates the distribution of the quantity $\frac{victories}{games}$ for players ranked 51-60 playing agains other players ranked 1-10,21-30, 51-60, and 71-80, arranged from left to right. 
+\
+The vertical axis represents the ratio of victories to games of the players in the group 51-60, providing insights into the performance of these players across various rank ranges. The boxes indicate the interquartile range (IQR) of the data, while the whiskers extend to the minimum and maximum values within 1.5 times the IQR. Outliers, if present, are shown as individual data points beyond this range.
+]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
-
 
 
 \clearpage
+\subsection{Focus on the 71st-80th Ranked Players}
 
-\subsection{Focus on players ranked from the 71st to the 80th position}
-
+Here we take a closer look at the players ranked from 1 to 10.
 
 \begin{longtable}{lrrrrr}
 \caption*{
-{\large Range [71-80].csv}
+{\large Performance of players ranked within the interval [71-80] vs other rank groups}
 } \\
 \toprule
-Range Rank players  & Mean games  & Mean Victories & Median & IQR & sd \\
+Range Rank players  & Mean $n_{\text{Matches}}$  & Mean $n_{\text{Victories}}$  & Median $\frac{n_{\text{Victories}}}{n_{\text{Matches}}}$ & IQR Median & sd Median\\
 \midrule
-Rank [1-10] & 3.0 & 0.0 & 0.0000000 & 0.2916667 & 0.3186585 \\
-Rank [21-30] & 3.0 & 0.5 & 0.1250000 & 0.3333333 & 0.2461117 \\
-Rank [51-60] & 1.5 & 1.0 & 0.5000000 & 1.0000000 & 0.4750731 \\
-Rank [71-80] & 1.0 & 0.0 & 0.3333333 & 0.6666667 & 0.4430534 \\
+Range [1-10] & 3.0 & 0.0 & 0.00 & 0.29 & 0.32 \\
+Range [21-30] & 3.0 & 0.5 & 0.13 & 0.33 & 0.25 \\
+Range [51-60] & 1.5 & 1.0 & 0.50 & 1.00 & 0.48 \\
+Range [71-80] & 1.0 & 0.0 & 0.33 & 0.67 & 0.44 \\
 \bottomrule
 \end{longtable}
 
-
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Adjacency of 71-80th ranked players versus the other 1-90th players.]{%
+\includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].png}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[Adjacency of 71-80th ranked players versus 1-10th players (upper-left quadrant), 21-30th players (upper-right quadrant),51-60th players (bottom-left quadrant),71-80th players (bottom-right quadrant)]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=1920,natheight=1080]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
 
 \begin{figure}
-\begin{center}
+\centering
+\subfigure[Bar plot comparing the performance of players ranked 71-80 with other player groups. The x-axis displays the 1st-10th ranked players repeated four times. Each panel provides data on the number of victories and total number of games played. These statistics are compared between the 1-10th ranked players and players ranked 21-30, 51-60, and 71-80.
+\
+In each panel, the red bar represents the total number of games played by each player in the 71-80 position against all players in one of the specific rank blocks mentioned above. The green bar corresponds to the number of victories achieved by the same player in these matchups.
+]{%
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png}
-\caption{ }
-\label{ }
-
-\end{center}
-\end{figure}
-\begin{figure}
-\begin{center}
+}%
+\label{ }%
+\hfill
+\\[2ex]
+\subfigure[This box plot illustrates the distribution of the quantity $\frac{victories}{games}$ for players ranked 71-80 playing agains other players ranked 21-30, 51-60, and 71-80, arranged from left to right. 
+\
+The vertical axis represents the ratio of victories to games of the players in the group 71-80, providing insights into the performance of these players across various rank ranges. The boxes indicate the interquartile range (IQR) of the data, while the whiskers extend to the minimum and maximum values within 1.5 times the IQR. Outliers, if present, are shown as individual data points beyond this range.
+]{%
+\centering
 \includegraphics[width=.95\textwidth,natwidth=817,natheight=441]{/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png}
-\caption{ }
+}%
 \label{ }
-\end{center}
 \end{figure}
 
 
-
+\clearpage
 
 
 
@@ -2341,6 +2545,13 @@ The interesting aspect of this methodology is that we could compute the discrepa
 
 \clearpage
 
+
+
+
+
+
+\begin{comment}
+
 \section{Appendix I: Estimation Details}
 
 
@@ -2393,7 +2604,7 @@ log(r) &= \log{ \left( \prod_{i<j}p_{z^{\prime}_i z^{\prime}_j}^{y_{ij}} \cdot (
 To update $P$ and $\alpha$ we propose a new label for each node, we evaluate the accept/reject move by computing the ratio $r$ as follows:
 
 \begin{align}
-r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{\prime y_{ij}} \cdot (1 - p^{\prime}_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{\prime (k+1)} - y^{\prime(k)}}\right)^{|L_{\prime(k)}|}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{y_{ij}} \cdot (1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{(k+1)} - y^{(k)}}\right)^{|L_{(k)}|}} \\
+r &= \frac{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{\prime y_{ij}} \cdot (1 - p^{\prime}_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y^{\prime (k+1)} - y^{\prime(k)}}\right)^{|L_{\prime(k)}|}}{\prod_{i<j}\binom{n_{ij}}{y_{ij}}p_{z_i z_j}^{y_{ij}} \cdot (1 - p_{z_i z_j})^{n_{ij} - y_{ij}} \cdot \prod_{k=1}^K  \left( \frac{1}{y_{(k+1)} - y_{(k)}}\right)^{|L_{(k)}|}} \\
 \end{align}
 
 
@@ -2401,7 +2612,7 @@ Passing to the log:
 
 \begin{align}
 log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p^{\prime}_{z_i z_j}) } \right)  - \sum_{k=1}^K |L_{\prime(k)}| \cdot \log{\left( y^{\prime(k+1)} - y^{\prime(k)} \right)}\\
- &\qquad - \sum_{i<j} \left(  y_{ij} \cdot \log{ p_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p_{z_i z_j}) } \right)  + \sum_{k=1}^K |L_{(k)}| \cdot \log{\left( y^{(k+1)} - y^{(k)} \right) }
+ &\qquad - \sum_{i<j} \left(  y_{ij} \cdot \log{ p_{z_i z_j} } + (n_{ij} - y_{ij}) \cdot \log{ (1 - p_{z_i z_j}) } \right)  + \sum_{k=1}^K |L_{(k)}| \cdot \log{\left( y_{(k+1)} - y_{(k)} \right) }
 \end{align}
 
 
@@ -2436,6 +2647,7 @@ log(r) &= \sum_{i<j} \left(  y_{ij} \cdot \log{ p^{\prime}_{z_i z_j} } + (n_{ij}
 \caption{Updating $P$ step}
 \end{algorithm}
 
+\end{comment}
 \clearpage
 \section{Appendix II: Limiting case for $\sigma$}
 
@@ -2499,13 +2711,13 @@ In \eqref{table:ks_test_appendix} we see that with values of $\sigma$ equal to 0
 
 \begin{align}
 &\lim_{\sigma \rightarrow \infty} \prod_{k=1}^K \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \mu_{(k)}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu_{(k)}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t- \mu_{(k)}}{\sigma}\right)^2 }dt} = \\
-&\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y^{(k)}+y^{(k+1)}}{2}}{\sigma}\right)^2 }dt} 
+&\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} -  \frac{y_{(k)}+y_{(k+1)}}{2}}{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y_{(k)}+y_{(k+1)}}{2}}{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \frac{y_{(k)}+y_{(k+1)}}{2}}{\sigma}\right)^2 }dt} 
 \end{align}
 
 
-If we substitute in the expression for $y^{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5$, we can simplify the following expression:
+If we substitute in the expression for $y_{(k)} = \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5$, we can simplify the following expression:
 \begin{align}
-\frac{y^{(k)} + y^{(k+1)}}{2} &= \frac{1}{2} \left[ \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 + \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k+1) \right)^\alpha + 0.5 \right] \\
+\frac{y_{(k)} + y_{(k+1)}}{2} &= \frac{1}{2} \left[ \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha + 0.5 + \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k+1) \right)^\alpha + 0.5 \right] \\
 &= \frac{1}{2} \left[ \left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times k \right)^\alpha  +\left( \frac{(\beta_{\max} - 0.5)^{(1/\alpha)}}{K} \times (k+1) \right)^\alpha + 1 \right] \\
 &=\left[\frac{1}{2} \left( \frac{(\beta_{\max} - 0.5)}{K^{\alpha}} \times k^{\alpha} \right)  +\left( \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times (k+1)^{\alpha} \right) + \frac{1}{2} \right] \\
 &=  \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} 
@@ -2516,7 +2728,7 @@ Substituting back in the simplified expression:
 \begin{align}
 &\lim_{\sigma \rightarrow \infty}  \prod_{k=1}^K  \frac{1}{\sigma} \frac{\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{p_{ij} - \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2}\right]  }{\sigma}\right)^2}}{\int_{-\infty}^\beta \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right] }{\sigma}\right)^2 }dt -\int_{-\infty}^{0.5} \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{t-  \left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right] }{\sigma}\right)^2 }dt} \\
 & \lim_{\sigma \rightarrow \infty} 
-\prod_{k=1}^K  \text{TruncatedNormal}(\left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right], \sigma^{2}; 0.5, \beta_{\max})
+\prod_{k=1}^K  \operatorname{TruncatedNormal}(\left[ \frac{(\beta_{\max} - 0.5)}{2K^{\alpha}} \times  \left(  k^{\alpha} + (k+1)^{\alpha} \right) +\frac{1}{2} \right], \sigma^{2}; 0.5, \beta_{\max})
 \end{align}
 
 

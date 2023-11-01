@@ -5,24 +5,23 @@
 \contentsline {section}{\tocsection {}{4}{Connection with Image Recognition}}{4}{}%
 \contentsline {section}{\tocsection {}{5}{The WST model}}{6}{}%
 \contentsline {section}{\tocsection {}{6}{The SST model}}{6}{}%
-\contentsline {section}{\tocsection {}{7}{Estimation}}{8}{}%
-\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and Inference}}{14}{}%
-\contentsline {section}{\tocsection {}{9}{Simulation Study from the Unordered Model N=100}}{15}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Unordered Model check}}{21}{}%
-\contentsline {section}{\tocsection {}{10}{Simulation Study from the WST Model N=100}}{23}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{10.0.1}{WST Model check}}{30}{}%
-\contentsline {section}{\tocsection {}{11}{Simulation Study from the POMM Model N=100}}{32}{}%
-\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{34}{}%
-\contentsline {section}{\tocsection {}{12}{Exploratory analysis of the Tennis Data}}{37}{}%
-\contentsline {subsection}{\tocsubsection {}{12.1}{Focus on the top 10 Ranked Players}}{37}{}%
-\contentsline {subsection}{\tocsubsection {}{12.2}{Focus on players ranked from the 21st to the 30th position}}{39}{}%
-\contentsline {subsection}{\tocsubsection {}{12.3}{Focus on players ranked from the 51st to the 60th position}}{41}{}%
-\contentsline {subsection}{\tocsubsection {}{12.4}{Focus on players ranked from the 71st to the 80th position}}{43}{}%
-\contentsline {section}{\tocsection {}{13}{Application to Tennis Data}}{45}{}%
-\contentsline {subsection}{\tocsubsection {}{13.1}{POMM model check}}{46}{}%
-\contentsline {subsection}{\tocsubsection {}{13.2}{Fixing $\sigma $=0.01}}{49}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{13.2.1}{Montecarlo algorithm}}{52}{}%
-\contentsline {section}{\tocsection {}{14}{Appendix I: Estimation Details}}{53}{}%
-\contentsline {subsection}{\tocsubsection {}{14.1}{Updating z}}{53}{}%
-\contentsline {subsection}{\tocsubsection {}{14.2}{Updating $\mathbf {P}$}}{53}{}%
-\contentsline {section}{\tocsection {}{15}{Appendix II: Limiting case for $\sigma $}}{56}{}%
+\contentsline {subsection}{\tocsubsection {}{6.1}{Heteroskedastic variance}}{10}{}%
+\contentsline {section}{\tocsection {}{7}{Estimation}}{12}{}%
+\contentsline {section}{\tocsection {}{8}{Point Estimate, Model Selection, and Inference}}{18}{}%
+\contentsline {section}{\tocsection {}{9}{Simulation Study from the Unordered Model N=100}}{19}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{9.0.1}{Unordered Model check}}{25}{}%
+\contentsline {section}{\tocsection {}{10}{Simulation Study from the WST Model N=100}}{27}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{10.0.1}{WST Model check}}{34}{}%
+\contentsline {section}{\tocsection {}{11}{Simulation Study from the POMM Model N=100}}{36}{}%
+\contentsline {subsection}{\tocsubsection {}{11.1}{POMM model check}}{38}{}%
+\contentsline {section}{\tocsection {}{12}{Exploratory analysis of the Tennis Data}}{41}{}%
+\contentsline {subsection}{\tocsubsection {}{12.1}{Overview of data}}{41}{}%
+\contentsline {subsection}{\tocsubsection {}{12.2}{Focus on the top 10 Ranked Players}}{42}{}%
+\contentsline {subsection}{\tocsubsection {}{12.3}{Focus on the 21st-30th Ranked Players}}{45}{}%
+\contentsline {subsection}{\tocsubsection {}{12.4}{Focus on the 51st-60th Ranked Players}}{48}{}%
+\contentsline {subsection}{\tocsubsection {}{12.5}{Focus on the 71st-80th Ranked Players}}{51}{}%
+\contentsline {section}{\tocsection {}{13}{Application to Tennis Data}}{54}{}%
+\contentsline {subsection}{\tocsubsection {}{13.1}{POMM model check}}{55}{}%
+\contentsline {subsection}{\tocsubsection {}{13.2}{Fixing $\sigma $=0.01}}{58}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{13.2.1}{Montecarlo algorithm}}{61}{}%
+\contentsline {section}{\tocsection {}{14}{Appendix II: Limiting case for $\sigma $}}{62}{}%

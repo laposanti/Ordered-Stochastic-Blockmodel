@@ -56,7 +56,7 @@ inverse_S <- function(S,truncations,K, beta_max,n_samples=1) {
   return(sigma_min)  # or sigma_max, they should be close at this point
 }
 
-simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncations, beta_max, diag0.5=T){
+simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncations, beta_max, diag0.5=T, phi=0){
   
   #we map the proportions on a desired scale
   
@@ -74,8 +74,8 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncat
       # Calculate the likelihood using a truncated distribution
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
       #sigma <- (ub - lb) *overlap
-      sigma <- S
-      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
+      sigma <- S*((1-phi)+ phi*(j+i))
+      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sqrt(sigma))
     }
   }
   P_matrix[lower.tri(P_matrix)] = 1 - t(P_matrix)[lower.tri(P_matrix)]
@@ -84,7 +84,6 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncat
   }
   
   return(P_matrix)}
-
 
 
 #--------------------------#

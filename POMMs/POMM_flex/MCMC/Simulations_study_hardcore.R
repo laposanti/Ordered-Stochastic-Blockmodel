@@ -38,7 +38,7 @@ cores <- 5
 # Iterate over parameter combinations using foreach
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_small_M/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero//")
 
 test_grid = expand_grid(K_values, switch_values, N_values)
 test_grid = test_grid %>% filter(switch_values ==1)
@@ -52,7 +52,7 @@ for(iterazione in 1:nrow(test_grid)){
   M= 3
   N = test_grid$N_values[iterazione]
   N_ij = matrix(M,N,N)
-  N_iter = 10000
+  N_iter = 40000
   alpha=.5
   S=.01
   K= test_grid$K_values[iterazione]
@@ -144,7 +144,7 @@ for(iterazione in 1:nrow(test_grid)){
   names(chains_POMM)<-my_names 
   
   filename <- paste0("True_Model",model,"Est_model_POMM_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
-  #saveRDS(chains_POMM, file = filename) #saving results
+  saveRDS(chains_POMM, file = filename) #saving results
   
   #------
   #Simple 
@@ -156,7 +156,7 @@ for(iterazione in 1:nrow(test_grid)){
   init_Simple = list()
   for(chain in 1:n_chains){
     P0_Simple= matrix(.5,K,K)
-    P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
+    P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0,beta_max)
     P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
     z0=vector()
     for(i in 1:N){
@@ -175,7 +175,7 @@ for(iterazione in 1:nrow(test_grid)){
                                      targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
   names(chains_Simple)<-my_names 
   filename_simple <- paste0("True_Model",model,"Est_model_Simple_","_N", N,"_K", K, "_S", S, "_alpha", alpha,"_M",M, "_seed", seed,".RDS")
-  #saveRDS(chains_Simple, file = filename_simple) #saving results
+  saveRDS(chains_Simple, file = filename_simple) #saving results
   
 }
 

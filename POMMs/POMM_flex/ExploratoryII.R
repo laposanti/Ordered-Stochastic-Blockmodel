@@ -167,8 +167,7 @@ data <- data %>%
 ggplot(data, aes(x = Players_x, y = Players_y)) +
   geom_tile(aes(fill = weight))+
   scale_fill_gradient(low = "white", high = "red") +  # Adjust the colors as needed
-  geom_ysidecol(aes(x =marginal_y, col= marginal_y))  +
-  geom_xsidecol(aes(y = marginal_x, col = marginal_x),show.legend = T)  +
+  geom_ysidecol(aes(x =marginal_y, fill= marginal_y))  +
   labs(title = "Heatmap with Densities", x = "Players", y = "Players") +
   theme_bw()+
   theme(legend.direction = "horizontal") +
