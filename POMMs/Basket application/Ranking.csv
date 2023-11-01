@@ -1,0 +1,211 @@
+﻿giornata,data,ora,teamA,teamB,pt A pt B,,teamA_slug,teamB_slug
+1° GIORNATA,SABATO 26 SETTEMBRE,Ore 20.30 ,De’Longhi Treviso,Dolomiti Energia Trento,84,80 ,Treviso,Trento
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 17.00 ,Openjobmetis Varese,Germani Brescia,94,89 ,Varese,Brescia
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 17.10 ,Unahotels Reggio Emilia,A|X Armani Exchange Milano,71,89 ,Emilia,Milano
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 17.30 ,Allianz Trieste,Vanoli Cremona,102,77 ,Trieste,Cremona
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 18.30 ,Carpegna Prosciutto Pesaro,Banco di Sardegna Sassari,85,95 ,Pesaro,Sassari
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 19.00 ,Virtus Bologna,Acqua S.Bernardo Cantù,84,65 ,Virtus Bologna,Cantù
+1° GIORNATA,DOMENICA 27 SETTEMBRE,Ore 20.45 ,Umana Reyer Venezia,Happy Casa Brindisi,75,67 ,Venezia,Brindisi
+2° GIORNATA,SABATO 3 OTTOBRE,Ore 20.30 ,Dolomiti Energia Trento,Unahotels Reggio Emilia,81,87  ,Trento,Emilia
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 16.30 ,Vanoli Cremona,Umana Reyer Venezia,66,83 ,Cremona,Venezia
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 17.00 ,A|X Armani Exchange Milano,De’Longhi Treviso,104,64 ,Milano,Treviso
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 17.30 ,Germani Brescia,Virtus Bologna,80,81 ,Brescia,Virtus Bologna
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 18.15 ,Banco di Sardegna Sassari,Allianz Trieste,72,74 ,Sassari,Trieste
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 18.30 ,Fortitudo Lavoropiù Bologna,Openjobmetis Varese,83,88 ,Fortitudo Bologna,Varese
+2° GIORNATA,DOMENICA 4 OTTOBRE,Ore 20.45 ,Acqua S.Bernardo Cantù,Carpegna Prosciutto Pesaro,81,72 ,Cantù,Pesaro
+3° GIORNATA,SABATO 10 OTTOBRE,Ore 20.00 ,Virtus Bologna,Vanoli Cremona,92,95 ,Virtus Bologna,Cremona
+3° GIORNATA,SABATO 10 OTTOBRE,Ore 20.30 ,Fortitudo Lavoropiù Bologna,Dolomiti Energia Trento,93,70 ,Fortitudo Bologna,Trento
+3° GIORNATA,DOMENICA 11 OTTOBRE,Ore 17.00 ,Allianz Trieste,A|X Armani Exchange Milano,65,87 ,Trieste,Milano
+3° GIORNATA,DOMENICA 11 OTTOBRE,Ore 17.10 ,Umana Reyer Venezia,Carpegna Prosciutto Pesaro,72,90 ,Venezia,Pesaro
+3° GIORNATA,DOMENICA 11 OTTOBRE,Ore 17.30 ,Unahotels Reggio Emilia,Happy Casa Brindisi,76,80 ,Emilia,Brindisi
+3° GIORNATA,DOMENICA 11 OTTOBRE,Ore 19.00 ,De’Longhi Treviso,Germani Brescia,87,94 ,Treviso,Brescia
+3° GIORNATA,DOMENICA 11 OTTOBRE,Ore 20.45 ,Openjobmetis Varese,Acqua S.Bernardo Cantù,80,90 ,Varese,Cantù
+4° GIORNATA,SABATO 17 OTTOBRE,Ore 20.30 ,Carpegna Prosciutto Pesaro,Dolomiti Energia Trento,57,71 ,Pesaro,Trento
+4° GIORNATA,SABATO 17 OTTOBRE,Ore 20.30 ,Vanoli Cremona,Openjobmetis Varese,80,67 ,Cremona,Varese
+4° GIORNATA,DOMENICA 4 OTTOBRE,Ore 12.00 ,Banco di Sardegna Sassari,Fortitudo Lavoropiù Bologna,89,86 ,Sassari,Fortitudo Bologna
+4° GIORNATA,DOMENICA 4 OTTOBRE,Ore 17.00 ,Virtus Bologna,Unahotels Reggio Emilia,67,77 ,Virtus Bologna,Emilia
+4° GIORNATA,DOMENICA 4 OTTOBRE,Ore 18.00 ,Acqua S.Bernardo Cantù,Umana Reyer Venezia,67,75 ,Cantù,Venezia
+4° GIORNATA,DOMENICA 4 OTTOBRE,Ore 19.00 ,Happy Casa Brindisi,De’Longhi Treviso,99,83 ,Brindisi,Treviso
+4° GIORNATA,DOMENICA 4 OTTOBRE,Ore 20.45 ,Germani Brescia,Allianz Trieste,75,63 ,Brescia,Trieste
+5°GIORNATA,SABATO 24 OTTOBRE,Ore 20.30 ,Unahotels Reggio Emilia,Germani Brescia,83,67 ,Emilia,Brescia
+5°GIORNATA,SABATO 24 OTTOBRE,Ore 20.30 ,Openjobmetis Varese,Virtus Bologna,73,85 ,Varese,Virtus Bologna
+5°GIORNATA,DOMENICA 25 OTTOBRE,Ore 17.00 ,Fortitudo Lavoropiù Bologna,A|X Armani Exchange Milano,71,82 ,Fortitudo Bologna,Milano
+5°GIORNATA,DOMENICA 25 OTTOBRE,Ore 17.30 ,Umana Reyer Venezia,Banco di Sardegna Sassari,92,99 ,Venezia,Sassari
+5°GIORNATA,DOMENICA 25 OTTOBRE,Ore 19.00 ,De’Longhi Treviso,Acqua S.Bernardo Cantù,89,82 ,Treviso,Cantù
+5°GIORNATA,DOMENICA 25 OTTOBRE,Ore 19.30 ,Allianz Trieste,Happy Casa Brindisi,76,79 ,Trieste,Brindisi
+5°GIORNATA,DOMENICA 25 OTTOBRE,Ore 20.45 ,Dolomiti Energia Trento,Vanoli Cremona,85,83 ,Trento,Cremona
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 17.00 ,Umana Reyer Venezia,Virtus Bologna,68,83 ,Venezia,Virtus Bologna
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 17.30 ,A|X Armani Exchange Milano,Dolomiti Energia Trento,82,75 ,Milano,Trento
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 18.00 ,Unahotels Reggio Emilia,De’Longhi Treviso,98,74 ,Emilia,Treviso
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 18.00 ,Carpegna Prosciutto Pesaro,Vanoli Cremona,95,83 ,Pesaro,Cremona
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 19.00 ,Banco di Sardegna Sassari,Openjobmetis Varese,104,82 ,Sassari,Varese
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 20.45 ,Happy Casa Brindisi,Fortitudo Lavoropiù Bologna,100,74 ,Brindisi,Fortitudo Bologna
+6°GIORNATA,DOMENICA 1 NOVEMBRE,Ore 20.46,Unahotels Reggio Emilia,De’Longhi Treviso,98,74,Emilia,Treviso
+7°GIORNATA,SABATO 7 NOVEMBRE,Ore 20.00 ,Virtus Bologna,Happy Casa Brindisi,88,98 ,Virtus Bologna,Brindisi
+7°GIORNATA,SABATO 7 NOVEMBRE,Ore 20.00 ,Dolomiti Energia Trento,Banco di Sardegna Sassari,92,78 ,Trento,Sassari
+7°GIORNATA,SABATO 7 NOVEMBRE,Ore 20.30 ,Fortitudo Lavoropiù Bologna,De’Longhi Treviso,87,98 ,Fortitudo Bologna,Treviso
+7°GIORNATA,DOMENICA 8 NOVEMBRE,Ore 17.00 ,A|X Armani Exchange Milano,Germani Brescia,87,56 ,Milano,Brescia
+7°GIORNATA,DOMENICA 8 NOVEMBRE,Ore 20.45 ,Carpegna Prosciutto Pesaro,Openjobmetis Varese,85,78 ,Pesaro,Varese
+7°GIORNATA,DOMENICA 8 NOVEMBRE,RINVIATA ,Vanoli Cremona,Acqua S.Bernardo Cantù,101,67,Cremona,Cantù
+7°GIORNATA,DOMENICA 8 NOVEMBRE,RINVIATA ,Allianz Trieste,Unahotels Reggio Emilia,78,69,Trieste,Emilia
+8°GIORNATA,SABATO 14 NOVEMBRE,RINVIATA ,Umana Reyer Venezia,Allianz Trieste,81,66,Venezia,Trieste
+8°GIORNATA,MERCOLEDì 30 DICEMBRE ,Ore 18.15,Virtus Bologna,Carpegna Prosciutto Pesaro,100,80 ,Virtus Bologna,Pesaro
+8°GIORNATA,DOMENICA 15 NOVEMBRE,Ore 12.00 ,Banco di Sardegna Sassari,Happy Casa Brindisi,87,100,Sassari,Brindisi
+8°GIORNATA,DOMENICA 15 NOVEMBRE,Ore 18.00 ,Acqua S.Bernardo Cantù,A|X Armani Exchange Milano,71,89 ,Cantù,Milano
+8°GIORNATA,DOMENICA 15 NOVEMBRE,Ore 20.45 ,Germani Brescia,Dolomiti Energia Trento,73,80 ,Brescia,Trento
+8°GIORNATA,DOMENICA 15 NOVEMBRE,RINVIATA ,De’Longhi Treviso,Vanoli Cremona,101,90,Treviso,Cremona
+8°GIORNATA,DOMENICA 15 NOVEMBRE,RINVIATA ,Unahotels Reggio Emilia,Fortitudo Lavoropiù Bologna,79,69,Emilia,Fortitudo Bologna
+9°GIORNATA,SABATO 21 NOVEMBRE,RINVIATA ,Allianz Trieste,De’Longhi Treviso,84,79,Trieste,Treviso
+9°GIORNATA,DOMENICA 22 NOVEMBRE,Ore 16.00 ,A|X Armani Exchange Milano,Umana Reyer Venezia,86,72 ,Milano,Venezia
+9°GIORNATA,DOMENICA 22 NOVEMBRE,Ore 18.00 ,Fortitudo Lavoropiù Bologna,Virtus Bologna,71,91 ,Fortitudo Bologna,Virtus Bologna
+9°GIORNATA,DOMENICA 22 NOVEMBRE,Ore 19.00 ,Dolomiti Energia Trento,Openjobmetis Varese,74,77 ,Trento,Varese
+9°GIORNATA,DOMENICA 22 NOVEMBRE,Ore 19.30 ,Happy Casa Brindisi,Germani Brescia,74,71 ,Brindisi,Brescia
+9°GIORNATA,DOMENICA 22 NOVEMBRE,Ore 20.45 ,Carpegna Prosciutto Pesaro,Unahotels Reggio Emilia,84,63 ,Pesaro,Emilia
+9°GIORNATA,DOMENICA 22 NOVEMBRE,RINVIATA ,Vanoli Cremona,Banco di Sardegna Sassari,75,95 ,Cremona,Sassari
+10°GIORNATA,SABATO 5 DICEMBRE,Ore 20.00 ,Germani Brescia,Fortitudo Lavoropiù Bologna,99,85 ,Brescia,Fortitudo Bologna
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 16.00 ,Virtus Bologna,Banco di Sardegna Sassari,78,83 ,Virtus Bologna,Sassari
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 17.00 ,Umana Reyer Venezia,Dolomiti Energia Trento,71,79 ,Venezia,Trento
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 17.30 ,Openjobmetis Varese,A|X Armani Exchange Milano,70,96 ,Varese,Milano
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 17.30 ,De’Longhi Treviso,Carpegna Prosciutto Pesaro,91,81 ,Treviso,Pesaro
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 18.00 ,Happy Casa Brindisi,Acqua S.Bernardo Cantù,85,71 ,Brindisi,Cantù
+10°GIORNATA,DOMENICA 6 DICEMBRE,Ore 19.00 ,Unahotels Reggio Emilia,Vanoli Cremona,56,85 ,Emilia,Cremona
+11° GIORNATA,SABATO 12 DICEMBRE,Ore 20:30 ,Carpegna Prosciutto Pesaro,Fortitudo Lavoropiù Bologna,70,78,Pesaro,Fortitudo Bologna
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 16:00 ,Banco di Sardegna Sassari,De’Longhi Treviso,97,93,Sassari,Treviso
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 16:30 ,Germani Brescia,Umana Reyer Venezia,71,69,Brescia,Venezia
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 17:00 ,A|X Armani Exchange Milano,Happy Casa Brindisi,82,88,Milano,Brindisi
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 18:00 ,Allianz Trieste,Virtus Bologna,60,77,Trieste,Virtus Bologna
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 18:30 ,Openjobmetis Varese,Unahotels Reggio Emilia,76,89,Varese,Emilia
+11° GIORNATA,DOMENICA 13 DICEMBRE,Ore 19:00 ,Dolomiti Energia Trento,Acqua S.Bernardo Cantù,74,73,Trento,Cantù
+12°GIORNATA,SABATO 19 DICEMBRE,Ore 20:00 ,Happy Casa Brindisi,Carpegna Prosciutto Pesaro,81,92,Brindisi,Pesaro
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 17:00 ,A|X Armani Exchange Milano,Banco di Sardegna Sassari,102,86,Milano,Sassari
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 17:30 ,De’Longhi Treviso,Virtus Bologna,72,98,Treviso,Virtus Bologna
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 18:00 ,Umana Reyer Venezia,Openjobmetis Varese,86,77,Venezia,Varese
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 18:30 ,Fortitudo Lavoropiù Bologna,Vanoli Cremona,85,71,Fortitudo Bologna,Cremona
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 19:00 ,Acqua S.Bernardo Cantù,Germani Brescia,98,92,Cantù,Brescia
+12°GIORNATA,DOMENICA 20 DICEMBRE,Ore 20:45 ,Allianz Trieste,Dolomiti Energia Trento,92,82,Trieste,Trento
+13° GIORNATA,SABATO 26 DICEMBRE,Ore 20.30 ,Unahotels Reggio Emilia,Acqua S.Bernardo Cantù,68,78,Emilia,Cantù
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 12:00 ,Banco di Sardegna Sassari,Germani Brescia,100,87,Sassari,Brescia
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 16:00 ,Carpegna Prosciutto Pesaro,Allianz Trieste,84,74,Pesaro,Trieste
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 17:00 ,Openjobmetis Varese,De’Longhi Treviso,79,80,Varese,Treviso
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 17:15 ,Virtus Bologna,A|X Armani Exchange Milano,68,73,Virtus Bologna,Milano
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 18:00,Fortitudo Lavoropiù Bologna,Umana Reyer Venezia,76,72,Fortitudo Bologna,Venezia
+13° GIORNATA,DOMENICA 27 DICEMBRE,Ore 20:00,Vanoli Cremona,Happy Casa Brindisi,96,94,Cremona,Brindisi
+14° GIORNATA,SABATO 2 GENNAIO,Ore 20.00 ,Acqua S.Bernardo Cantù,Fortitudo Lavoropiù Bologna,67,80,Cantù,Fortitudo Bologna
+14° GIORNATA,DOMENICA 3 GENNAIO,Ore 17:00 ,Unahotels Reggio Emilia,Banco di Sardegna Sassari,78,85,Emilia,Sassari
+14° GIORNATA,DOMENICA 3 GENNAIO,Ore 17:30 ,De’Longhi Treviso,Umana Reyer Venezia,86,88,Treviso,Venezia
+14° GIORNATA,DOMENICA 3 GENNAIO,Ore 18:00 ,A|X Armani Exchange Milano,Carpegna Prosciutto Pesaro,97,93,Milano,Pesaro
+14° GIORNATA,DOMENICA 3 GENNAIO,Ore 19:00 ,Happy Casa Brindisi,Dolomiti Energia Trento,74,73,Brindisi,Trento
+14° GIORNATA,DOMENICA 3 GENNAIO,Ore 20.45 ,Germani Brescia,Vanoli Cremona,85,89,Brescia,Cremona
+14° GIORNATA,DOMENICA 3 GENNAIO,RINVIATA ,Allianz Trieste,Openjobmetis Varese,108,83,Trieste,Varese
+15° GIORNATA,SABATO 9 GENNAIO,Ore 20.00 ,Dolomiti Energia Trento,Virtus Bologna,85,92,Trento,Virtus Bologna
+15° GIORNATA,SABATO 9 GENNAIO,Ore 17.30 ,Fortitudo Lavoropiù Bologna,Allianz Trieste,69,82,Fortitudo Bologna,Trieste
+15° GIORNATA,SABATO 9 GENNAIO,Ore 18.00 ,Carpegna Prosciutto Pesaro,Germani Brescia,98,88,Pesaro,Brescia
+15° GIORNATA,SABATO 9 GENNAIO,Ore 19:00 ,Banco di Sardegna Sassari,Acqua S.Bernardo Cantù,98,92,Sassari,Cantù
+15° GIORNATA,SABATO 9 GENNAIO,Ore 20:45 ,Umana Reyer Venezia,Unahotels Reggio Emilia,95,75,Venezia,Emilia
+15° GIORNATA,MARTEDI’ 19 GENNAIO,Ore 17:00 ,Vanoli Cremona,A|X Armani Exchange Milano,81,83,Cremona,Milano
+15° GIORNATA,MARTEDI’ 19 GENNAIO,Ore 17:00 ,Openjobmetis Varese,Happy Casa Brindisi,76,74,Varese,Brindisi
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 12.00 ,A|X Armani Exchange Milano,Unahotels Reggio Emilia,102,73,Milano,Emilia
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 15:00,Vanoli Cremona,Allianz Trieste,80,101,Cremona,Trieste
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 17:00 ,Acqua S.Bernardo Cantù,Virtus Bologna,82,91,Cantù,Virtus Bologna
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 17:15 ,Happy Casa Brindisi,Umana Reyer Venezia,77,89,Brindisi,Venezia
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 19:00 ,Banco di Sardegna Sassari,Carpegna Prosciutto Pesaro,99,84,Sassari,Pesaro
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 20:30 ,Dolomiti Energia Trento,De’Longhi Treviso,76,82,Trento,Treviso
+16° GIORNATA,DOMENICA 17 GENNAIO,Ore 20:30 ,Germani Brescia,Openjobmetis Varese,98,83,Brescia,Varese
+17° GIORNATA,SABATO 23 GENNAIO,Ore 19.00 ,Unahotels Reggio Emilia,Dolomiti Energia Trento,83,74,Emilia,Trento
+17° GIORNATA,SABATO 23 GENNAIO,Ore 20.00 ,Virtus Bologna,Germani Brescia,89,90,Virtus Bologna,Brescia
+17° GIORNATA,DOMENICA 24 GENNAIO,Ore 12.00 ,De’Longhi Treviso,A|X Armani Exchange Milano,77,82,Treviso,Milano
+17° GIORNATA,DOMENICA 24 GENNAIO,Ore 16.00 ,Carpegna Prosciutto Pesaro,Acqua S.Bernardo Cantù,107,83,Pesaro,Cantù
+17° GIORNATA,DOMENICA 24 GENNAIO,Ore 17.00 ,Umana Reyer Venezia,Vanoli Cremona,88,84,Venezia,Cremona
+17° GIORNATA,DOMENICA 24 GENNAIO,Ore 19.00 ,Allianz Trieste,Banco di Sardegna Sassari,82,103,Trieste,Sassari
+17° GIORNATA,DOMENICA 14 FEBBRAIO,Ore 16.00 ,Openjobmetis Varese,Fortitudo Lavoropiù Bologna,67,79,Varese,Fortitudo Bologna
+18° GIORNATA,SABATO 30 GENNAIO,Ore 20.00 ,Vanoli Cremona,Virtus Bologna,75,88,Cremona,Virtus Bologna
+18° GIORNATA,DOMENICA 31 GENNAIO,Ore 16.00 ,Acqua S.Bernardo Cantù,Openjobmetis Varese,97,82,Cantù,Varese
+18° GIORNATA,DOMENICA 31 GENNAIO,Ore 17.00 ,A|X Armani Exchange Milano,Allianz Trieste,81,100,Milano,Trieste
+18° GIORNATA,DOMENICA 31 GENNAIO,Ore 17.30 ,Dolomiti Energia Trento,Fortitudo Lavoropiù Bologna,64,78,Trento,Fortitudo Bologna
+18° GIORNATA,DOMENICA 31 GENNAIO,Ore 18:00 ,Germani Brescia,De’Longhi Treviso,91,94,Brescia,Treviso
+18° GIORNATA,DOMENICA 31 GENNAIO,Ore 20:45 ,Carpegna Prosciutto Pesaro,Umana Reyer Venezia,65,78,Pesaro,Venezia
+18° GIORNATA,LUNEDI’ 1 FEBBRAIO,Ore 20.30 ,Happy Casa Brindisi,Unahotels Reggio Emilia,79,70,Brindisi,Emilia
+19° GIORNATA,SABATO 6 FEBBRAIO,Ore 20.00 ,Fortitudo Lavoropiù Bologna,Banco di Sardegna Sassari,79,89,Fortitudo Bologna,Sassari
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 12.00 ,Allianz Trieste,Germani Brescia,78,81,Trieste,Brescia
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 16.00 ,Openjobmetis Varese,Vanoli Cremona,110,105 ,Varese,Cremona
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 17.00 ,Dolomiti Energia Trento,Carpegna Prosciutto Pesaro,70,81,Trento,Pesaro
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 18.30 ,Umana Reyer Venezia,Acqua S.Bernardo Cantù,80,75,Venezia,Cantù
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 19.00 ,De’Longhi Treviso,Happy Casa Brindisi,90,108,Treviso,Brindisi
+19° GIORNATA,DOMENICA 7 FEBBRAIO,Ore 20.45 ,Unahotels Reggio Emilia,Virtus Bologna,62,89,Emilia,Virtus Bologna
+20° GIORNATA,SABATO 27 FEBBRAIO,Ore 19:30 ,Virtus Bologna,Openjobmetis Varese,85,76,Virtus Bologna,Varese
+20° GIORNATA,SABATO 27 FEBBRAIO,Ore 20:30 ,Banco di Sardegna Sassari,Umana Reyer Venezia,96,88,Sassari,Venezia
+20° GIORNATA,SABATO 27 FEBBRAIO,Ore 20:45 ,Happy Casa Brindisi,Allianz Trieste,81,74,Brindisi,Trieste
+20° GIORNATA,DOMENICA 28 FEBBRAIO,Ore 12:00 ,Vanoli Cremona,Dolomiti Energia Trento,85,78,Cremona,Trento
+20° GIORNATA,DOMENICA 28 FEBBRAIO,Ore 17:00 ,A|X Armani Exchange Milano,Fortitudo Lavoropiù Bologna,98,72,Milano,Fortitudo Bologna
+20° GIORNATA,DOMENICA 28 FEBBRAIO,Ore 18:30 ,Acqua S.Bernardo Cantù,De’Longhi Treviso,83,76,Cantù,Treviso
+20° GIORNATA,DOMENICA 28 FEBBRAIO,Ore 20:45 ,Germani Brescia,Unahotels Reggio Emilia,89,79,Brescia,Emilia
+21° GIORNATA,SABATO 6 MARZO,Ore 19:00 ,Openjobmetis Varese,Banco di Sardegna Sassari,89,74,Varese,Sassari
+21° GIORNATA,SABATO 6 MARZO,Ore 20:00 ,Virtus Bologna,Umana Reyer Venezia,77,72,Virtus Bologna,Venezia
+21° GIORNATA,DOMENICA 7 MARZO,Ore 12:00 ,Fortitudo Lavoropiù Bologna,Happy Casa Brindisi,70,95,Fortitudo Bologna,Brindisi
+21° GIORNATA,DOMENICA 7 MARZO,Ore 17:00 ,Dolomiti Energia Trento,A|X Armani Exchange Milano,61,60,Trento,Milano
+21° GIORNATA,DOMENICA 7 MARZO,Ore 19:00 ,De’Longhi Treviso,Unahotels Reggio Emilia,78,72,Treviso,Emilia
+21° GIORNATA,DOMENICA 7 MARZO,Ore 20:45 ,Allianz Trieste,Acqua S.Bernardo Cantù,82,79,Trieste,Cantù
+21° GIORNATA,DOMENICA 7 MARZO,Ore 20:46,Vanoli Cremona,Carpegna Prosciutto Pesaro,100,78,Cremona,Pesaro
+22° GIORNATA,SABATO 13 MARZO,Ore 19:00 ,Unahotels Reggio Emilia,Allianz Trieste,70,96,Emilia,Trieste
+22° GIORNATA,SABATO 13 MARZO,Ore 20:00 ,Happy Casa Brindisi,Virtus Bologna,91,85,Brindisi,Virtus Bologna
+22° GIORNATA,DOMENICA 14 MARZO,Ore 17:00 ,Openjobmetis Varese,Carpegna Prosciutto Pesaro,81,69,Varese,Pesaro
+22° GIORNATA,DOMENICA 14 MARZO,Ore 17:30 ,Germani Brescia,A|X Armani Exchange Milano,92,99,Brescia,Milano
+22° GIORNATA,DOMENICA 14 MARZO,Ore 19:00 ,Acqua S.Bernardo Cantù,Vanoli Cremona,92,85,Cantù,Cremona
+22° GIORNATA,MERCOLEDI’ 21 APRILE,Ore 20.30 ,Banco di Sardegna Sassari,Dolomiti Energia Trento,94,76,Sassari,Trento
+22° GIORNATA,MERCOLEDI’ 21 APRILE,Ore 20.31,De’Longhi Treviso,Fortitudo Lavoropiù Bologna,84,78,Treviso,Fortitudo Bologna
+23° GIORNATA,VENERDÌ 19 MARZO,Ore 20.30 ,Fortitudo Lavoropiù Bologna,Unahotels Reggio Emilia,71,68,Fortitudo Bologna,Emilia
+23° GIORNATA,SABATO 20 MARZO,Ore 19:00 ,Dolomiti Energia Trento,Germani Brescia,91,67,Trento,Brescia
+23° GIORNATA,SABATO 20 MARZO,Ore 20:00 ,Carpegna Prosciutto Pesaro,Virtus Bologna,70,75,Pesaro,Virtus Bologna
+23° GIORNATA,DOMENICA 21 MARZO,Ore 17:00 ,Vanoli Cremona,De’Longhi Treviso,85,86,Cremona,Treviso
+23° GIORNATA,MERCOLEDÌ 5 MAGGIO,Ore 20.30 ,Happy Casa Brindisi,Banco di Sardegna Sassari,90,97,Brindisi,Sassari
+23° GIORNATA,MERCOLEDÌ 5 MAGGIO,Ore 20.30 ,A|X Armani Exchange Milano,Acqua S.Bernardo Cantù,70,57,Milano,Cantù
+23° GIORNATA,MERCOLEDÌ 5 MAGGIO,Ore 20.30 ,Allianz Trieste,Umana Reyer Venezia,69,87,Trieste,Venezia
+24° GIORNATA,SABATO 27 MARZO,Ore 20:00 ,Banco di Sardegna Sassari,Vanoli Cremona,95,84,Sassari,Cremona
+24° GIORNATA,DOMENICA 28 MARZO,Ore 12:00 ,Germani Brescia,Happy Casa Brindisi,68,74,Brescia,Brindisi
+24° GIORNATA,DOMENICA 28 MARZO,Ore 17:00 ,Umana Reyer Venezia,A|X Armani Exchange Milano,69,63,Venezia,Milano
+24° GIORNATA,DOMENICA 28 MARZO,Ore 18:00 ,Openjobmetis Varese,Dolomiti Energia Trento,88,70,Varese,Trento
+24° GIORNATA,DOMENICA 28 MARZO,Ore 19:00 ,De’Longhi Treviso,Allianz Trieste,95,76,Treviso,Trieste
+24° GIORNATA,DOMENICA 28 MARZO,Ore 20:45 ,Virtus Bologna,Fortitudo Lavoropiù Bologna,81,73,Virtus Bologna,Fortitudo Bologna
+24° GIORNATA,LUNEDI 29 MARZO,Ore 20.30 ,Unahotels Reggio Emilia,Carpegna Prosciutto Pesaro,91,79,Emilia,Pesaro
+25° GIORNATA,SABATO 03 APRILE,Ore 16.30 ,Dolomiti Energia Trento,Umana Reyer Venezia,90,84,Trento,Venezia
+25° GIORNATA,SABATO 03 APRILE,Ore 17.00 ,Acqua S.Bernardo Cantù,Happy Casa Brindisi,71,93,Cantù,Brindisi
+25° GIORNATA,SABATO 03 APRILE,Ore 18.00 ,Vanoli Cremona,Unahotels Reggio Emilia,90,71,Cremona,Emilia
+25° GIORNATA,SABATO 03 APRILE,Ore 19.00 ,Fortitudo Lavoropiù Bologna,Germani Brescia,88,78,Fortitudo Bologna,Brescia
+25° GIORNATA,SABATO 03 APRILE,Ore 20.45 ,Banco di Sardegna Sassari,Virtus Bologna,77,108,Sassari,Virtus Bologna
+25° GIORNATA,LUNEDI’ 05 APRILE,Ore 18:15 ,A|X Armani Exchange Milano,Openjobmetis Varese,81,83,Milano,Varese
+25° GIORNATA,LUNEDI’ 05 APRILE,Ore 18:16,Carpegna Prosciutto Pesaro,De’Longhi Treviso,89,97,Pesaro,Treviso
+26° GIORNATA,SABATO 10 APRILE,Ore 20:00 ,Fortitudo Lavoropiù Bologna,Carpegna Prosciutto Pesaro,77,79,Fortitudo Bologna,Pesaro
+26° GIORNATA,DOMENICA 11 APRILE,Ore 12:00 ,De’Longhi Treviso,Banco di Sardegna Sassari,89,85,Treviso,Sassari
+26° GIORNATA,DOMENICA 11 APRILE,Ore 17:00 ,UnaHotels Reggio Emilia,Openjobmetis Varese,95,77,Emilia,Varese
+26° GIORNATA,DOMENICA 11 APRILE,Ore 18:00 ,Umana Reyer Venezia,Germani Brescia,94,87,Venezia,Brescia
+26° GIORNATA,DOMENICA 11 APRILE,Ore 19:30 ,Acqua S.Bernardo Cantù,Dolomiti Energia Trento,75,76,Cantù,Trento
+26° GIORNATA,DOMENICA 11 APRILE,Ore 20:30 ,Virtus Bologna,Allianz Trieste,81,67,Virtus Bologna,Trieste
+26° GIORNATA,DOMENICA 11 APRILE,Ore 20:45 ,Happy Casa Brindisi,A|X Armani Exchange Milano,80,71,Brindisi,Milano
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 18:00 ,Carpegna Prosciutto Pesaro,Happy Casa Brindisi, 62,86,Pesaro,Brindisi
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 18:30 ,Openjobmetis Varese,Umana Reyer Venezia,75,77,Varese,Venezia
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 19:00 ,Vanoli Cremona,Fortitudo Lavoropiù Bologna,82,74,Cremona,Fortitudo Bologna
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 19:30 ,Germani Brescia,Acqua S.Bernardo Cantù,69,74,Brescia,Cantù
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 20:00 ,Dolomiti Energia Trento,Allianz Trieste,81,69,Trento,Trieste
+27° GIORNATA,MERCOLEDI’ 14 APRILE,Ore 20:45 ,Banco di Sardegna Sassari,A|X Armani Exchange Milano,73,85,Sassari,Milano
+27° GIORNATA,MERCOLEDI’ 21 APRILE,Ore 20:00 ,Virtus Bologna,De’Longhi Treviso,97,68,Virtus Bologna,Treviso
+28° GIORNATA,SABATO 17 APRILE,Ore 20:15 ,A|X Armani Exchange Milano,Virtus Bologna,94,84,Milano,Virtus Bologna
+28° GIORNATA,DOMENICA 18 APRILE,Ore 12:00 ,Germani Brescia,Banco di Sardegna Sassari,82,94,Brescia,Sassari
+28° GIORNATA,DOMENICA 18 APRILE,Ore 19:30 ,Acqua S.Bernardo Cantù,Unahotels Reggio Emilia,71,72,Cantù,Emilia
+28° GIORNATA,DOMENICA 18 APRILE,Ore 20:45 ,Happy Casa Brindisi,Vanoli Cremona,67,78,Brindisi,Cremona
+28° GIORNATA,DOMENICA 18 APRILE,Ore 19:30 ,Allianz Trieste,Carpegna Prosciutto Pesaro,101,88,Trieste,Pesaro
+28° GIORNATA,DOMENICA 18 APRILE,Ore 20:45 ,Umana Reyer Venezia,Fortitudo Lavoropiù Bologna,92,76,Venezia,Fortitudo Bologna
+28° GIORNATA,DOMENICA 18 APRILE,Ore 19:30 ,De’Longhi Treviso,Openjobmetis Varese,94,103,Treviso,Varese
+29° GIORNATA,DOMENICA 25 APRILE,Ore 12:00 ,Carpegna Prosciutto Pesaro,A|X Armani Exchange Milano,81,88,Pesaro,Milano
+29° GIORNATA,DOMENICA 25 APRILE,Ore 20:30 ,Vanoli Cremona,Germani Brescia,89,94,Cremona,Brescia
+29° GIORNATA,DOMENICA 25 APRILE,Ore 20:30 ,Fortitudo Lavoropiù Bologna,Acqua S.Bernardo Cantù,75,68,Fortitudo Bologna,Cantù
+29° GIORNATA,DOMENICA 25 APRILE,Ore 20:30 ,Banco di Sardegna Sassari,Unahotels Reggio Emilia,89,82,Sassari,Emilia
+29° GIORNATA,DOMENICA 25 APRILE,Ore 20:30 ,Openjobmetis Varese,Allianz Trieste,73,79,Varese,Trieste
+29° GIORNATA,DOMENICA 25 APRILE,Ore 20:30 ,Umana Reyer Venezia,De’Longhi Treviso,82,62,Venezia,Treviso
+29° GIORNATA,VENERDI’ 7 MAGGIO,Ore 20:30 ,Dolomiti Energia Trento,Happy Casa Brindisi,83,73,Trento,Brindisi
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45 ,Acqua S.Bernardo Cantù,Banco di Sardegna Sassari,106,101,Cantù,Sassari
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,A|X Armani Exchange Milano,Vanoli Cremona,77,66,Milano,Cremona
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,Allianz Trieste,Fortitudo Lavoropiù Bologna,88,82 ,Trieste,Fortitudo Bologna
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,Unahotels Reggio Emilia,Umana Reyer Venezia,65,71,Emilia,Venezia
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,Happy Casa Brindisi,Openjobmetis Varese,108,84,Brindisi,Varese
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,Virtus Bologna,Dolomiti Energia Trento,83,91,Virtus Bologna,Trento
+30° GIORNATA,LUNEDÌ 10 MAGGIO,Ore 20:45,Germani Brescia,Carpegna Prosciutto Pesaro,86,84,Brescia,Pesaro
