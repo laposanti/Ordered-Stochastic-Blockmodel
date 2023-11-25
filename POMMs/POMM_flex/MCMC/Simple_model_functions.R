@@ -7,7 +7,7 @@ P_simple_update = function(z_current, p_current,
   C_prime <- sum(dbeta(p_current[upper.tri(p_current)],1,1,log=T))
   z_prime <- z_current
   p_prime <- p_current
-  P_NbyN_prime <- calculate_victory_probabilities(vec2mat(z_prime),p_prime)
+  P_NbyN_prime <- calculate_victory_probabilities(vec2mat_0_P(z_prime,p_prime),p_prime)
   
   j_start <- ifelse(diag0.5, yes = 1, no = 0)
   K_stop <- ifelse(diag0.5, yes = K-1, no = K)

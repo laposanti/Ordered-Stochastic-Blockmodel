@@ -12,21 +12,23 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_c
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
 
+mean_check_summary= data.frame(level_set =0,means = 0, alpha=0)
 
 
-K_list = c(3,5,9)
-K=K_list[2]
+
+
+
 S_list = c(0.01,0.5,3)
 alpha_list = c(1, 1, 1)
 n_samples=10000
-S = .5
+S = .001
 beta_max = .8
-alpha=.5
+alpha=3
 diag0.5=T
 true_alpha<-alpha
 
 
-
+K=5
 #creating a sample of P matrices
 p_container = array(0, dim=c(K,K,n_samples))
 for(i in 1:n_samples){
@@ -37,54 +39,69 @@ for(i in 1:n_samples){
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
 # Combine the four levels into a list
 
-p_container_simple = array(0, dim=c(K,K,n_samples))
-for(i in 1:n_samples){
-  p_container_simple[,,i] = matrix(runif(K*K, 0.5, beta_max), K, K)
-}
+# p_container_simple = array(0, dim=c(K,K,n_samples))
+# for(i in 1:n_samples){
+#   p_container_simple[,,i] = matrix(runif(K*K, 0.5, beta_max), K, K)
+# }
+# 
+# level_list_p_container_simple<- generalized_levels(p_container_simple,K,n_samples, diag0.5 = diag0.5)
 
-level_list_p_container_simple<- generalized_levels(p_container_simple,K,n_samples, diag0.5 = diag0.5)
+# 
+# paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',S,'K',K)
+# 
+# #interpretation of overlap
+# 
+# overlap_space = vector()
+# for(i in 2:length(level_list_p_container)){
+#   overlap_space = append(overlap_space,abs(max(level_list_p_container[[i]]) - min(level_list_p_container[[i-1]])))
+# }
+# mean(overlap_space)/(beta_max- 0.5)
+# 
 
-
-paste0('alpha_and_overlap_investigation_alpha',alpha,'overlap',S,'K',K)
-
-#interpretation of overlap
-
-overlap_space = vector()
-for(i in 2:length(level_list_p_container)){
-  overlap_space = append(overlap_space,abs(max(level_list_p_container[[i]]) - min(level_list_p_container[[i-1]])))
-}
-mean(overlap_space)/(beta_max- 0.5)
-
-
-
-blue_purple <- generate_color_gradient_K(K)
-
-my_sample_1<- vector()
-for(i in 1:(K-1)){
-my_data <- sample(x = level_list_p_container[[i]],size = 1000,replace = F)
-my_sample_1<- append(my_sample_1,my_data)
-}
-
-my_sample_2<- vector()
-for(i in 1:(K-1)){
-  my_data <- sample(x = level_list_p_container_simple[[i]],size = 1000,replace = F)
-  my_sample_2<- append(my_sample_2,my_data)
-}
-
-
-#computing ks test
-ks.test(my_sample_1, my_sample_2)
+# 
+# blue_purple <- generate_color_gradient_K(K)
+# 
+# my_sample_1<- vector()
+# for(i in 1:(K-1)){
+# my_data <- sample(x = level_list_p_container[[i]],size = 1000,replace = F)
+# my_sample_1<- append(my_sample_1,my_data)
+# }
+# 
+# my_sample_2<- vector()
+# for(i in 1:(K-1)){
+#   my_data <- sample(x = level_list_p_container_simple[[i]],size = 1000,replace = F)
+#   my_sample_2<- append(my_sample_2,my_data)
+# }
 
 
-compute_S(S,truncations = trunc,K = K,n_samples = n_samples)
+# #computing ks test
+# ks.test(my_sample_1, my_sample_2)
+# 
+# 
+# compute_S(S,truncations = trunc,K = K,n_samples = n_samples)
+# 
+# data_1<- data.frame(x= c(my_sample_1,my_sample_2),model =c(rep("POMM", length(my_sample_1)),rep("Simple", length(my_sample_1)) ))
+# 
+# ggplot(data_1, aes(x=x))+
+#   geom_density(aes(fill = model), alpha=.75)+
+#   labs(fill = "Levels", x = "Points", y = "Density", title = "Density Plot across the level sets", 
+#        subtitle = '500 points extracted from each level set')+
+#   theme_bw()
 
-data_1<- data.frame(x= c(my_sample_1,my_sample_2),model =c(rep("POMM", length(my_sample_1)),rep("Simple", length(my_sample_1)) ))
+mean_check= data.frame(level_set = 0:(K-1),means = c(0.5,as.numeric(lapply(level_list_p_container,FUN = mean))),alpha=rep(alpha,K))
+mean_check_summary= rbind(mean_check_summary, mean_check)
+mean_check_summary=mean_check_summary[-1,]
 
-ggplot(data_1, aes(x=x))+
-  geom_density(aes(fill = model), alpha=.75)+
-  labs(fill = "Levels", x = "Points", y = "Density", title = "Density Plot across the level sets", 
-       subtitle = '500 points extracted from each level set')+
-  theme_bw()
+ggplot(mean_check_summary, aes(factor(level_set),y= means)) +
+  geom_point(aes(color = factor(alpha)), size = 3) +  # Add points
+  geom_line(aes(color=factor(alpha),group=alpha), size = 1) +   
+  ylim(0.5, beta_max) +
+  labs(title = "Evolution of level sets means for different alpha values",
+       x = "Level Sets",
+       y = "Level Sets means",
+       color = 'alpha') +
+  theme_minimal()
+
 
 #goood plot here
 ggplot() +

@@ -3,34 +3,37 @@ library(gridExtra)
 library(ggplot2)
 library(truncnorm)
 K_list = c(3,5,9)
-K=K_list[2]
-S_list = c(0.01,0.5,3)
-alpha_list = c(1, 1, 1)
+K=5
+S_list = c(0.01,0.05,0.4)
+alpha_list = c(0.1, 1, 3)
 n_samples=10000
-S = .21
+
 beta_max = .8
-alpha=.5
+
 diag0.5=T
 true_alpha<-alpha
 
-
+for(aa in 1:3){
+  for(ss in 1:3){
+    
+alpha<- alpha_list[aa]
+S<- S_list[ss]
 
 #creating a sample of P matrices
 p_container = array(0, dim=c(K,K,n_samples))
 for(i in 1:n_samples){
   trunc = improper_prior5(K,alpha = alpha,diag0.5 = diag0.5, beta_max = beta_max )
-  p_container[,,i] = simulating_overlapping_POMM_powerlaw_norm(K, alpha=alpha, S  = S, beta_max = beta_max,truncations = trunc,diag0.5 = diag0.5)
+  p_container[,,i] = simulating_overlapping_POMM_powerlaw_norm(K, alpha=alpha, S  = S, 
+                                                               beta_max = beta_max,truncations = trunc,diag0.5 = diag0.5,phi = .5)
 }
 
 level_list_p_container<- generalized_levels(p_container,K,n_samples, diag0.5 = diag0.5)
+
+
+
+
 # Combine the four levels into a list
 
-p_container_simple = array(0, dim=c(K,K,n_samples))
-for(i in 1:n_samples){
-  p_container_simple[,,i] = matrix(runif(K*K, 0.5, beta_max), K, K)
-}
-
-level_list_p_container_simple<- generalized_levels(p_container_simple,K,n_samples, diag0.5 = diag0.5)
 
 p_ij_lst<- list()
 
@@ -65,7 +68,7 @@ for(i in  1:length(p_ij_lst)){
   my_table[[names(p_ij_lst[i])]] <- tableGrob(i_th_df)
   }
 
-sqrt(0.08)
+
 
 hlay <- rbind(c(NA,1,2,3,4),
               c(11,NA,5,6,7),
@@ -73,7 +76,7 @@ hlay <- rbind(c(NA,1,2,3,4),
               c(13,16,18,NA,10),
               c(14,17,19,20,NA))
 
-grid.arrange(
+my_plot<- grid.arrange(
   my_p[[1]],
   my_p[[2]],
   my_p[[3]],
@@ -89,12 +92,14 @@ grid.arrange(
   my_table[[6]],
   my_table[[7]],my_table[[8]],my_table[[9]],my_table[[10]],
   layout_matrix = hlay,
-  top=paste0("P_ij density for K= ",K," alpha= ",alpha," sigma= ",S))
- 
+  top=paste0("P_ij density and summary for K= ",K," alpha= ",alpha," sigma= ",S))
+
+setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration')
+ggsave(file=paste0("plot_sigma",S,"alpha",alpha,"phi",.5,".png"), my_plot,width =800,height = 569 ,units = 'px',dpi = 'screen')
 
 
-
-
+}}
+qnorm(.95,c(1),sd=.3)
 
 
 

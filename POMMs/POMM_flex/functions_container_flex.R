@@ -75,7 +75,7 @@ simulating_overlapping_POMM_powerlaw_norm = function(K,  alpha = 1, S=1, truncat
       mu <- (lb + ub) / 2  # Mean of the truncated distribution
       #sigma <- (ub - lb) *overlap
       sigma <- S*((1-phi)+ phi*(j+i))
-      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sqrt(sigma))
+      P_matrix[i,j] = rtruncnorm(1,0.5,beta_max,mu,sigma)
     }
   }
   P_matrix[lower.tri(P_matrix)] = 1 - t(P_matrix)[lower.tri(P_matrix)]
@@ -265,7 +265,7 @@ P_POMM_update_fixed_alpha_S_z = function(z_current, p_current,
   C_prime <- l_like_p_ij_normal_overlap(K,p_current,S_current,truncations_current,diag0.5)
   z_prime <- z_current
   p_prime <- p_current
-  P_NbyN_prime <- calculate_victory_probabilities(vec2mat(z_prime),p_prime)
+  P_NbyN_prime <- calculate_victory_probabilities(vec2mat_0_P(z_prime,p_prime),p_prime)
   
   j_start <- ifelse(diag0.5, yes = 1, no = 0)
   K_stop <- ifelse(diag0.5, yes = K-1, no = K)
@@ -454,8 +454,11 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
   A_prime<- A_current
   B_prime<- B_current
   z_prime=z_current
-  P_NbyN_prime<- calculate_victory_probabilities(vec2mat(z_prime),P_matrix)
-  n_prime = table(z_prime)
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P_matrix),P_matrix)
+  n_prime = matrix(0,nrow(P_matrix),1)
+  for(h in 1:nrow(P_matrix)){
+    n_prime[h] = sum(which(z_prime==h))
+  }
   
   scanning_order = sample(1:N,N, replace=F)
   # full sweep
@@ -481,16 +484,16 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
     
     z_scanning[ii] <- k_scanning
     
-    while (TRUE) {
-      if (length(unique(z_scanning)) == K) {
-        break
-      } else {
-        # resample new_label and try again
-        k_scanning <- sample(labels_available,size = 1)
-        z_scanning[ii] <- k_scanning
-        print("!")
-      }
-    }
+    # while (TRUE) {
+    #   if (length(unique(z_scanning)) == K) {
+    #     break
+    #   } else {
+    #     # resample new_label and try again
+    #     k_scanning <- sample(labels_available,size = 1)
+    #     z_scanning[ii] <- k_scanning
+    #     print("!")
+    #   }
+    # }
     
     #compute the likelihood of the data with the current assignment just for ii
     A_minus = sum(dbinom(y_ij[ii,], n_ij[ii,], P_NbyN_prime[ii,], log=T)) + sum(dbinom(y_ij[,ii], n_ij[,ii], P_NbyN_prime[,ii], log=T)) 
@@ -565,9 +568,13 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
 
 
 tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget, min_sigma){
+  #compute acceptance rate
   acceptanceRate <- acceptance_count / iteration
+  #setting the change in the variance
   delta= min(0.01, iteration**(-1/2))
+  #passing top the log scale, to have a finer scale
   lsi= log(sigma)
+  #if we are accepting too much ==> increase variance, otherwise, reduce it
   if (acceptanceRate > acceptanceTarget) {
     lsi <- lsi + delta
   } else {

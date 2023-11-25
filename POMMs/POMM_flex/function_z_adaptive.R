@@ -5,7 +5,7 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
   A_prime<- A_current
   B_prime<- B_current
   z_prime=z_current
-  P_NbyN_prime<- calculate_victory_probabilities(vec2mat(z_prime),P_matrix)
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P_matrix),P_matrix)
   n_prime = table(z_prime)
   
   scanning_order = sample(1:N,N, replace=F)
@@ -57,11 +57,12 @@ z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,l
       P_NbyN_scanning[ii,nodes]<- P_matrix[k_scanning,z_scanning[nodes]]
       P_NbyN_scanning[nodes,ii]<- P_matrix[z_scanning[nodes],k_scanning]
     }
-    #compute the likelihood of the same points with the new assignment
+    #compute the p_z'i,zj of the i-th row and the i-th column with the new assignment
     A_plus = sum(dbinom(y_ij[ii,], n_ij[ii,], P_NbyN_scanning[ii,], log=T)) + sum(dbinom(y_ij[,ii], n_ij[,ii], P_NbyN_scanning[,ii], log=T)) 
     
-    #Updating the likelihood
+    #Updating the likelihood for the proposal
     A_scanning = A_prime - A_minus + A_plus
+    
     
     n_k_scanning <- table(z_scanning)
     #n_k_scanning[c(k_cur, k_prime)] <- n_prime[c(k_cur, k_prime)] + c(-1, 1)

@@ -23,5 +23,8 @@
 \contentsline {section}{\tocsection {}{13}{Application to Tennis Data}}{54}{}%
 \contentsline {subsection}{\tocsubsection {}{13.1}{POMM model check}}{55}{}%
 \contentsline {subsection}{\tocsubsection {}{13.2}{Fixing $\sigma $=0.01}}{58}{}%
-\contentsline {subsubsection}{\tocsubsubsection {}{13.2.1}{Montecarlo algorithm}}{61}{}%
-\contentsline {section}{\tocsection {}{14}{Appendix II: Limiting case for $\sigma $}}{62}{}%
+\contentsline {section}{\tocsection {}{14}{Application to Basket data}}{61}{}%
+\contentsline {subsubsection}{\tocsubsubsection {}{14.0.1}{Montecarlo algorithm}}{65}{}%
+\contentsline {section}{\tocsection {}{15}{Application to Monkey Data}}{66}{}%
+\contentsline {subsection}{\tocsubsection {}{15.1}{POMM model check}}{67}{}%
+\contentsline {section}{\tocsection {}{16}{Appendix II: Limiting case for $\sigma $}}{70}{}%

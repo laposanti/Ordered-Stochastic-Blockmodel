@@ -1,4 +1,4 @@
-This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  26 OCT 2023 00:01
+This is e-upTeX, Version 3.141592653-p4.0.0-u1.28-220214-2.6 (utf8.uptex) (TeX Live 2022) (preloaded format=uplatex 2022.9.6)  15 NOV 2023 23:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1118,6 +1118,207 @@ LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
 LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
 
 
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K3' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K5' multiply defined.
+
+
+LaTeX Warning: Label `fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:POMM_adjacency_K9' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M4000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M7000' multiply defined.
+
+
+LaTeX Warning: Label `fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:M10000' multiply defined.
+
+
+LaTeX Warning: Label `fig:all_images' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:P_diagnostic_simple' multiply defined.
+
+
+LaTeX Warning: Label `table:simulations_from_simple' multiply defined.
+
+
 LaTeX Warning: Label `fig:Joint_K3' multiply defined.
 
 
@@ -1277,36 +1478,36 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 220.
  [6]
 [7]
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha0.1.png Graphic file (type eps)
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha0.1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha0.1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha0.
+1.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha3.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha1.
+png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha3.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha3.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.4alpha0.1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha3.
+png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alp
+ha0.1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.4alpha0.1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.4alpha1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alpha0.1
+.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alp
+ha1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.4alpha1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.4alpha3.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alpha1.p
+ng>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alp
+ha3.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.4alpha3.png>
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.4alpha3.p
+ng>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 321.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
@@ -1320,51 +1521,51 @@ LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [8] [9]
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha0.1phi1.png Graphic file (type eps)
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha0.1phi1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha0.1phi1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha1phi1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha0.
+1phi1.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha1phi1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha1phi1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha3phi1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha1p
+hi1.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha3phi1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha3phi1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha0.1phi0.5.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha3p
+hi1.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha0.1phi0.5.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha0.1phi0.5.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha1phi0.5.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha0.
+1phi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha1phi0.5.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha1phi0.5.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha3phi0.5.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha1p
+hi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha3phi0.5.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha3phi0.5.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha0.1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha3p
+hi0.5.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha0.1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha0.1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha1.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha0.
+1.png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha1.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha1.png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_explor
-ation/plot_sigma0.01alpha3.png Graphic file (type eps)
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha1.
+png>
+File: /Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01al
+pha3.png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/prior_exploration
-/plot_sigma0.01alpha3.png>
+</Users/lapo_santi/Desktop/Nial/grafici/prior_exploration/plot_sigma0.01alpha3.
+png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 382.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
@@ -1909,12 +2110,12 @@ Overfull \hbox (51.4604pt too wide) in paragraph at lines 1712--1724
 [38] [39] [40]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 1756.
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].pn
-g Graphic file (type eps)
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].png Graphic file (type 
+eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].png>
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapvs1-90Range [1-90].png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
 (Font)              No change on input line 1765.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
@@ -1933,30 +2134,27 @@ Overfull \hbox (49.10028pt too wide) in alignment at lines 1790--1802
  [] [] [] [] [] [] 
  []
 
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].pn
-g Graphic file (type eps)
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].png Graphic file (type 
+eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png Grap
-hic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapvs1-90Range [1-10].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapRange [1-10].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [1-10].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png Grap
-hic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapRange [1-10].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/barplotRange [1-10].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/barplotRange [1-10].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png Grap
-hic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/barplotRange [1-10].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/boxplotRange [1-10].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [1-10].png>
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/boxplotRange [1-10].png>
 
 LaTeX Warning: Float too large for page by 60.91542pt on input line 1839.
 
@@ -1965,30 +2163,27 @@ Overfull \hbox (49.10028pt too wide) in alignment at lines 1848--1859
  [] [] [] [] [] [] 
  []
 
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].p
-ng Graphic file (type eps)
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].png Graphic file (type
+ eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapvs1-90Range [21-30].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapRange [21-30].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [21-30].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapRange [21-30].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/barplotRange [21-30].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/barplotRange [21-30].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/barplotRange [21-30].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/boxplotRange [21-30].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [21-30].png>
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/boxplotRange [21-30].png>
 
 LaTeX Warning: Float too large for page by 60.91542pt on input line 1896.
 
@@ -1999,30 +2194,27 @@ Overfull \hbox (49.10028pt too wide) in alignment at lines 1904--1916
  [] [] [] [] [] [] 
  []
 
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].p
-ng Graphic file (type eps)
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].png Graphic file (type
+ eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapvs1-90Range [51-60].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapRange [51-60].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [51-60].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapRange [51-60].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/barplotRange [51-60].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/barplotRange [51-60].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/barplotRange [51-60].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/boxplotRange [51-60].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [51-60].png>
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/boxplotRange [51-60].png>
 
 LaTeX Warning: Float too large for page by 60.91542pt on input line 1953.
 
@@ -2033,30 +2225,27 @@ Overfull \hbox (49.10028pt too wide) in alignment at lines 1961--1973
  [] [] [] [] [] [] 
  []
 
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].p
-ng Graphic file (type eps)
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].png Graphic file (type
+ eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapvs1-90Range [71-80].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/heatmapRange [71-80].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/heatmapRange [71-80].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/heatmapRange [71-80].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/barplotRange [71-80].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/barplotRange [71-80].png>
-File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_
-graphs_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png Gra
-phic file (type eps)
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/barplotRange [71-80].png>
+File: //Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference
+/exploratoryII/ExploratoryIII/boxplotRange [71-80].png Graphic file (type eps)
 
-</Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/exploratory_graph
-s_with_inference/exploratoryII/ExploratoryIII/boxplotRange [71-80].png>
+<//Users/lapo_santi/Desktop/Nial/grafici/exploratory_graphs_with_inference/expl
+oratoryII/ExploratoryIII/boxplotRange [71-80].png>
 
 LaTeX Warning: Float too large for page by 60.91542pt on input line 2010.
 
@@ -2304,21 +2493,260 @@ Overfull \hbox (43.25679pt too wide) in paragraph at lines 2405--2416
 [58
 
 ] [59] [60]
-LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
-(Font)              No change on input line 2425.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2420.
+File: /Users/lapo_santi/Desktop/Nial/grafici/esploring_basket_data/general_heat
+map.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/grafici/esploring_basket_data/general_heatmap.p
+ng>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2429.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2429.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2429.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2429.
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/RankvsClust_Est_modelPOMM_K2_N15.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/RankvsClust_Est_modelPOMM_K2_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/RankvsClust_Est_modelPOMM_K3_N15.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/RankvsClust_Est_modelPOMM_K3_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/RankvsClust_Est_modelPOMM_K4_N15.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/RankvsClust_Est_modelPOMM_K4_N15.png>
+Underfull \vbox (badness 1137) has occurred while \output is active []
+
  [61
 
 ]
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/adjacency_Basket_application_Est_model_POMM_K2_N15.png Graphic file (typ
+e eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/adjacency_Basket_application_Est_model_POMM_K2_N15.png>
+File: //Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pr
+ocessed/adjacency_Basket_application_Est_model_POMM_K3_N15.png Graphic file (ty
+pe eps)
+
+<//Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/process
+ed/adjacency_Basket_application_Est_model_POMM_K3_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/adjacency_Basket_application_Est_model_POMM_K4_N15.png Graphic file (typ
+e eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/adjacency_Basket_application_Est_model_POMM_K4_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/similarity_Basket_application_Est_model_POMMK2_N15.png Graphic file (typ
+e eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/similarity_Basket_application_Est_model_POMMK2_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/similarity_Basket_application_Est_model_POMMK3_N15.png Graphic file (typ
+e eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/similarity_Basket_application_Est_model_POMMK3_N15.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/pro
+cessed/similarity_Basket_application_Est_model_POMMK4_N15.png Graphic file (typ
+e eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/first_attempt_basket_data/processe
+d/similarity_Basket_application_Est_model_POMMK4_N15.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2652.
+(Font)              No change on input line 2504.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2663.
+(Font)              No change on input line 2504.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2663.
+(Font)              No change on input line 2504.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2663.
+(Font)              No change on input line 2504.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (12.53491pt too wide) in paragraph at lines 2561--2572
+ [][] 
+ []
+
+[62] [63] [64]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/it' undefined
+(Font)              No change on input line 2601.
+ [65
+
+]
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2663.
+(Font)              No change on input line 2614.
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/adjacency_Monkey_data_Est_model_Simple_K3_N59.png Graphic file (type ep
+s)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/adjacency_Monkey_data_Est_model_Simple_K3_N59.png>
+File: //Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed
+_results/adjacency_Monkey_data_Est_model_Simple_K4_N59.png Graphic file (type e
+ps)
+
+<//Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resu
+lts/adjacency_Monkey_data_Est_model_Simple_K4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/adjacency_Monkey_data_Est_model_Simple_K5_N59.png Graphic file (type ep
+s)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/adjacency_Monkey_data_Est_model_Simple_K5_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/adjacency_Monkey_data_Est_model_POMM_K3_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/adjacency_Monkey_data_Est_model_POMM_K3_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/adjacency_Monkey_data_Est_model_POMM_K4_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/adjacency_Monkey_data_Est_model_POMM_K4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/adjacency_Monkey_data_Est_model_POMM_K5_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/adjacency_Monkey_data_Est_model_POMM_K5_N59.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2642.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2642.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2642.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2642.
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_SimpleK3_N59.png Graphic file (type ep
+s)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_SimpleK3_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_SimpleK4_N59.png Graphic file (type ep
+s)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_SimpleK4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_SimpleK5_N59.png Graphic file (type ep
+s)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_SimpleK5_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_POMMK3_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_POMMK3_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_POMMK4_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_POMMK4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/similarity_Monkey_data_Est_model_POMMK5_N59.png Graphic file (type eps)
+
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/similarity_Monkey_data_Est_model_POMMK5_N59.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2673.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2673.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2673.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2673.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelPOMM_K3_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelPOMM_K3_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelPOMM_K4_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelPOMM_K4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelPOMM_K5_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelPOMM_K5_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelSimple_K3_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelSimple_K3_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelSimple_K4_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelSimple_K4_N59.png>
+File: /Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_
+results/RankvsClust_Est_modelSimple_K5_N59.png Graphic file (type eps)
+
+</Users/lapo_santi/Desktop/Nial/MCMC_results/monkey application/processed_resul
+ts/RankvsClust_Est_modelSimple_K5_N59.png>
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2703.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2703.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2703.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 2703.
+
+Overfull \hbox (66.85806pt too wide) detected at line 2742
+[] \OT1/cmr/m/n/10.95 = []  [] = []
+ []
+
+[66
+
+]
+Overfull \hbox (62.11514pt too wide) in paragraph at lines 2800--2812
+ [][] 
+ []
+
+
+Overfull \hbox (37.46872pt too wide) in paragraph at lines 2820--2832
+ [][] 
+ []
+
+[67] [68] [69]
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 3074.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 3085.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 3085.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 3085.
+LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
+(Font)              No change on input line 3085.
 File: /Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results
 _small_M/processed/LevelSets/level_appendix_sigma0.01.png Graphic file (type ep
 s)
@@ -2356,30 +2784,31 @@ ps)
 </Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/results_smal
 l_M/processed/LevelSets/general_appendix_sigma0.5.png>
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2705.
+(Font)              No change on input line 3127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2705.
+(Font)              No change on input line 3127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2705.
+(Font)              No change on input line 3127.
 LaTeX Font Info:    Kanji font shape `JY2/mc/m/sc' undefined
-(Font)              No change on input line 2705.
+(Font)              No change on input line 3127.
 
-Overfull \hbox (12.66254pt too wide) detected at line 2724
+Overfull \hbox (12.66254pt too wide) detected at line 3146
 []
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [62
+ [70
+
 
 
 ]
-Overfull \hbox (71.0944pt too wide) detected at line 2732
+Overfull \hbox (71.0944pt too wide) detected at line 3154
 []
  []
 
-[63] [64] (./Draft.aux)
+[71] [72] (./Draft.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -2388,12 +2817,12 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 19139 strings out of 478716
- 554267 string characters out of 5858226
- 692666 words of memory out of 5000000
- 36748 multiletter control sequences out of 15000+600000
+ 19677 strings out of 478716
+ 606892 string characters out of 5858226
+ 692679 words of memory out of 5000000
+ 37169 multiletter control sequences out of 15000+600000
  488235 words of font info for 113 fonts, out of 8000000 for 9000
  1090 hyphenation exceptions out of 8191
  84i,15n,89p,1290b,552s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Draft.dvi (64 pages, 224448 bytes).
+Output written on Draft.dvi (72 pages, 243992 bytes).

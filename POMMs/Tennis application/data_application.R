@@ -11,8 +11,15 @@ library(label.switching)
 library(igraph)
 library(ggraph)
 library(foreach)
+library(progressr)
+library(doFuture)
 
 
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
+source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
+source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
 
 
 
@@ -24,7 +31,6 @@ ranking_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-da
 #importing the data
 
 df_rank <- read.csv('/Users/lapo_santi/Desktop/Nial/raw_tennis_data/rankings_1973-2017_csv.csv')
-
 match_2017_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/match_scores_2017_unindexed_csv/data/df00561878fee97bf28b92cc70ae1d54/match_scores_2017_unindexed_csv.csv'
 df_match <- read.csv(match_2017_url)
 
@@ -48,7 +54,11 @@ g =graph_from_edgelist(as.matrix(my_edges),directed = T)
 my_name = data.frame(player_slug=vertex_attr(g)$name)
 players_df = inner_join(my_name,top100players, by="player_slug")
 
-A = as_adjacency_matrix(g)
+
+
+
+A= list_pl$A_xvsy
+#A = as_adjacency_matrix(g)
 
 
 Y_ij= as.matrix(A)
@@ -56,115 +66,96 @@ N_ij = matrix(0, nrow(Y_ij), ncol(Y_ij))
 N_ij[lower.tri(N_ij)] = Y_ij[lower.tri(Y_ij)] + t(Y_ij)[lower.tri(Y_ij)]
 N_ij[upper.tri(N_ij)] = Y_ij[upper.tri(Y_ij)] + t(Y_ij)[upper.tri(Y_ij)]
 
-for(k in c(3,4,5)){
-  
-  
-  K=k
-  N=95
+n_chains<-4
+#-----------------------------------------------------------------------------
+# Estimation
+#-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
+N= nrow(Y_ij)
+N_iter = 40000
+
+for(little_k in 5:5){
+  K= little_k
+  beta_max=0.8
   gamma_vec = rep(1/K,K)
   diag0.5=T
-  N_iter=10000*k
-  #-------------------------------------------------------------------------------
-  #POMM 
+  alpha=.5
+  S=.01
+  trunc = improper_prior5(K,beta_max ,alpha,diag0.5)
+  
+  #------
+  #POMMM
   #------
   
-  chains_POMM <- foreach(iterazione = 1:4) %dopar% { 
-    beta_max=.8
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
-    source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
-    source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
-    source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
+  
+  seed=123
+  #initializing each chain
+  print(paste0("Estimation of POMM model, K=",K))
+  init_POMM = list()
+  for(chain in 1:n_chains){
+    alpha0=runif(1,0.1,3)
     
+    S0=runif(1,0.1,.9)
     
-    library(foreach)
-    library(doParallel)
-    library(tidyverse)
-    library(EnvStats)
-    library(truncnorm)
-    library(dplyr)
-    
-    seed= 123
-    alpha0= runif(1,0.1,3)
     trunc=improper_prior5(K,beta_max,alpha = alpha0)
-    S0=0.01
     P0_POMM= simulating_overlapping_POMM_powerlaw_norm(K,alpha0,S0,trunc,beta_max,diag0.5)
+    
+    z0=matrix(0,N,1)
+    for(item in 1:N){
+      z0[item]= sample(1:K,1)
+    }
+    init_POMM[[chain]] =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
+  }
+  
+  estimation_control = list(z = 1,alpha=1,S=0,P=1)
+  ground_truth= list(z = NA,alpha=NA,S=0.01,P=NA)
+  hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  chains_POMM = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
+                                   estimation_control = estimation_control,
+                                   ground_truth = ground_truth,N = N,n_chains = n_chains,
+                                   N_iter = N_iter,targ_rate = .22,
+                                   hyper_params =hyper_params ,seed = seed)
+  my_names <- paste0("chain", 1:n_chains)
+  names(chains_POMM)<-my_names 
+  
+  setwd('/Users/lapo_santi/Desktop/Nial/MCMC_results/kids_application/')
+  filename <- paste0("kids_data_Est_model_POMM_","_N", N,"_K", K, "_seed", seed,".RDS")
+  saveRDS(chains_POMM, file = filename) #saving results
+  
+  #------
+  #Simple 
+  #------
+  
+  
+  seed=123
+  print(paste0("Estimation of Simple model, K=",K))
+  init_Simple = list()
+  for(chain in 1:n_chains){
+    P0_Simple= matrix(.5,K,K)
+    P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0,beta_max)
+    P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
     z0=vector()
     for(i in 1:N){
       z0=append(z0, sample(1:K,1))
     }
-    init_POMM =list(z = z0,alpha=alpha0,S=S0,P=P0_POMM)
-    
-    estimation_control = list(z = 1,alpha=1,S=0,P=1)
-    
-    hyper_params = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
-    TEST = adaptive_MCMC_POMM(Yij_matrix = Y_ij,Nij_matrix = N_ij,init = init_POMM,
-                              estimation_control = estimation_control,ground_truth = list("z"=NA ,  "alpha"=NA ,"S"=S0 ,   "P"=NA ),N = N,
-                              N_iter = N_iter,targ_rate = .22,
-                              hyper_params =hyper_params ,seed = seed)
+    init_Simple[[chain]]  =list(z = z0,P=P0_Simple)
   }
-  seed=123
-  names(chains_POMM) <- c('chain1','chain2','chain3','chain4')
-  setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/fixing_S/')
-  filename <- paste0('Tennis_application_Est_model_POMM_',"_N", N,"_K", K, "_seed", seed,".RDS")
-  saveRDS(chains_POMM, file = filename) #saving results
-}
-#-------------------------------------------------------------------------------
-#Simple 
-#------
-
-
-
-
-chains_Simple <- foreach(iterazione = 1:4) %dopar% { 
   
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
-  source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
-  source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Inference_functions.R")
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
-  
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_Simple_MCMC_function.R")
-  source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/Simple_model_functions.R")
-  library(foreach)
-  library(doParallel)
-  library(tidyverse)
-  library(EnvStats)
-  library(truncnorm)
-  library(dplyr)
-  beta_max=.8
-  seed=123
-  P0_Simple= matrix(.5,K,K)
-  P0_Simple[upper.tri(P0_Simple)]<- runif(K*(K-1)/2,0.5,beta_max)
-  P0_Simple[lower.tri(P0_Simple)]<- 1- P0_Simple[upper.tri(P0_Simple)]
-  z0=vector()
-  for(i in 1:N){
-    z0=append(z0, sample(1:K,1))
-  }
-  init_Simple =list(z = z0,P=P0_Simple)
   
   estimation_control_Simple = list(z = 1,P=1)
+  ground_truth_Simple= list(z = NA,P=NA)
+  hyper_params_Simple = list(K = K,beta_max =beta_max,gamma_vec = gamma_vec,diag0.5=diag0.5)
+  chains_Simple = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
+                                       init = init_Simple,estimation_control = estimation_control_Simple,
+                                       ground_truth = ground_truth_Simple,N = N,N_iter = N_iter,n_chains = n_chains,
+                                       targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
+  names(chains_Simple)<-my_names 
+  setwd('/Users/lapo_santi/Desktop/Nial/MCMC_results/kids_application/')
+  filename_simple <- paste0("kids_data_Est_model_Simple_","_N", N,"_K", K, "_seed", seed,".RDS")
+  saveRDS(chains_Simple, file = filename_simple) #saving results
   
-  hyper_params_Simple = list(K = K,gamma_vec = gamma_vec,diag0.5=diag0.5)
-  TEST = adaptive_MCMC_simple(Yij_matrix = Y_ij,Nij_matrix = N_ij,
-                              init = init_Simple,estimation_control = estimation_control_Simple,
-                              N = N,N_iter = N_iter,
-                              targ_rate = .22,hyper_params =hyper_params_Simple, seed = seed)
 }
-
-seed=123
-names(chains_Simple) <- c('chain1','chain2','chain3','chain4')
-setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Tennis application/results')
-filename_simple <- paste0('Tennis_application_Est_model_Simple_',"_N", N,"_K", K, "_seed", seed,".RDS")
-saveRDS(chains_Simple, file = filename_simple) #saving results
-
-}
-
 
 
 label_switch = label.switching(method = "DATA-BASED",z = t(z_burn),K = 3, data=rowSums(A))

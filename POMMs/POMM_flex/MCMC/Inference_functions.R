@@ -65,8 +65,9 @@ z_permute<-function (z_container, permutations,K) {
   t_z<- t(z_container)
   
   z_array<- array(0,dim=c(m,K,J))  
+  P=matrix(0,K,K)
   for(iter in 1:m){
-    z_array[iter,,]<- t(vec2mat(t_z[iter,]))
+    z_array[iter,,]<- t(vec2mat_0_P(t_z[iter,],P = P))
   }
   
   
@@ -167,7 +168,7 @@ calculate_waic_matrix <- function(n_ij_matrix, z_container, N_iter, p_container,
   waic_matrix_container <- matrix(0, nrow = N_iter, ncol = length(upper.tri.non.zero.waic))
 
   for (ii in 1:N_iter) {
-    z_mat_waic <- vec2mat(z_container[, ii])
+    z_mat_waic <- vec2mat_0_P(z_container[, ii],P =p_container[,,ii] )
     p_ij_waic <- calculate_victory_probabilities(z_mat_waic, p_container[,, ii])
     waic_matrix_container[ii, ] <- dbinom(y_ij_matrix[upper.tri.non.zero.waic],
                                           size = n_ij_matrix[upper.tri.non.zero.waic],
@@ -297,7 +298,7 @@ z_summary_table<- function(test_output , true_value, diag0.5 , K, burn_in, label
     
     if(label_switch==T){
       runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
-      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR)
+      z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR,K)
     }
     Yij_matrix<- test_output$chain1$Yij_matrix
     Nij_matrix<- test_output$chain1$Nij_matrix

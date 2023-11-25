@@ -38,7 +38,7 @@ cores <- 5
 # Iterate over parameter combinations using foreach
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero//")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/starting_from_zero/")
 
 test_grid = expand_grid(K_values, switch_values, N_values)
 test_grid = test_grid %>% filter(switch_values ==1)
@@ -178,7 +178,7 @@ for(iterazione in 1:nrow(test_grid)){
   saveRDS(chains_Simple, file = filename_simple) #saving results
   
 }
-
+§
 
 
 
