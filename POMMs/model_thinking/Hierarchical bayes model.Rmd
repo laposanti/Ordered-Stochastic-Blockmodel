@@ -1,0 +1,410 @@
+---
+title: "hierarchical bayes model"
+author: "Lapo Santi"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(RColorBrewer)
+source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
+```
+
+
+# Hierarchical bayesian model
+
+\begin{align}
+& K \sim \operatorname{Pois}(\lambda_{K}=1 \mid K>0 ) \quad \text{for } 0< K \leq K^{\max}\\
+& a \sim U(0.5,1) \\
+& U_1,\ldots, U_K \sim (iid) \quad U(0.5,a) \\
+& U_{(k)} \sim f_{U(k)}(u)=\frac{n_0 !}{(k-1) !(n_0-k) !}\left(\frac{u-0.5}{a-0.5}\right)^{k-1}\left(\frac{a-u}{a-0.5}\right)^{n_0-k} \frac{1}{a-0.5} \text {, for } 0.5 \leq u \leq a \text {. }\\
+& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid 0< \sigma^2 < U^{\max}\cdot(1-U^{\max})) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
+& p_{(k)}\sim f(p_{(k)}\mid \mathbf{U}_{(1:K)}, \sigma^2 ) = Beta(\tilde{\alpha}_k, \tilde{\beta}_k) \quad \text{where } \tilde{\alpha}_k,\tilde{\beta}_k : \begin{cases} 
+&\mathbb{E}\left(p_{k}\right) = U_{(k)}\\
+&\mathbb{V}ar\left(p_{k}\right) = \sigma^2
+\end{cases}\\
+& z_i \sim f(z_i \mid \gamma_1,\ldots, \gamma_K) = Mult(n= 1, \gamma_1,\ldots, \gamma_K)\\
+&\gamma_i \sim f(\gamma_i \mid A_1,\ldots, A_K ) =  Dir(\gamma_i \mid A_1,\ldots, A_K) \text{ where } A = \sum_{k=1}^K A_k = K \cdot A_k = 1\\
+& y_{ij}\sim f(y_{ij} \mid \boldsymbol{z}, p) = Bin\left(n_{ij}, p_{z_i,z_j} \right)
+\end{align}
+
+which leads us to:
+\begin{align}
+& K \sim \operatorname{Pois}(\lambda_{K}=1 \mid K>0 ) \quad \text{for } 0< K \leq K^{\max}\\
+& a \sim U(0.5,1) \\
+& \mathbf{U}_{(1:K)} \mid a \sim K! \cdot \left( \frac{1}{a - 0.5}\right)^K \\
+& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid \sigma^2 < U^{\max}*(1-U^{\max})) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
+& p_{(1)},\ldots,p_{(K-1)}\mid \mathbf{U}_{(1:K)},\sigma^2 \underset{ind}{\sim} \prod_{k=1}^{K-1} Beta(\tilde{\alpha}_k, \tilde{\beta}_k)\\
+& z_{(1)},\ldots,z_{(n)} \mid \gamma_1,\ldots, \gamma_K \underset{ind}{\sim} \frac{\Gamma(\sum_k n_k + 1)}{\prod_k \Gamma(n_k+1)} \prod_{k=1}^K \gamma_k^{n_k} \\ 
+&\gamma_1,\ldots, \gamma_{K}\mid \alpha_1,\ldots, \alpha_K  = \frac{1}{\mathrm{B}(\boldsymbol{\alpha})} \prod_{k=1}^K \gamma_k^{\alpha_k - 1}\\
+& Y \mid \boldsymbol{z}, P \sim \prod_{p=1}^{K-1} \prod_{q=p+1}^K p_{pq}^{\bar{y}_{pq}} \cdot (1 - p_{pq})^{\bar{n}_{pq}- \bar{y}_{pq}} 
+\end{align}
+
+```{r}
+
+
+# Print the palettes
+
+my_df <- data.frame(level_set = 0, mean_l = 0, perc5 = 0, perc95=0, sd = 0,sample_number=0)
+my_combinations = c(0.0001,0.001,0.01,0.16)
+
+for(var_i in 1:length(my_combinations)){
+  n_samples=20
+  for(sample in 1:n_samples){
+    K=5
+    a = .80
+    U = runif(5,0.5,a)
+    x = rgamma(1 ,shape = 1,scale = 1)
+    sigma_squared = my_combinations[var_i]
+    U_k = sort(U)
+    
+    beta_params = beta_mean_var(U_k,rep(sigma_squared,K) )
+    a_k = beta_params$alpha
+    b_k = beta_params$beta
+    
+    
+    
+    P_array = array(0,dim=c(K,K,1))
+    P = matrix(0,K,K)
+    for(k in 0:(K-1)){
+      for(i in 1:(K-1)){
+        for(j in (i+1):K){
+          if((j-i)==k){
+            P[i,j]= rbeta(1,a_k[k+1],b_k[k+1])
+          }
+        }
+      }
+    }
+    
+    
+    P = P +  lower.tri(P)*(1-t(P))
+    diag(P)<- rbeta(K,1,1)
+    P_array[,,1]<- P
+    
+    
+    
+    gen_samples = generalized_levels(P_array,K = K,N = 1,diag0.5 = F)
+    
+    
+    
+    for(e in 1:length(gen_samples)){
+      my_df_i<- data.frame(level_set = e, 
+                           mean_l = mean(gen_samples[[e]]), 
+                           perc5 = quantile(gen_samples[[e]],.05),
+                           perc95 = quantile(gen_samples[[e]],.95), 
+                           sd = paste('sd=',round(sqrt(sigma_squared),2)),
+                           sample_number = sample)
+      
+      my_df <- rbind(my_df,my_df_i)
+    }
+  }
+}
+
+my_df <- my_df[-1,]
+
+
+
+
+my_df_sum <- my_df %>% group_by(level_set, sd) %>% summarize(mean= mean(mean_l), perc5 = quantile(mean_l,.05), perc95 = quantile(mean_l,.95))
+
+
+my_df_m<- my_df %>% left_join(my_df_sum, by= c('sd','level_set'))
+
+# Number of colors in the palette
+num_colors = length(my_combinations)
+
+# Blue to Red color palette with alpha=0
+palette_alpha_0 <- colorRampPalette(c("blue", "red"))(num_colors)
+
+# Blue to Red color palette with alpha=0.5
+palette_alpha_0.5 <- adjustcolor(palette_alpha_0, alpha.f = 0.5)
+
+# plotting the level sets
+ggplot(my_df_m, aes(x = level_set, y = mean_l, group = sample_number)) +
+  facet_grid(~sd) +
+  geom_ribbon(aes(ymin = perc5.y, ymax = perc95.y,fill=sd, group=sd)) +
+  geom_path(color='gray50', linewidth = 0.4, alpha = 0.05) +
+  geom_line(aes(y = mean,color=sd,group=sd),linewidth = .8) +
+  scale_color_manual(values = palette_alpha_0) +
+  scale_fill_manual(values = palette_alpha_0.5) +
+  theme_bw()+
+  labs(title = "Evolution of the inter-block probabilities across the level sets",  # Add your desired title
+       x = "Level Sets",  # Add your desired X-axis label
+       y = "p_ij",  # Add your desired Y-axis label
+       fill = "95% confidence interval",
+       colour = 'Mean')
+
+```
+
+
+
+# Collapsing P parameter
+
+We have that the likelihood, rewritten over blocks, takes the following expression:
+\begin{equation}
+f_Y(y \mid z, p)=\prod_{p=1}^K \prod_{q=1}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q}} \left(1-p_{p q}\right)^{\bar{m}_{p q}}
+\label{eq_likelihood_over_all_blocks}
+\end{equation}
+
+where
+
+\begin{align}
+&\bar{y}_{p q}=\sum_{i=1}^{N-1} \sum_{j=i+1}^N y_{i j} \quad \mathbb{I}\left(z_i=p\right) \mathbb{I}\left(z_j=q\right)\\
+&\bar{m}_{p q}=\sum_{i=1}^{N-1} \sum_{j=i+1}^N\left(n_{i j}-y_{i j}\right) \mathbb{I}\left(z_i=p\right) \mathbb{I}\left(z_j=q\right)\\
+&\bar{\lambda}_{p q}=\sum_{i=1}^{N-1} \sum_{j=i+1}^N\left(\begin{array}{l} n_{i j} \\ y_{i j}\end{array}\right) \mathbb{I}\left(z_i=p\right) \mathbb{I}\left(z_j=q\right)
+\end{align}
+
+where $\bar{y}_{p q}$ is the number of links between block $p$ and block $q$, $\bar{m}_{p q}$ is the number of missing links between the two blocks, and finally  $\bar{\lambda}_{p q}$ computes the number of ways in which we could have obtained that number of links out of the total amount of possibilities.
+
+The problem with \eqref{eq_likelihood_over_all_blocks} is that the product runs over all possible pairs of blocks. Instead, we would like to have the product spanning just the upper triangular $P$ entries to obtain an expression that would allow us to integrate out the parameter $P$.
+
+We start by rewriting \eqref{eq_likelihood_over_all_blocks} as follows:
+
+\begin{align}
+f_Y(y \mid z, p)&=\prod_{p=1}^K \prod_{q=1}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q}} \left(1-p_{p q}\right)^{\bar{m}_{p q}}\\
+&=\prod_{p=1}^{K} \prod_{q=p}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q}} \left(1-p_{p q}\right)^{\bar{m}_{p q}} \cdot \prod_{p=2}^{K} \prod_{q=1}^{K-1} \bar{\lambda}_{p q} p_{p q}^{\bar{m}_{q p}} \left(1-p_{p q}\right)^{\bar{y}_{q p }}\\
+&=\prod_{p=1}^{K} \bar{\lambda}_{p p} p_{p p}^{\bar{y}_{p p}} \left(1-p_{p p}\right)^{\bar{m}_{p p}} \cdot \prod_{p=1}^{K-1} \prod_{q=p+1}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q} + \bar{m}_{q p}} \left(1-p_{p q}\right)^{\bar{m}_{p q}+ \bar{y}_{q p}}
+\end{align}
+since $p_{pq} = 1 - p_{qp}$
+
+To achieve this result, we start by acknowledging that $\bar{m}_{qp} = \bar{y}_{pq}$
+
+
+
+
+
+The prior on the $P$ entries takes the following expression
+$$
+f_p\left(p_{p q} \mid \tilde{\alpha}_k, \tilde{\beta}_k, k\right)=\prod_{p=1}^{K} \prod_{q=1}^{K} \frac{1}{\operatorname{Beta}\left(\tilde{\alpha}_{k},\tilde{\beta}_{k}\right)} p_{pq}^{\tilde{\alpha}_{k} -1} \left(1-p_{p q}\right)^{\tilde{\beta}_{k}-1}
+$$
+for $\tilde{\alpha}_k>0, \tilde{\beta}_K>0$, where for $q-p>0$
+
+\begin{align}
+& \tilde{\alpha}_k=\left(\frac{1-U_{(k)}}{\sigma^2}-\frac{1}{U_k}\right) \cdot \mu^2 \\
+& \tilde{\beta}_k=\tilde{\alpha}_k \cdot\left(\frac{1}{U_{(k)}}-1\right)
+\end{align}
+
+so that
+
+\begin{align}
+& \mathbb{E}\left(p^{(l)}\right)=U_{(k)} \\
+& \operatorname{Var}\left(p^{(l)}\right)=\sigma^2
+\end{align}
+
+where $p^{(l)}:=\left\{p_{p q}: q-p=l \quad \text{for } l=1,\ldots,K-1\right\}$, denoted as \textit{Level Set}.
+
+Instead, for $q-p=0$, that is over $p^{(0)}$, we set $\tilde{\alpha}_k=\tilde{\beta}_k=1$, so that the distribution of the level set $p^{(0)}$  , that is, the diagonal of the $P$ matrix is a uniform distribution with
+
+\begin{align}
+& \mathbb{E}\left[p^{(0)}\right]=1 / 2 \\
+& \mathbb{V}ar\left[p^{(0)}\right]=1 / 12
+\end{align}
+
+
+The, using the beta-binomial conjugacy, we marginalize out $P$, obtaining
+$$
+f_Y \left( Y \mid \mathbf{z}, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)=\prod_{p=1}^K \prod_{q=1}^K \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}
+$$
+
+where we use the notation $f_Y \left( y \mid z, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)$ to explicit the dependency of $\tilde{\alpha}_k, \tilde{\beta}_k$ upon $\{ \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, \alpha \}$.
+
+
+## Collapsing the prior on $\gamma$
+
+From this model we can write the joint distribution of $( \boldsymbol{z}, \boldsymbol{\boldsymbol{\gamma}})$ as:
+
+
+
+\begin{align}
+f( \boldsymbol{z}, \boldsymbol{\gamma}) &= f(\boldsymbol{z} | \boldsymbol{\gamma} ) f(\boldsymbol{\gamma} | \boldsymbol{\alpha} ) \nonumber \\
+&= \frac{1}{B(\boldsymbol{\alpha})}\gamma^{n_1} \gamma^{n_2} ...\gamma^{n_K}  \prod_{i=1}^K ( \gamma_i^{\alpha_i - 1}) \nonumber  \\
+&= \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^K ( \gamma_i^{n_i + \alpha_i - 1})
+\end{align}
+
+where $n_k = \sum_{i=1}^N \mathbb{I} \left( z_i = k\right)$ is the number of items in block $k$. 
+Now, we can marginalize out $\boldsymbol{\gamma}$ exploiting the Dirichlet-Categorial conjugacy 
+
+\begin{align}
+f_{\boldsymbol{z}}(\boldsymbol{z} \mid \boldsymbol{\alpha}) &= \int \mathrm{p}( \boldsymbol{z}, \boldsymbol{\gamma})  \boldsymbol{\gamma} \nonumber \\
+&= \frac{\sum_{i=1}^K \Gamma (\alpha_i)}{\prod_{i=1}^K \Gamma(\alpha_i)}  \int \gamma_i^{n_i + \alpha_i - 1} d \gamma \label{eqn:dirichletkernel}\\
+&= \frac{\sum_{i=1}^K \Gamma (\alpha_i)}{\prod_{i=1}^K \Gamma(\alpha_i)} \frac{\prod_{i=1}^K \Gamma(\alpha_i + n_i)} {\Gamma (\sum_{i=1}^K \alpha_i + n_i )} \nonumber \\
+&= \frac{\Gamma ( \sum_{i =1}^K \alpha_i)}{\Gamma (\sum_{i=1}^K \alpha_i + n_i )} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)} \nonumber \\
+&=  \frac{\Gamma (A)}{\Gamma (A + N)} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)} \label{eqn: z-marginal}
+\end{align}
+
+
+where we have recognised in \eqref{eqn:dirichletkernel} the kernel of a $\operatorname{Dirichlet}(n_i + \alpha_i)$ and where \eqref{eqn: z-marginal} is known as Dirichlet-Multinomial distribution and we denote it as $DM(\boldsymbol{\alpha})$
+
+# The full proportional posterior distribution
+
+\begin{align}
+& f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \propto \\
+& f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right) \cdot f(\boldsymbol{z} \mid \boldsymbol{\alpha}) \cdot f\left(\mathbf{U}_{(1:K)} \mid a, K\right) \cdot f\left(\sigma^2 \mid U^{\max} \right) \cdot f(a) \cdot f(K) \\
+& = \underbrace{\prod_{p=1}^K \prod_{q=1}^K \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}}_{f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right)} \cdot \underbrace{\frac{\Gamma (\boldsymbol{\alpha})}{\Gamma (\boldsymbol{\alpha} + n)} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)}}_{f(\boldsymbol{z} \mid \boldsymbol{\alpha})} \cdot \underbrace{K! \cdot \left( \frac{1}{a - 0.5}\right)^K}_{ f\left(\mathbf{U}_{(1:K)} \mid a, K\right)} \cdot \underbrace{\frac{e^{-\sigma^2}}{1-\exp \left(-U^{\max}\right)}}_{f\left(\sigma^2\right)} \underbrace{\frac{1}{2}}_{ f(a)} \cdot \underbrace{\frac{1}{K!(e-1)}}_{f(K)}
+\end{align}
+
+Passing to the log:
+
+$$
+\begin{aligned}
+&log\left(f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \right) \propto \\ 
+& \sum_{p=1}^K \sum_{q=1}^K \left[ \log \left(B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)\right)-\log \left(B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)\right) \right]+  \log (\Gamma(\boldsymbol{\alpha}))-\log (\Gamma(\boldsymbol{\alpha}+n)) +\\
+&\sum_{i=1}^K\left[\log \left( \Gamma\left(\alpha_i+n_i\right)\right) - \log \left(\Gamma\left(\alpha_i\right)\right)\right] +\log (K !)+K \cdot(-\log (a-0.5))  -\sigma^2 -\\
+&\log \left(1-\exp \left(-U^{\max }\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
+\label{eqn_proportional_posterior}
+\end{aligned}
+$$
+
+Here I write the code to evaluate the function above \eqref{eqn_proportional_posterior}.
+
+```{r}
+# 
+# compute_log_proportional_posterior <- function(z, tilde_alpha_k, tilde_beta_k, sigma_squared, a, U, K, alpha) {
+# 
+# 
+#   sum1 <- 
+# 
+#   sum2 <- sum(log(gamma(alpha)) - log(gamma(alpha + colSums(Y))))
+# 
+#   sum3 <- sum(sapply(1:K, function(i) {
+#     log(gamma(alpha[i] + rowSums(Y[, i])) - log(gamma(alpha[i])))
+#   }))
+# 
+#   result <- sum1 + sum2 + sum3 + log(factorial(K)) - K * log(a - 0.5) - sigma_squared -
+#             log(1 - exp(-max(U))) + log(1 / 2) - log(factorial(K)) - log(exp(1) - 1)
+# 
+#   return(result)
+# }
+# 
+# # Example usage:
+# z <- # Provide your value for z
+# sigma_squared <- # Provide your value for sigma_squared
+# a <- # Provide your value for a
+# U <- # Provide your matrix for U
+# K <- # Provide your value for K
+# Y <- # Provide your matrix for Y
+# alpha <- # Provide your vector for alpha
+# 
+# result <- compute_formula(z, sigma_squared, a, U, K, Y, alpha)
+# print(result)
+
+```
+
+
+# Appendix
+
+## Checking that rewriting the likelihood over blocks is correct
+
+
+First, we are simulating some data and compute the likelihood with the product ranging over individuals $i<j=1,\ldots,n$
+```{r}
+# Binomial SBM
+
+#Simulating the from the prior P -------
+set.seed(12)
+n=20
+K=4
+a = .70
+U = runif(4,0.5,a)
+x = rgamma(1 ,shape = 1,scale = 1)
+sigma_squared = 0.001
+U_k = sort(U)
+
+beta_params = beta_mean_var(U_k,rep(sigma_squared,K) )
+a_k = beta_params$alpha
+b_k = beta_params$beta
+
+N<- matrix(2,n,n)
+diag(N)<-0
+
+P = matrix(0,K,K)
+for(k in 0:(K-1)){
+  for(i in 1:(K-1)){
+    for(j in (i+1):K){
+      if((j-i)==k){
+        P[i,j]= rbeta(1,a_k[k+1],b_k[k+1])
+      }
+    }
+  }
+}
+
+P = P +  lower.tri(P)*(1-t(P))
+diag(P)=0.5
+
+#simulating z
+z = matrix(0,n,1)
+z<- sample(1:K, n,replace=T)
+
+z_P<- vec2mat_0_P(z,P)
+
+P_nbyn<- calculate_victory_probabilities(z_P,P)
+
+#simulating N
+Y_binom <- matrix(0, n,n)
+for(i in 1:n){
+  for(j in 1:n){
+    Y_binom[i,j]<- rbinom(1,N[i,j],P_nbyn[i,j])
+  }
+}
+
+Y_binom[lower.tri(Y_binom)] = N[lower.tri(N)] - t(Y_binom)[lower.tri(Y_binom)]
+diag(Y_binom)<- 0
+
+#--------------
+
+log_lik_f_binom = function(N,Y,z,P, directed=T){
+  z_P<- vec2mat_0_P(z,P)
+  P_nbyn<- calculate_victory_probabilities(z_P, P)
+  if(directed==T){
+    #computing the pairwise log-probabilitiees
+    bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
+    #remember to subtract the diagonal
+    log_lik= sum(bigM) - sum(diag(bigM))
+  }else if(directed==F){
+    bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
+    #remember to subtract the diagonal
+    log_lik= sum(bigM*upper.tri(bigM))
+  }
+  return(log_lik)
+}
+
+# number of victories between block p and block q
+ybar_binom1 = t(z_P)%*%(Y_binom*upper.tri(Y_binom))%*%z_P
+# number of missed victories between block p and block q
+n_minus_y1 <- (N-Y_binom)*upper.tri(N)
+# number of missed victories between block p and block q
+mbar_binom1<- t(z_P)%*%n_minus_y1%*%z_P
+
+coef1 = lchoose(N, Y_binom)*upper.tri(N)
+bin_coef1 <- t(z_P)%*%(coef1)%*%z_P
+
+
+llik_over_blocks_f_binomial = function(bin_coef, ybar, mbar, P){
+  #llik<- sum(bin_coef+ ybar*log(P) + (mbar)*log(1-P))
+  llik = matrix(0,K,K)
+  for(p in 1:K){
+    for(q in p:K){
+      if(q-p==0){
+        llik[p,q] = bin_coef[p,q]+ ybar[p,q]*log(P[p,q]) + mbar[p,q]*log(1-P[p,q])
+      }else{
+        llik[p,q] = bin_coef[q,p]+ bin_coef[p,q]+(ybar[p,q]+mbar[q,p])*log(P[p,q]) + (mbar[p,q]+ybar[q,p])*log(1-P[p,q]) 
+      }
+    }
+  }
+  return(sum(llik))
+}
+
+llik_over_blocks_f_binomial(bin_coef1 ,ybar_binom1, mbar_binom1,P)
+
+log_lik_f_binom(N,Y_binom,z,P,directed=F)
+```
+
+
+
+
+
+
+

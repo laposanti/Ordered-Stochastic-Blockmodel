@@ -1,6 +1,0 @@
-\contentsline {section}{\tocsection {}{1}{Current Model: focus on likelihood and prior for $P$}}{1}{}%
-\contentsline {section}{\tocsection {}{2}{Re-parametrise with a Beta and integrate out P}}{3}{}%
-\contentsline {subsection}{\tocsubsection {}{2.1}{Riparametrization with $\nu $ as prior sample size}}{4}{}%
-\contentsline {subsection}{\tocsubsection {}{2.2}{Riparametrisation with mean and variance}}{4}{}%
-\contentsline {subsection}{\tocsubsection {}{2.3}{Integrating $P$ out}}{4}{}%
-\contentsline {section}{\tocsection {}{3}{Allowing for different values on the diagonal}}{6}{}%
