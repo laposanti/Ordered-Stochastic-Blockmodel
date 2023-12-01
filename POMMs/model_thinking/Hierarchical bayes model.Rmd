@@ -2,7 +2,10 @@
 title: "hierarchical bayes model"
 author: "Lapo Santi"
 date: "`r Sys.Date()`"
-output: pdf_document
+output: 
+  pdf_document:
+    extra_dependencies: ["algorithm","algpseudocode"]
+
 ---
 
 ```{r setup, include=FALSE}
@@ -10,9 +13,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+library(truncnorm)
 source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
 ```
-
+\newcommand{\vertg}{\rotatebox{90}{$>$}}
 
 # Hierarchical bayesian model
 
@@ -36,7 +40,7 @@ which leads us to:
 & K \sim \operatorname{Pois}(\lambda_{K}=1 \mid K>0 ) \quad \text{for } 0< K \leq K^{\max}\\
 & a \sim U(0.5,1) \\
 & \mathbf{U}_{(1:K)} \mid a \sim K! \cdot \left( \frac{1}{a - 0.5}\right)^K \\
-& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid \sigma^2 < U^{\max}*(1-U^{\max})) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
+& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid \sigma^2 < (U^{\max}\cdot(1-U^{\max}))) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
 & p_{(1)},\ldots,p_{(K-1)}\mid \mathbf{U}_{(1:K)},\sigma^2 \underset{ind}{\sim} \prod_{k=1}^{K-1} Beta(\tilde{\alpha}_k, \tilde{\beta}_k)\\
 & z_{(1)},\ldots,z_{(n)} \mid \gamma_1,\ldots, \gamma_K \underset{ind}{\sim} \frac{\Gamma(\sum_k n_k + 1)}{\prod_k \Gamma(n_k+1)} \prod_{k=1}^K \gamma_k^{n_k} \\ 
 &\gamma_1,\ldots, \gamma_{K}\mid \alpha_1,\ldots, \alpha_K  = \frac{1}{\mathrm{B}(\boldsymbol{\alpha})} \prod_{k=1}^K \gamma_k^{\alpha_k - 1}\\
@@ -166,20 +170,23 @@ We start by rewriting \eqref{eq_likelihood_over_all_blocks} as follows:
 \begin{align}
 f_Y(y \mid z, p)&=\prod_{p=1}^K \prod_{q=1}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q}} \left(1-p_{p q}\right)^{\bar{m}_{p q}}\\
 &=\prod_{p=1}^{K} \prod_{q=p}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q}} \left(1-p_{p q}\right)^{\bar{m}_{p q}} \cdot \prod_{p=2}^{K} \prod_{q=1}^{K-1} \bar{\lambda}_{p q} p_{p q}^{\bar{m}_{q p}} \left(1-p_{p q}\right)^{\bar{y}_{q p }}\\
-&=\prod_{p=1}^{K} \bar{\lambda}_{p p} p_{p p}^{\bar{y}_{p p}} \left(1-p_{p p}\right)^{\bar{m}_{p p}} \cdot \prod_{p=1}^{K-1} \prod_{q=p+1}^K \bar{\lambda}_{p q} p_{p q}^{\bar{y}_{p q} + \bar{m}_{q p}} \left(1-p_{p q}\right)^{\bar{m}_{p q}+ \bar{y}_{q p}}
+&=\prod_{p=1}^{K} \bar{\lambda}_{p p} p_{p p}^{\bar{y}_{p p}} \left(1-p_{p p}\right)^{\bar{m}_{p p}} \cdot \prod_{p=1}^{K-1} \prod_{q=p+1}^K \bar{\lambda}_{p q} \cdot \bar{\lambda}_{qp} p_{p q}^{\bar{y}_{p q} + \bar{m}_{q p}} \left(1-p_{p q}\right)^{\bar{m}_{p q}+ \bar{y}_{q p}}
 \end{align}
 since $p_{pq} = 1 - p_{qp}$
-
-To achieve this result, we start by acknowledging that $\bar{m}_{qp} = \bar{y}_{pq}$
-
 
 
 
 
 The prior on the $P$ entries takes the following expression
-$$
-f_p\left(p_{p q} \mid \tilde{\alpha}_k, \tilde{\beta}_k, k\right)=\prod_{p=1}^{K} \prod_{q=1}^{K} \frac{1}{\operatorname{Beta}\left(\tilde{\alpha}_{k},\tilde{\beta}_{k}\right)} p_{pq}^{\tilde{\alpha}_{k} -1} \left(1-p_{p q}\right)^{\tilde{\beta}_{k}-1}
-$$
+
+
+\begin{equation}
+f_p\left(p_{p q} \mid \tilde{\alpha}_k, \tilde{\beta}_k, k\right)= \begin{cases} 
+\prod_{p=1}^{K-1} \prod_{q=p+1}^{K} \frac{1}{\operatorname{Beta}\left(\tilde{\alpha}_{k},\tilde{\beta}_{k}\right)} p_{pq}^{\tilde{\alpha}_{k} -1} \left(1-p_{p q}\right)^{\tilde{\beta}_{k}-1}\quad &\text{for } 0<q-p<K-1 \\
+\prod_{p=q} Beta(1,1) = [Beta(1,1)]^K\quad &\text{for } q-p=0
+\end{cases}
+\end{equation}
+
 for $\tilde{\alpha}_k>0, \tilde{\beta}_K>0$, where for $q-p>0$
 
 \begin{align}
@@ -204,10 +211,15 @@ Instead, for $q-p=0$, that is over $p^{(0)}$, we set $\tilde{\alpha}_k=\tilde{\b
 \end{align}
 
 
-The, using the beta-binomial conjugacy, we marginalize out $P$, obtaining
+The, using the beta-binomial conjugacy, we marginalize out $P$, obtaining:
+
 $$
-f_Y \left( Y \mid \mathbf{z}, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)=\prod_{p=1}^K \prod_{q=1}^K \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}
+f_Y \left( Y \mid \mathbf{z}, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)= \prod_{p=1}^{K-1} \prod_{q=p+1}^{K-1} \left( \bar{\lambda}_{p q}  \bar{\lambda}_{qp}  \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)} \right) \prod_{p=1}^K \bar{\lambda}_{p p} \frac{B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right)}{B\left(1, 1\right)}
 $$
+
+
+
+
 
 where we use the notation $f_Y \left( y \mid z, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)$ to explicit the dependency of $\tilde{\alpha}_k, \tilde{\beta}_k$ upon $\{ \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, \alpha \}$.
 
@@ -242,56 +254,381 @@ where we have recognised in \eqref{eqn:dirichletkernel} the kernel of a $\operat
 
 \begin{align}
 & f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \propto \\
-& f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right) \cdot f(\boldsymbol{z} \mid \boldsymbol{\alpha}) \cdot f\left(\mathbf{U}_{(1:K)} \mid a, K\right) \cdot f\left(\sigma^2 \mid U^{\max} \right) \cdot f(a) \cdot f(K) \\
-& = \underbrace{\prod_{p=1}^K \prod_{q=1}^K \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}}_{f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right)} \cdot \underbrace{\frac{\Gamma (\boldsymbol{\alpha})}{\Gamma (\boldsymbol{\alpha} + n)} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)}}_{f(\boldsymbol{z} \mid \boldsymbol{\alpha})} \cdot \underbrace{K! \cdot \left( \frac{1}{a - 0.5}\right)^K}_{ f\left(\mathbf{U}_{(1:K)} \mid a, K\right)} \cdot \underbrace{\frac{e^{-\sigma^2}}{1-\exp \left(-U^{\max}\right)}}_{f\left(\sigma^2\right)} \underbrace{\frac{1}{2}}_{ f(a)} \cdot \underbrace{\frac{1}{K!(e-1)}}_{f(K)}
+& f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right) \cdot f(\boldsymbol{z} \mid \boldsymbol{\alpha}) \cdot f\left(\mathbf{U}_{(1:K)} \mid a, K\right) \cdot f\left(\sigma^2 \mid U^{\max} \right) \cdot f(a) \cdot f(K) = \\
+&\underbrace{\prod_{p=1}^{K-1} \prod_{q=p+1}^{K-1} \left( \bar{\lambda}_{p q}  \bar{\lambda}_{qp}  \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)} \right) \prod_{p=1}^K \bar{\lambda}_{p p} \frac{B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right)}{B\left(1, 1\right)}}_{f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right)} \cdot \underbrace{\frac{\Gamma (\boldsymbol{\alpha})}{\Gamma (\boldsymbol{\alpha} + n)} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)}}_{f(\boldsymbol{z} \mid \boldsymbol{\alpha})} \\
+&\cdot \underbrace{K! \cdot \left( \frac{1}{a - 0.5}\right)^K}_{ f\left(\mathbf{U}_{(1:K)} \mid a, K\right)} \cdot \underbrace{\frac{e^{-\sigma^2}}{1-\exp \left(U^{\max }(1-U^{\max }\right)}}_{f\left(\sigma^2\right)} \underbrace{\frac{1}{2}}_{ f(a)} \cdot \underbrace{\frac{1}{K!(e-1)}}_{f(K)}
 \end{align}
 
 Passing to the log:
 
-$$
-\begin{aligned}
-&log\left(f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \right) \propto \\ 
-& \sum_{p=1}^K \sum_{q=1}^K \left[ \log \left(B\left(\tilde{\alpha}_k+\bar{y}_{p q}, \tilde{\beta}_k+\bar{m}_{p q}\right)\right)-\log \left(B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)\right) \right]+  \log (\Gamma(\boldsymbol{\alpha}))-\log (\Gamma(\boldsymbol{\alpha}+n)) +\\
-&\sum_{i=1}^K\left[\log \left( \Gamma\left(\alpha_i+n_i\right)\right) - \log \left(\Gamma\left(\alpha_i\right)\right)\right] +\log (K !)+K \cdot(-\log (a-0.5))  -\sigma^2 -\\
-&\log \left(1-\exp \left(-U^{\max }\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
-\label{eqn_proportional_posterior}
-\end{aligned}
-$$
 
-Here I write the code to evaluate the function above \eqref{eqn_proportional_posterior}.
+\begin{equation}
+\begin{aligned}
+&\log\left(f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \right) \propto \\ 
+& \sum_{p=1}^{K-1} \sum_{q=p+1}^{K-1} \left( \log({\bar{\lambda}_{p q}}) + \log({ \bar{\lambda}_{qp} }) \log({B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}) - \log({B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}) \right) +\\
+&\sum_{p=1}^K( \log(\bar{\lambda}_{p p}) + \log{(B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right))} - \log{(B\left(1, 1\right))})+ \log (\Gamma(\boldsymbol{\alpha}))-\log (\Gamma(\boldsymbol{\alpha}+n)) + \\
+&\sum_{i=1}^K\left[\log \left( \Gamma\left(\alpha_i+n_i\right)\right) - \log \left(\Gamma\left(\alpha_i\right)\right)\right] +\log (K !)+K \cdot(-\log (a-0.5))  -\sigma^2 -\\
+&\log \left(1-\exp \left(U^{\max }(1-U^{\max })\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
+\label{eqn_log_proportional_posterior}
+\end{aligned}
+\end{equation}
+
+Here I write the code to evaluate the function above \eqref{eqn_log_proportional_posterior}.
 
 ```{r}
-# 
-# compute_log_proportional_posterior <- function(z, tilde_alpha_k, tilde_beta_k, sigma_squared, a, U, K, alpha) {
-# 
-# 
-#   sum1 <- 
-# 
-#   sum2 <- sum(log(gamma(alpha)) - log(gamma(alpha + colSums(Y))))
-# 
-#   sum3 <- sum(sapply(1:K, function(i) {
-#     log(gamma(alpha[i] + rowSums(Y[, i])) - log(gamma(alpha[i])))
-#   }))
-# 
-#   result <- sum1 + sum2 + sum3 + log(factorial(K)) - K * log(a - 0.5) - sigma_squared -
-#             log(1 - exp(-max(U))) + log(1 / 2) - log(factorial(K)) - log(exp(1) - 1)
-# 
-#   return(result)
-# }
-# 
-# # Example usage:
-# z <- # Provide your value for z
-# sigma_squared <- # Provide your value for sigma_squared
-# a <- # Provide your value for a
-# U <- # Provide your matrix for U
-# K <- # Provide your value for K
-# Y <- # Provide your matrix for Y
-# alpha <- # Provide your vector for alpha
-# 
-# result <- compute_formula(z, sigma_squared, a, U, K, Y, alpha)
-# print(result)
+
+lprop_posterior <- function(lambdabar, ybar,mbar, a, 
+                            alpha_vec, n_k,sigma_squared, U_vec,K){
+  
+  beta_params = beta_mean_var(U_vec,rep(sigma_squared,K) )
+  alpha_k = beta_params$alpha
+  beta_k = beta_params$beta
+  
+  
+  
+  llik= matrix(0,K,K)
+  for(p in 1:(K-1)){
+    for(q in p+1:K){
+      if(q-p != 0){
+        llik[p,q]<-  log(lambdabar[p,q]) + log(lambdabar[q,p]) +
+          lbeta(alpha_k[q-p] + ybar[p,q]+ mbar[q,p],beta_k[q-p] + 
+                  ybar[q,p]+ mbar[q,p]) - lbeta(alpha_k[q-p], beta_k[q-p])  
+      }else{
+        llik[p,p]<-  log(lambdabar[p,q]) +lbeta(1 + ybar[p,q],1 
+                                                + ybar[q,p]) - lbeta(1, 1)  
+      }
+    }
+  }
+  
+  
+  sum1 <- sum(llik)
+  #prior on z
+  sum2 <- ddirichlet_multinomial(N,K,n_k, alpha_vec)
+  #prior on U
+  sum3 <- lfactorial(K)+K*(-log(a-0.5))
+  #prior on sigma^2
+  sum4 <- -sigma_squared - log(1-exp(max(U)*(1-max(U))))
+  #prior on K
+  sum5 <- -lfactorial(K) - log(exp(1) -1)
+  #pior on a
+  sum6 <- 1/2
+  result <- sum1 + sum2 + sum3 + sum4 + sum5 + sum6
+  return(result)
+}
 
 ```
+
+
+# Inference
+
+## Update z
+
+Regarding the $z$ parameter:
+
+
+
+
+
+
+
+
+## Update $\sigma^2$
+
+Below we report the algorithm employed to update $\sigma^2$
+
+
+\begin{algorithm}
+\begin{algorithmic}
+\State $\texttt{Given} \quad \boldsymbol{z}^{(t)}, (\sigma^2)^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)}, Y, N, \boldsymbol{\alpha}$
+\State
+\State \texttt{1. Sample} 
+\begin{align} (\sigma^{2})^{\prime}&\sim g \left( (\sigma^{2})^{(t)}, (\tau^2_{\sigma^2})^{(t)}\mid 0, U^{\max}\right) \\
+&= \operatorname{TruncNorm}\left(\mu= (\sigma^{2})^{(t)}, \sigma^2 = (\tau^2_{\sigma^2})^{(t)} , lb= 0,ub= U^{\max}(1-U_{\max})\right)\end{align}
+
+\State \texttt{2. Take} $$
+(\sigma^{2})^{(t+1)} = 
+\begin{cases}
+(\sigma^{2})^{(t)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+(\sigma^{2})^{\prime} \quad &\texttt{with probability} \quad r^\prime,
+\end{cases}
+$$
+\State $\texttt{where}$ \begin{align}\label{eqn:sigma_ratio}
+&r^\prime = \log(1) \ \vertg \nonumber \\ 
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{\prime}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right) + \log\left(g((\sigma^{2})^{(t)})\right) - \\
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right)  - \log\left(g((\sigma^{2})^{\prime}) \right) 
+\end{align}
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for \( \sigma^2 \)}
+\label{alg_general_algorithm_sigma}
+\end{algorithm}
+
+Here is the function employed for its computation:
+
+
+```{r}
+#code for the sigma^2 update step within the MH MCMC algorithm
+
+sigma_squared_update = function(lambdabar,ybar,mbar, a, alpha_vec, n_k,
+                                sigma_squared, U_vec,K, theta_sigma_squared,
+                                acc.count_sigma_squared){
+  
+  U_max = max(U_vec)
+  
+  #simulating (sigma^2)' from a g ~ truncated normal
+  sigma_squared_prime <- rtruncnorm(1,a = 0,b = 0.9,
+                                    mean = sigma_squared,
+                                    sd = theta_sigma_squared**2)
+  
+  #computing the proportional posterior in (sigma^2)'
+  prop_posterior_prime <- lprop_posterior(lambdabar, ybar,mbar, a, alpha_vec, 
+                                          n_k,sigma_squared_prime, U_vec,K)
+  
+  #evaluating the proportional posterior in (sigma^2)^(t)
+  prop_posterior_current<- lprop_posterior(lambdabar, ybar,
+                                           mbar, a, alpha_vec, n_k,
+                                           sigma_squared_current, U_vec,K)
+  
+  #evaluating the proposal density g(sigma^2)') 
+  log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = 0.9,
+                                       mean = sigma_squared,
+                                       sd = theta_sigma_squared**2))
+  
+  #evaluating the proposal density g(sigma^2)^(t)) 
+  log_proposal_current <- log(dtruncnorm(sigma_squared,a = 0,b = 0.9,
+                                         mean = sigma_squared,
+                                         sd = theta_sigma_squared**2))
+  #acceptance ratio
+  log_r=  prop_posterior_prime + log_proposal_current - 
+    prop_posterior_current - log_proposal_prime
+  
+  #create statements that check conditionion to accept move
+  MH_condition_S= min(log_r,0)>=log(runif(1))
+  if(MH_condition_S){
+    acc.count_sigma_squared = acc.count_sigma_squared+1
+    sigma_squared <- sigma_squared_prime
+  }
+  
+  
+  return(list(acc.moves = acc.count_sigma_squared,
+              sigma_squared=sigma_squared))
+  
+} 
+
+```
+
+
+## Update a
+
+Below we report the algorithm employed to update $a$
+
+
+\begin{algorithm}
+\begin{algorithmic}
+\State $\texttt{Given} \quad \boldsymbol{z}^{(t)}, (\sigma^2)^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)}, Y, N, \boldsymbol{\alpha}$
+\State
+\State \texttt{1. Sample} 
+\begin{align} 
+a^{\prime} &\sim g \left( a^{(t)}, (\tau^2_{a})^{(t)}\mid 0, 1 \right) \\
+&= \operatorname{TruncNorm}\left(\mu= (a^{(t)}, \sigma^2 = (\tau^2_{a})^{(t)} , lb= 0,ub= 1 \right)
+\end{align}
+
+\State \texttt{2. Take} $$
+a^{(t+1)} = 
+\begin{cases}
+a^{(t)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+a^{\prime} \quad &\texttt{with probability} \quad r^\prime,
+\end{cases}
+$$
+\State $\texttt{where}$ \begin{align}\label{eqn:a_ratio}
+&r^\prime = \log(1) \ \vertg \nonumber \\ 
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{(t)}, a^{\prime}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right) + \log\left(g(a^{(t)})\right) - \\
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right)  - \log\left(g(a^{\prime}) \right) 
+\end{align}
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for \( a \)}
+\label{alg_general_algorithm_a}
+\end{algorithm}
+
+Here is the function employed for its computation:
+
+
+```{r}
+#code for the a parameter update step within the MH MCMC algorithm
+
+a_update = function(lambdabar, ybar,mbar, a, alpha_vec, n_k,
+                    sigma_squared, U_vec,K, theta_sigma_squared,
+                    acc.count_a){
+  
+  
+  
+  #simulating (sigma^2)' from a g ~ truncated normal
+  a_prime <- rtruncnorm(1,a = 0.5,b = 1,
+                        mean = a,
+                        sd = theta_a**2)
+  
+  #computing the proportional posterior in a'
+  prop_posterior_prime <- lprop_posterior(lambdabar, ybar,mbar, a_prime, 
+                                          alpha_vec, n_k,sigma_squared, 
+                                          U_vec,K)
+  
+  #evaluating the proportional posterior in a^(t)
+  prop_posterior_current<- lprop_posterior(lambdabar, ybar,
+                                           mbar, a, alpha_vec, n_k,
+                                           sigma_squared, U_vec,K)
+  
+  #evaluating the proposal density g(a') 
+  log_proposal_prime <- log(dtruncnorm(a_prime,a = 0,b = 0.9,
+                                       mean = sigma_squared,
+                                       sd = theta_sigma_squared**2))
+  
+  #evaluating the proposal density g(sigma^2)^(t)) 
+  log_proposal_current <- log(dtruncnorm(1,a = 0,b = 0.9,
+                                         mean = a,
+                                         sd = theta_a**2))
+  #acceptance ratio
+  log_r=  prop_posterior_prime + log_proposal_current - 
+    prop_posterior_current - log_proposal_prime
+  
+  #create statements that check conditionion to accept move
+  MH_condition_S= min(log_r,0)>=log(runif(1))
+  if(MH_condition_S){
+    acc.count_a = acc.count_a+1
+    a <- a_prime
+  }
+  
+  
+  return(list(acc.moves = acc.count_a,
+              sigma_squared=sigma_squared))
+  
+} 
+
+```
+
+
+
+
+
+## Update U
+
+Below we report the algorithm employed to update $\mathbf{U}_{(1:K)}^{(t)}$
+
+
+\begin{algorithm}
+\begin{algorithmic}
+\State $\texttt{Given} \quad \boldsymbol{z}^{(t)}, (\sigma^2)^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)}, Y, N, \boldsymbol{\alpha}$
+\For{\texttt{k = 1:K}}
+\State \texttt{1. Sample}
+
+\begin{align} 
+U_{(k)}^{\prime} &\sim g_l= \begin{cases} g_1 \left( U_{(1)}^{(t)}, (\tau^2_{U_{(1)}})^{(t)}\mid 0.5, U_{(2)}^{(t)} \right) &\quad \text{ if } k=1 \\ 
+g_2 \left( U_{(k)}^{(t)}, (\tau^2_{U_{(k)}})^{(t)}\mid U_{(k-1)}^{(t)}, U_{(k+1)}^{(t)} \right) &\quad \text{ if } 1<k<K \\ 
+g_3 \left( U_{(K)}^{(t)}, (\tau^2_{U_{(K)}})^{(t)}\mid U_{(K-1)},a \right) &\quad \text{ if } k=K \\ 
+\end{cases} \\
+&= \begin{cases}
+\operatorname{TruncNorm}\left(\mu=  U_{(1)}^{(t)}, \sigma^2 = (\tau^2_{1})^{(t)} , lb= 0.5,ub= U_{(2)}^{(t)} \right) &\quad \text{ for } k=1\\
+\operatorname{TruncNorm}\left(\mu= U_{(k)}^{(t)}, \sigma^2 = (\tau^2_{k})^{(t)} , lb= U_{(k-1)}^{(t)},ub= U_{(k+1)}^{(t)} \right)&\quad \text{ for }  1<k<K \\
+\operatorname{TruncNorm}\left(\mu= U_{(K)}^{(t)}, \sigma^2 = (\tau^2_{K})^{(t)} , lb= U_{(k-1)}^{(t)},ub= U_{(K)}^{(t)} \right)&\quad \text{ for } k=K\\
+\end{cases}
+\end{align}
+
+
+
+\State \texttt{2. Take} $$
+U_{(k)}^{(t+1)} = 
+\begin{cases}
+U_{(k)}^{(t)} \quad &\texttt{with probability} \quad 1 - r^\prime, \\
+U_{(k)}^{\prime} \quad &\texttt{with probability} \quad r^\prime,
+\end{cases}
+$$
+\State $\texttt{where}$ 
+
+\begin{align}
+&r^\prime = \log(1) \vertg \nonumber \\ 
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{(t)}, a^{(t)}, \mathbf{U}_{(k_j<k)}^{(t+1)}, \mathbf{U}_{(k)}^{\prime}, \mathbf{U}_{(k_j>k)}^{(t)}, K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right) + \log\left(g_l(U_k^{(t)})\right) - \\
+&\log\left(f\left(\boldsymbol{z}^{(t)}, (\sigma^{2})^{(t)}, a^{(t)}, \mathbf{U}_{(k_j<k)}^{(t+1)}, \mathbf{U}_{(k:K)}^{(t)}, K^{(t)} \mid Y \boldsymbol{\alpha} \right) \right)  - \log\left(g_l(U_k^{\prime}) \right) 
+\label{eqn:U_update}
+\end{align}
+\EndFor
+\end{algorithmic}
+\caption{Metropolis-within-Gibbs update for \( \mathbf{U}_{(1:K)}^{(t)} \)}
+\label{alg_general_algorithm_a}
+\end{algorithm}
+
+
+Here is the function employed for its computation:
+
+
+```{r}
+#code for the U parameter update step within the MH MCMC algorithm
+
+U_update = function(lambdabar, ybar,mbar, a, alpha_vec, n_k,
+                    sigma_squared, U_vec,K, theta_sigma_squared,
+                    acc.count_a){
+  
+  
+  for(k in 2:(K+1)){
+    
+    U_ext <- c(0.5,U_vec,a)
+    U_vec_prime <- U_vec
+    
+    #simulating (sigma^2)' from a g ~ truncated normal
+    U_prime <- rtruncnorm(1,a = U_ext[k-1],b = U_ext[k+1],
+                          mean = U_vec[k],
+                          sd = theta_U[k]**2)
+    
+    U_vec_prime[k] <- U_prime
+    #computing the proportional posterior in a'
+    prop_posterior_prime <- lprop_posterior(lambdabar, ybar,mbar, a, 
+                                            alpha_vec, n_k,sigma_squared, 
+                                            U_vec_prime,K)
+    
+    #evaluating the proportional posterior in a^(t)
+    prop_posterior_current<- lprop_posterior(lambdabar, ybar,
+                                             mbar, a, alpha_vec, n_k,
+                                             sigma_squared, U_vec,K)
+    
+    #evaluating the proposal density g(a') 
+    log_proposal_prime <- log(dtruncnorm(U_prime,a = U_ext[k-1],b = U_ext[k+1],
+                                         mean = U_vec[k],
+                                         sd = theta_U[k]**2))
+    
+    #evaluating the proposal density g(sigma^2)^(t)) 
+    log_proposal_current <- log(dtruncnorm(U_vec[k],a = U_ext[k-1],b = U_ext[k+1],
+                                           mean = U_vec[k],
+                                           sd = theta_U**2))
+    #acceptance ratio
+    log_r=  prop_posterior_prime + log_proposal_current - 
+      prop_posterior_current - log_proposal_prime
+    
+    #create statements that check conditionion to accept move
+    MH_condition_S= min(log_r,0)>=log(runif(1))
+    if(MH_condition_S){
+      acc.count_a = acc.count_a+1
+      U_vec <- U_prime
+    }
+  }
+  
+  return(list(acc.moves = acc.count_a,
+              U_vec=U_vec))
+  
+} 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+## Update K
+
+
 
 
 # Appendix
@@ -300,6 +637,7 @@ Here I write the code to evaluate the function above \eqref{eqn_proportional_pos
 
 
 First, we are simulating some data and compute the likelihood with the product ranging over individuals $i<j=1,\ldots,n$
+
 ```{r}
 # Binomial SBM
 

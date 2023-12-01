@@ -19,8 +19,8 @@
 \usepackage{booktabs}
 \usepackage{subfigure}
 \usepackage{tikz}
-
-
+				
+					
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
@@ -3209,6 +3209,14 @@ Overall, the POMM model can be applied in any field where pairwise comparisons a
 
 \end{comment}
 
-
+\begin{align}
+&\log\left(f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \right) \propto \\ 
+& \sum_{p=1}^{K-1} \sum_{q=p+1}^{K-1} \left( \log({\bar{\lambda}_{p q}}) + \log({ \bar{\lambda}_{qp} }) \log({B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}) - \log({B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}) \right) +\\
+&\sum_{p=1}^K( \log(\bar{\lambda}_{p p}) + \log{(B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right))} - \log{(B\left(1, 1\right))})+  
+\log (\Gamma(\boldsymbol{\alpha}))-\log (\Gamma(\boldsymbol{\alpha}+n)) +\\
+&\sum_{i=1}^K\left[\log \left( \Gamma\left(\alpha_i+n_i\right)\right) - \log \left(\Gamma\left(\alpha_i\right)\right)\right] +\log (K !)+K \cdot(-\log (a-0.5))  -\sigma^2 -\\
+&\log \left(1-\exp \left(-U^{\max }\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
+\label{eqn_proportional_posterior}
+\end{align}
 
 \end{document}
