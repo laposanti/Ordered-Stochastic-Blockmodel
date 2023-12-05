@@ -25,7 +25,7 @@ source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorS
 & a \sim U(0.5,1) \\
 & U_1,\ldots, U_K \sim (iid) \quad U(0.5,a) \\
 & U_{(k)} \sim f_{U(k)}(u)=\frac{n_0 !}{(k-1) !(n_0-k) !}\left(\frac{u-0.5}{a-0.5}\right)^{k-1}\left(\frac{a-u}{a-0.5}\right)^{n_0-k} \frac{1}{a-0.5} \text {, for } 0.5 \leq u \leq a \text {. }\\
-& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid 0< \sigma^2 < U^{\max}\cdot(1-U^{\max})) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
+& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid 0< \sigma^2 < U^{\min}\cdot(1-U^{\min})) , \quad \text{where } U^{\min}= \min \left(\mathbf{U}_{(1:K)}\right)\\
 & p_{(k)}\sim f(p_{(k)}\mid \mathbf{U}_{(1:K)}, \sigma^2 ) = Beta(\tilde{\alpha}_k, \tilde{\beta}_k) \quad \text{where } \tilde{\alpha}_k,\tilde{\beta}_k : \begin{cases} 
 &\mathbb{E}\left(p_{k}\right) = U_{(k)}\\
 &\mathbb{V}ar\left(p_{k}\right) = \sigma^2
@@ -40,7 +40,7 @@ which leads us to:
 & K \sim \operatorname{Pois}(\lambda_{K}=1 \mid K>0 ) \quad \text{for } 0< K \leq K^{\max}\\
 & a \sim U(0.5,1) \\
 & \mathbf{U}_{(1:K)} \mid a \sim K! \cdot \left( \frac{1}{a - 0.5}\right)^K \\
-& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid \sigma^2 < (U^{\max}\cdot(1-U^{\max}))) , \quad \text{where } U^{\max}= \max \left(\mathbf{U}_{(1:K)}\right)\\
+& \sigma^2 \sim f(\sigma^2) = \operatorname{TruncExp}(\lambda_{\sigma^2}=1\mid \sigma^2 < (U^{\min}\cdot(1-U^{\min}))) , \quad \text{where } U^{\min}= \min \left(\mathbf{U}_{(1:K)}\right)\\
 & p_{(1)},\ldots,p_{(K-1)}\mid \mathbf{U}_{(1:K)},\sigma^2 \underset{ind}{\sim} \prod_{k=1}^{K-1} Beta(\tilde{\alpha}_k, \tilde{\beta}_k)\\
 & z_{(1)},\ldots,z_{(n)} \mid \gamma_1,\ldots, \gamma_K \underset{ind}{\sim} \frac{\Gamma(\sum_k n_k + 1)}{\prod_k \Gamma(n_k+1)} \prod_{k=1}^K \gamma_k^{n_k} \\ 
 &\gamma_1,\ldots, \gamma_{K}\mid \alpha_1,\ldots, \alpha_K  = \frac{1}{\mathrm{B}(\boldsymbol{\alpha})} \prod_{k=1}^K \gamma_k^{\alpha_k - 1}\\
@@ -53,10 +53,10 @@ which leads us to:
 # Print the palettes
 
 my_df <- data.frame(level_set = 0, mean_l = 0, perc5 = 0, perc95=0, sd = 0,sample_number=0)
-my_combinations = c(0.0001,0.001,0.01,0.16)
+my_combinations = c(0.0001,0.001,0.01,0.1)
 
 for(var_i in 1:length(my_combinations)){
-  n_samples=20
+  n_samples=100
   for(sample in 1:n_samples){
     K=5
     a = .80
@@ -137,13 +137,65 @@ ggplot(my_df_m, aes(x = level_set, y = mean_l, group = sample_number)) +
   theme_bw()+
   labs(title = "Evolution of the inter-block probabilities across the level sets",  # Add your desired title
        x = "Level Sets",  # Add your desired X-axis label
-       y = "p_ij",  # Add your desired Y-axis label
+       y = expression(p[ij]),  # Add your desired Y-axis label
        fill = "95% confidence interval",
        colour = 'Mean')
 
 ```
 
+Here we explore the relationship between $\mathbf{U}_{(1:K)}$ and $\sigma^2$.
+Since we know that $\sigma^2 < \mathbf{U}_{(1:K)}(1-\mathbf{U}_{(1:K)})$, this implies that
+\[
+\frac{1}{2} (1-\sqrt{1-4\sigma^2} <\mathbf{U}_{k} < \frac{1}{2} (1+\sqrt{1-4\sigma^2} \quad \text{ for } k=1,\ldots,K-1
+\]
 
+```{r}
+
+#several variances
+sigma_squared_combinations= seq(0.0001,0.2,0.001)
+
+#lower bound function
+lb_f = function(sigma_squared){
+  if(sigma_squared>0){
+    lb<- 0.5*(1-sqrt(1-4*sigma_squared))
+    return(lb)}
+}
+#upper bound function
+ub_f = function(sigma_squared){
+  if(sigma_squared>0){
+    ub<- 0.5*(1+sqrt(1-4*sigma_squared))
+    return(ub)}
+}   
+
+sigma_U_rel_df <- data.frame(
+  sigma = sqrt(sigma_squared_combinations),
+  sigma_squared = sigma_squared_combinations,
+  lb = as.numeric(lapply(sigma_squared_combinations, lb_f)),
+  ub = as.numeric(lapply(sigma_squared_combinations, ub_f))
+)
+#this function is needed to avoid the ggplor error: function non monotonic
+my_f <- Vectorize(function(x) {
+  if (x < 0) return(x/1e10)
+  sqrt(x)
+})
+
+
+ggplot(sigma_U_rel_df, aes(x = sigma_squared, ymin = lb, ymax = ub)) +
+  geom_errorbar(color = 'navy') +
+  theme_bw() +
+  labs(
+    title = expression(paste("Admissible ", U[1:K], " values for different ", sigma^2 ,' values')),
+    x = expression(sigma^2),
+    y = expression(U[1:K])
+  ) +
+  scale_x_continuous(  limits = c(0,max(sigma_squared_combinations)),
+                       sec.axis = sec_axis(~ my_f(.), name =  expression(sigma))
+  )
+
+
+
+
+```
 
 # Collapsing P parameter
 
@@ -223,6 +275,28 @@ $$
 
 where we use the notation $f_Y \left( y \mid z, \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, a\right)$ to explicit the dependency of $\tilde{\alpha}_k, \tilde{\beta}_k$ upon $\{ \mathbf{U}_{(1),\ldots,(K)}, \sigma^2, \alpha \}$.
 
+To compute it, we use the following function:
+
+```{r}
+llike_integrated_out = function(lambdabar, ybar,mbar,K,alpha_k, beta_k){
+  llik= matrix(0,K,K)
+  for(p in 1:K){
+    for(q in p:K){
+      if(q-p != 0){
+        llik[p,q]<-  log(lambdabar[p,q]) + log(lambdabar[q,p]) +
+          lbeta(alpha_k[q-p] + ybar[p,q]+ mbar[q,p],beta_k[q-p] + 
+                  ybar[q,p]+ mbar[q,p]) - lbeta(alpha_k[q-p], beta_k[q-p])  
+      }else{
+        llik[p,p]<-  log(lambdabar[p,q]) +lbeta(1 + ybar[p,q],1 
+                                                + ybar[q,p]) - lbeta(1, 1)  
+      }
+    }
+  }
+  
+  return(sum(llik))
+}
+
+```
 
 ## Collapsing the prior on $\gamma$
 
@@ -254,9 +328,9 @@ where we have recognised in \eqref{eqn:dirichletkernel} the kernel of a $\operat
 
 \begin{align}
 & f\left(\boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)} , K \mid Y \boldsymbol{\alpha} \right) \propto \\
-& f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right) \cdot f(\boldsymbol{z} \mid \boldsymbol{\alpha}) \cdot f\left(\mathbf{U}_{(1:K)} \mid a, K\right) \cdot f\left(\sigma^2 \mid U^{\max} \right) \cdot f(a) \cdot f(K) = \\
+& f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right) \cdot f(\boldsymbol{z} \mid \boldsymbol{\alpha}) \cdot f\left(\mathbf{U}_{(1:K)} \mid a, K\right) \cdot f\left(\sigma^2 \mid U^{\min} \right) \cdot f(a) \cdot f(K) = \\
 &\underbrace{\prod_{p=1}^{K-1} \prod_{q=p+1}^{K-1} \left( \bar{\lambda}_{p q}  \bar{\lambda}_{qp}  \frac{B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}{B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)} \right) \prod_{p=1}^K \bar{\lambda}_{p p} \frac{B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right)}{B\left(1, 1\right)}}_{f\left(Y \mid \boldsymbol{z}, \sigma^2, a, \mathbf{U}_{(1:K)}, K\right)} \cdot \underbrace{\frac{\Gamma (\boldsymbol{\alpha})}{\Gamma (\boldsymbol{\alpha} + n)} \prod_{i=1}^K  \frac{\Gamma(\alpha_i + n_i)}{\Gamma (\alpha_i)}}_{f(\boldsymbol{z} \mid \boldsymbol{\alpha})} \\
-&\cdot \underbrace{K! \cdot \left( \frac{1}{a - 0.5}\right)^K}_{ f\left(\mathbf{U}_{(1:K)} \mid a, K\right)} \cdot \underbrace{\frac{e^{-\sigma^2}}{1-\exp \left(U^{\max }(1-U^{\max }\right)}}_{f\left(\sigma^2\right)} \underbrace{\frac{1}{2}}_{ f(a)} \cdot \underbrace{\frac{1}{K!(e-1)}}_{f(K)}
+&\cdot \underbrace{K! \cdot \left( \frac{1}{a - 0.5}\right)^K}_{ f\left(\mathbf{U}_{(1:K)} \mid a, K\right)} \cdot \underbrace{\frac{e^{-\sigma^2}}{1-\exp \left(-U^{\min }(1-U^{\min }\right)}}_{f\left(\sigma^2\right)} \underbrace{\frac{1}{2}}_{ f(a)} \cdot \underbrace{\frac{1}{K!(e-1)}}_{f(K)}
 \end{align}
 
 Passing to the log:
@@ -268,7 +342,7 @@ Passing to the log:
 & \sum_{p=1}^{K-1} \sum_{q=p+1}^{K-1} \left( \log({\bar{\lambda}_{p q}}) + \log({ \bar{\lambda}_{qp} }) \log({B\left(\tilde{\alpha}_k+\bar{y}_{p q}+\bar{m}_{q p}, \tilde{\beta}_k+\bar{m}_{p q}+\bar{y}_{q p}\right)}) - \log({B\left(\tilde{\alpha}_k, \tilde{\beta}_k\right)}) \right) +\\
 &\sum_{p=1}^K( \log(\bar{\lambda}_{p p}) + \log{(B\left(1 +\bar{y}_{p p}, 1+\bar{m}_{p p}\right))} - \log{(B\left(1, 1\right))})+ \log (\Gamma(\boldsymbol{\alpha}))-\log (\Gamma(\boldsymbol{\alpha}+n)) + \\
 &\sum_{i=1}^K\left[\log \left( \Gamma\left(\alpha_i+n_i\right)\right) - \log \left(\Gamma\left(\alpha_i\right)\right)\right] +\log (K !)+K \cdot(-\log (a-0.5))  -\sigma^2 -\\
-&\log \left(1-\exp \left(U^{\max }(1-U^{\max })\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
+&\log \left(1-\exp \left(-U^{\min }(1-U^{\min })\right)\right)+ \log (1 / 2)-\log (K !)-\log (e-1) \\
 \label{eqn_log_proportional_posterior}
 \end{aligned}
 \end{equation}
@@ -286,28 +360,13 @@ lprop_posterior <- function(lambdabar, ybar,mbar, a,
   
   
   
-  llik= matrix(0,K,K)
-  for(p in 1:(K-1)){
-    for(q in p+1:K){
-      if(q-p != 0){
-        llik[p,q]<-  log(lambdabar[p,q]) + log(lambdabar[q,p]) +
-          lbeta(alpha_k[q-p] + ybar[p,q]+ mbar[q,p],beta_k[q-p] + 
-                  ybar[q,p]+ mbar[q,p]) - lbeta(alpha_k[q-p], beta_k[q-p])  
-      }else{
-        llik[p,p]<-  log(lambdabar[p,q]) +lbeta(1 + ybar[p,q],1 
-                                                + ybar[q,p]) - lbeta(1, 1)  
-      }
-    }
-  }
-  
-  
-  sum1 <- sum(llik)
+  sum1= llike_integrated_out(lambdabar, ybar,mbar,K,alpha_k,beta_k)
   #prior on z
   sum2 <- ddirichlet_multinomial(N,K,n_k, alpha_vec)
   #prior on U
   sum3 <- lfactorial(K)+K*(-log(a-0.5))
   #prior on sigma^2
-  sum4 <- -sigma_squared - log(1-exp(max(U)*(1-max(U))))
+  sum4 <- -sigma_squared - log(1-exp(min(U*(1-U))))
   #prior on K
   sum5 <- -lfactorial(K) - log(exp(1) -1)
   #pior on a
@@ -342,8 +401,8 @@ Below we report the algorithm employed to update $\sigma^2$
 \State $\texttt{Given} \quad \boldsymbol{z}^{(t)}, (\sigma^2)^{(t)}, a^{(t)}, \mathbf{U}_{(1:K)}^{(t)} , K^{(t)}, Y, N, \boldsymbol{\alpha}$
 \State
 \State \texttt{1. Sample} 
-\begin{align} (\sigma^{2})^{\prime}&\sim g \left( (\sigma^{2})^{(t)}, (\tau^2_{\sigma^2})^{(t)}\mid 0, U^{\max}\right) \\
-&= \operatorname{TruncNorm}\left(\mu= (\sigma^{2})^{(t)}, \sigma^2 = (\tau^2_{\sigma^2})^{(t)} , lb= 0,ub= U^{\max}(1-U_{\max})\right)\end{align}
+\begin{align} (\sigma^{2})^{\prime}&\sim g \left( (\sigma^{2})^{(t)}, (\tau^2_{\sigma^2})^{(t)}\mid 0, U^{\min}\right) \\
+&= \operatorname{TruncNorm}\left(\mu= (\sigma^{2})^{(t)}, \sigma^2 = (\tau^2_{\sigma^2})^{(t)} , lb= 0,ub= U^{\min}(1-U_{\min})\right)\end{align}
 
 \State \texttt{2. Take} $$
 (\sigma^{2})^{(t+1)} = 
@@ -738,6 +797,177 @@ llik_over_blocks_f_binomial = function(bin_coef, ybar, mbar, P){
 llik_over_blocks_f_binomial(bin_coef1 ,ybar_binom1, mbar_binom1,P)
 
 log_lik_f_binom(N,Y_binom,z,P,directed=F)
+```
+
+
+```{r}
+
+llike_integrated_out = function(lambdabar, ybar,mbar,K,alpha_k, beta_k){
+  llik= matrix(0,K,K)
+  for(p in 1:K){
+    for(q in p:K){
+      if(q-p != 0){
+        llik[p,q]<-  log(lambdabar[p,q]) + log(lambdabar[q,p]) +
+          lbeta(alpha_k[q-p] + ybar[p,q]+ mbar[q,p],beta_k[q-p] + 
+                  ybar[q,p]+ mbar[q,p]) - lbeta(alpha_k[q-p], beta_k[q-p])  
+      }else{
+        llik[p,p]<-  log(lambdabar[p,q]) +lbeta(1 + ybar[p,q],1 
+                                                + ybar[q,p]) - lbeta(1, 1)  
+      }
+    }
+  }
+  
+  return(sum(llik))
+}
+
+```
+
+## Checking that the full likelihood works effectively
+
+```{r}
+
+P_prior_probability = function(P,K,U_vec, sigma_squared){
+  
+  beta_params = beta_mean_var(U_vec,rep(sigma_squared,K) )
+  alpha_k = beta_params$alpha
+  beta_k = beta_params$beta
+  
+  p_P = matrix(0,K,K)
+  for(p in 1:K){
+    for(q in p:K){
+      if(q-p != 0){
+        p_P[p,q]<-  dbeta(P[p,q],alpha_k[q-p],beta_k[q-p],log = TRUE) 
+      }else if (p==q){
+        p_P[p,p]<-  dbeta(P[p,q],1,1,log = TRUE) 
+      }
+    }
+  }
+  
+  return(sum(p_P))
+}
+
+```
+
+
+```{r}
+N_samples = 1000
+
+
+set.seed(12)
+n=100
+N<- matrix(2,n,n)
+diag(N)<-0
+K= 5
+a = .75
+sigma_squared = 0.005
+P_container = array(0, dim=c(K,K,N_samples))
+
+Y_container= array(0, dim=c(n,n,N_samples))
+z = matrix(0,n,1)
+z<- sample(1:K, n,replace=T)
+U = runif(K,0.5,a)
+U_k = sort(U)
+
+
+for(sample in 1:N_samples){
+  
+  beta_params = beta_mean_var(U_k,rep(sigma_squared,K) )
+  
+  a_k = beta_params$alpha
+  b_k = beta_params$beta
+  
+  
+  P = matrix(0,K,K)
+  for(k in 0:(K-1)){
+    for(i in 1:(K-1)){
+      for(j in (i+1):K){
+        if((j-i)==k){
+          P[i,j]= rbeta(1,a_k[k+1],b_k[k+1])
+        }
+      }
+    }
+  }
+  
+  P = P +  lower.tri(P)*(1-t(P))
+  diag(P)= rbeta(K,1,1)
+  P_container[,,sample]<-P
+  
+  z_P<- vec2mat_0_P(z,P)
+  
+  P_nbyn<- calculate_victory_probabilities(z_P,P)
+  
+  #simulating N
+  Y_binom <- matrix(0, n,n)
+  for(i in 1:n){
+    for(j in 1:n){
+      Y_binom[i,j]<- rbinom(1,N[i,j],P_nbyn[i,j])
+    }
+  }
+  
+  Y_binom[lower.tri(Y_binom)] = N[lower.tri(N)] - t(Y_binom)[lower.tri(Y_binom)]
+  diag(Y_binom)<- 0
+  
+  Y_container[,,sample]<- Y_binom
+}
+```
+
+
+```{r}
+
+sigma_squared_values <-  seq(0.000001,.1,.001)
+
+prior_P = matrix(0,length(sigma_squared_values),1)
+
+for(try_out in 1:length(sigma_squared_values)){
+  prior_container = matrix(0,N_samples,1)
+  
+  beta_params = beta_mean_var(U_k,rep(sigma_squared_values[try_out],K) )
+  
+  
+  for(try_in in 1:N_samples){
+    
+    alpha_k = beta_params$alpha
+    beta_k = beta_params$beta
+    
+    Y_binom <- Y_container[,,try_in]
+    
+    P = matrix(0,K,K)
+    for(k in 0:(K-1)){
+      for(i in 1:(K-1)){
+        for(j in (i+1):K){
+          if((j-i)==k){
+            P[i,j]= rbeta(1,alpha_k[k+1],beta_k[k+1])
+          }
+        }
+      }
+    }
+    
+    P = P +  lower.tri(P)*(1-t(P))
+    diag(P)= rbeta(K,1,1)
+    # number of victories between block p and block q
+    ybar = t(z_P)%*%(Y_binom*upper.tri(Y_binom))%*%z_P
+    # number of missed victories between block p and block q
+    n_minus_y1 <- (N-Y_binom)*upper.tri(N)
+    # number of missed victories between block p and block q
+    mbar<- t(z_P)%*%n_minus_y1%*%z_P
+    
+    coef1 = lchoose(N, Y_binom)*upper.tri(N)
+    lambdabar <- t(z_P)%*%(coef1)%*%z_P
+    
+    prior_container[try_in]<- llik_over_blocks_f_binomial(bin_coef = lambdabar,ybar = ybar,mbar = mbar,P = P)
+  }
+  prior_P[try_out] <- sum(prior_container)
+  print(sum(prior_container))
+}
+
+a_df = data.frame(sigma_squared_values = sigma_squared_values,prior_probabilities = prior_P)
+
+ggplot(a_df, aes(x = sigma_squared_values, y = prior_P))+
+  geom_point()+
+  geom_vline(xintercept = sigma_squared)+
+  geom_vline(xintercept = sigma_squared_values[which.max(prior_P)])
+
+
 ```
 
 

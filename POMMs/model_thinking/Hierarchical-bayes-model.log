@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.9.6)  1 DEC 2023 11:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.9.6)  4 DEC 2023 14:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -571,40 +571,57 @@ Package pdftex.def Info: Hierarchical-bayes-model_files/figure-latex/unnamed-ch
 unk-1-1.pdf  used on input line 253.
 (pdftex.def)             Requested size: 453.6939pt x 313.16922pt.
 [3] [4 <./Hierarchical-bayes-model_files/figure-latex/unnamed-chunk-1-1.pdf>]
-Overfull \hbox (31.67688pt too wide) detected at line 334
+<Hierarchical-bayes-model_files/figure-latex/unnamed-chunk-2-1.pdf, id=72, 459.
+7175pt x 313.17pt>
+File: Hierarchical-bayes-model_files/figure-latex/unnamed-chunk-2-1.pdf Graphic
+ file (type pdf)
+<use Hierarchical-bayes-model_files/figure-latex/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: Hierarchical-bayes-model_files/figure-latex/unnamed-ch
+unk-2-1.pdf  used on input line 307.
+(pdftex.def)             Requested size: 459.7304pt x 313.17877pt.
+[5 <./Hierarchical-bayes-model_files/figure-latex/unnamed-chunk-2-1.pdf>] [6]
+Overfull \hbox (31.67688pt too wide) detected at line 388
 \OML/lmm/m/it/10 f[] [] \OT1/lmr/m/n/10 = [] [] [] [] [][]
  []
 
 
-Underfull \hbox (badness 1237) in paragraph at lines 336--340
+Underfull \hbox (badness 1237) in paragraph at lines 390--394
 []\T1/lmr/m/n/10 (+20) where we use the no-ta-tion $\OML/lmm/m/it/10 f[] []$ \T
 1/lmr/m/n/10 (+20) to ex-plicit the de-pen-dency of $[]\OML/lmm/m/it/10 ; []$ \
 T1/lmr/m/n/10 (+20) upon
  []
 
-[5]
-Overfull \hbox (14.15622pt too wide) detected at line 380
+[7]
+Overfull \hbox (14.15622pt too wide) detected at line 458
 []
  []
 
-[6] [7]
+[8]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 476.
-[8] [9] [10] [11] [12] [13] [14] [15] (./Hierarchical-bayes-model.aux)
+put line 539.
+[9] [10] [11] [12] [13] [14]
+Underfull \vbox (badness 10000) detected at line 904
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 904
+ []
+
+[15] [16] (./Hierarchical-bayes-model.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 14596 strings out of 478268
- 231785 string characters out of 5846348
- 589907 words of memory out of 5000000
- 32359 multiletter control sequences out of 15000+600000
- 551560 words of font info for 137 fonts, out of 8000000 for 9000
+ 14610 strings out of 478268
+ 232320 string characters out of 5846348
+ 590911 words of memory out of 5000000
+ 32365 multiletter control sequences out of 15000+600000
+ 551818 words of font info for 140 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  74i,20n,77p,1021b,446s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local
-/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2022/
+{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
+texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2022/
 texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2022/texmf-dist/fon
 ts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvi
 ps/lm/lm-mathsy.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-m
@@ -629,10 +646,10 @@ t/fonts/type1/public/lm/lmtk10.pfb></usr/local/texlive/2022/texmf-dist/fonts/ty
 pe1/public/lm/lmtt10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public
 /lm/lmtti10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts
 /symbols/msbm10.pfb>
-Output written on Hierarchical-bayes-model.pdf (15 pages, 415734 bytes).
+Output written on Hierarchical-bayes-model.pdf (16 pages, 437501 bytes).
 PDF statistics:
- 358 PDF objects out of 1000 (max. 8388607)
- 285 compressed objects within 3 object streams
- 94 named destinations out of 1000 (max. 500000)
- 45158 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 371 PDF objects out of 1000 (max. 8388607)
+ 294 compressed objects within 3 object streams
+ 95 named destinations out of 1000 (max. 500000)
+ 45163 words of extra memory for PDF output out of 51595 (max. 10000000)
 

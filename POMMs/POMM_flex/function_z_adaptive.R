@@ -2,6 +2,7 @@
 
 
 z_update_adaptive = function(z_current, A_current,B_current,y_ij,n_ij,P_matrix,labels_available,upper.tri.non.zero,gamma_vec,K, acc.count_z, sigma_z){
+  
   A_prime<- A_current
   B_prime<- B_current
   z_prime=z_current
