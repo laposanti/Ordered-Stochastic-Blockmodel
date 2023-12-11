@@ -688,8 +688,6 @@ U_update = function(lambdabar, ybar,mbar, a, alpha_vec, n_k,
 ## Update K
 
 
-
-
 # Appendix
 
 ## Checking that rewriting the likelihood over blocks is correct

@@ -176,7 +176,7 @@ calculate_waic_matrix <- function(n_ij_matrix, z_container, N_iter, p_container,
   }
 
 
-  waic.matrix(waic_matrix_container)
+
 }
 
 
