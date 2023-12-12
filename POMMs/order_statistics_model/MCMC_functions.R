@@ -710,32 +710,39 @@ lprop_posterior_withP_UNORDERED <- function(lamdabar, ybar,mbar,P, alpha_vec, n_
 #---------------------------- MCMC steps ---------------------------------------
 
 
-P_update_f_UNORDERED = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,K, tau_P,acc.count_P){
+
+P_update_f = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
+                      sigma_squared, U_vec,K, tau_P,
+                      acc.count_P){
   
+  P_current = P
   
-  for(p in 1:K){
-    for(q in p:K){
+  for(p_th in 1:K){
+    for(q_th in p_th:K){
       
-      P_prime<-P
-      P_prime[p,q]<- rtruncnorm(1, mean = P[p,q],sd = tau_P[p,q], a =   0, b  = 1)
-      if(p!=q){
-        P_prime[q,p] <- 1 - P_prime[p,q]
+      P_prime<-P_current
+      P_prime[p_th,q_th]<- rtruncnorm(1, mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1)
+      if(p_th!=q_th){
+        P_prime[q_th,p_th] <- 1 - P_prime[p_th,q_th]
       }
       #computing the proportional posterior in a'
-      prop_posterior_prime <-  lprop_posterior_withP_UNORDERED(lamdabar = lamdabar, ybar = ybar,
-                                                               mbar = mbar,P = P_prime, 
-                                                               alpha_vec = alpha_vec, n_k = n_k,K = K)
+      prop_posterior_prime <-  lprop_posterior_withP_UNORDERED(lamdabar = lamdabar,
+                                                               ybar = ybar, mbar = mbar, 
+                                                               P = P_prime, 
+                                                               alpha_vec = alpha_vec,
+                                                               n_k = n_k,K = K)
       
       #evaluating the proportional posterior in a^(t)
-      prop_posterior_current<- lprop_posterior_withP_UNORDERED(lamdabar = lamdabar, ybar = ybar,
-                                                               mbar = mbar,P = P, 
-                                                               alpha_vec = alpha_vec, n_k = n_k,K = K)
-      
+      prop_posterior_current <-  lprop_posterior_withP_UNORDERED(lamdabar = lamdabar,
+                                                               ybar = ybar, mbar = mbar, 
+                                                               P = P_current, 
+                                                               alpha_vec = alpha_vec,
+                                                               n_k = n_k,K = K) 
       #evaluating the proposal density g(a') 
-      log_proposal_prime <- log(dtruncnorm(P_prime[p,q],mean = P[p,q],sd = tau_P[p,q], a =   0, b  = 1))
+      log_proposal_prime <- log(dtruncnorm(P_prime[p_th,q_th],mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1))
       
       #evaluating the proposal density g(sigma^2)^(t)) 
-      log_proposal_current <- log(dtruncnorm(P[p,q],mean = P_prime[p,q],sd = tau_P[p,q], a =   0, b  = 1))
+      log_proposal_current <- log(dtruncnorm(P_current[p_th,q_th],mean = P_prime[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1))
       
       #acceptance ratio
       log_r=  prop_posterior_prime + log_proposal_current - 
@@ -745,16 +752,16 @@ P_update_f_UNORDERED = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,K, tau_P,ac
       #create statements that check conditiond to accept move
       MH_condition_P_update= min(log_r,0)>=log(runif(1))
       if(MH_condition_P_update){
-        acc.count_P[p,q] =acc.count_P[p,q] +1
-        P= P_prime
+        acc.count_P[p_th,q_th] =acc.count_P[p_th,q_th] +1
+        P_current = P_prime
       }
     }
   }
-  
-  P= P_prime
+  P_current= P_prime
   
   return(list(acc.moves = acc.count_P,
-              P= P))
+              P= P_current))
   
 } 
+
 

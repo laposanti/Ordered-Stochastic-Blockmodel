@@ -31,8 +31,8 @@ setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_model
 
 
 
-K_values <- c(3)  # Range of K values to explore
-sigma_squared_values <- c(0.001)  # Range of sigma_squared values to explore
+K_values <- c(3,4,5)  # Range of K values to explore
+sigma_squared_values <- c(0.001,0.01)  # Range of sigma_squared values to explore
 model_selection <- c(1) # Range of models to explore: 1= SST, 0 =Simple/unordererd
 
 
@@ -57,9 +57,9 @@ for(iteration in 1:nrow(test_grid)){
   
   n=100
   M= 10
-  N_iter = 40000
+  N_iter = 20000
   K= test_grid$K_values[iteration]
-  K_max = 5
+  K_max = test_grid$K_values[iteration]
   
   
   
@@ -71,7 +71,7 @@ for(iteration in 1:nrow(test_grid)){
   U_vec = sort(U)
   alpha_vec = rep(1/K,K)
   
-  beta_params = beta_mean_var(U_vec,rep(sigma_squared,K) )
+  beta_params = beta_mean_var(U_vec,rep(sigma_squared,K-1) )
   a_k = beta_params$alpha
   b_k = beta_params$beta
   
@@ -79,25 +79,20 @@ for(iteration in 1:nrow(test_grid)){
   diag(N_ij)<-0
   
   P = matrix(0,K,K)
-  for(k in 0:(K-1)){
+  for(k in 1:(K-1)){
     for(i in 1:(K-1)){
       for(j in (i+1):K){
         if((j-i)==k){
-          if(test_grid$model_selection[iteration] == 1){
-            #simulating ordered blocks
-            P[i,j]= rbeta(1,a_k[k+1],b_k[k+1])}
-          else if(test_grid$model_selection[iteration] == 0){
-            #simulating unordered blocks
-            P[i,j]= rbeta(1,1,1)}
+          P[i,j]= rbeta(1,a_k[k],b_k[k])
         }
-        
       }
     }
   }
   
-  
   P = P +  lower.tri(P)*(1-t(P))
-  diag(P)<- runif(K,0.4,0.6)
+  
+  # blocks on the diagonal should have values close to 0.5
+  diag(P)= rep(0.5,K) + runif(K,-0.1,0.1) 
   
   #simulating z
   z = matrix(0,n,1)
@@ -145,18 +140,20 @@ for(iteration in 1:nrow(test_grid)){
     U_vec0 = sort(U)
     
     P0 = matrix(0,K,K)
-    for(k in 0:(K-1)){
+    for(k in 1:(K-1)){
       for(i in 1:(K-1)){
         for(j in (i+1):K){
           if((j-i)==k){
-            P0[i,j]= rbeta(1,a_k[k+1],b_k[k+1])
+            P0[i,j]= rbeta(1,a_k[k],b_k[k])
           }
         }
       }
     }
     
     P0 = P0 +  lower.tri(P0)*(1-t(P0))
-    diag(P0)<- rep(0.5,K)
+    
+    # blocks on the diagonal should have values close to 0.5
+    diag(P0)= rep(0.5,K) + runif(K,-0.1,0.1) 
     
     sigma_squared0= runif(1,0.001,min(U*(1-U)))
     

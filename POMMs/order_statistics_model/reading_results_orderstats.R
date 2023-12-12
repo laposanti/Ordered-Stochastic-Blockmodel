@@ -41,7 +41,7 @@ while(controller==0){
   true_model <- ifelse(choose_model,'POMM',"Simple")
   
   #setting up containers ----------------
-  z_summary_results = matrix(0,2,ncol = 12)
+  z_summary_results = matrix(0,2,ncol = 9)
   rownames(z_summary_results)<- c("POMM","Simple")
   
   z_diagnostic_results = matrix(0,2,15)
@@ -69,7 +69,7 @@ while(controller==0){
   #1: POMM, 0:Simple
   results_control <- data.frame(Est_m =c(0,1))
   for(results_row in c(F,T)){
-    
+
     
     #---------------++++----------------
     #est_model  <- ifelse(results_row, "POMM","Simple")
@@ -208,17 +208,17 @@ while(controller==0){
       save_table_to_file(P_est, P_est_title,title = 'Pestmatrix',subtitle = paste0(true_model,est_model,K,N))
       
       
-      # z_tot_table<- z_summary_table(chains  = uploded_results, true_value = simulated, diag0.5 = TRUE, K = K, burnin = burnin,label_switch = F)
-      # 
-      # z_s_table<- z_tot_table$table
-      # 
-      # if(K==3){
-      #   z_summary_results[est_model,c(1,4,7,10)]<- round(unlist(z_s_table),2)
-      # }else if(K==4){
-      #   z_summary_results[est_model,c(2,5,8,11)]<- round(unlist(z_s_table),2)
-      # }else{
-      #   z_summary_results[est_model,c(3,6,9,12)]<- round(unlist(z_s_table),2)
-      # }
+      z_tot_table<- z_summary_table(chains  = uploded_results, true_value = T, diag0.5 = TRUE, K = K, burnin = burnin,label_switch = F)
+
+      z_s_table<- z_tot_table$table
+
+      if(K==3){
+        z_summary_results[est_model,c(1,4,7)]<- round(unlist(z_s_table),2)
+      }else if(K==4){
+        z_summary_results[est_model,c(2,5,8)]<- round(unlist(z_s_table),2)
+      }else{
+        z_summary_results[est_model,c(3,6,9)]<- round(unlist(z_s_table),2)
+      }
       
       
       if(est_model == 'POMM'){
@@ -393,34 +393,34 @@ while(controller==0){
 }
 
 #saving results
-a_d_title <- paste0(tap,'/a_diagnostic_table',true_model, est_model,'.csv')
+a_d_title <- paste0(tap,'/a_diagnostic_table',true_model,'.csv')
 save_table_to_file(a_diagnostic_results, a_d_title,title = 'adiagnosticstable',)
 
-U_vec_d_title <- paste0(tap,'/U_vec_diagnostic_table',true_model, est_model,'.csv')
+U_vec_d_title <- paste0(tap,'/U_vec_diagnostic_table',true_model,'.csv')
 save_table_to_file(U_vec_diagnostic_results, U_vec_d_title,title = 'U_vecdiagnosticstable',)
 
-sigma_squared_d_title <- paste0(tap,'/sigma_squared_diagnostic_table',true_model, est_model, '.csv')
+sigma_squared_d_title <- paste0(tap,'/sigma_squared_diagnostic_table',true_model, '.csv')
 save_table_to_file(sigma_squared_diagnostic_results, sigma_squared_d_title,title = 'Sdiagnosticstable')
 
-z_d_title <- paste0(tap,'/z_diagnostic_table',true_model, est_model,'.csv')
+z_d_title <- paste0(tap,'/z_diagnostic_table',true_model,'.csv')
 save_table_to_file(z_diagnostic_results, z_d_title,title = 'zdiagnosticstable',)
 
 P_d_title <- paste0(tap,'/P_diagnostic_table',true_model, est_model, '.csv')
 save_table_to_file(P_diagnostic_results, P_d_title,title = 'Pdiagnosticstable',)
 
-a_s_title <- paste0(tap,'/a_summary_table',true_model, est_model,'.csv')
+a_s_title <- paste0(tap,'/a_summary_table',true_model,'.csv')
 save_table_to_file(a_summary_results, a_s_title,title = 'asummarytable',)
 
-U_vec_s_title <- paste0(tap,'/U_vec_summary_table',true_model, est_model,'.csv')
+U_vec_s_title <- paste0(tap,'/U_vec_summary_table',true_model,'.csv')
 save_table_to_file(U_vec_summary_results, U_vec_s_title,title = 'U_vecsummarytable',)
 
-sigma_squared_s_title <- paste0(tap,'/sigma_squared_summary_table',true_model, est_model, '.csv')
+sigma_squared_s_title <- paste0(tap,'/sigma_squared_summary_table',true_model, '.csv')
 save_table_to_file(sigma_squared_summary_results, sigma_squared_s_title,title = 'Ssummarytable',)
 
-z_s_title <- paste0(tap,'/z_summary_table',true_model, est_model,'.csv')
+z_s_title <- paste0(tap,'/z_summary_table',true_model,'.csv')
 save_table_to_file(z_summary_results, z_s_title,title = 'zsummarytable',)
 
-P_s_title <- paste0(tap,'/P_summary_table',true_model, est_model,'.csv')
+P_s_title <- paste0(tap,'/P_summary_table',true_model,'.csv')
 save_table_to_file(P_summary_results, P_s_title,title = 'Psummarytable')
 
 

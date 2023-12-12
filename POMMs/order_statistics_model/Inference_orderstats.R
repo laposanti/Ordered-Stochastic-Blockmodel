@@ -162,21 +162,10 @@ calculate_misclassification_rate <- function(N_new, z_new, N, p_true, z_true, sa
 }
 
 
-calculate_waic_matrix <- function(n_ij_matrix, z_container, N_iter, p_container, y_ij_matrix) {
-  
-  upper.tri.non.zero.waic <- which(n_ij_matrix > 0, arr.ind = TRUE)
-  waic_matrix_container <- matrix(0, nrow = N_iter, ncol = length(upper.tri.non.zero.waic))
-  
-  for (ii in 1:N_iter) {
-    z_mat_waic <- vec2mat_0_P(z_container[, ii],P =p_container[,,ii] )
-    p_ij_waic <- calculate_victory_probabilities(z_mat_waic, p_container[,, ii])
-    waic_matrix_container[ii, ] <- dbinom(y_ij_matrix[upper.tri.non.zero.waic],
-                                          size = n_ij_matrix[upper.tri.non.zero.waic],
-                                          p_ij_waic[upper.tri.non.zero.waic],log = T)
-  }
-  
-  
-  waic.matrix(waic_matrix_container)
+LL_edges <- function(N_ij, Y_ij, z, P){
+  z_mat = vec2mat_0_P(z,P)
+  P_ij<- calculate_victory_probabilities(z_mat,P)
+  ll_lik = dbinom(x = Y_ij[upper.tri(Y_ij,diag=F)], size =  N_ij[upper.tri(N_ij,diag=F)], prob = P_ij[upper.tri(P_ij,diag=F)], log=T)
 }
 
 
@@ -288,22 +277,23 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
   
 }
 
-
 z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switch = F){
   
   
   z_container_POMM <- assembling_chains(chains,burnin = burnin,parameter = 'z')
-
-
+  
+  
   #Data used to generate the data -----
   if(true_value==T){
     
     if(label_switch==T){
       runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
       z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR,K)
+      Pcontainer<- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$ECR)
     }
     Y_ij<- chains$chain1$Y_ij
     N_ij<- chains$chain1$N_ij
+    n =nrow(Y_ij)
     A_container_POMM <- c(chains$chain1$control_containers$A[-c(1:burnin)],
                           chains$chain2$control_containers$A[-c(1:burnin)],
                           chains$chain3$control_containers$A[-c(1:burnin)],
@@ -323,9 +313,7 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   #computing WAIC
   
   Pcontainer<- assembling_chains(chains,burnin = burnin,parameter = 'P')
-  if(label_switch==T){
-    Pcontainer<- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$ECR)
-  }
+ 
   
   if(true_value==F & label_switch == T){
     # apply the permutations returned by typing:
@@ -337,15 +325,20 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   
   
   #computing WAIC
-  WAIC<- calculate_waic_matrix(n_ij_matrix = N_ij,
-                               z_container = z_container_POMM,
-                               N_iter = ncol(z_container_POMM),
-                               p_container = Pcontainer,y_ij_matrix = Y_ij )
-
-  results = results %>% mutate(WAIC_est = WAIC$estimates[3,1])
-  results = results %>% mutate(WAIC_SE= WAIC$estimates[3,2])
+ 
+  LL <- matrix(nrow=n*(n-1)/2,ncol=N_iter-burnin)
   
-  return(list(table=results, memb = z_MAP_POMM))
+  for(t in 1:ncol(LL)){
+    LL[,t]<- LL_edges(N_ij, Y_ij, z_container_POMM[,t], Pcontainer[,,t])
+    if(t%%3000==0){print(paste0("iteration number----->",t))}
+  }
+ 
+  
+  results = results %>% mutate(WAIC_est = WAIC(LL)$WAIC)
+  index_traceplot <- sample(c(1:(n*(n-1)/2)),1)
+  my_plot<- plot(ts(LL[index_traceplot,]),xlab="",ylab="")
+  
+  return(list(table=results, memb = z_MAP_POMM,my_plot = my_plot ))
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_switch){
@@ -412,7 +405,7 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_
 # P summary and diagnostics
 ###
 
-chains=uploded_results
+
 P_summary_table <- function(chains, true_value, diag0.5, P, K, burnin, label_switch) {
   Y_ij <- chains$chain1$Y_ij
   K= nrow(chains$chain1$ground_truth$P)
@@ -424,7 +417,7 @@ P_summary_table <- function(chains, true_value, diag0.5, P, K, burnin, label_swi
     }
   }
   entries_df <- entries_df[-1,]
-
+  
   
   Pcontainer <- assembling_chains(chains, burnin = burnin, parameter = 'P')
   if (label_switch == TRUE) {
@@ -449,7 +442,7 @@ P_summary_table <- function(chains, true_value, diag0.5, P, K, burnin, label_swi
   results <- cbind(entries_df, data.frame(mean_est = rep(0, nrow(entries_df)),
                                           credible_interval_05 = rep(0, nrow(entries_df)),
                                           credible_interval_95 = rep(0, nrow(entries_df))))
-
+  
   for (i in 1:nrow(results)) {
     m <- mcmc(Pcontainer[results$entry_i[i], results$entry_j[i], ])
     results$mean_est[i] <- mean(m)
@@ -477,12 +470,10 @@ P_summary_table <- function(chains, true_value, diag0.5, P, K, burnin, label_swi
 
 #Diagnostics for P#
 
-
 P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burnin,N_iter, label_switch){
   stopifnot(length(chains)==4)
   
-  K=nrow(P)
-  
+
   entries_df <- data.frame(entry_i = 0 ,entry_j =0 )
   for( ii in 1:K){
     for(jj in ii:K){
@@ -513,7 +504,7 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burnin,N_iter, lab
     }
   }
   for(i in 1:nrow(results)){
-
+    
     if(label_switch == F){
       mm<-mcmc.list(mcmc(chains$chain1$est_containers$P[results$entry_i[i],results$entry_j[i],-c(1:burnin)]),
                     mcmc(chains$chain2$est_containers$P[results$entry_i[i],results$entry_j[i],-c(1:burnin)]),
@@ -533,11 +524,11 @@ P_diagnostic_table<- function(chains, true_value, diag0.5,P,K,burnin,N_iter, lab
     #Autocorrelation at lag=30
     results$LAG_30[i] <- round(mean(simplify2array(lapply(mm,autocorr.diag,lag=30))),3)
     
-    mm_acc<-list(chains$chain1$acceptance_rates$acc.count_p[results$entry_i[i],results$entry_j[i]],
-                 chains$chain2$acceptance_rates$acc.count_p[results$entry_i[i],results$entry_j[i]],
-                 chains$chain3$acceptance_rates$acc.count_p[results$entry_i[i],results$entry_j[i]],
-                 chains$chain4$acceptance_rates$acc.count_p[results$entry_i[i],results$entry_j[i]])
-    
+    mm_acc<-list(chains$chain1$acceptance_rates$acc.count_P[results$entry_i[i],results$entry_j[i]],
+                 chains$chain2$acceptance_rates$acc.count_P[results$entry_i[i],results$entry_j[i]],
+                 chains$chain3$acceptance_rates$acc.count_P[results$entry_i[i],results$entry_j[i]],
+                 chains$chain4$acceptance_rates$acc.count_P[results$entry_i[i],results$entry_j[i]])
+
     results$acceptance_rate[i]<- mean(unlist(mm_acc))/N_iter*100
     
     if(true_value == T){
@@ -704,14 +695,14 @@ assembling_chains <- function(chains, burnin, parameter){
 U_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
   
   MCMC_samples<- cbind(chains$chain1$est_containers$U_vec[,-c(1:burnin)],
-                   chains$chain2$est_containers$U_vec[,-c(1:burnin)],
-                   chains$chain3$est_containers$U_vec[,-c(1:burnin)],
-                   chains$chain4$est_containers$U_vec[,-c(1:burnin)])
+                       chains$chain2$est_containers$U_vec[,-c(1:burnin)],
+                       chains$chain3$est_containers$U_vec[,-c(1:burnin)],
+                       chains$chain4$est_containers$U_vec[,-c(1:burnin)])
   
   m<- mcmc(MCMC_samples)
   
   results = data.frame(mean_est = apply(m,1,mean))
-
+  
   HPD <- round(cbind(coda::HPDinterval(t(m))),2)
   results$credible_interval_95<- paste0("[",HPD[,1],",",HPD[,2],"]")
   if(true_value == T){
@@ -723,7 +714,7 @@ U_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
   return(results)}
 
 
-chains<-uploded_results
+
 
 U_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
   stopifnot(length(chains)==4)
@@ -737,7 +728,7 @@ U_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
   
   results = data.frame(ESS = effectiveSize(mm))
   
-
+  
   #Gelman Rubin
   results$Gelman_rubin<-  round(gelman.diag(mm)[1]$psrf[,1],3)
   #Autocorrelation at lag=30
