@@ -59,7 +59,7 @@ adaptive_MCMC_UNORDERED <- function(Y_ij, N_ij,init , estimation_control,
       }
       
       labels_available<- 1:K
-      z_current = z
+
       #initializing quantities
       n_k = as.vector(table(z_current))
       z_P = vec2mat(z_current)
@@ -77,7 +77,7 @@ adaptive_MCMC_UNORDERED <- function(Y_ij, N_ij,init , estimation_control,
       
       
       
-      A_current = llik_over_blocks_f_binomial(lamdabar, ybar,mbar,P)
+      A_current = llik_over_blocks_f_binomial(lamdabar, ybar,mbar,P_current)
       
       
       z_container[,1] = z_current
@@ -170,7 +170,7 @@ adaptive_MCMC_UNORDERED <- function(Y_ij, N_ij,init , estimation_control,
         tau_P_container[,,j]<- tau_P
         
         #storing results for inference
-        A_container[j] = A_current
+        A_container[j] = llik_over_blocks_f_binomial(lamdabar, ybar,mbar,P_current)
         z_container[,j] <- z_current
         P_container[,,j] <- P_current
         

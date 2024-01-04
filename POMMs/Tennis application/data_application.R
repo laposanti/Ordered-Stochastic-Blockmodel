@@ -66,6 +66,13 @@ N_ij = matrix(0, nrow(Y_ij), ncol(Y_ij))
 N_ij[lower.tri(N_ij)] = Y_ij[lower.tri(Y_ij)] + t(Y_ij)[lower.tri(Y_ij)]
 N_ij[upper.tri(N_ij)] = Y_ij[upper.tri(Y_ij)] + t(Y_ij)[upper.tri(Y_ij)]
 
+write_csv(players_df,file = "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv")
+
+write.table(Y_ij, file = "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/Y_ij.csv", row.names = T, col.names = F,sep = ",")
+write.table(N_ij, file = "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/N_ij.csv", row.names = T, col.names = F,sep = ",")
+
+
+
 n_chains<-4
 #-----------------------------------------------------------------------------
 # Estimation

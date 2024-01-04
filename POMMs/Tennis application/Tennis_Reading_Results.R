@@ -45,14 +45,24 @@ df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% f
 my_edges = df_match %>% select(winner_slug, loser_slug)
 g =graph_from_edgelist(as.matrix(my_edges),directed = T)
 my_name = data.frame(player_slug=vertex_attr(g)$name)
+
 players_df = inner_join(my_name,top100players, by="player_slug")
 
 A = as_adjacency_matrix(g)
 
 #-------------------------------------------------------------------------------
 
+# Assuming players_df is a data frame resulting from inner join
+players_df <- inner_join(my_name, top100players, by = "player_slug")
 
+# Save the data frame to a CSV file
+write.csv(players_df, "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv", row.names = FALSE)
 
+# Assuming A is an adjacency matrix
+A <- as.matrix(as_adjacency_matrix(g))
+
+# Save the adjacency matrix to a text file
+write.table(A, "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/adjacency_matrix.csv", row.names = T, col.names = T)
 
 
 #where the data are stored

@@ -451,12 +451,12 @@ U_update_f_withP = function(lamdabar, ybar,mbar,P, a, alpha_vec, n_k,
   
   #computing the proportional posterior in a'
   prop_posterior_prime <- lprop_posterior_withP(lamdabar,ybar,mbar,P,
-                                                a_current,alpha_vec,n_k,sigma_squared,
+                                                a,alpha_vec,n_k,sigma_squared,
                                                 U_vec = U_vec_prime,K)
   
   #evaluating the proportional posterior in a^(t)
   prop_posterior_current <- lprop_posterior_withP(lamdabar,ybar,mbar,
-                                                  P,a_current,alpha_vec,
+                                                  P,a,alpha_vec,
                                                   n_k,sigma_squared,U_vec,K)
   
   #evaluating the proposal density g(a') 
@@ -560,7 +560,8 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     k_prime <- z_prime[ii]
     
     # Sample a new label using the adjusted probabilities
-    k_scanning <- sample(x = setdiff(labels_available, k_prime), size = 1, replace = F)
+    labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
+    k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
     
     z_scanning[ii] <- k_scanning
     
@@ -711,7 +712,7 @@ lprop_posterior_withP_UNORDERED <- function(lamdabar, ybar,mbar,P, alpha_vec, n_
 
 
 
-P_update_f = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
+P_update_f_UNORDERED = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
                       sigma_squared, U_vec,K, tau_P,
                       acc.count_P){
   

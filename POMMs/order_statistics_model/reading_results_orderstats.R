@@ -81,9 +81,9 @@ while(controller==0){
     
     #where to save the results
     
-    for(i in 1:length(filename)){
+    for(file in 1:length(filename)){
       
-      uploded_results<- readRDS(paste0(data_wd,"/",filename[i]))
+      uploded_results<- readRDS(paste0(data_wd,"/",filename[file]))
       
       if(est_model == 'POMM'){
         # Create a data frame with the x and y values

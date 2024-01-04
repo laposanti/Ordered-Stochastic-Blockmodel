@@ -84,7 +84,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       }
       
       labels_available<- 1:K_current
-      z_current = z
+      
       #initializing quantities
       n_k = as.vector(table(z_current))
       z_P = vec2mat(z_current)
@@ -102,7 +102,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       
       
       
-      A_current = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar,P = P)
+      A_current = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar,P = P_current)
       
       z_container[,1] = z_current
       a_container[1] = a_current
@@ -278,7 +278,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
         tau_P_container[,,j]<- tau_P
         
         #storing results for inference
-        A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar,P = P_current)
+        A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar, P = P_current)
         z_container[,j] <- z_current
         a_container[1,j] <- a_current
         sigma_squared_container[1,j] = sigma_squared_current

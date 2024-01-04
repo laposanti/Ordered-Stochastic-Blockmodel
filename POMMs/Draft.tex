@@ -438,8 +438,6 @@ p_{k} = \frac{p \left( d_{k,z_{\pi(i)}^{(t)}} \right) }{\sum_{k=1}^Kp \left( d_{
 \end{equation}
     
     \State \texttt{3. $z^{\prime}_{\pi(i)} \gets k^{\prime}$ sampled from $\{ k = 1,...,K \} \setminus \{ z_{\pi(i)}^{(t)} \}$ with probability $p_k$} 
-
-    
     \State \texttt{4. Take} \begin{equation}\label{eqn_acc_reject_z}
     z^{(t+1)}_{\pi(i)} = 
     \begin{cases}
@@ -641,6 +639,7 @@ where $z_j^{(t)} \sim p(z|Y)$
 \end{comment}
 
 \clearpage
+
 \section{Simulation Study from the Unordered Model N=100}
 
 In order to evaluate how well our model performs in a situation similar to our intended use, and measure its advantages compared to the best existing alternatives, we generated three simulated tournaments with 100 players from the Unordered Model. 
@@ -1032,6 +1031,10 @@ We want to compare the quality of the POMM model in recovering the ground truth 
 Below, in figure \eqref{fig:WST_adjacency}, you may see the adjacency matrix of the simulated data. The darker is the pixel $(i,j)$, the more are the victories of player $i$ vs player $j$.
 
 On the side, the different colours testify the different block membership of each single player.
+
+
+
+
 
 
 
