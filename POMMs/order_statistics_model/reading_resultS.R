@@ -472,58 +472,58 @@ for(est_model in c("SST","WST", "Simple")){
     print(combined_plot)
     dev.off()
 
-    # # Initialize an empty list for plots
-    # plot_list <- list()
-    # K= nrow(uploaded_results$chain1$est_containers$P[,,1])
-    # # Loop through the groups
-    # for (group1 in 1:K) {
-    #   for (group2 in 1:K) {
-    #     
-    #     # Filter data for the current groups
-    #     subsetted_K <- all_possible_combinations %>% 
-    #       filter(est_cl_player1 == group1) %>%
-    #       filter(est_cl == group2)
-    #     
-    #     # Create the ggplot object
-    #     my_plot_i <- ggplot(subsetted_K, aes(x = reorder(player2, degree_pl, decreasing = F), 
-    #                                          y = reorder(player1, degree_pl_player1, decreasing = T), 
-    #                                          fill = percentage_won)) +
-    #       geom_tile(color = 'gray') +
-    #       geom_ysidecol(aes(x = percentage_won)) +
-    #       scale_fill_gradient(low = "white", high = "red") +
-    #       labs(title = 'Interactions matrix', 
-    #            x = paste0("Players in block", group2),
-    #            y = paste0("Players in block", group1),
-    #            fill = "% victories") +
-    #       theme_bw() +
-    #       theme(legend.direction = "vertical",
-    #             axis.text.x = element_blank(), 
-    #             axis.text.y = element_blank(),
-    #             legend.key.size = unit(0.5, "cm"),
-    #             legend.position = "none")  # Remove individual legends
-    #     
-    #     # Convert ggplot object to grob and store in the list
-    #     plot_list[[paste0("Blocks", group2, group1)]] <- ggplotGrob(my_plot_i)
-    #   }
-    # }
-    # 
-    # # Arrange and display the plots using cowplot
-    # combined_plot <- plot_grid(plotlist = plot_list, ncol = K, align = 'hv')
-    # 
-    # # extract the legend from one of the plots
-    # my_legend <- get_legend(
-    #   # create some space to the left of the legend
-    #   my_plot_i+ guides(color = guide_legend(nrow = K)) +
-    #     theme(legend.position = "bottom")
-    # )
-    # # Add a common legend to the combined plot
-    # combined_plot_with_legend <- plot_grid(combined_plot, my_legend, ncol = 2, rel_widths = c(5, 1)) +theme_bw()
-    # 
-    # # Display the combined plot with a common legend
-    # print(combined_plot_with_legend)
-    
-    
-    
+    # Initialize an empty list for plots
+    plot_list <- list()
+    K= nrow(uploaded_results$chain1$est_containers$P[,,1])
+    # Loop through the groups
+    for (group1 in 1:K) {
+      for (group2 in 1:K) {
+
+        # Filter data for the current groups
+        subsetted_K <- all_possible_combinations %>%
+          filter(est_cl_player1 == group1) %>%
+          filter(est_cl == group2)
+
+        # Create the ggplot object
+        my_plot_i <- ggplot(subsetted_K, aes(x = reorder(player2, degree_pl, decreasing = F),
+                                             y = reorder(player1, degree_pl_player1, decreasing = T),
+                                             fill = percentage_won)) +
+          geom_tile(color = 'gray') +
+          geom_ysidecol(aes(x = percentage_won)) +
+          scale_fill_gradient(low = "white", high = "red") +
+          labs(title = 'Interactions matrix',
+               x = paste0("Players in block", group2),
+               y = paste0("Players in block", group1),
+               fill = "% victories") +
+          theme_bw() +
+          theme(legend.direction = "vertical",
+                axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                legend.key.size = unit(0.5, "cm"),
+                legend.position = "none")  # Remove individual legends
+
+        # Convert ggplot object to grob and store in the list
+        plot_list[[paste0("Blocks", group2, group1)]] <- ggplotGrob(my_plot_i)
+      }
+    }
+
+    # Arrange and display the plots using cowplot
+    combined_plot <- plot_grid(plotlist = plot_list, ncol = K, align = 'hv')
+
+    # extract the legend from one of the plots
+    my_legend <- get_legend(
+      # create some space to the left of the legend
+      my_plot_i+ guides(color = guide_legend(nrow = K)) +
+        theme(legend.position = "bottom")
+    )
+    # Add a common legend to the combined plot
+    combined_plot_with_legend <- plot_grid(combined_plot, my_legend, ncol = 2, rel_widths = c(5, 1)) +theme_bw()
+
+    # Display the combined plot with a common legend
+    print(combined_plot_with_legend)
+
+
+
     
     png(plot_name,width = 800, height = 627)
     print(rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model))
@@ -583,16 +583,6 @@ U_vec_d_container = U_vec_d_container %>% arrange(n_clust ) %>% relocate (n_clus
   relocate(where(is.character)) %>% rename(K = n_clust)
 
 U_vec_d_container %>%  write.csv(file = paste0(processed_wd,"/U_vec_d_container.csv"))
-
-
-
-
-
-
-
-
-
-
 
 
 
