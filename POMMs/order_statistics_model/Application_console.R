@@ -34,7 +34,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_mode
 
 
 
-K_values <- c(3,4,5)  # Range of K values to explore
+K_values <- c(6)  # Range of K values to explore
 sigma_squared_values <- c(0.001,0.01)  # Range of sigma_squared values to explore
 model_selection <- c(1) # Range of models to explore: 1= SST, 0 =Simple/unordererd
 
@@ -58,7 +58,7 @@ N_ij = as.matrix(N_ij)
 setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/estimates_file/")
 
 
-for(iteration in 2:nrow(test_grid)){
+for(iteration in 1:nrow(test_grid)){
   
   
   n = nrow(Y_ij)

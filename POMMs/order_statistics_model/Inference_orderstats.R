@@ -87,6 +87,7 @@ z_permute<-function (z_container, permutations,K) {
   }
   return(output)
 }
+
 permute_array <-function(array_samples, perm_matrix) {
   
   N_iter <- dim(array_samples)[3]  # Number of iterations
@@ -217,21 +218,61 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z , burnin,label_switch,tap){
   
   z_container_POMM <- assembling_chains(chains,burnin,'z')
-  z<- chains$chain1$ground_truth$z
   Y_ij<-chains$chain1$Y_ij
-  
-  
   if(true_value == T){
+    
     if(label_switch==T){
       runPOMM<- label.switching(method = 'ECR' ,zpivot = z ,z = t(z_container_POMM), K = K)
       z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$ECR)
     }
-    similarity_matrixPOMM = pr_cc(z_container_POMM)
+    
+    similarity_matrixPOMM = pr_cc(chains$chain1$est_containers$z)
+    point_est_POMM = minVI(similarity_matrixPOMM)$cl
+    # Create row and column indices
+    indices <- expand.grid(row = 1:N, col = 1:N)
+    
+    z_df <- data.frame(items = 1:N, z = chains$chain1$ground_truth$z)
+    
+    
+    # Convert the matrix to a data frame
+    uuu <- data.frame(
+      row = indices$row,
+      col = indices$col,
+      similarity_value = as.vector(similarity_matrixPOMM),
+      Y = as.vector(Y_ij)
+    ) %>%inner_join(z_df, by = c("row" = "items")) %>%
+      rename(row_z = z) %>%
+      inner_join(z_df, by = c("col" = "items")) %>%
+      rename(col_z = z)
+    
+
+    similarity_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z))) +
+      geom_tile(aes(fill = similarity_value), color = "gray",show.legend = F) +
+      scale_fill_gradient(low = "white", high = "black") +
+      geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
+      theme_minimal() +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
+    
+    adjacency_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z))) +
+      geom_tile(aes(fill = Y), color = "gray",show.legend = F) +
+      scale_fill_gradient(low = "white", high = "black") +
+      geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
+      theme_minimal() +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
+      
+    
     #plotting it
     plot_name <- paste0(tap,"//adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    similarity_plot(Y_ij, z, z) #checking mixing
+    #similarity_plot(Y_ij, z, z) #checking mixing
+    print(adjacency_m)
     # Close the device to save the plot
     dev.off()
     
@@ -239,11 +280,12 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
     plot_name <- paste0(tap,"//similarity_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    similarity_plot(similarity_matrixPOMM, z, z) #checking mixing
+    #similarity_plot(similarity_matrixPOMM, z, z) #checking mixing
+    print(similarity_m)
     # Close the device to save the plot
     dev.off()
     
-  }else{
+  }else if(true_value == F){
     if(label_switch==T){
       runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Y_ij)/colSums(Y_ij))
       z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
@@ -272,9 +314,8 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
     similarity_plot(similarity_matrixPOMM, z_MAP_POMM, z_MAP_POMM) #checking mixing
     # Close the device to save the plot
     dev.off()
-    return(point_est_POMM)
   }
-  
+  return(point_est_POMM)
 }
 
 z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switch = F,tap){
@@ -674,7 +715,7 @@ sigma_squared_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N
   return(results)}
 #alpha inference and diagnosics
 
-a_summary_table<- function(chains, true_value, diag0.5,alpha,K,burnin){
+a_summary_table<- function(chains, true_value, diag0.5,K,burnin){
   MCMC_samples <- c(chains$chain1$est_containers$a[-c(1:burnin)],
                     chains$chain2$est_containers$a[-c(1:burnin)],
                     chains$chain3$est_containers$a[-c(1:burnin)],
@@ -688,10 +729,12 @@ a_summary_table<- function(chains, true_value, diag0.5,alpha,K,burnin){
   HPD <- round(cbind(coda::HPDinterval(m)),2)
   results$credible_interval_95<- paste0("[",HPD[1],",",HPD[2],"]")
   if(true_value == T){
+    a <- chains$chain1$ground_truth$a
     results$true_value<- round(a,4)
     
   }
-  return(results)}
+  return(results)
+}
 
 a_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
   stopifnot(length(chains)==4)

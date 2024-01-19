@@ -31,7 +31,7 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_study_orderstats/r
 
 
 
-K_values <- c(3,4,5)  # Range of K values to explore
+K_values <- c(4,5,6)  # Range of K values to explore
 sigma_squared_values <- c(0.001,0.01)  # Range of sigma_squared values to explore
 model_selection <- c(1) # Range of models to explore: 1= SST, 0 =Simple/unordererd
 
@@ -53,8 +53,8 @@ for(iteration in 1:nrow(test_grid)){
     
     
   n = 100
-  M = 10
-  N_iter = 20000
+  M = 8
+  N_iter = 30000
   K = test_grid$K_values[iteration]
   K_max = test_grid$K_values[iteration]
   
