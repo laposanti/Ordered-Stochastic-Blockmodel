@@ -663,7 +663,8 @@ for(block_i in 1:5){
       scale_color_manual(values = c("black", "white"))+
       scale_fill_viridis_c()+
       theme_bw()+
-      theme(legend.direction = "vertical", axis.text.x = element_text(angle=45, hjust = 1),
+      theme(legend.direction = "vertical", 
+            axis.text.x = element_text(angle=45, hjust = 1),
             plot.title =  element_text(face = "bold", hjust = 0.5))+
       labs(title = paste0('Heatmap victory % between blocks'),
            x = paste0("Players in block ", block_j),

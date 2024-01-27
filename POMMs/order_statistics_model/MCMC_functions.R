@@ -308,7 +308,7 @@ P_prior_probability = function(P,K,U_vec, sigma_squared){
 }
 
 # Proportional posterior
-
+j
 
 lprop_posterior_withP <- function(lamdabar, ybar,mbar,P, a, 
                                   alpha_vec, n_k,sigma_squared, U_vec,K){
