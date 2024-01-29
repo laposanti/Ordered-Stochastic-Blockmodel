@@ -271,94 +271,89 @@ sigma_squared_update_f_P_out = function(lamdabar,ybar,mbar, a, alpha_vec, n_k,
 # Likelihood
 
 llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P){
-  #llik<- sum(bin_coef+ ybar*log(P) + (mbar)*log(1-P))
+  llik<- sum(bin_coef+ ybar*log(P) + (mbar)*log(1-P))
   llik = matrix(0,K,K)
-  for(p in 1:K){
-    for(q in p:K){
-      if(q-p==0){
-        llik[p,q] = lamdabar[p,q]+ ybar[p,q]*log(P[p,q]) + mbar[p,q]*log(1-P[p,q])
-      }else{
-        llik[p,q] = lamdabar[q,p]+ lamdabar[p,q]+(ybar[p,q]+mbar[q,p])*log(P[p,q]) + (mbar[p,q]+ybar[q,p])*log(1-P[p,q]) 
-      }
-    }
+  for(diag_iii in 0:(K-1)){
+    llik[col(P)-row(P)==diag_iii] <- lamdabar[col(P)-row(P)==diag_iii]+ ybar[col(P)-row(P)==diag_iii]*P[col(P)-row(P)==diag_iii] -
+      (mbar[col(P)-row(P)==diag_iii]+ybar[col(P)-row(P)==diag_iii])*log(1+exp(P[col(P)-row(P)==diag_iii]))
   }
+
   return(sum(llik))
 }
 
-# Prior on P
+# Density for P
 
-P_prior_probability = function(P,K,U_vec, sigma_squared){
-  
-  beta_params = beta_mean_var(mu = U_vec,var = rep(sigma_squared,K-1) )
-  alpha_k = beta_params$alpha
-  beta_k = beta_params$beta
-  
+P_prior_probability = function(P,K,mu_vec, sigma_squared){
   p_P = matrix(0,K,K)
-  for(p_th in 1:K){
-    for(q_th in p_th:K){
-      if(q_th-p_th != 0){
-        p_P[p_th,q_th]<-  dbeta(P[p_th,q_th],alpha_k[q_th-p_th],beta_k[q_th-p_th],log = TRUE) 
-      }else if (p_th==q_th){
-        p_P[p_th,p_th]<-  dbeta(P[p_th,q_th],1,1,log = TRUE) 
-      }
-    }
+  for(diag_i in 0:(K-1)){
+    p_P[col(P)-row(P)==diag_i] <- truncnorm::dtruncnorm(x = P[col(P)-row(P)==diag_i],a = 0,b=Inf,mean = mu_vec[diag_i+1],sd = sqrt(sigma_squared))
   }
-  
-  return(sum(p_P))
+  log_p_P = sum(log(p_P[upper.tri(p_P,diag = T)]))
+  return(log_p_P)
 }
 
-# Proportional posterior
-j
+#mu prior distribution
+d_sA_mu = function(K,mu_vec){
+  fac <- lfactorial(K)
+  joint_density<- sum(dnorm(mu_vec,0,1,log = T)-log(1/2))
+  return(joint_density+fac)
+}
 
-lprop_posterior_withP <- function(lamdabar, ybar,mbar,P, a, 
-                                  alpha_vec, n_k,sigma_squared, U_vec,K){
+
+# Proportional posterior
+
+
+lprop_posterior_withP <- function(lamdabar, ybar,mbar,P, 
+                                  alpha_vec, n_k,sigma_squared, mu_vec,K){
   
-  sum1 <- llik_over_blocks_f_binomial(lamdabar, ybar, mbar, P)
-  #prior on P
-  sum0<- P_prior_probability(P,K,U_vec, sigma_squared)
-  #prior on z
-  sum2 <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
-  #prior on U
-  sum3 <- lfactorial(K-1)+(K-1)*(-log(a-0.5))+log(ifelse(all(U_vec<a)&all(U_vec>0.5),1,0))
-  #prior on sigma^2
-  sum4 <- -sigma_squared - log(1-exp(-min(U_vec*(1-U_vec))))
-  #prior on K
-  sum5 <- -lfactorial(K) - log(exp(1) -1)
-  #pior on a
-  sum6 <- dtruncnorm(x = a,mean = 0.75,sd =0.25,a=0.5,b = 1)
-  result <- sum0+ sum1 + sum2 + sum3 + sum4 + sum5 + sum6
+  #log likelihood
+  log_lik <- llik_over_blocks_f_binomial(lamdabar, ybar, mbar, P)
+  #log prior on P
+  prior_P<- P_prior_probability(P,K,mu_vec, sigma_squared)
+  #log prior on z
+  prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
+  #log prior on mu
+  hyperprior_mu <- d_sA_mu(K, mu_vec)
+  #log prior on sigma^2
+  hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
+  #computing the whole log proportional posterior
+  result <- log_lik+ prior_P + prior_z + hyperprior_mu + hyperprior_sigmasquared 
   return(result)
 }
 
 #-------------------------- MCMC steps -----------------------------------------
 
-P_update_f = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
-                      sigma_squared, U_vec,K, tau_P,
+P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
+                      sigma_squared, mu_vec,K, tau_P,
                       acc.count_P){
-  
-  P_current = P
-  
+  P_current<- P
+  #Updating each entry of P, one at the time
   for(p_th in 1:K){
     for(q_th in p_th:K){
-      
+
       P_prime<-P_current
-      P_prime[p_th,q_th]<- rtruncnorm(1, mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1)
+      #P' ~ g(P^(t), tau_P) 
+      P_prime[p_th,q_th]<- rtruncnorm(1, mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 10)
+      
       if(p_th!=q_th){
-        P_prime[q_th,p_th] <- 1 - P_prime[p_th,q_th]
+        p_ij<- inverse_logit_f(P_prime[p_th,q_th])
+        P_prime[q_th,p_th] <- log((1-p_ij)/p_ij)                  
       }
-      #computing the proportional posterior in a'
+
+      
+      #computing the proportional posterior in P'
       prop_posterior_prime <-  lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, P = P_prime,
-                                                     K = K,U_vec = U_vec,sigma_squared = sigma_squared,a = a,alpha_vec = alpha_vec,n_k = n_k)
+                                                     K = K,mu_vec = mu_vec,sigma_squared = sigma_squared,alpha_vec = alpha_vec,n_k = n_k)
       
-      #evaluating the proportional posterior in a^(t)
+      #evaluating the proportional posterior in P^(t)
       prop_posterior_current<- lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, P = P_current,
-                                                     K = K,U_vec = U_vec,sigma_squared = sigma_squared,a = a,alpha_vec = alpha_vec,n_k = n_k)
+                                                     K = K,mu_vec = mu_vec,sigma_squared = sigma_squared,alpha_vec = alpha_vec,n_k = n_k)
       
-      #evaluating the proposal density g(a') 
-      log_proposal_prime <- log(dtruncnorm(P_prime[p_th,q_th],mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1))
+      #evaluating the proposal density g(P'| P^(t)) 
+      log_proposal_prime <- log(dtruncnorm(P_prime[p_th,q_th],mean = P_current[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = Inf))
       
-      #evaluating the proposal density g(sigma^2)^(t)) 
-      log_proposal_current <- log(dtruncnorm(P_current[p_th,q_th],mean = P_prime[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = 1))
+      #evaluating the proposal density g(P^(t)| P') 
+      log_proposal_current <- log(dtruncnorm(P_current[p_th,q_th],mean = P_prime[p_th,q_th],sd = tau_P[p_th,q_th], a =   0, b  = Inf))
       
       #acceptance ratio
       log_r=  prop_posterior_prime + log_proposal_current - 
@@ -381,110 +376,44 @@ P_update_f = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
 } 
 
 
-a_update_f_withP = function(lamdabar, ybar,mbar, P,a, alpha_vec, n_k,
-                            sigma_squared, U_vec,K, tau_a,
-                            acc.count_a){
+
+
+
+mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
+                            sigma_squared, mu_vec,tau_mu_vec, K,
+                            acc.count_mu_vec){
+
+  #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
+  mu_prime <- truncnorm::rtruncnorm(K,a = 0,b = Inf, mean = mean(mu_vec),sd = tau_mu_vec)
+  mu_vec_prime <- sort(mu_prime)
   
+  #computing the proportional posterior in mu'
+  prop_posterior_prime <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P,alpha_vec = alpha_vec,
+                                                n_k = n_k,sigma_squared = sigma_squared,mu_vec = mu_vec_prime,K = K)
   
-  #simulating (sigma^2)' from a g ~ truncated normal
-  a_prime <- rtruncnorm(1,a = 0.5,b = 1,
-                        mean = a,
-                        sd = tau_a)
+  #evaluating the proportional posterior in mu^(t)
+  prop_posterior_current <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P,alpha_vec = alpha_vec,
+                                                  n_k = n_k,sigma_squared = sigma_squared,mu_vec = mu_vec,K = K)
   
-  #computing the proportional posterior in a'
-  prop_posterior_prime <-  lprop_posterior_withP(lamdabar, ybar,mbar,P, a_prime, 
-                                                 alpha_vec, n_k,sigma_squared, U_vec,K)
+  #evaluating the proposal density g(mu'| mu^(t)) 
+  log_proposal_prime <- log(dtruncnorm(mu_prime,mean = mu_vec,sd =tau_mu_vec, a =   0, b  = Inf))
   
+  #evaluating the proposal density g(mu^(t)| mu') 
+  log_proposal_current <- log(dtruncnorm(mu_vec,mean = mu_prime,sd = tau_mu_vec, a =   0, b  = Inf))
   
-  #evaluating the proportional posterior in a^(t)
-  prop_posterior_current<- lprop_posterior_withP(lamdabar, ybar,mbar,P, a, 
-                                                 alpha_vec, n_k,sigma_squared, U_vec,K)
-  
-  #evaluating the proposal density g(a') 
-  log_proposal_prime <- log(dtruncnorm(a_prime,a = 0.5,b = 1,
-                                       mean = a,
-                                       sd = tau_a))
-  
-  #evaluating the proposal density g(sigma^2)^(t)) 
-  log_proposal_current <- log(dtruncnorm(a,a = 0.5,b = 1,
-                                         mean = a_prime,
-                                         sd = tau_a))
-  #acceptance ratio
-  log_r=  prop_posterior_prime + log_proposal_current - 
-    prop_posterior_current - log_proposal_prime
+  log_r =  prop_posterior_prime  - prop_posterior_current + log_proposal_current - log_proposal_prime
   
   #create statements that check conditionion to accept move
-  MH_condition_a= min(log_r,0)>=log(runif(1))
-  if(MH_condition_a){
-    acc.count_a = acc.count_a + 1
-    a <- a_prime
-  }
-  
-  
-  return(list(acc.moves = acc.count_a,
-              a=a))
-  
-} 
-
-
-
-
-U_update_f_withP = function(lamdabar, ybar,mbar,P, a, alpha_vec, n_k,
-                            sigma_squared, U_vec,K, tau_U_vec,
-                            acc.count_U){
-  # 
-  # for(k in 2:(K+1)){
-  
-  lb<- max(0.5*(1-sqrt(1-4*sigma_squared)),0.5)
-  ub<- min(0.5*(1+sqrt(1-4*sigma_squared)),a)
-  # U_ext <- c(lb,U_vec,ub)
-  # U_vec_prime <- U_vec
-  
-  
-  #simulating (sigma^2)' from a g ~ truncated normal
-  # U_prime <- rtruncnorm(1,a = U_ext[k-1],b = U_ext[k+1],
-  #                       mean = U_ext[k],
-  #                       sd = tau_U_vec[k-1]**2)
-  
-  U_unif_prime <- runif((K-1),lb,ub)
-  U_vec_prime <- sort(U_unif_prime)
-  
-  #computing the proportional posterior in a'
-  prop_posterior_prime <- lprop_posterior_withP(lamdabar,ybar,mbar,P,
-                                                a,alpha_vec,n_k,sigma_squared,
-                                                U_vec = U_vec_prime,K)
-  
-  #evaluating the proportional posterior in a^(t)
-  prop_posterior_current <- lprop_posterior_withP(lamdabar,ybar,mbar,
-                                                  P,a,alpha_vec,
-                                                  n_k,sigma_squared,U_vec,K)
-  
-  #evaluating the proposal density g(a') 
-  # log_proposal_prime <- log(dtruncnorm(U_prime,a = U_ext[k-1],b = U_ext[k+1],
-  #                                      mean = U_ext[k],
-  #                                      sd = tau_U_vec[k-1]**2))
-  # 
-  # #evaluating the proposal density g(sigma^2)^(t)) 
-  # log_proposal_current <- log(dtruncnorm(U_ext[k],a = U_ext[k-1],b = U_ext[k+1],
-  #                                        mean = U_ext[k],
-  #                                        sd = tau_U_vec[k-1]**2))
-  #acceptance ratio
-  # log_r=  prop_posterior_prime + log_proposal_current - 
-  #   prop_posterior_current - log_proposal_prime
-  # 
-  log_r =  prop_posterior_prime  - prop_posterior_current 
-  
-  #create statements that check conditionion to accept move
-  MH_condition_U_vec= min(log_r,0)>=log(runif(1))
-  if(MH_condition_U_vec){
-    acc.count_U = acc.count_U+1
-    # U_vec[k-1] <- U_prime
-    U_vec <- U_vec_prime
+  MH_condition_mu_vec= min(log_r,0)>=log(runif(1))
+  if(MH_condition_mu_vec){
+    acc.count_mu_vec = acc.count_mu_vec+1
+    # U_vec[t] <- U_prime
+    mu_vec <- mu_vec_prime
   }
   # }
   
-  return(list(acc.moves = acc.count_U,
-              U_vec=U_vec))
+  return(list(acc.moves = acc.count_mu_vec,
+              mu_vec=mu_vec))
   
 } 
 
@@ -492,31 +421,30 @@ U_update_f_withP = function(lamdabar, ybar,mbar,P, a, alpha_vec, n_k,
 
 
 
-sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
-                                        sigma_squared, U_vec,K, tau_sigma_squared,
+sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
+                                        sigma_squared, mu_vec,K, tau_sigma_squared,
                                         acc.count_sigma_squared){
   
-  
-  ub<- min(U_vec*(1-U_vec))
+ 
   #simulating (sigma^2)' from a g ~ truncated normal
-  sigma_squared_prime <- rtruncnorm(1,a = 0,b = ub ,
+  sigma_squared_prime <- rtruncnorm(1,a = 0,b = 1 ,
                                     mean = sigma_squared,
                                     sd = tau_sigma_squared)
   
   #computing the proportional posterior in (sigma^2)'
-  prop_posterior_prime <- lprop_posterior_withP(lamdabar, ybar,mbar,P, a, 
-                                                alpha_vec, n_k,sigma_squared_prime, U_vec,K)
+  prop_posterior_prime <- lprop_posterior_withP(lamdabar, ybar,mbar,P, 
+                                                alpha_vec, n_k,sigma_squared_prime, mu_vec,K)
   #evaluating the proportional posterior in (sigma^2)^(t)
-  prop_posterior_current<- lprop_posterior_withP(lamdabar, ybar,mbar,P, a, 
-                                                 alpha_vec, n_k,sigma_squared, U_vec,K)
+  prop_posterior_current<- lprop_posterior_withP(lamdabar, ybar,mbar,P,
+                                                 alpha_vec, n_k,sigma_squared, mu_vec,K)
   
   #evaluating the proposal density g(sigma^2)') 
-  log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = ub,
+  log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = 1,
                                        mean = sigma_squared,
                                        sd = tau_sigma_squared))
   
   #evaluating the proposal density g(sigma^2)^(t)) 
-  log_proposal_current <- log(dtruncnorm(sigma_squared,a = 0,b = ub,
+  log_proposal_current <- log(dtruncnorm(sigma_squared,a = 0,b = 1,
                                          mean = sigma_squared_prime,
                                          sd = tau_sigma_squared))
   #acceptance ratio
@@ -538,7 +466,7 @@ sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, a, alpha_vec, n_k,
 
 
 z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
-                            K, tau_z,
+                            K, 
                             acc.count_z,labels_available){
   n<- nrow(N_ij)
   A_prime<- log_lik_f_binom(N = N_ij,Y = Y_ij,z =z,P = P,directed = T)
@@ -620,54 +548,6 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
 
 
 
-z_update_f_withP1 = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, a, alpha_vec, n_k,
-                             sigma_squared, U_vec,K, tau_z,
-                             acc.count_z,labels_available){
-  
-  n<- nrow(N_ij)
-  scanning_order = sample(1:n,n, replace=F)
-  
-  # full sweep
-  for(ii in scanning_order){
-    
-    z_prime<- z
-    z_ii <- z_prime[ii]
-    
-    z_prime[ii]<- sample(x = setdiff(labels_available,z_ii),size = 1)
-    
-    z_P<- vec2mat_0_P(z_prime,P)
-    # number of victories between block p and block q
-    ybar_prime = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
-    # number of missed victories between block p and block q
-    n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-    # number of missed victories between block p and block q
-    mbar_prime<- t(z_P)%*%n_minus_y1%*%z_P
-    
-    coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-    lamdabar_prime <- t(z_P)%*%(coef1)%*%z_P
-    
-    #computing the proportional posterior in (sigma^2)'
-    prop_posterior_prime <- lprop_posterior_withP(lamdabar_prime, ybar_prime,mbar_prime,P, a, 
-                                                  alpha_vec, n_k,sigma_squared, U_vec,K)
-    #evaluating the proportional posterior in (sigma^2)^(t)
-    prop_posterior_current<- lprop_posterior_withP(lamdabar, ybar,mbar,P, a, 
-                                                   alpha_vec, n_k,sigma_squared, U_vec,K)
-    #acceptance ratio
-    log_r=  prop_posterior_prime  - prop_posterior_current 
-    
-    #create statements that check conditionion to accept move
-    MH_condition_z= min(log_r,0)>=log(runif(1))
-    if(MH_condition_z){
-      lamdabar = lamdabar_prime
-      mbar=mbar_prime
-      ybar = ybar_prime
-    }
-    
-  }
-  
-  
-  return(list(acc.moves = acc.count_z, z_current= z, ybar =ybar, mbar=mbar, lamdabar= lamdabar))
-} 
 
 
 
