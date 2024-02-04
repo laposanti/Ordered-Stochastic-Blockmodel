@@ -188,18 +188,20 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
   ut <- upper.tri(P,diag = T) # get the logical matrix for upper triangular elements
   Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows
-  
-  for(i_th in 1:nrow(uo)){
+  n_P_entries<- nrow(uo)
+  for(i_th in 1:n_P_entries){
     
     P_prime<-P_current
+    i_star<- uo$row[i_th]
+    j_star<- uo$col[i_th]
     #P' ~ g(P^(t), tau_P) 
-    P_prime[uo$row[i_th],uo$col[i_th]]<- rtruncnorm(1, mean = P_current[uo$row[i_th],uo$col[i_th]],
-                                                    sd = tau_P[uo$row[i_th],uo$col[i_th]], 
-                                                    a = ifelse(uo$row[i_th]==uo$col[i_th],-10,0), b  = 10)
+    P_prime[i_star,j_star]<- rtruncnorm(1, mean = P_current[i_star,j_star],
+                                                    sd = tau_P[i_star,j_star], 
+                                                    a = ifelse(i_star==j_star,-10,0), b  = 10)
     
-    if(uo$row[i_th] != uo$col[i_th]){
-      p_ij<- inverse_logit_f(P_prime[uo$row[i_th],uo$col[i_th]])
-      P_prime[uo$col[i_th],uo$row[i_th]] <- log((1-p_ij)/p_ij)                  
+    if(i_star != j_star){
+      p_ij<- inverse_logit_f(P_prime[i_star,j_star])
+      P_prime[j_star,i_star] <- log((1-p_ij)/p_ij)                  
     }
     
     
@@ -214,17 +216,17 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                                                    alpha_vec = alpha_vec,n_k = n_k,model)
     
     #evaluating the proposal density g(P'| P^(t)) 
-    log_proposal_prime <- log(dtruncnorm(P_prime[uo$row[i_th],uo$col[i_th]],
-                                         mean = P_current[uo$row[i_th],uo$col[i_th]],
-                                         sd = tau_P[uo$row[i_th],uo$col[i_th]], 
-                                         a =   ifelse(uo$row[i_th]==uo$col[i_th],-10,0), 
+    log_proposal_prime <- log(dtruncnorm(P_prime[i_star,j_star],
+                                         mean = P_current[i_star,j_star],
+                                         sd = tau_P[i_star,j_star], 
+                                         a =   ifelse(i_star==j_star,-10,0), 
                                          b  = 10))
     
     #evaluating the proposal density g(P^(t)| P') 
-    log_proposal_current <- log(dtruncnorm(P_current[uo$row[i_th],uo$col[i_th]],
-                                           mean = P_prime[uo$row[i_th],uo$col[i_th]],
-                                           sd = tau_P[uo$row[i_th],uo$col[i_th]], 
-                                           a =  ifelse(uo$row[i_th]==uo$col[i_th],-10,0),
+    log_proposal_current <- log(dtruncnorm(P_current[i_star,j_star],
+                                           mean = P_prime[i_star,j_star],
+                                           sd = tau_P[i_star,j_star], 
+                                           a =  ifelse(i_star==j_star,-10,0),
                                            b  = 10))
     
     #acceptance ratio
@@ -235,7 +237,7 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
     #create statements that check conditiond to accept move
     MH_condition_P_update= min(log_r,0)>=log(runif(1))
     if(MH_condition_P_update){
-      acc.count_P[uo$row[i_th],uo$col[i_th]] =acc.count_P[uo$row[i_th],uo$col[i_th]] +1
+      acc.count_P[i_star,j_star] =acc.count_P[i_star,j_star] +1
       P_current = P_prime
     }
     
@@ -363,37 +365,38 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
   z_prime= z
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
   n_prime = matrix(0,nrow(P),1)
-  for(h in 1:nrow(P)){
+  for(h in 1:K){
     n_prime[h] = sum(length(which(z_prime==h)))
   }
   
   scanning_order = sample(1:n,n, replace=F)
   
   # full sweep
-  for(ii in scanning_order){
+  for(i_th_turn in scanning_order){
     
     z_scanning = z_prime
     #save current label of z_ii
-    k_prime <- z_prime[ii]
+    k_prime <- z_prime[i_th_turn]
     
     # Sample a new label using the adjusted probabilities
     labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
     k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
     
-    z_scanning[ii] <- k_scanning
+    z_scanning[i_th_turn] <- k_scanning
     
     
-    #compute the likelihood of the data with the current assignment just for ii
-    A_minus = sum(dbinom(Y_ij[ii,], N_ij[ii,], P_NbyN_prime[ii,], log=T)) + sum(dbinom(Y_ij[,ii], N_ij[,ii], P_NbyN_prime[,ii], log=T)) 
+    #compute the likelihood of the data with the current assignment just for i_th_turn
+    A_minus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_prime[i_th_turn,], log=T)) + 
+      sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_prime[,i_th_turn], log=T)) 
     
     #update P_NbyN
     P_NbyN_scanning = P_NbyN_prime
     for(nodes in 1:n){
-      P_NbyN_scanning[ii,nodes]<- P[k_scanning,z_scanning[nodes]]
-      P_NbyN_scanning[nodes,ii]<- P[z_scanning[nodes],k_scanning]
+      P_NbyN_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
+      P_NbyN_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
     }
     #compute the likelihood of the same points with the new assignment
-    A_plus = sum(dbinom(Y_ij[ii,], N_ij[ii,], P_NbyN_scanning[ii,], log=T)) + sum(dbinom(Y_ij[,ii], N_ij[,ii], P_NbyN_scanning[,ii], log=T)) 
+    A_plus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_scanning[i_th_turn,], log=T)) + sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_scanning[,i_th_turn], log=T)) 
     
     #Updating the likelihood
     A_scanning = A_prime - A_minus + A_plus
@@ -408,7 +411,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     #create statements that check conditiond to accept move
     GS_condition= min(log_r,0)>=log(runif(1))
     if(GS_condition){
-      acc.count_z[ii]=acc.count_z[ii]+1
+      acc.count_z[i_th_turn]=acc.count_z[i_th_turn]+1
       z_prime<-z_scanning
       A_prime<- A_scanning
       B_prime<- B_scanning

@@ -164,6 +164,7 @@ calculate_misclassification_rate <- function(N_new, z_new, N, p_true, z_true, sa
 
 
 LL_edges <- function(N_ij, Y_ij, z, P){
+  P<- inverse_logit_f(P)
   z_mat = vec2mat_0_P(z,P)
   P_ij<- calculate_victory_probabilities(z_mat,P)
   ll_lik = dbinom(x = Y_ij[upper.tri(Y_ij,diag=F)], size =  N_ij[upper.tri(N_ij,diag=F)], prob = P_ij[upper.tri(P_ij,diag=F)], log=T)
@@ -245,8 +246,8 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
       inner_join(z_df, by = c("col" = "items")) %>%
       rename(col_z = z)
     
-
-    similarity_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z))) +
+    
+    similarity_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
       geom_tile(aes(fill = similarity_value), color = "gray",show.legend = F) +
       scale_fill_gradient(low = "white", high = "black") +
       geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
@@ -256,7 +257,7 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
             axis.title.x = element_blank(),
             axis.title.y = element_blank())
     
-    adjacency_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z))) +
+    adjacency_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
       geom_tile(aes(fill = Y), color = "gray",show.legend = F) +
       scale_fill_gradient(low = "white", high = "black") +
       geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
@@ -265,7 +266,7 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
             axis.text.y = element_blank(),
             axis.title.x = element_blank(),
             axis.title.y = element_blank())
-      
+    
     
     #plotting it
     plot_name <- paste0(tap,"//adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
@@ -328,7 +329,7 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   #Data used to generate the data -----
   
   Pcontainer <- assembling_chains(chains, burnin = burnin, parameter = 'P')
-
+  
   
   A_container_POMM <- c(chains$chain1$control_containers$A[-c(1:burnin)],
                         chains$chain2$control_containers$A[-c(1:burnin)],
@@ -342,29 +343,11 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   if(true_value==F & label_switch == T){
     # apply the permutations returned by typing:
     
-    z_chain<- matrix((t(chains$chain1$est_containers$z[,-c(1:25000)])),5000,95)
-    dim(z_chain)
-    my_fun = function(x){
-  y = length(unique(x))
-}
-    Ks<- apply(z_chain,1,my_fun)
-    dim(Ks)
-    
-    z_chain=z_chain[,-c(which(Ks<5))]
-    dim(z_chain)
-    n=20
-    unique(z_chain)
-    Knumb<-rep(4, dim(z_chain)[1])
-    Knumb =matrix(5, 15000,1,byrow = T)
-    
-    dim(Knumb)
-    library(collpcm)
-    collpcm::collpcm.undo.label.switching(Z=z_chain,apply(z_chain,2,my_fun))
-  
     runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Y_ij)/colSums(Y_ij))
     z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
     Pcontainer<- permute_array(array_samples = Pcontainer, perm_matrix = runPOMM$permutations$`DATA-BASED`)
   }   
+  
   z_truePOMM <- chains$chain1$ground_truth$z #true underlying value
   similarity_matrixPOMM<- pr_cc(z_container_POMM)
   #point est 1
@@ -381,11 +364,6 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   #computing WAIC
   
   Pcontainer<- assembling_chains(chains,burnin = burnin,parameter = 'P')
-  
-  
-
-  
-  
   #computing WAIC
   
   LL <- matrix(nrow=n*(n-1)/2,ncol=N_iter-burnin)
@@ -397,19 +375,13 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   
   
   results = results %>% mutate(WAIC_est = WAIC(LL)$WAIC)
-  index_traceplot <- sample(c(1:(n*(n-1)/2)),1)
-  
-  plot_name <- paste0(tap,"//traceplot_",true_model,est_model, "_K",K,"_N",n,".png")
-  # Save the plot with the constructed file name
-  png(plot_name,width = 600, height = 326)
-  my_plot = plot(ts(LL[index_traceplot,]),xlab="",ylab="")
-  dev.off()
-  return(list(table=results, memb = z_MAP_POMM,my_plot = my_plot,LL=LL ))
+
+  return(list(table=results, memb = z_MAP_POMM,LL=LL ))
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_switch){
   stopifnot(length(chains)==4)
-
+  
   
   N<- nrow(chains$chain1$Y_ij)
   
@@ -829,12 +801,12 @@ assembling_chains <- function(chains, burnin, parameter){
 
 
 
-U_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
+mu_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
   
-  MCMC_samples<- cbind(chains$chain1$est_containers$U_vec[,-c(1:burnin)],
-                       chains$chain2$est_containers$U_vec[,-c(1:burnin)],
-                       chains$chain3$est_containers$U_vec[,-c(1:burnin)],
-                       chains$chain4$est_containers$U_vec[,-c(1:burnin)])
+  MCMC_samples<- cbind(chains$chain1$est_containers$mu_vec[,-c(1:burnin)],
+                       chains$chain2$est_containers$mu_vec[,-c(1:burnin)],
+                       chains$chain3$est_containers$mu_vec[,-c(1:burnin)],
+                       chains$chain4$est_containers$mu_vec[,-c(1:burnin)])
   
   m<- mcmc(MCMC_samples)
   
@@ -844,7 +816,7 @@ U_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
   results$credible_interval_95<- paste0("[",HPD[,1],",",HPD[,2],"]")
   if(true_value == T){
     
-    results$true_value<- chains$chain1$ground_truth$U_vec
+    results$true_value<- chains$chain1$ground_truth$mu_vec
     
   }
   
@@ -853,32 +825,32 @@ U_vec_summary_table<- function(chains, true_value, diag0.5,K,burnin){
 
 
 
-
-U_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
+mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
   stopifnot(length(chains)==4)
   
-  U_par_mcmc = array(NA, dim=c((N_iter*0.75), 4, K-1))
+  mu_vec_mcmc = array(NA, dim=c((N_iter*0.75), 4, K))
   my_var_names = vector()
-  for(u in 1:(K-1)){
+  for(u in 1:(K)){
     my_var_names = append(my_var_names, paste0("U_",u))
   }
   
   
   
   
-  mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(chains$chain1$est_containers$U_vec[,-c(1:burnin)])),
-                                        mcmc(t(chains$chain2$est_containers$U_vec[,-c(1:burnin)])),
-                                        mcmc(t(chains$chain3$est_containers$U_vec[,-c(1:burnin)])),
-                                        mcmc(t(chains$chain4$est_containers$U_vec[,-c(1:burnin)]))))
-  U_par_mcmc[,1,]<- mcmc(mm[[1]])
-  U_par_mcmc[,2,]<- mcmc( mm[[2]])
-  U_par_mcmc[,3,]<- mcmc(mm[[3]])
-  U_par_mcmc[,4,]<- mcmc(mm[[4]])
+  mm<-mcmc.list(chains_list = mcmc.list(mcmc(t(chains$chain1$est_containers$mu_vec[,-c(1:burnin)])),
+                                        mcmc(t(chains$chain2$est_containers$mu_vec[,-c(1:burnin)])),
+                                        mcmc(t(chains$chain3$est_containers$mu_vec[,-c(1:burnin)])),
+                                        mcmc(t(chains$chain4$est_containers$mu_vec[,-c(1:burnin)]))))
+
+  mu_vec_mcmc[,1,]<- mcmc(mm[[1]])
+  mu_vec_mcmc[,2,]<- mcmc( mm[[2]])
+  mu_vec_mcmc[,3,]<- mcmc(mm[[3]])
+  mu_vec_mcmc[,4,]<- mcmc(mm[[4]])
   
-  U_list = mcmc.list( mcmc(U_par_mcmc[,1,]), 
-                      mcmc(U_par_mcmc[,2,]),
-                      mcmc(U_par_mcmc[,3,]),
-                      mcmc(U_par_mcmc[,4,]))
+  U_list = mcmc.list( mcmc(mu_vec_mcmc[,1,]), 
+                      mcmc(mu_vec_mcmc[,2,]),
+                      mcmc(mu_vec_mcmc[,3,]),
+                      mcmc(mu_vec_mcmc[,4,]))
   varnames(U_list)<- my_var_names
   
   results = data.frame(ESS = effectiveSize(mm))
@@ -890,16 +862,16 @@ U_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
   U_autocorr_chain_i<-simplify2array(lapply(mm,autocorr.diag,lag=30))
   results$LAG_30 <- round(apply(U_autocorr_chain_i,2,mean),3)
   
-  mm_acc<-list(chains$chain1$acceptance_rates$acc.count_U[1],
-               chains$chain1$acceptance_rates$acc.count_U[1],
-               chains$chain1$acceptance_rates$acc.count_U[1],
-               chains$chain1$acceptance_rates$acc.count_U[1])
+  mm_acc<-list(chains$chain1$acceptance_rates$acc.count_mu_vec,
+               chains$chain1$acceptance_rates$acc.count_mu_vec,
+               chains$chain1$acceptance_rates$acc.count_mu_vec,
+               chains$chain1$acceptance_rates$acc.count_mu_vec)
   
   results$acceptance_rate<- mean(unlist(mm_acc))/N_iter*100
   if(true_value == T){
     
-    U_vec<- chains$chain1$ground_truth$U_vec
-    results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - U_vec),4)
+    mu_vec<- chains$chain1$ground_truth$mu_vec
+    results$MAE=round(abs(mean(simplify2array(lapply(mm, mean))) - mu_vec),4)
     
   }
   return(list(results=results, plots_list=U_list))

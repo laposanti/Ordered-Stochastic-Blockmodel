@@ -556,7 +556,17 @@ simulating_tournament<- function(N,alpha,beta, min_clust,max_clust,n_ij_max){
 #   matches = data.frame(player1, player2, n_ij, y_ij)
 #   
 #   return(list(z_true = z_players, matches_results = matches, p_true = p))}
-
+vec2mat_0_P <- function(clust_lab,P){
+  # in: vector clust_lab of length V s.t. clust_lab[v]=h if node v is in cluster h
+  # out: binary VxH matrix M s.t. M[v,h]=1{node v is in cluster h}
+  V <- length(clust_lab)
+  H <- nrow(P)
+  M <- matrix(0,V,H)
+  for (v in 1:V){
+    M[v,clust_lab[v]] <- 1
+  }
+  return(M)
+}
 
 vec2mat <- function(clust_lab){
   # in: vector clust_lab of length V s.t. clust_lab[v]=h if node v is in cluster h
@@ -768,7 +778,7 @@ plot_matrix <- function(my_matrix, cilower, ciupper, model_name, colorscale, wid
            yaxis = list(title = "Row index"))
 }
 
-estBetaParams <- function(mu, var) {
+beta_mean_var <- function(mu, var) {
   alpha <- ((1 - mu) / var - 1 / mu) * mu^2
   beta <- alpha * (1 / mu - 1)
   return(params = list(alpha = alpha, beta = beta))

@@ -138,9 +138,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
         start_time <- Sys.time()
         
         # Create a vector of update indices in random order
-        
-        
-        
+
         if (estimation_control$z == 1) {
           #z UPDATE-------------------------------------------------------------
           
@@ -219,6 +217,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
           #updating quantities
           mu_vec_current = mu_update$mu_vec
           acc.count_mu_vec = mu_update$acc.moves
+          
           if(model == "SST"){
             P_current = mu_update$P
           }

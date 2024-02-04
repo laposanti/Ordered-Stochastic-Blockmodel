@@ -14,21 +14,17 @@ library(coda)
 library(mcclust)
 library(LaplacesDemon)
 
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/functions_container_flex.R")
-source("/Users/lapo_santi/Desktop/Nial/project/simplified model/Functions_priorSST.R")
-source("/Users/lapo_santi/Desktop/Nial/project/simplified model/SaraWade.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/POMM_flex/MCMC/adaptive_POMM_MCMC_function.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_model/Inference_orderstats.R")
-
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_model/MCMC_wrapper_ORDERED.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_model/MCMC_wrapper_UNORDERED.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/order_statistics_model/MCMC_functions.R")
+source("/Users/lapo_santi/Desktop/Nial/oldmaterial/POMM_flex/functions_container_flex.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
+source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/SaraWade.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Inference_orderstats.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
 
 
 
 
 name_of_models = c('SST','WST', "Simple")
-K_estimated = c(3,4,5,6)
+K_estimated = c(3)
 
 #Uploading data
 
@@ -39,32 +35,32 @@ ranking_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-da
 
 #importing the data
 
-df_rank <- read.csv('/Users/lapo_santi/Desktop/Nial/raw_tennis_data/rankings_1973-2017_csv.csv')
-
-match_2017_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/match_scores_2017_unindexed_csv/data/df00561878fee97bf28b92cc70ae1d54/match_scores_2017_unindexed_csv.csv'
-df_match <- read.csv(match_2017_url)
-
-head(df_match)
-
-#computing the median rank for each player in 2017
-ranks= df_rank   %>%
-  filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
-
-top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
-
-#adding one extra column with the player id
-df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
-
-#now, for each game I want to filter just those players in the top one-hundred
-df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
-
-
-my_edges = df_match %>% select(winner_slug, loser_slug)
-g =graph_from_edgelist(as.matrix(my_edges),directed = T)
-my_name = data.frame(player_slug=vertex_attr(g)$name)
-players_df = inner_join(my_name,top100players, by="player_slug")
-
-A = as_adjacency_matrix(g)
+# df_rank <- read.csv('/Users/lapo_santi/Desktop/Nial/raw_tennis_data/rankings_1973-2017_csv.csv')
+# 
+# match_2017_url <- 'https://pkgstore.datahub.io/sports-data/atp-world-tour-tennis-data/match_scores_2017_unindexed_csv/data/df00561878fee97bf28b92cc70ae1d54/match_scores_2017_unindexed_csv.csv'
+# df_match <- read.csv(match_2017_url)
+# 
+# head(df_match)
+# 
+# #computing the median rank for each player in 2017
+# ranks= df_rank   %>%
+#   filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
+# 
+# top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
+# 
+# #adding one extra column with the player id
+# df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
+# 
+# #now, for each game I want to filter just those players in the top one-hundred
+# df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
+# 
+# 
+# my_edges = df_match %>% select(winner_slug, loser_slug)
+# g =graph_from_edgelist(as.matrix(my_edges),directed = T)
+# my_name = data.frame(player_slug=vertex_attr(g)$name)
+# players_df = inner_join(my_name,top100players, by="player_slug")
+# 
+# A = as_adjacency_matrix(g)
 
 
 
@@ -73,27 +69,26 @@ A = as_adjacency_matrix(g)
 # ###############################################################################
 
 #where the data are stored
-data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/estimates_file/"
+data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/"
 
-processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/estimates/"
+processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/estimates/"
 
 
 #est_model  <- ifelse(results_row, "POMM","Simple")
-is.simulation = F
-true_model = 'Tennis_data'
+is.simulation = T
+true_model = "WST"
 
-for(est_model in c("SST","WST", "Simple")){
-  est_model ="WST"
+for(est_model in c("WST", "Simple")){
+  
   filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
   for(file in 1:length(filenames)){
-    file=3
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
-    N=95
-    n=N
+    N= nrow(uploaded_results$chain1$Y_ij)
+    N=n
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
     
@@ -112,11 +107,11 @@ for(est_model in c("SST","WST", "Simple")){
     P_s_table_save <-P_s_table$table
     
     if(is.simulation==T){
-    P_s_table_sum <- P_s_table_save%>%
-      summarise(
-        average_credible_length = mean(abs(credible_interval_95 - credible_interval_05)),
-        MAE = mean(MAE)
-      ) %>% round(3) 
+      P_s_table_sum <- P_s_table_save%>%
+        summarise(
+          average_credible_length = mean(abs(credible_interval_95 - credible_interval_05)),
+          MAE = mean(MAE)
+        ) %>% round(3) 
     }else{
       P_s_table_sum <- P_s_table_save%>%
         summarise(
@@ -139,7 +134,7 @@ for(est_model in c("SST","WST", "Simple")){
     
     z_tot_table<- z_summary_table(chains  = uploaded_results, true_value = is.simulation, 
                                   diag0.5 = TRUE, K = K, burnin = N_iter*0.25,
-                                  label_switch = T, tap = processed_wd)
+                                  label_switch = F, tap = processed_wd)
     
     z_s_table<- z_tot_table$table 
     z_s_table = z_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
@@ -172,33 +167,18 @@ for(est_model in c("SST","WST", "Simple")){
       
       
       #-------------------------------------------------------------------------------
-      # sigma^2 parameter estimate
-      #-------------------------------------------------------------------------------
-      
-      a_s_table<- a_summary_table(chains = uploaded_results, true_value = is.simulation, 
-                                  diag0.5 = TRUE, K = K, burnin = N_iter*0.25)
-      
-      a_s_table = a_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
-      if(est_model=='SST' & file==1){
-        a_container = a_s_table
-      }
-      else{
-        a_container =  rbind(a_container,a_s_table)
-      }
-      
-      #-------------------------------------------------------------------------------
-      # U parameter estimate
+      # mu parameter estimate
       #-------------------------------------------------------------------------------
       # 
-      # 
-      U_vec_s_table<- U_vec_summary_table(chains = uploaded_results, true_value = is.simulation,
+
+      mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation,
                                           diag0.5 = TRUE, K = K, burnin = N_iter*0.25)
       
-      U_vec_s_table = U_vec_s_table %>% mutate(model=rep(est_model,nrow(U_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(U_vec_s_table)))
+      mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
       if(est_model=='SST'&file==1){
-        U_vec_container = U_vec_s_table
+        mu_vec_container = mu_vec_s_table
       }
-      U_vec_container =  rbind(U_vec_container,U_vec_s_table)
+      mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
       
       
     }
@@ -286,35 +266,21 @@ for(est_model in c("SST","WST", "Simple")){
         sigma_squared_d_container =  rbind(sigma_squared_d_container,sigma_squared_d_table)
       }
       
-      
-      #-------------------------------------------------------------------------------
-      # a diagnostics 
-      #-------------------------------------------------------------------------------
-      
-      a_d_table <- a_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE, 
-                                      K = K, burnin = N_iter*0.25,N_iter = N_iter)
-      
-      a_d_table = a_d_table %>% mutate(model= est_model)%>% mutate(n_clust = K)
-      if(est_model=='SST'&file==1){
-        a_d_container = a_d_table
-      }else{
-        a_d_container =  rbind(a_d_container,a_d_table)
-      }
-      
-      
+
+
       #-------------------------------------------------------------------------
-      # U diagnostics 
+      # mu diagnostics 
       #-------------------------------------------------------------------------
-      
-      U_vec_d_table <- U_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
+
+      mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
                                               K = K, burnin = N_iter*0.25,N_iter = N_iter)
       
-      U_vec_d_table_save = U_vec_d_table$results %>% mutate(model= est_model)%>% mutate(n_clust = K)
+      mu_vec_d_table_save = mu_vec_d_table$results %>% mutate(model= est_model)%>% mutate(n_clust = K)
       
       if(est_model=='SST'&file==1){
-        U_vec_d_container = U_vec_d_table_save
+        mu_vec_d_container = mu_vec_d_table_save
       }else{
-        U_vec_d_container =  rbind(U_vec_d_container,U_vec_d_table_save)
+        mu_vec_d_container =  rbind(mu_vec_d_container,mu_vec_d_table_save)
       }
       
     }
@@ -323,7 +289,7 @@ for(est_model in c("SST","WST", "Simple")){
     # Saving Plots and matrices
     #---------------------------------------------------------------------------
     P_est_title <- paste0(processed_wd,'/P_est_matrix',true_model,est_model,K, '.csv')
-    P_est <- round(P_s_table$P_hat,3) %>% data.frame() 
+    P_est <- round(P_s_table$P_hat,3) %>% data.frame() %>% inverse_logit_f()
     P_est %>% write.csv(file = P_est_title)
     
     # P_true_title <- paste0(processed_wd,'/P_true_matrix',true_model,K, '.csv')
@@ -333,7 +299,7 @@ for(est_model in c("SST","WST", "Simple")){
     # convergence diagnostics plot -----------------------------------------------
     
     P_list <- P_d_table$plots_list
-    U_list <- U_vec_d_table$plots_list
+    U_list <- mu_vec_d_table$plots_list
     
     #---------------------------------------------------------------------------
     #DIAGNOSTICS PLOTS FOR P 
@@ -361,7 +327,7 @@ for(est_model in c("SST","WST", "Simple")){
     dev.off()
     
     #---------------------------------------------------------------------------
-    #DIAGNOSTICS PLOTS FOR U
+    #DIAGNOSTICS PLOTS FOR mu
     #---------------------------------------------------------------------------
     
     if(est_model != 'Simple'){
@@ -407,10 +373,10 @@ for(est_model in c("SST","WST", "Simple")){
     #---------------------------------------------------------------------------
     
     my_names <- read.csv("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv")
-
+    
     plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     # Save the plot with the constructed file name
-
+    
     g_df =  data.frame(vertex_attr(g)) %>%
       rename(player_slug= name) %>%
       left_join(players_df, by="player_slug") %>%
@@ -425,7 +391,7 @@ for(est_model in c("SST","WST", "Simple")){
     #---------------------------------------------------------------------------
     # CHECKING THE HOMOGENEITY OF THE CLUSTERS: HEATMAP
     #---------------------------------------------------------------------------
-
+    
     my_names <- read.csv("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv")
     
     plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
@@ -481,15 +447,15 @@ for(est_model in c("SST","WST", "Simple")){
            y = paste0("Playersordered by blocks"),
            fill = "% victories",
            color = "Block")
-
+    
     #saving the heatmap
     plot_name1<- paste0(processed_wd,"//Combined_plot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name1,width = 800, height = 594)
     print(combined_plot)
     dev.off()
-
     
-
+    
+    
     #---------------------------------------------------------------------------
     # CHECKING THE RANKING and THE CLUSTERING
     #---------------------------------------------------------------------------
@@ -498,7 +464,7 @@ for(est_model in c("SST","WST", "Simple")){
     set.seed(23)
     # Randomly sample a subset of labels to display
     sampled_labels <- combined_df[sample(nrow(combined_df), size = round(percentage_to_display / 100 * nrow(combined_df))), ]
-
+    
     rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
       geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
       geom_label_repel(
@@ -521,12 +487,12 @@ for(est_model in c("SST","WST", "Simple")){
             plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
             plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
             plot.caption = element_text(face = "italic"))
-
+    
     plot_name2<- paste0(processed_wd,"//Boxplot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name2,width = 800, height = 594)
     print(rank_boxplot)
     dev.off()
-
+    
   }
 }
 
@@ -550,10 +516,10 @@ a_container = a_container %>% arrange(n_clust) %>% arrange(n_clust ) %>% relocat
 
 a_container %>%  write.csv(file = paste0(processed_wd,"/a_container.csv"))
 
-U_vec_container <- U_vec_container %>% arrange(n_clust) %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
+mu_vec_container <- mu_vec_container %>% arrange(n_clust) %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
   relocate(where(is.character)) %>% rename(K = n_clust) 
 
-U_vec_container%>% write.csv(file = paste0(processed_wd,"/U_vec_container.csv"))
+mu_vec_container%>% write.csv(file = paste0(processed_wd,"/mu_vec_container.csv"))
 
 
 
@@ -578,10 +544,10 @@ a_d_container = a_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>%
 
 a_d_container %>%  write.csv(file = paste0(processed_wd,"/a_d_container.csv"))
 
-U_vec_d_container = U_vec_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
+mu_vec_d_container = mu_vec_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
   relocate(where(is.character)) %>% rename(K = n_clust)
 
-U_vec_d_container %>%  write.csv(file = paste0(processed_wd,"/U_vec_d_container.csv"))
+mu_vec_d_container %>%  write.csv(file = paste0(processed_wd,"/mu_vec_d_container.csv"))
 
 
 #BLOCKWISE HEATMAP ---------------------------------------------------------
