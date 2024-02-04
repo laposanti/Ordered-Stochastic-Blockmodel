@@ -78,7 +78,7 @@ processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan202
 is.simulation = T
 true_model = "WST"
 
-for(est_model in c("WST", "Simple")){
+for(est_model in c('SST',"WST", "Simple")){
   
   filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)

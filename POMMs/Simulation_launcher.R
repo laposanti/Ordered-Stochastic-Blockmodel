@@ -31,13 +31,13 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/")
 
 
 
-K_values <- c(4,5)  # Range of K values to explore
+K_values <- c(3,4,5)  # Range of K values to explore
 sigma_values <- c(0.001,0.01)  # Range of sigma_squared values to explore
 model_selection <- c(1) # Range of models to explore: 1= SST, 0 =Simple/unordererd
 
 
 is.simulation=T
-true_model = 'SST'
+true_model = 'WST'
 
 test_grid = expand_grid(K_values)
 
@@ -50,11 +50,11 @@ for(iteration in 1:nrow(test_grid)){
   
   
   
-  
+
   n = 100
   M = 12
   
-  N_iter = 400
+  N_iter = 40000
   K = test_grid$K_values[iteration]
   K_max = test_grid$K_values[iteration]
   N_ij<- matrix(M,n,n)
@@ -67,8 +67,10 @@ for(iteration in 1:nrow(test_grid)){
   P_star = matrix(NA, K, K)
   if(true_model == 'SST'){
     print("Generating data from the SST model")
-    for(i in 0:(K-1)){
-      P_star[col(P_star)-row(P_star)==i] <- rep(mu_vec[i+1],K-i)
+    P_star = matrix(NA, K, K)
+    P_star[col(P_star)-row(P_star)==0] <- runif(K, min=-2, max = mu_vec[1])
+    for(diag_i in 1:(K-1)){
+      P_star[col(P_star)-row(P_star)==diag_i] <- runif(K-diag_i, min= mu_vec[diag_i],max = mu_vec[diag_i+1])
     }
     p_ij = inverse_logit_f(P_star)
     p_ij[lower.tri(p_ij)]<- 1-t(p_ij)[lower.tri(p_ij)]
@@ -136,28 +138,26 @@ for(iteration in 1:nrow(test_grid)){
     mu_SST = sort(rtruncnorm(K,a = 0, b = Inf, mean = 0,sd = 1))
     P_star_SST = matrix(NA, K, K)
     
-    sigma_i_SST=sigma_i
-    
     
     for(i in 0:(K-1)){
-      P_star_SST[col(P_star_SST)-row(P_star_SST)==(i)] <- truncnorm::rtruncnorm(K-i,a = 0, b = 10,mean = mu_SST[i+1],sd = sigma_i_SST)
+      P_star_SST[col(P_star_SST)-row(P_star_SST)==(i)] <- truncnorm::rtruncnorm(K-i,a = 0, b = 10,mean = mu_SST[i+1],sd = 0)
     }
     
     P_star_SST[lower.tri(P_star_SST)] = 1 - P_star_SST[upper.tri(P_star_SST)]
     
-    
+    sigma_i_SST=NA
     
     z0=matrix(0,n,1)
     for(item in 1:n){
       z0[item]= sample(1:K,1)
     }
     
-    ground_truth[[chain]]=list(z = z,sigma_squared=sigma_squared, mu_vec = mu_vec,K=K,P=P_star)
+    ground_truth[[chain]]=list(z = z,sigma_squared=ifelse(true_model=='WST',sigma_squared,NA), mu_vec = mu_vec,K=K,P=P_star)
     
     init[[chain]] =list(z = z0,sigma_squared=sigma_i_SST, mu_vec = mu_SST,K=K,P0=P_star_SST)
   }
   
-  estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,P=0)
+  estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,P=1)
   
   
   hyper_params = list(K_max = K,alpha_vec =rep(1/K,K))
@@ -173,10 +173,10 @@ for(iteration in 1:nrow(test_grid)){
   my_names <- paste0("chain", 1:n_chains)
   names(chains_SST)<-my_names 
   
-  filename_SST <- paste0("True_Model",true_model,"Est_model_SST","_N", n,"_K", K, "true_sigma_squared", sigma_squared, "_seed", seed,".RDS")
+  filename_SST <- paste0("True_Model",true_model,"Est_model_SST","_N", n,"_K", K, "_seed", seed,".RDS")
   saveRDS(chains_SST, file = filename_SST) #saving results
   beep("coin")
-  
+
   # 
   # sigma_df = data.frame(iter = 1: N_iter,sigma= t(chains_SST$chain1$est_containers$sigma_squared))
   # 
@@ -184,36 +184,31 @@ for(iteration in 1:nrow(test_grid)){
   #   geom_line(group=1)+
   #   geom_hline(yintercept = chains_SST$chain1$ground_truth$sigma_squared, col='red', linetype = 2)
   # 
+  # plot(x=1:N_iter, y=chains_SST$chain1$st.deviations$tau_mu_vec)
   # 
+  # mus = t(chains_SST$chain1$est_containers$mu_vec)
+  # mu_df = data.frame(iter = rep(1: N_iter,K) ,
+  #                    ground_truth = c(rep(chains_SST$chain1$ground_truth$mu[1],N_iter),
+  #                                     rep(chains_SST$chain1$ground_truth$mu[2],N_iter),
+  #                                     rep(chains_SST$chain1$ground_truth$mu[3],N_iter),
+  #                                     rep(chains_SST$chain1$ground_truth$mu[4],N_iter),
+  #                                     rep(chains_SST$chain1$ground_truth$mu[5],N_iter)),
+  #                    mu = c(mus[,1],mus[,2],mus[,3],mus[,4],mus[,5]),
+  #                    level_set = c(rep(1,N_iter), rep(2,N_iter), rep(3,N_iter), rep(4,N_iter),rep(5,N_iter)))
   # 
-  mus = t(chains_SST$chain1$est_containers$mu_vec)
-  mu_df = data.frame(iter = rep(1: N_iter,K) ,
-                     ground_truth = c(rep(chains_SST$chain1$ground_truth$mu[1],N_iter),
-                                      rep(chains_SST$chain1$ground_truth$mu[2],N_iter),
-                                      rep(chains_SST$chain1$ground_truth$mu[3],N_iter),
-                                      rep(chains_SST$chain1$ground_truth$mu[4],N_iter)),
-                     mu = c(mus[,1],mus[,2],mus[,3],mus[,4]),
-                     level_set = c(rep(1,N_iter), rep(2,N_iter), rep(3,N_iter), rep(4,N_iter)))
-
-  ggplot(mu_df, aes(x=iter,y=mu, group= factor(level_set,levels = c(1,2,3,4)), color= factor(level_set)))+
-    geom_line()+
-    geom_line(aes(y=ground_truth, x = iter), linetype=2, color='red')+
-    facet_wrap(~level_set)
+  # ggplot(mu_df, aes(x=iter,y=mu, group= factor(level_set,levels = c(1,2,3,4)), color= factor(level_set)))+
+  #   geom_line()+
+  #   geom_line(aes(y=ground_truth, x = iter), linetype=2, color='red')+
+  #   facet_wrap(~level_set)
   # 
-  # 
-  # 
-  # mu_df=mu_df %>% mutate(diff = abs(mu - ground_truth))%>%
-  #   group_by(level_set)%>%
-  #   summarise(MAE = mean(diff), point_est = mean(mu), gtruth = mean(ground_truth), var= var(mu))
-  # inverse_logit_f(mu_df$point_est)
-  # inverse_logit_f(mu_df$gtruth)
-  # 
-  # Ps <- as.numeric(chains_SST$chain1$est_containers$P[1,1,])
-  # 
+  # Ps <- as.numeric(chains_SST$chain1$est_containers$P[2,4,])  # 
   # P_df = data.frame(iter = 1: N_iter,P= Ps)
   # ggplot(P_df, aes(x=iter, y=P))+
   #   geom_line(group=1)+
-  #   geom_hline(yintercept = P_star[1,1], linetype=2,col='red')
+  #   geom_hline(yintercept = P_star[2,4], linetype=2,col='red')
+  
+  
+}
   
   #-----------------------------------------------------------------------------
   # WST MODEL
@@ -266,7 +261,7 @@ for(iteration in 1:nrow(test_grid)){
   my_names <- paste0("chain", 1:n_chains)
   names(chains_WST)<-my_names 
   
-  filename_WST <- paste0("True_Model",true_model,"Est_model_WST","_N", n,"_K", K, "true_sigma_squared", sigma_squared, "_seed", seed,".RDS")
+  filename_WST <- paste0("True_Model",true_model,"Est_model_WST","_N", n,"_K", K, "_seed", seed,".RDS")
   saveRDS(chains_WST, file = filename_WST) #saving results
   beep("coin")
   #-----------------------------------------------------------------------------
@@ -317,9 +312,9 @@ for(iteration in 1:nrow(test_grid)){
                                            optimal_acceptance_rate=optimal_acceptance_rate, 
                                            hyper_params = hyper_params, seed = seed, model = 'Simple')
   names(chains_Simple)<-my_names 
-  filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K, "true_sigma_squared", sigma_squared, "_seed", seed,".RDS")
+  filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,  "_seed", seed,".RDS")
   saveRDS(chains_Simple, file = filename_Simple) #saving results
   beep("coin")
   
-}
+
 

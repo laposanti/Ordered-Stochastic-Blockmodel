@@ -76,7 +76,9 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       }else{
         P_current=  as.matrix(ground_truth$P)
       }
-      
+      if(model == 'SST'){
+        P_current<- as.matrix(init$P0)
+      }
       labels_available<- 1:K_current
       
       #initializing quantities
@@ -115,12 +117,12 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       
       #adaptive variances initialisation
       tau_sigma_squared <- 0.2 
-      tau_mu_vec <- 0.5
+      tau_mu_vec <- 0.05
       tau_P <- matrix(0.2,K,K)
 
 
       tau_sigma_squared_container<- matrix(0,1, N_iter)
-      tau_mu_vec_container<- 1
+      tau_mu_vec_container<- matrix(0,1, N_iter)
       tau_P_container <- array(0,dim=c(K,K,N_iter))
       
       
@@ -218,9 +220,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
           mu_vec_current = mu_update$mu_vec
           acc.count_mu_vec = mu_update$acc.moves
           
-          if(model == "SST"){
-            P_current = mu_update$P
-          }
+
           
           if(j %% 50 == 0 && j< N_iter*0.3){
               tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
@@ -235,7 +235,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
         
         #storing scales
         tau_sigma_squared_container[j]<- tau_sigma_squared
-        tau_mu_vec_container<- tau_mu_vec
+        tau_mu_vec_container[j]<- tau_mu_vec
         tau_P_container[,,j]<- tau_P
         
         #storing results for inference
@@ -275,8 +275,8 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       acceptance_rates <- list(acc.count_P = acc.count_P, acc.count_z = acc.count_z,
                                acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)
       
-      st.deviations<- list(tau_P = tau_P,tau_sigma_squared = tau_sigma_squared, 
-                           tau_mu_vec= tau_mu_vec)
+      st.deviations<- list(tau_P = tau_P_container,tau_sigma_squared = tau_sigma_squared_container, 
+                           tau_mu_vec= tau_mu_vec_container)
       
       est_containers = list(z = z_container,P = P_container,
                             sigma_squared= sigma_squared_container, mu_vec = mu_vec_container)
