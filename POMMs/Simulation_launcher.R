@@ -31,7 +31,7 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/")
 
 
 
-K_values <- c(3,4,5)  # Range of K values to explore
+K_values <- c(6)  # Range of K values to explore
 sigma_values <- c(0.001,0.01)  # Range of sigma_squared values to explore
 model_selection <- c(1) # Range of models to explore: 1= SST, 0 =Simple/unordererd
 

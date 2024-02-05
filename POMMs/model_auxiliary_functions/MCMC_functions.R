@@ -140,6 +140,10 @@ d_sA_mu = function(K,mu_vec){
 }
 
 
+
+
+
+
 # Proportional posterior
 
 
@@ -224,8 +228,10 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
         P_prime[j_star,i_star] <- log((1-p_ij)/p_ij)      
         
       }
+    }else if(model=='Simple'){
+      lower.bound =  -5
+      upper.bound = 10
     }
-    
     #computing the proportional posterior in P'
     prop_posterior_prime <-  lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, P = P_prime,
                                                    K = K,mu_vec = mu_vec,sigma_squared = sigma_squared,

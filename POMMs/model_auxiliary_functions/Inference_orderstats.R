@@ -239,12 +239,24 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
     uuu <- data.frame(
       row = indices$row,
       col = indices$col,
-      similarity_value = as.vector(similarity_matrixPOMM),
-      Y = as.vector(Y_ij)
-    ) %>%inner_join(z_df, by = c("row" = "items")) %>%
+      similarity_value = NA,
+      Y = NA
+    )
+    
+    for (i in seq_len(nrow(uuu))) {
+      uuu$Y[i] <- Y_ij[uuu$col[i], uuu$row[i]]
+    }
+    for (i in seq_len(nrow(uuu))) {
+      uuu$similarity_value[i] <- similarity_matrixPOMM[uuu$col[i], uuu$row[i]]
+    }
+    uuu=uuu%>%
+      inner_join(z_df, by = c("row" = "items")) %>%
       rename(row_z = z) %>%
       inner_join(z_df, by = c("col" = "items")) %>%
-      rename(col_z = z)
+      rename(col_z = z) %>%
+      mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
+             col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
+    
     
     
     similarity_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
@@ -257,10 +269,10 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
             axis.title.x = element_blank(),
             axis.title.y = element_blank())
     
-    adjacency_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
-      geom_tile(aes(fill = Y), color = "gray",show.legend = F) +
+    adjacency_m<- ggplot(uuu, aes(x = row, y = col)) +
+      geom_tile(aes(fill = Y), color = "gray", show.legend = FALSE) +
       scale_fill_gradient(low = "white", high = "black") +
-      geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
+      geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
       theme_minimal() +
       theme(axis.text.x = element_blank(),
             axis.text.y = element_blank(),
@@ -291,30 +303,81 @@ z_plot<- function(chains, true_model, est_model, true_value, diag0.5 , K, N, z ,
       runPOMM<- label.switching(method = 'DATA-BASED',z = t(z_container_POMM), K = K,data = rowSums(Y_ij)/colSums(Y_ij))
       z_container_POMM<- z_permute(z_container_POMM, permutations = runPOMM$permutations$`DATA-BASED`)
     }
-    similarity_matrixPOMM = pr_cc(z_container_POMM)
-    A_container_POMM <- cbind(chains$chain1$control_containers$A[-c(1:burnin)],
-                              chains$chain2$control_containers$A[-c(1:burnin)],
-                              chains$chain3$control_containers$A[-c(1:burnin)],
-                              chains$chain4$control_containers$A[-c(1:burnin)]) 
+    z_container_POMM <- assembling_chains(chains,burnin,'z')
+    Y_ij<-chains$chain1$Y_ij
     
-    z_MAP_POMM= z_container_POMM[,which(A_container_POMM == max(A_container_POMM))[1]]
-    #plotting it
+    
+    similarity_matrixPOMM = pr_cc(chains$chain1$est_containers$z)
     point_est_POMM = minVI(similarity_matrixPOMM)$cl
+    # Create row and column indices
+    indices <- expand.grid(row = rownames(Y_ij), col =rownames(Y_ij))
+    
+    z_df <- data.frame(items = rownames(Y_ij), z = point_est_POMM)
+    
+    
+    # Convert the matrix to a data frame
+    uuu <- data.frame(
+      row = indices$row,
+      col = indices$col,
+      similarity_value = NA,
+      Y = NA
+    )
+    
+    for (i in seq_len(nrow(uuu))) {
+      uuu$Y[i] <- Y_ij[uuu$col[i], uuu$row[i]]
+    }
+    for (i in seq_len(nrow(uuu))) {
+      uuu$similarity_value[i] <- similarity_matrixPOMM[uuu$col[i], uuu$row[i]]
+    }
+    uuu=uuu%>%
+      inner_join(z_df, by = c("row" = "items")) %>%
+      rename(row_z = z) %>%
+      inner_join(z_df, by = c("col" = "items")) %>%
+      rename(col_z = z) %>%
+      mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
+             col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
+    
+    
+    
+    similarity_m <- ggplot(uuu, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
+      geom_tile(aes(fill = similarity_value), color = "gray",show.legend = F) +
+      scale_fill_gradient(low = "white", high = "black") +
+      geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
+      theme_minimal() +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
+    
+    adjacency_m<- ggplot(uuu, aes(x = row, y = col)) +
+      geom_tile(aes(fill = Y), color = "gray", show.legend = FALSE) +
+      scale_fill_gradient(low = "white", high = "black") +
+      geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
+      theme_minimal() +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
+    
+    
+    #plotting it
     plot_name <- paste0(tap,"//adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    similarity_plot(Y_ij, z_MAP_POMM, z_MAP_POMM) #checking mixing
+    #similarity_plot(Y_ij, z, z) #checking mixing
+    print(adjacency_m)
     # Close the device to save the plot
     dev.off()
     
     #plotting it
-    plot_name <- paste0(tap,"//similarity_",true_model,est_model,"K",K,"_N",N,".png")
+    plot_name <- paste0(tap,"//similarity_",true_model,est_model, "_K",K,"_N",N,".png")
     # Save the plot with the constructed file name
     png(plot_name,width = 800, height = 800)
-    
-    similarity_plot(similarity_matrixPOMM, z_MAP_POMM, z_MAP_POMM) #checking mixing
+    #similarity_plot(similarity_matrixPOMM, z, z) #checking mixing
+    print(similarity_m)
     # Close the device to save the plot
     dev.off()
+    
   }
   return(point_est_POMM)
 }
@@ -375,8 +438,8 @@ z_summary_table<- function(chains , true_value, diag0.5 , K, burnin, label_switc
   
   
   results = results %>% mutate(WAIC_est = WAIC(LL)$WAIC)
-
-  return(list(table=results, memb = z_MAP_POMM,LL=LL ))
+  
+  return(list(table=results, memb = point_est_POMM,LL=LL ))
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_switch){
@@ -841,7 +904,7 @@ mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter){
                                         mcmc(t(chains$chain2$est_containers$mu_vec[,-c(1:burnin)])),
                                         mcmc(t(chains$chain3$est_containers$mu_vec[,-c(1:burnin)])),
                                         mcmc(t(chains$chain4$est_containers$mu_vec[,-c(1:burnin)]))))
-
+  
   mu_vec_mcmc[,1,]<- mcmc(mm[[1]])
   mu_vec_mcmc[,2,]<- mcmc( mm[[2]])
   mu_vec_mcmc[,3,]<- mcmc(mm[[3]])
