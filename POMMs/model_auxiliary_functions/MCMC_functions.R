@@ -114,17 +114,21 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P){
 P_prior_probability = function(P,K,mu_vec, sigma_squared, model){
   p_P = matrix(0,K,K)
   if(model == "WST"){
-    p_P[col(p_P)-row(p_P)==0] <- dnorm(x = P[col(P)-row(P)==0],mean = mu_vec[1],sd = sqrt(sigma_squared))
-    for(diag_i in 1:(K-1)){
-      p_P[col(p_P)-row(p_P)==diag_i] <- truncnorm::dtruncnorm(x = P[col(P)-row(P)==diag_i],a = 0,b=Inf,mean = mu_vec[diag_i+1],sd = sqrt(sigma_squared))
+    sigma= sqrt(sigma_squared)
+    for(diag_i in 0:(K-1)){
+      p_P[col(p_P)-row(p_P)==diag_i] <- dunif(x = P[col(P)-row(P)==diag_i], 
+                                              min= mu_vec[diag_i+1]-sigma,
+                                              max = mu_vec[diag_i+2]+sigma)
     }
   }else if (model == "Simple"){
     theta = inverse_logit_f(P)
     p_P = dbeta(theta,1,1)*exp(theta)/((1+exp(theta))**2)
   }else if(model =='SST'){
-    p_P[col(p_P)-row(p_P)==0] <- dunif(P[col(P)-row(P)==0], min=-2, max = mu_vec[1])
-    for(diag_i in 1:(K-1)){
-      p_P[col(p_P)-row(p_P)==diag_i] <- dunif(x = P[col(P)-row(P)==diag_i], min= mu_vec[diag_i],max = mu_vec[diag_i+1])
+    
+    for(diag_i in 0:(K-1)){
+      p_P[col(p_P)-row(p_P)==diag_i] <- dunif(x = P[col(P)-row(P)==diag_i], min= 
+                                                mu_vec[diag_i+1],
+                                              max = mu_vec[diag_i+2])
     }
   }
   log_p_P = sum(log(p_P[upper.tri(p_P,diag = T)]))
@@ -134,12 +138,18 @@ P_prior_probability = function(P,K,mu_vec, sigma_squared, model){
 
 #mu prior distribution
 d_sA_mu = function(K,mu_vec){
+  mu_0_lp = dnorm(mu_vec[1],0,1,log=T)
   fac <- lfactorial(K)
-  joint_density<- sum(log(dtruncnorm(mu_vec,a = 0,mean = -1,sd = 1)) - log(1- pnorm(0,mean = -1,sd = 1)))
-  return(joint_density+fac)
+  joint_density<- sum(log(dtruncnorm(mu_vec[2:(K+1)],a = 0,mean = 0,sd = 1)) - log(1- pnorm(0,mean = 0,sd = 1)))
+  return(joint_density+fac+mu_0_lp)
 }
 
-
+order_stat_truncnorm = function(K, mu, mean, sd, lb, ub){
+  fac <- lfactorial(K)
+  joint_density<- sum(log(dtruncnorm(mu,a = lb,b = ub, mean = mean,sd = sd)) - 
+                        log(pnorm(ub,mean = mean,sd = sd)- pnorm(lb,mean = mean,sd = sd)))
+  return(fac+joint_density)
+}
 
 
 
@@ -156,7 +166,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     #log prior on z
     prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
     #log prior on P
-    prior_P<- P_prior_probability(P,K,mu_vec, sigma_squared,model)
+    prior_P<- P_prior_probability(P,K,mu_vec, sigma,model)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z 
   }else if (model=='WST'){
@@ -176,7 +186,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     #log likelihood
     log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P)
     #log prior on P
-    prior_P<- P_prior_probability(P,K,mu_vec, sigma_squared,model)
+    prior_P<- P_prior_probability(P,K,mu_vec, sigma,model)
     #log prior on z
     prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
     #log prior on mu
@@ -192,7 +202,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
 P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                       sigma_squared, mu_vec,K, tau_P,
                       acc.count_P, model){
-  tau_P = matrix(.2,K,K)
+  
   P_current<- P
   #Updating each entry of P, one at the time
   
@@ -205,41 +215,36 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
     P_prime<-P_current
     i_star<- uo$row[i_th]
     j_star<- uo$col[i_th]
-    if(model == 'WST'){
-      #P' ~ g(P^(t), tau_P) 
-      lower.bound =  ifelse(i_star==j_star,-10,0)
-      upper.bound = 10
-      P_prime[i_star,j_star]<- rtruncnorm(1, mean = P_current[i_star,j_star],
-                                          sd = tau_P[i_star,j_star], 
-                                          a = ifelse(i_star==j_star,-10,0), b  = 10)
-      
-      if(i_star != j_star){
-        p_ij<- inverse_logit_f(P_prime[i_star,j_star])
-        P_prime[j_star,i_star] <- log((1-p_ij)/p_ij)                  
-      }
-    }else if(model=="SST"){
-      lower.bound =  ifelse(i_star==j_star,-2,mu_vec[j_star-i_star])
-      upper.bound = mu_vec[j_star-i_star+1]
-      P_prime[i_star,j_star]<- rtruncnorm(1, a = lower.bound , b = upper.bound,
-                                          mean = P_current[i_star,j_star], sd =  tau_P[i_star,j_star])
-      
-      if(i_star != j_star){
-        p_ij<- inverse_logit_f(P_prime[i_star,j_star])
-        P_prime[j_star,i_star] <- log((1-p_ij)/p_ij)      
-        
-      }
+    if(model=="SST"){
+      lower.bound = mu_vec[j_star - i_star + 1]
+      upper.bound = mu_vec[j_star - i_star + 2]
+    }else if(model == 'WST'){
+      sigma=sqrt(sigma_squared)
+      lower.bound = mu_vec[j_star - i_star + 1] - sigma
+      upper.bound = mu_vec[j_star - i_star + 2] + sigma
     }else if(model=='Simple'){
-      lower.bound =  -5
-      upper.bound = 10
+      lower.bound = -5
+      upper.bound = +10
     }
+    
+    P_prime[i_star,j_star]<- rtruncnorm(1, a = lower.bound , b = upper.bound,
+                                        mean = P_current[i_star,j_star], 
+                                        sd =  tau_P[i_star,j_star])
+    
+    P_prime[lower.tri(P_prime)] = - t(P_prime)[lower.tri(P_prime)]
+    
     #computing the proportional posterior in P'
-    prop_posterior_prime <-  lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, P = P_prime,
-                                                   K = K,mu_vec = mu_vec,sigma_squared = sigma_squared,
+    prop_posterior_prime <-  lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, 
+                                                   P = P_prime,
+                                                   K = K,mu_vec = mu_vec,
+                                                   sigma_squared = sigma_squared,
                                                    alpha_vec = alpha_vec,n_k = n_k,model)
     
     #evaluating the proportional posterior in P^(t)
-    prop_posterior_current<- lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, mbar = mbar, P = P_current,
-                                                   K = K,mu_vec = mu_vec,sigma_squared = sigma_squared,
+    prop_posterior_current<- lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, 
+                                                   mbar = mbar, P = P_current,
+                                                   K = K,mu_vec = mu_vec,
+                                                   sigma_squared = sigma_squared,
                                                    alpha_vec = alpha_vec,n_k = n_k,model)
     
     #evaluating the proposal density g(P'| P^(t)) 
@@ -269,6 +274,7 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
     }
     
   }
+  
   P_current= P_prime
   
   return(list(acc.moves = acc.count_P,
@@ -285,25 +291,39 @@ mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
                              acc.count_mu_vec,model){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
-  mu_prime <- truncnorm::rtruncnorm(K,a = -1,b = 5, mean = mu_vec,sd = tau_mu_vec)
-  mu_vec_prime <- sort(mu_prime)
+  mu_1_K_prime <- truncnorm::rtruncnorm(K,a = 0,b = 10, mean = mu_vec[2:(K+1)],sd = tau_mu_vec)
+  mu_0_prime = truncnorm::rtruncnorm(1,a = -Inf,b = min(mu_1_K_prime), mean = mu_vec[1],sd = tau_mu_vec)
+  mu_vec_prime <- c(mu_0_prime,sort(mu_1_K_prime))
   
   
   #computing the proportional posterior in mu'
-  prop_posterior_prime <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P, alpha_vec = alpha_vec,
-                                                n_k = n_k,sigma_squared = sigma_squared,mu_vec = mu_vec_prime,K = K,model=model)
+  prop_posterior_prime <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P, 
+                                                alpha_vec = alpha_vec,
+                                                n_k = n_k,sigma_squared = sigma_squared
+                                                ,mu_vec = mu_vec_prime,K = K,model=model)
   
   #evaluating the proportional posterior in mu^(t)
-  prop_posterior_current <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P,alpha_vec = alpha_vec,
-                                                  n_k = n_k,sigma_squared = sigma_squared,mu_vec = mu_vec,K = K,model = model)
+  prop_posterior_current <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
+                                                  P = P,alpha_vec = alpha_vec,
+                                                  n_k = n_k,sigma_squared = sigma_squared,
+                                                  mu_vec = mu_vec,K = K,model = model)
   
   #evaluating the proposal density g(mu'| mu^(t)) 
-  log_proposal_prime <- log(dtruncnorm(mu_prime,mean = mu_vec,sd =tau_mu_vec, a =   -1, b  = 5))
+  log_proposal_mu_1_K_prime <- order_stat_truncnorm(K, mu = mu_1_K_prime, 
+                                                   mean = mu_vec[2:(K+1)],sd =tau_mu_vec,lb = 0,ub = 10)
+  log_proposal_mu0_prime <- log(truncnorm::dtruncnorm(mu_0_prime ,a= -Inf,b = min(mu_1_K_prime), 
+                                                      mean = mu_vec[1],sd = tau_mu_vec))
+  log_proposal_mu_prime = log_proposal_mu_1_K_prime+ log_proposal_mu0_prime
   
   #evaluating the proposal density g(mu^(t)| mu') 
-  log_proposal_current <- log(dtruncnorm(mu_vec,mean = mu_prime,sd = tau_mu_vec, a =   -1, b  = 5))
+  log_proposal_mu_1_K_current <-order_stat_truncnorm(K, mu = mu_vec[2:(K+1)], mean = mu_1_K_prime,sd =tau_mu_vec,lb = 0,ub = 10)
+  log_proposal_mu0_current <- log(truncnorm::dtruncnorm(mu_vec[1] ,a= -Inf,b = min(mu_1_K_prime), 
+                                                        mean = mu_0_prime,sd = tau_mu_vec))
+  log_proposal_mu_current = log_proposal_mu_1_K_current+ log_proposal_mu0_current
   
-  log_r =  prop_posterior_prime  - prop_posterior_current + log_proposal_current - log_proposal_prime
+  
+  log_r =  prop_posterior_prime  - prop_posterior_current + 
+    log_proposal_mu_current - log_proposal_mu_prime
   
   #create statements that check conditionion to accept move
   MH_condition_mu_vec= min(log_r,0)>=log(runif(1))

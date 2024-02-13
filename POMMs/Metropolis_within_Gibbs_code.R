@@ -19,67 +19,93 @@
 #gamma_vec: the hyperprior on the block sizes
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
-adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control, 
+adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control, 
                                      ground_truth,N, N_iter,n_chains, 
-                                     optimal_acceptance_rate, hyper_params, seed,model){
+                                     optimal_acceptance_rate, K, seed,model){
   
-  handlers(global = TRUE)
   registerDoFuture()
-
   reprex <- local({
+    handlers(global = TRUE)
     p <- progressor(steps = n_chains * N_iter/5000)
-    plan(multisession, workers= min(n_chains,(detectCores()-2)))
-    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(TRUE, add=c('init','ground_truth')), seed=TRUE)) %dofuture% { 
-
-      init <- init[[chain]]
-      ground_truth<- ground_truth[[chain]]
+    plan(multisession, workers= n_chains)
+    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(TRUE, add=c('K','ground_truth','seed')), seed=TRUE)) %dofuture%{ 
+      set.seed(seed[[chain]])
+      
       N=n
       #setting hyperparams
-      K_max = as.numeric(hyper_params$K_max)
-      alpha_vec = as.vector(hyper_params$alpha_vec)
-      A_container= matrix(0, nrow=1, ncol=N_iter)
-      K = nrow(init$P)
-      #setting containers
-      z_container= matrix(0, nrow = N, ncol = N_iter)
-      sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter)
-      mu_vec_container = matrix(0, nrow = K, ncol = N_iter)
-      K_container = matrix(0, nrow = 1, ncol = N_iter)
-      P_container = array(0, dim = c(K,K,N_iter))
+      K = K
+      alpha_vec = as.vector(rep(1/K,K))
+      
+      
+      #-------------------------------------------------------------------------
+      #Initializing z allocation vector 
+      #-------------------------------------------------------------------------
       
       #if the parameters is fixed, setting it to the true value
       if(estimation_control$z==1){
-        z_current= matrix(init$z,N,1)
+        z_current= kmeans(Y_ij,K)
+        z_current = z_current$cluster
       }else{
         z_current=  matrix(ground_truth$z, N, 1)
       }
-      
-
-      if(estimation_control$sigma_squared==1){
-        sigma_squared_current<- as.numeric(init$sigma_squared)
+      #-------------------------------------------------------------------------
+      #Initializing sigma_squared boundaries 
+      #-------------------------------------------------------------------------
+      # if model WST is selected: initialise sigma_squared
+      if(model == 'WST'){
+        if(estimation_control$sigma_squared==1){
+          sigma_squared_current <- runif(1,0.01,0.4)
+        }else{
+          sigma_squared_current <- as.numeric(ground_truth$sigma_squared)
+        }
       }else{
-        sigma_squared_current=  as.numeric(ground_truth$sigma_squared)
+        sigma_squared_current <-  NA
+      }
+      #-------------------------------------------------------------------------
+      #Initializing mu parameter for different models
+      #-------------------------------------------------------------------------
+      # if model WST ore SST is selected: initialise the means of the level sets mu_vec
+      if(model == 'WST' || model == 'SST'){
+        if(estimation_control$mu_vec==1){
+          mu_vec_1_K_1<- sort(rtruncnorm(K,a = 0, b = 10, mean = 0,sd = 1))
+          mu_vec0 = rtruncnorm(1,a = -Inf, b = min(mu_vec_1_K_1), mean = 0,sd = 1)
+          mu_vec_current = c(mu_vec0,mu_vec_1_K_1)
+        }else{
+          mu_vec_current=  as.numeric(ground_truth$mu_vec)
+        }
+      }else if(model == 'Simple'){
+        mu_vec_current =NA
       }
       
-      if(estimation_control$mu_vec==1){
-        mu_vec_current<- as.numeric(init$mu_vec)
-      }else{
-        mu_vec_current=  as.numeric(ground_truth$mu_vec)
-      }
-      
-      if(estimation_control$K==1){
-        K_current<- as.numeric(init$K)
-      }else{
-        K_current=  as.numeric(ground_truth$K)
-      }
+      #-------------------------------------------------------------------------
+      #Initializing P matrix for different models
+      #-------------------------------------------------------------------------
       if(estimation_control$P==1){
-        P_current<- as.matrix(init$P0)
+        P_current = matrix(NA,K,K)
+        if(model =='SST'){
+          for(d in 0:(K-1)){
+            P_current[col(P_current)-row(P_current)==d]<- runif(K-d, 
+                                                                min  = mu_vec_current[d+1] , 
+                                                                max = mu_vec_current[d+2])
+          }
+        }else if(model =='WST'){
+          sigma=sqrt(sigma_squared_current)
+          for(d in 0:(K-1)){
+            P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma , 
+                                                                max = mu_vec_current[d+2]+sigma)
+          }
+        }else if( model =='Simple'){
+          for(d in 0:(K-1)){
+            P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = -10 , 
+                                                                max = +10)
+          }
+        }
+        P_current[lower.tri(P_current)] = - t(P_current)[lower.tri(P_current)]
       }else{
         P_current=  as.matrix(ground_truth$P)
       }
-      if(model == 'SST'){
-        P_current<- as.matrix(init$P0)
-      }
-      labels_available<- 1:K_current
+      
+      labels_available<- 1:K
       
       #initializing quantities
       n_k = as.vector(table(z_current))
@@ -98,49 +124,76 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       
       
       
-      A_current = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar,P = P_current)
+      A_current = llik_over_blocks_f_binomial(lamdabar = lamdabar, ybar = ybar,mbar = mbar,P = P_current)
       
+      check = lprop_posterior_withP(lamdabar = lamdabar,
+                                    ybar = ybar,
+                                    mbar = mbar,
+                                    P = P_current,
+                                    alpha_vec = alpha_vec,
+                                    n_k = n_k,
+                                    sigma_squared = sigma_squared_current,
+                                    mu_vec = mu_vec_current,
+                                    K = K, 
+                                    model = model)
+      
+      #--------------------------------------------------------------------------
+      #setting and initialising containers
+      #--------------------------------------------------------------------------
+      #initialising the chain
+      z_container= matrix(0, nrow = N, ncol = N_iter)
       z_container[,1] = z_current
-
-      sigma_squared_container[1] = sigma_squared_current
-      mu_vec_container[,1] = mu_vec_current
-      P_container[,,1]<-P_current
+      if(model == 'WST'){
+        #initialising the chain
+        sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter)
+        sigma_squared_container[1] <- sigma_squared_current
+        #initialising the adaptive variance
+        tau_sigma_squared <- 0.2 
+        tau_sigma_squared_container = matrix(0,1, N_iter)
+        tau_sigma_squared_container[1] <- tau_sigma_squared
+      }else{
+        tau_sigma_squared <- NA
+        sigma_squared_container <- NA
+        tau_sigma_squared_container <- NA
+      }
+      if(model == 'WST'||model == 'SST'){
+        #initialising the chain
+        mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter)
+        mu_vec_container[,1] <- mu_vec_current
+        #initialising the adaptive variance
+        tau_mu_vec <- 0.05
+        tau_mu_vec_container = matrix(0,1, N_iter)
+        tau_mu_vec_container[1] <- tau_mu_vec
+      }else{
+        mu_vec_container <- NA
+        tau_mu_vec <- NA
+        tau_mu_vec_container <- NA
+      }
+      #initialing P and its adaptive variance container
+      P_container = array(0, dim = c(K,K,N_iter))
+      P_container[,,1] <-P_current
       
-      A_container[1]=A_current
+      tau_P_container = array(0,dim=c(K,K,N_iter))
+      tau_P = matrix(0.2,K,K)
+      tau_P_container[,,1] = tau_P
+      
+      
+      A_container= matrix(0, nrow=1, ncol=N_iter)
+      
+      A_container[1] <- A_current
       
       #containers for the counts of accepted proposals
       acc.count_z = rep(1,N)
-
       acc.count_sigma_squared=1
       acc.count_mu_vec = 1
       acc.count_P<- matrix(1,K,K)
       
-      #adaptive variances initialisation
-      tau_sigma_squared <- 0.2 
-      tau_mu_vec <- 0.05
-      tau_P <- matrix(0.2,K,K)
-
-
-      tau_sigma_squared_container<- matrix(0,1, N_iter)
-      tau_mu_vec_container<- matrix(0,1, N_iter)
-      tau_P_container <- array(0,dim=c(K,K,N_iter))
-      
-      
-      
-      
-      
-      
-      
-      
       #READY TO BOMB!
-      
-      set.seed(seed)
       iteration_time= vector()
       for(j in 2:N_iter){
         start_time <- Sys.time()
         
-        # Create a vector of update indices in random order
-
+        
         if (estimation_control$z == 1) {
           #z UPDATE-------------------------------------------------------------
           
@@ -152,11 +205,11 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
           lamdabar = z_update$lamdabar
           ybar = z_update$ybar
           mbar = z_update$mbar
-      
+          
           z_current = z_update$z
           acc.count_z = z_update$acc.moves
-            
-  
+          
+          
           
           
         }
@@ -166,7 +219,8 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
           P_update = P_update_f(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
                                 P = P_current,alpha_vec = alpha_vec,
                                 n_k = n_k,sigma_squared = sigma_squared_current,
-                                mu_vec = mu_vec_current,K = K,tau_P = tau_P,acc.count_P = acc.count_P,model)
+                                mu_vec = mu_vec_current,K = K,tau_P = tau_P,
+                                acc.count_P = acc.count_P,model)
           
           P_current = P_update$P
           acc.count_P = P_update$acc.moves
@@ -213,24 +267,24 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
           
           mu_update=  mu_update_f_withP(lamdabar = lamdabar, ybar = ybar,mbar = mbar,  P = P_current,
                                         alpha_vec =  alpha_vec, n_k = n_k,
-                                      sigma_squared = sigma_squared_current, 
-                                      mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
-                                      acc.count_mu_vec,model)
+                                        sigma_squared = sigma_squared_current, 
+                                        mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
+                                        acc.count_mu_vec,model)
           #updating quantities
           mu_vec_current = mu_update$mu_vec
           acc.count_mu_vec = mu_update$acc.moves
           
-
+          
           
           if(j %% 50 == 0 && j< N_iter*0.3){
-              tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                               sigma = tau_mu_vec,
-                                               acceptanceTarget = optimal_acceptance_rate,
-                                               min_sigma = 0.002)
+            tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
+                                          sigma = tau_mu_vec,
+                                          acceptanceTarget = optimal_acceptance_rate,
+                                          min_sigma = 0.002)
           }
           
           
-        
+          
         }
         
         #storing scales
@@ -241,8 +295,12 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
         #storing results for inference
         A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar, P = P_current)
         z_container[,j] <- z_current
+        if(model == 'WST'){
         sigma_squared_container[1,j] = sigma_squared_current
+        }
+        if(model == 'WST'|| model=='SST'){
         mu_vec_container[,j] <- mu_vec_current
+        }
         P_container[,,j] <- P_current
         
         
@@ -255,11 +313,11 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
         if(j%%5000==0){
           avg_iteration<- mean(iteration_time)
           current_time <- Sys.time() # Get the current time
-
+          
           # Calculate the expected finishing time
           expected_finishing_time <- current_time + (avg_iteration * (N_iter - j) )
           formatted_expected_finishing_time <- format(expected_finishing_time, "%H:%M:%S")
-
+          
           p(sprintf("Chain %d: mean acc.rate z %.3f%%, mean acc.rate P %.3f%%,mean acc.rate sigma_squared %.3f%%,mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
                     chain,
                     100 * mean(acc.count_z/j),
@@ -267,8 +325,8 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
                     100 * mean(acc.count_sigma_squared/j),
                     100 * mean(acc.count_mu_vec/j),
                     4, avg_iteration, formatted_expected_finishing_time), class = "sticky")
-
-
+          
+          
         }
       }
       
@@ -284,7 +342,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij,init , estimation_control,
       control_containers = list(A = A_container)
       
       return(list(Y_ij= Y_ij, N_ij = N_ij,
-                  init = init, ground_truth=ground_truth,est_containers=est_containers, 
+                  seed = seed, ground_truth=ground_truth,est_containers=est_containers, 
                   control_containers=control_containers, acceptance_rates= acceptance_rates, 
                   st.deviations=st.deviations, seed=seed))
     }
