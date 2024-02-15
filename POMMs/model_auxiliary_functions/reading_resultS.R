@@ -1,4 +1,4 @@
- 
+  
 
 library(ggside)
 library(ggrepel)
@@ -24,7 +24,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 #where the data are stored
 data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/"
 #where the data are saved
-processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/SST_true/"
+processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/Simple_true/"
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
 is.simulation = T
@@ -52,7 +52,7 @@ if(is.simulation==F){
   A = as_adjacency_matrix(g)
   true_model = "Tennis_data"
 }else if(is.simulation == T){
-  true_model = "SST"
+  true_model = "Simple"
 }
 
 
@@ -62,8 +62,10 @@ for(est_model in c('SST','WST','Simple')){
   print(filenames)
   
   for(file in 1:length(filenames)){
-    
+
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
+
+    
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
@@ -72,6 +74,7 @@ for(est_model in c('SST','WST','Simple')){
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
     burnin = 10000
 
+  
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
@@ -80,6 +83,8 @@ for(est_model in c('SST','WST','Simple')){
     P_est <- inverse_logit_f(P_est)
     
     
+    
+
     #---------------------------------------------------------------------------
     # SUMMARY PLOT PLOTS FOR z
     #---------------------------------------------------------------------------
@@ -180,7 +185,7 @@ for(est_model in c('SST','WST','Simple')){
       #-------------------------------------------------------------------------------
       # 
       
-      mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation,
+      mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
                                             diag0.5 = TRUE, K = K, burnin = burnin)
       
       mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
@@ -222,7 +227,7 @@ for(est_model in c('SST','WST','Simple')){
     
     P_d_table<- P_diagnostic_table(chains = uploaded_results, true_value = is.simulation, 
                                    permutations_z = permutations_z,
-                                   diag0.5 = TRUE,K = K_est,
+                                   diag0.5 = TRUE,K = K,
                                    P = uploaded_results$chain1$ground_truth$P,
                                    burnin = burnin, N_iter = N_iter, label_switch =T)
     
@@ -236,23 +241,23 @@ for(est_model in c('SST','WST','Simple')){
     }else{
       P_d_container =  rbind(P_d_container,P_d_table_save)
     }
-    # 
-    #-------------------------------------------------------------------------------
-    # z diagnostics 
-    #-------------------------------------------------------------------------------
-    # 
-    # z_d_table <- z_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE, 
-    #                                 K = K, burnin = N_iter*0.25, N_iter=N_iter,label_switch=F)
-    # 
-    # z_d_table = z_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
-    # 
-    # if(est_model=='SST'&file==1){
-    #   z_d_container = z_d_table
-    # }else{
-    #   z_d_container =  rbind(z_d_container,z_d_table)
-    # }
-    # 
-    
+
+    # -------------------------------------------------------------------------------
+    # z diagnostics
+    # -------------------------------------------------------------------------------
+
+    z_d_table <- z_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
+                                    K = K, burnin = N_iter*0.25, N_iter=N_iter,label_switch=F)
+
+    z_d_table = z_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
+
+    if(est_model=='SST'&file==1){
+      z_d_container = z_d_table
+    }else{
+      z_d_container =  rbind(z_d_container,z_d_table)
+    }
+
+
     
     
     if(est_model == 'WST'){
@@ -262,7 +267,7 @@ for(est_model in c('SST','WST','Simple')){
       #-------------------------------------------------------------------------------
       
       sigma_squared_d_table <- sigma_squared_diagnostic_table(chains = uploaded_results, 
-                                                              true_value = is.simulation, diag0.5 = TRUE, K = K, 
+                                                              true_value = is.simulation*(true_model=='WST'), diag0.5 = TRUE, K = K, 
                                                               burnin = burnin, N_iter = N_iter)
       
       sigma_squared_d_table = sigma_squared_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
@@ -279,7 +284,7 @@ for(est_model in c('SST','WST','Simple')){
       # mu diagnostics 
       #-------------------------------------------------------------------------
       
-      mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
+      mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'), diag0.5 = TRUE,
                                                 K = K, burnin = burnin,N_iter = N_iter)
       
       mu_vec_d_table_save = mu_vec_d_table$results %>% mutate(model= est_model)%>% mutate(n_clust = K)
@@ -314,25 +319,26 @@ for(est_model in c('SST','WST','Simple')){
     #DIAGNOSTICS PLOTS FOR P 
     #---------------------------------------------------------------------------
     
-    plot_name <- paste0(processed_wd,"//P_gelman_rubin_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    plot_name_gelman <- paste0(processed_wd,"//P_gelman_rubin_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     # Save the plot with the constructed file name
-    png(plot_name,width = 800, height = 800)
+    png(plot_name_gelman,width = 800, height = 800)
     par(mar = c(1.5, 1.5,1.5,1.5))
     gelman.plot(P_list)
     dev.off()
 
 
     #Crosscorrelation
-    plot_name <- paste0(processed_wd,"//P_crosscorr_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-    png(plot_name,width = 800, height = 800)
+    plot_name_cross <- paste0(processed_wd,"//P_crosscorr_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(plot_name_cross,width = 800, height = 800)
     par(mfrow = c(1,1))
     crosscorr.plot(P_list)
     dev.off()
     #
     #Autocorrelation
-    plot_name <- paste0(processed_wd,"//P_autocorr_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-    png(plot_name,width = 800, height = 800)
-    acfplot(P_list, type = 'l')
+    auto_plot <- acfplot(P_list, type = 'l')
+    plot_name_auto <- paste0(processed_wd,"//P_autocorr_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(plot_name_auto,width = 800, height = 800)
+    print(auto_plot)
     dev.off()
     
     
@@ -344,9 +350,9 @@ for(est_model in c('SST','WST','Simple')){
     if(est_model != 'Simple'){
       
       #Gelman Rubin
-      plot_name <- paste0(processed_wd,"//U_gelman_rubin_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+      plot_name_gelman_U <- paste0(processed_wd,"//U_gelman_rubin_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       # Save the plot with the constructed file name
-      png(plot_name,width = 800, height = 800)
+      png(plot_name_gelman_U,width = 800, height = 800)
       par(mar = c(1.5, 1.5,1.5,1.5))
       gelman.plot(mu_list)
       dev.off()
@@ -354,16 +360,17 @@ for(est_model in c('SST','WST','Simple')){
       
       
       #Crosscorrelation
-      plot_name <- paste0(processed_wd,"//U_crosscorr_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-      png(plot_name,width = 800, height = 800)
+      plot_name_cross_U <- paste0(processed_wd,"//U_crosscorr_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+      png(plot_name_cross_U,width = 800, height = 800)
       par(mfrow = c(1,1))
       crosscorr.plot(mu_list)
       dev.off()
       
       #Autocorrelation
-      plot_name <- paste0(processed_wd,"//U_autocorr_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-      png(plot_name,width = 800, height = 800)
-      acfplot(mu_list, type = 'l')
+      auto_plot_U = acfplot(mu_list, type = 'l')
+      plot_name_auto_U <- paste0(processed_wd,"//U_autocorr_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+      png(plot_name_auto_U,width = 800, height = 800)
+      print(auto_plot_U)
       dev.off()
     }
     
@@ -383,7 +390,7 @@ for(est_model in c('SST','WST','Simple')){
         left_join(players_df, by="player_slug") %>%
         mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
         arrange()
-      est_df<- data.frame(player_slug = my_names$player_slug, est_cl = point_est)
+      est_df<- data.frame(player_slug = my_names$player_slug, est_cl = point_est_z)
       combined_df<- inner_join(g_df,est_df,by = 'player_slug')
       png(plot_name,width = 800, height = 627)
       print(rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model))
@@ -522,11 +529,11 @@ mu_vec_container%>% write.csv(file = paste0(processed_wd,"/mu_vec_container.csv"
 
 
 
-# z_d_container = z_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
-#   relocate(where(is.character)) %>% rename(K = n_clust) 
-# 
-# z_d_container %>% write.csv(file = paste0(processed_wd,"/z_d_container.csv"))
-# 
+z_d_container = z_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>%
+  relocate(where(is.character))
+
+z_d_container %>% write.csv(file = paste0(processed_wd,"/z_d_container.csv"))
+
 P_d_container = P_d_container %>% arrange(n_clust ) %>% relocate (n_clust) %>%
   relocate(where(is.character)) %>% rename(K = n_clust)
 
@@ -549,7 +556,9 @@ if(is.simulation==F){
   
   chosen_model <- z_container[which(z_container$WAIC_est ==  min(z_container$WAIC_est)),]
   
-  uploaded_results<- readRDS(paste0(data_wd, 'True_ModelTennis_dataEst_model_',chosen_model$model,'_N95_K',chosen_model$K,'_seed123.RDS'))
+  
+  
+  uploaded_results<- readRDS(paste0(data_wd, 'True_ModelTennis_dataEst_model_',chosen_model$model,'_N95_K',chosen_model$K,'.RDS'))
   K<- chosen_model$K
   P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
   P_est <- inverse_logit_f(P_est)
@@ -635,8 +644,7 @@ if(is.simulation==F){
         theme(legend.direction = "vertical", 
               axis.text.x = element_text(angle=45, hjust = 1),
               plot.title =  element_text(face = "bold", hjust = 0.5))+
-        labs(title = paste0('Heatmap victory % between blocks'),
-             x = paste0("Players in block ", block_j),
+        labs( x = paste0("Players in block ", block_j),
              y = paste0("Players in block ", block_i),
              fill = "% victories",
              color = "Block")+
@@ -652,6 +660,5 @@ if(is.simulation==F){
     print(cowplot::plot_grid(plotlist = my_beauti_plottini[c(1:K)+(K*j)], nrow=1))
     dev.off()
   }
-  
-  
+
 }

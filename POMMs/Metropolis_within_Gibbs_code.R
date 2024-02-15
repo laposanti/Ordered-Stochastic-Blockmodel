@@ -179,7 +179,6 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
       
       
       A_container= matrix(0, nrow=1, ncol=N_iter)
-      
       A_container[1] <- A_current
       
       #containers for the counts of accepted proposals

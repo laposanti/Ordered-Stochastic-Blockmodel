@@ -33,9 +33,9 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/")
 
 
 is.simulation=T
-true_model = 'SST'
+true_model = 'Simple'
 #data.directory
-data_directory = "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/SST_true/Simulated data/"
+data_directory = "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/Simple_true/Simulated data/"
 filenames <- list.files(pattern = paste0(true_model),path = data_directory)
 
 print(filenames) #data to be estimated
@@ -63,7 +63,7 @@ for(file in 1:length(filenames)){
   
   n_chains = 4
   optimal_acceptance_rate =.22
-  N_iter= 30000
+  N_iter= 70000
   chains_seeds = list(20,09,97,2024)
   
   #-----------------------------------------------------------------------------
@@ -151,4 +151,16 @@ for(file in 1:length(filenames)){
     beep("coin")
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 

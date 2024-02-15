@@ -52,7 +52,7 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024//raw/")
 K_values <- c(3,4,5,6)  # Range of K values to explore
 
 
-choose_model_to_estimate = c('SST','WST','Simple')
+choose_model_to_estimate = c('Simple')
 #-----------------------------------------------------------------------------
 # read the files in the selected folder, estimate the SST, the WST and the Simple model
 #-----------------------------------------------------------------------------

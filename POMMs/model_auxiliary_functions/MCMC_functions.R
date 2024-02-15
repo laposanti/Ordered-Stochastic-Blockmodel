@@ -409,7 +409,11 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     k_prime <- z_prime[i_th_turn]
     
     # Sample a new label using the adjusted probabilities
+    if(model != 'Simple'){
     labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
+    }else{
+      labels_to_sample = labels_available
+    }
     k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
     
     z_scanning[i_th_turn] <- k_scanning
