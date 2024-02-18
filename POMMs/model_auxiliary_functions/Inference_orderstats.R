@@ -55,112 +55,34 @@ plot_P = function(p_container, p_true, burnin,K){
   p_combined = patchwork::wrap_plots(plots, ncol = K, nrow = K)
   return(p_combined)}
 
-
-
-z_permute<-function (z_container, permutations,K) {
-  
-  m <- dim(permutations)[1]
-  K <- dim(permutations)[2]
-  J <- nrow(z_container)
-  
-  t_z<- t(z_container)
-  
-  z_array<- array(0,dim=c(m,K,J))  
-  P=matrix(0,K,K)
-  for(iter in 1:m){
-    z_array[iter,,]<- t(vec2mat_0_P(t_z[iter,],P = P))
-  }
-  
-  
-  mcmc.permuted <- z_array
-  for (iter in 1:m) {
-    for (j in 1:J) {
-      mcmc.permuted[iter, , j] <- z_array[iter, permutations[iter, 
-      ], j]
-    }
-  }
-  
-  output<- matrix(0,J,m)
-  for(iter in 1:m){
-    for(j in 1:J){
-      output[j,iter]<- which(mcmc.permuted[iter,,j]>0)
-    }
-  }
-  return(output)
-}
-
-permute_array <-function(array_samples, perm_matrix) {
-  
-  N_iter <- dim(array_samples)[3]  # Number of iterations
-  K <- dim(array_samples)[1]       # Dimension of the array (K by K)
-  
-  permuted_array <- array(dim = c(K, K, N_iter))  # Initialize permuted array
-  
-  for (i in 1:N_iter) {
-    perm_indices <- perm_matrix[i, ]  # Permutation indices for the current iteration
-    permuted_array[, , i] <- array_samples[perm_indices, perm_indices, i]
-  }
-  
-  return(permuted_array)
-}
-uncertainty_labels<- function(z_container,K)
-{
-  N <- nrow(z_container)
-  m <- ncol(z_container)
-  label_proportions <- matrix(0, N, K)
-  colnames(label_proportions)<-1:K
-  # Calculate label proportions with zero counts
-  for (i in 1:N) {
-    label_counts <- table(z_container[i, ])
-    
-    # Fill in the label proportions matrix
-    label_proportions[i, names(label_counts)] <- round(label_counts / m,2)
-  }
-  return(label_proportions)
+# Define the function to be executed in parallel
+compute_likelihood_foreach <- function(t) {
+  P <- inverse_logit_f(P_chain[,,t])
+  z_mat <- vec2mat_0_P(z_chain[,t], P)
+  P_ij <- calculate_victory_probabilities(z_mat, P)
+  LL_val <- dbinom(x = Y_ij[upper.tri(Y_ij)], 
+                   size = N_ij[upper.tri(N_ij)], 
+                   prob = P_ij[upper.tri(P_ij)], log = TRUE)
+  return(LL_val)
 }
 
 
-estimator_P <- function(Pcontainer){
-  K<-nrow(Pcontainer)
-  P_hat<- matrix(0,K,K )
-  for(p in 1:K){
-    for(q in 1:K){
-      P_hat[p,q]<- mean(Pcontainer[p,q,])
-    }
+# Define a function to relabel chains
+relabel_chain <- function(chain_index, permutations_z, chains, ncol_iter,n) {
+  chain_relabeled = matrix(NA, nrow = n, ncol = ncol_iter)
+  for (i in 1:ncol(chain_relabeled)) {
+    chain_relabeled[, i] <- permutations_z[i,][chains[[paste0("chain", chain_index)]]$est_containers$z[, i]]
   }
-  return(P_hat)
+  return(chain_relabeled)
 }
 
-calculate_misclassification_rate <- function(N_new, z_new, N, p_true, z_true, sampled_games, labels_available, P_est, z_est) {
-  # create empty matrix of edges between the N_new nodes and those in the original network
-  Yij_new <- matrix(0, N_new, N)
-  
-  # simulate the new edges
-  for (i in 1:N_new){
-    for (j in 1:sampled_games){
-      Yij_new[i, j] <- rbinom(1, 1, prob = p_true[z_new[i], z_true[j]])
-    }
+# Define a function to permute P matrices
+permute_P <- function(chain_index, permutations_z, chains,K) {
+  P_permuted = array(NA, dim = c(K, K, nrow(permutations_z)))
+  for (i in 1:nrow(permutations_z)) {
+    P_permuted[, , i] <- chains[[paste0("chain", chain_index)]]$est_containers$P[permutations_z[i,], permutations_z[i,], i]
   }
-  
-  z_proportion <- table(z_est) / N
-  
-  K <- length(labels_available)
-  z_predicted_prob <- matrix(0, N_new, K)
-  
-  for (k in labels_available){
-    for (i in 1:N_new){
-      lik_i <- 0 
-      for (j in sampled_games){
-        lik_i <- lik_i + dbinom(Yij_new[i, j], 1, P_est[k, z_est[j]], log = TRUE)
-      }
-      lik_i <- lik_i + log(z_proportion[k])
-      z_predicted_prob[i, k] <- lik_i 
-    }
-  }
-  
-  misclassification_rate <- (N_new - sum(diag(table(z_new, apply(z_predicted_prob, 1, which.max))))) / N_new
-  
-  return(misclassification_rate)
+  return(P_permuted)
 }
 
 
@@ -246,7 +168,7 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
                                           zpivot = z_pivot ,
                                           z = t(z_chain), 
                                           K = K)
-    }if(true_value==T){
+    }else if(true_value==T){
       #if we have the ground truth, use it as pivotal partitioning for label switching
       run_label_switch <- label.switching(method = "ECR" ,
                                           zpivot = z_pivot ,
@@ -263,6 +185,8 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
     for(i in 1:ncol(chain_relabeled)){
       chain_relabeled[,i] <- permutations_z[i,][z_chain[,i]]
     }
+    
+    
   }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
   }
@@ -348,57 +272,9 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
   }
 }
 
-z_summary_table<- function(chains , true_value, z_chain_permuted, P_chain_permuted, z_est,  diag0.5 , K, burnin, label_switch = T,tap){
-  
-  Y_ij<- chains$chain1$Y_ij
-  N_ij<- chains$chain1$N_ij
-  n =nrow(Y_ij)
-  
-  if (label_switch == T){
-    z_chain = z_chain_permuted
-    P_chain = P_chain_permuted
-  }else if(label_switch==F){
-    z_chain = chains$chain1$est_containers$z
-    P_chain = chains$chain1$est_containers$P
-  }
-  
-  
-  
-  LL <- matrix(NA,(n*(n-1))/2,ncol=N_iter-burnin)
-  for(t in 1:ncol(LL)){
-    
-    P<- inverse_logit_f(P_chain[,,t])
-    z_mat = vec2mat_0_P(z_chain[,t],P)
-    P_ij<- calculate_victory_probabilities(z_mat,P)
-    cor(P_ij[upper.tri(Y_ij)],Y_ij[upper.tri(Y_ij)]/N_ij[upper.tri(Y_ij)])
+z_summary_table<- function(chains , true_value, z_list_relab = z_list_relab, P_list_relab = P_list_relab, z_est,  
+                           diag0.5, K, burnin,N_iter, label_switch = T,tap){
 
-    LL[,t] = dbinom(x = Y_ij[upper.tri(Y_ij)], 
-                    size =  N_ij[upper.tri(N_ij)], 
-                    prob = P_ij[upper.tri(P_ij)], log=T)
-    
-    if(t%%3000==0){print(paste0("iteration number----->",t))}
-  }
-  
-  
-  
-  WAIC_est_1 = waic(t(LL))
-  LOO<-loo(t(LL))
-  
-  results = data.frame(WAIC_est =WAIC_est_1$estimates[3],
-                       WAIC_SE =  WAIC_est_1$estimates[6],
-                       looic =LOO$estimates[3],
-                       loiic_SE = LOO$estimates[6])
-  
-  
-  if(true_value == T){
-    z_true = chains$chain1$ground_truth$z
-    similarity_matrix <- pr_cc(z_chain)
-    point_est_minVI = minVI(similarity_matrix)$cl
-    
-    results$VIdist_minVI <- vi.dist(point_est_minVI, z_true)
-    results$VIdist_MAP <- vi.dist(z_est, z_true)
-    return(list(table=results, VIdist_minVI = results$VIdist_minVI,LL=LL))
-  }
   
   return(list(table=results, LL=LL))
 }
@@ -498,7 +374,7 @@ P_diagnostic_table<- function(chains, true_value, permutations_z, diag0.5,P,K,bu
       P_samples_list[[chain]]<- P_permuted
     }
   }
-  upper.tri.extractor = function(x){ x[upper.tri(x,diag = T)]}
+  
   
   
   mm<-mcmc.list(mcmc(t(apply(P_samples_list[[1]], MARGIN = c(3), FUN = upper.tri.extractor))),

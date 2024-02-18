@@ -27,6 +27,7 @@ label_probability <- function(distance, sigma_z) {
   return(prob)
 }
 
+upper.tri.extractor = function(x){ x[upper.tri(x,diag = T)]}
 
 inverse_logit_f = function(x){
   y= exp(x)/(1+exp(x))
@@ -122,7 +123,9 @@ P_prior_probability = function(P,K,mu_vec, sigma_squared, model){
     }
   }else if (model == "Simple"){
     theta = inverse_logit_f(P)
-    p_P = dbeta(theta,1,1)*exp(theta)/((1+exp(theta))**2)
+    theta=upper.tri.extractor(theta)
+    
+    p_P[upper.tri(p_P,diag=T)] = dbeta(theta,1,1)*(exp(theta)/((1+exp(theta))**2))
   }else if(model =='SST'){
     
     for(diag_i in 0:(K-1)){
@@ -205,7 +208,9 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
   
   P_current<- P
   #Updating each entry of P, one at the time
-  
+  if(model =='Simple'){
+    tau_P = matrix(.2,K,K)
+  }
   ut <- upper.tri(P,diag = T) # get the logical matrix for upper triangular elements
   Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows
@@ -310,7 +315,7 @@ mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
   
   #evaluating the proposal density g(mu'| mu^(t)) 
   log_proposal_mu_1_K_prime <- order_stat_truncnorm(K, mu = mu_1_K_prime, 
-                                                   mean = mu_vec[2:(K+1)],sd =tau_mu_vec,lb = 0,ub = 10)
+                                                    mean = mu_vec[2:(K+1)],sd =tau_mu_vec,lb = 0,ub = 10)
   log_proposal_mu0_prime <- log(truncnorm::dtruncnorm(mu_0_prime ,a= -Inf,b = min(mu_1_K_prime), 
                                                       mean = mu_vec[1],sd = tau_mu_vec))
   log_proposal_mu_prime = log_proposal_mu_1_K_prime+ log_proposal_mu0_prime
@@ -410,7 +415,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     
     # Sample a new label using the adjusted probabilities
     if(model != 'Simple'){
-    labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
+      labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
     }else{
       labels_to_sample = labels_available
     }

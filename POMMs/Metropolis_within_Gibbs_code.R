@@ -28,9 +28,9 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
     handlers(global = TRUE)
     p <- progressor(steps = n_chains * N_iter/5000)
     plan(multisession, workers= n_chains)
-    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(TRUE, add=c('K','ground_truth','seed')), seed=TRUE)) %dofuture%{ 
+    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(TRUE, add=c('K','ground_truth','seed','model')), seed=TRUE)) %dofuture%{ 
       set.seed(seed[[chain]])
-      
+
       N=n
       #setting hyperparams
       K = K
@@ -43,8 +43,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
       
       #if the parameters is fixed, setting it to the true value
       if(estimation_control$z==1){
-        z_current= kmeans(Y_ij,K)
-        z_current = z_current$cluster
+        z_current=  sample(1:K, n, replace=T)
       }else{
         z_current=  matrix(ground_truth$z, N, 1)
       }
@@ -96,7 +95,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
           }
         }else if( model =='Simple'){
           for(d in 0:(K-1)){
-            P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = -10 , 
+            P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = -5 , 
                                                                 max = +10)
           }
         }
@@ -171,7 +170,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
       }
       #initialing P and its adaptive variance container
       P_container = array(0, dim = c(K,K,N_iter))
-      P_container[,,1] <-P_current
+      P_container[,,1] <- P_current
       
       tau_P_container = array(0,dim=c(K,K,N_iter))
       tau_P = matrix(0.2,K,K)
@@ -233,7 +232,6 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                    sigma = tau_P[my_p,my_q],
                                                    acceptanceTarget = optimal_acceptance_rate,
                                                    min_sigma = 0.00002)
-                tau_P[K,K]<-.2
               }
             }
           }
@@ -294,13 +292,14 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
         #storing results for inference
         A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar, P = P_current)
         z_container[,j] <- z_current
+        P_container[,,j] <- P_current
         if(model == 'WST'){
         sigma_squared_container[1,j] = sigma_squared_current
         }
         if(model == 'WST'|| model=='SST'){
         mu_vec_container[,j] <- mu_vec_current
         }
-        P_container[,,j] <- P_current
+
         
         
         
@@ -317,7 +316,10 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
           expected_finishing_time <- current_time + (avg_iteration * (N_iter - j) )
           formatted_expected_finishing_time <- format(expected_finishing_time, "%H:%M:%S")
           
-          p(sprintf("Chain %d: mean acc.rate z %.3f%%, mean acc.rate P %.3f%%,mean acc.rate sigma_squared %.3f%%,mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
+          p(sprintf("Chain %d: mean acc.rate z %.3f%%, 
+                    mean acc.rate P %.3f%%,
+                    mean acc.rate sigma_squared %.3f%%,
+                    mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
                     chain,
                     100 * mean(acc.count_z/j),
                     100 * mean(acc.count_P/j),

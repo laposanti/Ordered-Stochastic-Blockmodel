@@ -1,4 +1,4 @@
-  
+
 
 library(ggside)
 library(ggrepel)
@@ -10,6 +10,7 @@ library(label.switching)
 library(collpcm)
 library(loo)
 library(gt)
+library(doParallel)
 library(coda)
 library(mcclust)
 library(LaplacesDemon)
@@ -62,26 +63,30 @@ for(est_model in c('SST','WST','Simple')){
   print(filenames)
   
   for(file in 1:length(filenames)){
-
+    
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-
+    
     
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
-    N=n
+    n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = 10000
-
-  
+    burnin = N_iter-20000
+    Y_ij <- uploaded_results$chain1$Y_ij
+    N_ij <- uploaded_results$chain1$N_ij
+    
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
-
+    
     P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
     P_est <- inverse_logit_f(P_est)
     
+    P_true_upper <- upper.tri.extractor(uploaded_results$chain1$ground_truth$P)
+    upper_tri_indices <- which(upper.tri(P_est, diag = T), arr.ind = TRUE)
+    P_chain = uploaded_results$chain1$est_containers$P[,,-c(1:burnin)]
     
     
 
@@ -97,11 +102,13 @@ for(est_model in c('SST','WST','Simple')){
     
     
     point_est_z<- as.vector(my_z_est$point_est)
+    
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
     z_chain_permuted<- my_z_est$relabeled_chain
     
-    #-------------------------------------------------------------------------------
+    
+    #---------------------------------------------------------------------------
     # P parameter estimate
     #-------------------------------------------------------------------------------
     
@@ -116,7 +123,33 @@ for(est_model in c('SST','WST','Simple')){
     P_s_table_save <-P_s_table$table
     P_chain_permuted <- P_s_table$P_permuted
     P_est_relabeled<- P_s_table$P_hat
-
+    
+    
+    
+    P_trace_df_post_switch <- do.call(rbind, lapply(1:10000, function(j) {
+      data.frame(iteration = j,
+                 P = upper.tri.extractor(P_chain_permuted[,,j]), 
+                 P_true = P_true_upper, 
+                 P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+    }))
+    
+    
+    traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
+      geom_line(aes(y=P), alpha=.3)+
+      geom_line(aes(y=P_true), linetype=2, color='red')+
+      facet_wrap(~P_ij)+
+      theme_bw()
+    
+    
+    
+    plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(plot_name_traceplot_P,width = 800, height = 800)
+    par(mar = c(1.5, 1.5,1.5,1.5))
+    print(traceplot_P)
+    dev.off()
+    
+    
+    
     if(is.simulation==T){
       P_s_table_sum <- P_s_table_save%>%
         summarise(
@@ -140,21 +173,105 @@ for(est_model in c('SST','WST','Simple')){
     
     
     #-------------------------------------------------------------------------------
-    # z parameter estimate
+    # relabeling the chains to correct for label switching
     #-------------------------------------------------------------------------------
-
-    z_tot_table<- z_summary_table(chains  = uploaded_results, true_value = is.simulation, 
-                                  z_chain_permuted = z_chain_permuted,
-                                  P_chain_permuted = P_chain_permuted,
-                                  z_est = point_est_z,
-                                  diag0.5 = TRUE, K = K, burnin = burnin,
-                                  label_switch = T, tap = processed_wd)
+    # Relabel remaining chains
+    chain_relabeled2 <- relabel_chain(2, permutations_z, uploaded_results, N_iter - burnin,n=n)
+    chain_relabeled3 <- relabel_chain(3, permutations_z, uploaded_results, N_iter - burnin,n=n)
+    chain_relabeled4 <- relabel_chain(4, permutations_z, uploaded_results, N_iter - burnin,n=n)
     
-    z_s_table<- z_tot_table$table 
+    
+    # Permute P matrices for the remaining chains
+    P_permuted2 <- permute_P(2, permutations_z, uploaded_results,K=K)
+    P_permuted3 <- permute_P(3, permutations_z, uploaded_results,K=K)
+    P_permuted4 <- permute_P(4, permutations_z, uploaded_results,K=K)
+    
+    z_list_relab = list(z1 = z_chain_permuted,z2=chain_relabeled2,z3=chain_relabeled3,z4=chain_relabeled4)
+    P_list_relab = list(P1 = P_chain_permuted,P2=P_permuted2,P3=P_permuted3,P4=P_permuted4)
+    
+    #-------------------------------------------------------------------------------
+    # computing the estimated loglikelihood for each chain
+    #-------------------------------------------------------------------------------
+ 
+    # Set up parallel backend
+    cl <- makeCluster(4)  # Adjust the number of cores accordingly
+    registerDoParallel(cl)
+    
+    # Export necessary variables to the workers
+    clusterExport(cl, list("P_list_relab", "compute_likelihood_foreach","z_list_relab", "Y_ij", "N_ij", "inverse_logit_f", "vec2mat_0_P", "calculate_victory_probabilities", "dbinom", "P_chain"), envir = .GlobalEnv)
+    
+
+    # Perform parallel computation using foreach
+    LL_list <- foreach(i = 1:4 ) %do% {
+      z_chain <- z_list_relab[[i]]
+      P_chain <- P_list_relab[[i]]
+      
+      # Define the number of chunks in which to split the likelihood
+      num_chunks <- 5
+      # Split the columns into chunks for parallel processing
+      chunk_size <- ceiling(ncol(LL) / num_chunks)
+      chunks <- split(1:ncol(LL), cut(1:ncol(LL), breaks = num_chunks, labels = FALSE))
+      
+      # Apply function to each chunk
+      LL <- foreach(chunk_idx = 1:num_chunks, .combine = "cbind") %dopar% {
+        chunk <- chunks[[chunk_idx]]
+        sapply(chunk, compute_likelihood_foreach)
+      }
+      LL
+    }
+    # Stop the cluster after the loop
+    stopCluster(cl)
+
+
+    LLik_sum <- lapply(LL_list,FUN = colSums)
+    saveRDS(LLik_sum,file = paste0("loglik",true_model,est_model,K))
+    #-------------------------------------------------------------------------------
+    # printing traceplots of the likelihood
+    #-------------------------------------------------------------------------------
+    df_traceplot = data.frame(chain = c(rep(1,ncol(LL)), rep(2,ncol(LL)), rep(3,ncol(LL)),rep(4,ncol(LL))),
+                              log_likelihood = c(LLik_sum[[1]],LLik_sum[[2]],LLik_sum[[3]],LLik_sum[[4]]),
+                              iterations = rep(1:(20000),4))
+    df_traceplot = df_traceplot %>% mutate(chain = factor(chain, levels = 1:4))
+    
+    my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, color = factor(chain), group=chain))+
+      geom_line(alpha = .5)+
+      labs(title = "Log likelihood for the 4 chains",
+           subtitle = paste0("Number of iterations: ", N_iter," || Burnin: ", burnin), 
+           x = "Iterations",
+           y = "Log likelihood",
+           color = "Chain")+
+      theme_bw()
+    traceplot_name <- paste0(processed_wd,"//traceplot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(traceplot_name,width = 500, height = 250)
+    print(my_sexy_traceplot)
+    dev.off()
+    
+   #computing the 
+    WAIC_est_1 = waic(t(LL_list[[1]]))
+    LOO<-loo(t(LL_list[[1]]))
+    
+    z_s_table = data.frame(WAIC_est =WAIC_est_1$estimates[3],
+                         WAIC_SE =  WAIC_est_1$estimates[6],
+                         looic =LOO$estimates[3],
+                         loiic_SE = LOO$estimates[6])
+    
+    
+    if(is.simulation == T){
+      z_true = uploaded_results$chain1$ground_truth$z
+      similarity_matrix <- pr_cc(z_list_relab[[1]])
+      point_est_minVI = minVI(similarity_matrix)$cl
+      
+      z_s_table$VIdist_minVI <- vi.dist(point_est_minVI, z_true)
+      z_s_table$VIdist_MAP <- vi.dist(point_est_z, z_true)
+      
+    }
+    
+    
+    
     z_s_table = z_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
     if(est_model=='SST'&file==1){
       z_container = z_s_table
-      }else{
+    }else{
       z_container =  rbind(z_container,z_s_table)
     }
     
@@ -198,26 +315,6 @@ for(est_model in c('SST','WST','Simple')){
     }
     
     
-    df_traceplot = data.frame(chain = c(rep(1,(N_iter*.75)), rep(2,(N_iter*.75)), rep(3,(N_iter*.75)),rep(4,(N_iter*.75))),
-                              log_likelihood = c(uploaded_results$chain1$control_containers$A[-c(1:(N_iter*0.25))],
-                                                 uploaded_results$chain2$control_containers$A[-c(1:(N_iter*0.25))],
-                                                 uploaded_results$chain3$control_containers$A[-c(1:(N_iter*0.25))],
-                                                 uploaded_results$chain4$control_containers$A[-c(1:(N_iter*0.25))]),
-                              iterations = rep(1:(N_iter*.75),4))
-    df_traceplot = df_traceplot %>% mutate(chain = factor(chain, levels = 1:4))
-    
-    my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, color = factor(chain), group=chain))+
-      geom_line(alpha = .5)+
-      labs(title = "Log likelihood for the 4 chains",
-           subtitle = paste0("Number of iterations: ", N_iter," || Burnin: ", burnin), 
-           x = "Iterations",
-           y = "Log likelihood",
-           colo = "Chain")+
-      theme_bw()
-    traceplot_name <- paste0(processed_wd,"//traceplot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-    png(traceplot_name,width = 500, height = 250)
-    print(my_sexy_traceplot)
-    dev.off()
     
     
     #-------------------------------------------------------------------------------
@@ -241,23 +338,23 @@ for(est_model in c('SST','WST','Simple')){
     }else{
       P_d_container =  rbind(P_d_container,P_d_table_save)
     }
-
+    
     # -------------------------------------------------------------------------------
     # z diagnostics
     # -------------------------------------------------------------------------------
-
+    
     z_d_table <- z_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
                                     K = K, burnin = N_iter*0.25, N_iter=N_iter,label_switch=F)
-
+    
     z_d_table = z_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
-
+    
     if(est_model=='SST'&file==1){
       z_d_container = z_d_table
     }else{
       z_d_container =  rbind(z_d_container,z_d_table)
     }
-
-
+    
+    
     
     
     if(est_model == 'WST'){
@@ -325,8 +422,8 @@ for(est_model in c('SST','WST','Simple')){
     par(mar = c(1.5, 1.5,1.5,1.5))
     gelman.plot(P_list)
     dev.off()
-
-
+    
+    
     #Crosscorrelation
     plot_name_cross <- paste0(processed_wd,"//P_crosscorr_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_cross,width = 800, height = 800)
@@ -645,9 +742,9 @@ if(is.simulation==F){
               axis.text.x = element_text(angle=45, hjust = 1),
               plot.title =  element_text(face = "bold", hjust = 0.5))+
         labs( x = paste0("Players in block ", block_j),
-             y = paste0("Players in block ", block_i),
-             fill = "% victories",
-             color = "Block")+
+              y = paste0("Players in block ", block_i),
+              fill = "% victories",
+              color = "Block")+
         guides(fill = 'none', color='none')
       
       my_beauti_plottini[[paste0("blocks",block_i, block_j)]] <- combined_plot12
@@ -660,5 +757,5 @@ if(is.simulation==F){
     print(cowplot::plot_grid(plotlist = my_beauti_plottini[c(1:K)+(K*j)], nrow=1))
     dev.off()
   }
-
+  
 }

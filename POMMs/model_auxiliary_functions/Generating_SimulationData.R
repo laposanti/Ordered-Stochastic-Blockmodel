@@ -25,13 +25,13 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 # Generating data from the SST
 ###############################################################################
 
-true_model = 'SST'
-saving_directory="/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/SST_true/Simulated data/"
+true_model = 'Simple'
+saving_directory="/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/Simple_true/Simulated data/"
 
 
 n = 100
 M = 12
-K=6
+K=3
 N_ij<- matrix(M,n,n)
 seed =1234
 set.seed(seed)
@@ -60,9 +60,9 @@ if(true_model =='SST'){
 }else if( true_model == 'Simple'){
   
   P = matrix(NA, K, K)
-  P[col(P)-row(P)==0] <-runif(K, .7,.85)
+  P[col(P)-row(P)==0] <-runif(K, .6,.85)
   for(diag_i in 1:(K-1)){
-    P[col(P)-row(P)==diag_i] <- runif( K-diag_i,0.01,.85)
+    P[col(P)-row(P)==diag_i] <- runif( K-diag_i,0.01,.9)
   }
   P[lower.tri(P)] = 1-t(P)[lower.tri(P)]
   P_star = log(P/(1-P))

@@ -1,4 +1,5 @@
 
+
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -12,6 +13,7 @@ library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
 library(ggside)
+library(parallel)
 library(truncnorm)
 library(doRNG)
 source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/Functions_priorSST.R")
@@ -40,14 +42,16 @@ filenames <- list.files(pattern = paste0(true_model),path = data_directory)
 
 print(filenames) #data to be estimated
 
-choose_model_to_estimate = c('Simple')
+choose_model_to_estimate = c('SST','WST','Simple')
 #-----------------------------------------------------------------------------
 # read the files in the selected folder, estimate the SST, the WST and the Simple model
 #-----------------------------------------------------------------------------
 
-for(file in 1:length(filenames)){
-  
+for(file in 1:1){
+
   data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
+  data_to_be_estimated$data_plot
+  
   
   N_ij = data_to_be_estimated$N_ij
   n = nrow(N_ij)
@@ -62,8 +66,8 @@ for(file in 1:length(filenames)){
   ##############################################################################
   
   n_chains = 4
-  optimal_acceptance_rate =.22
-  N_iter= 70000
+  optimal_acceptance_rate =.30
+  N_iter= 100000
   chains_seeds = list(20,09,97,2024)
   
   #-----------------------------------------------------------------------------
