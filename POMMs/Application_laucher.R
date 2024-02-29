@@ -52,7 +52,7 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024//raw/")
 K_values <- c(3,4,5,6)  # Range of K values to explore
 
 
-choose_model_to_estimate = c('Simple')
+choose_model_to_estimate = c('SST', 'WST','Simple')
 #-----------------------------------------------------------------------------
 # read the files in the selected folder, estimate the SST, the WST and the Simple model
 #-----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ for(k_th in K_values){
   N_ij = as.matrix(N_ij)
   
   n = nrow(N_ij)
-  K = k_th
+  K = list(k_th,k_th,k_th,k_th)
   ground_truth = NA
   
     
@@ -78,7 +78,7 @@ for(k_th in K_values){
   
   n_chains = 4
   optimal_acceptance_rate =.22
-  N_iter= 40000
+  N_iter= 110000
   chains_seeds = list(20,09,97,2024)
   
   #-----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ for(k_th in K_values){
     chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
-                                          N = n, N_iter = N_iter,n_chains = n_chains, 
+                                          n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                           seed = chains_seeds, model = 'SST')
     
@@ -108,7 +108,7 @@ for(k_th in K_values){
     
     
     
-    filename_SST <- paste0("True_Model",true_model,"Est_model_SST","_N", n,"_K", K,".RDS")
+    filename_SST <- paste0("True_Model",true_model,"Est_model_SST","_N", n,"_K", K[[1]],".RDS")
     saveRDS(chains_SST, file = filename_SST) #saving results
     beep("coin")
   }
@@ -128,13 +128,13 @@ for(k_th in K_values){
     chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
-                                          N = n, N_iter = N_iter,n_chains = n_chains, 
+                                          n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                           seed = chains_seeds, model = 'WST')
     my_names <- paste0("chain", 1:n_chains)
     names(chains_WST)<-my_names 
     
-    filename_WST <- paste0("True_Model",true_model,"Est_model_WST","_N", n,"_K", K,".RDS")
+    filename_WST <- paste0("True_Model",true_model,"Est_model_WST","_N", n,"_K", K[[1]],".RDS")
     saveRDS(chains_WST, file = filename_WST) #saving results
     beep("coin")
     
@@ -156,12 +156,12 @@ for(k_th in K_values){
     chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                              estimation_control = estimation_control, 
                                              ground_truth = ground_truth, 
-                                             N = n, N_iter = N_iter,n_chains = n_chains, 
+                                             n = n, N_iter = N_iter,n_chains = n_chains, 
                                              optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                              seed = chains_seeds, model = 'Simple')
     my_names <- paste0("chain", 1:n_chains)
     names(chains_Simple)<- my_names 
-    filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,".RDS")
+    filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K[[1]],".RDS")
     saveRDS(chains_Simple, file = filename_Simple) #saving results
     beep("coin")
   }

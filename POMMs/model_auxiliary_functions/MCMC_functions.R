@@ -40,18 +40,18 @@ inverse_logit_f = function(x){
 
 #---------------------- Computing the probabilities ----------------------------
 
-log_lik_f_binom = function(N,Y,z,P, directed=T){
+log_lik_f_binom = function(N,Y,z,P, directed=T,t=1){
   z_P<- vec2mat_0_P(z,P)
   P_nbyn<- calculate_victory_probabilities(z_P, P)
   if(directed==T){
     #computing the pairwise log-probabilitiees
     bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
     #remember to subtract the diagonal
-    log_lik= sum(bigM) - sum(diag(bigM))
+    log_lik= t* sum(bigM) - sum(diag(bigM))
   }else if(directed==F){
     bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
     #remember to subtract the diagonal
-    log_lik= sum(bigM*upper.tri(bigM))
+    log_lik= t*sum(bigM*upper.tri(bigM))
   }
   return(log_lik)
 }
@@ -99,7 +99,7 @@ llike_integrated_out = function(lamdabar, ybar,mbar,K,U_vec, sigma_squared){
 
 # Likelihood
 
-llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P){
+llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P, K, t=1){
   #llik<- sum(bin_coef+ ybar*log(P) + (mbar)*log(1-P))
   llik = matrix(0,K,K)
   for(diag_iii in 0:(K-1)){
@@ -107,7 +107,7 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P){
       (mbar[col(P)-row(P)==diag_iii]+ybar[col(P)-row(P)==diag_iii])*log(1+exp(P[col(P)-row(P)==diag_iii]))
   }
   
-  return(sum(llik))
+  return(t*sum(llik))
 }
 
 # Density for P
@@ -161,41 +161,41 @@ order_stat_truncnorm = function(K, mu, mean, sd, lb, ub){
 
 
 lprop_posterior_withP <- function(lamdabar, ybar,mbar,P, 
-                                  alpha_vec, n_k,sigma_squared, mu_vec,K, model){
+                                  alpha_vec, n_k,sigma_squared, mu_vec,K, model,t){
   
   if(model=='Simple'){
     #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P)
+    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P, K=K, t=t)
     #log prior on z
-    prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
+    prior_z <- ddirichlet_multinomial(N = sum(n_k),K = K,n_k = n_k,my_alpha =  alpha_vec)
     #log prior on P
-    prior_P<- P_prior_probability(P,K,mu_vec, sigma,model)
+    prior_P<- P_prior_probability(P = P,K=K,mu_vec = mu_vec, sigma_squared = sigma, model=model)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z 
   }else if (model=='WST'){
     #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P)
+    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P,K=K,t=t)
     #log prior on z
-    prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
+    prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on P
-    prior_P<- P_prior_probability(P,K,mu_vec, sigma_squared,model)
+    prior_P<- P_prior_probability(P = P, K=K,mu_vec = mu_vec, sigma_squared = sigma_squared,model = model)
     #log prior on mu
-    hyperprior_mu <- d_sA_mu(K, mu_vec)
+    hyperprior_mu <- d_sA_mu(K = K, mu_vec = mu_vec)
     #log prior on sigma^2
     hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z + hyperprior_mu + hyperprior_sigmasquared 
   }else if(model =='SST'){
     #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P)
+    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P,K=K,t=t)
     #log prior on P
-    prior_P<- P_prior_probability(P,K,mu_vec, sigma,model)
+    prior_P<- P_prior_probability(P = P, K = K,mu_vec = mu_vec, sigma_squared = sigma,model = model)
     #log prior on z
-    prior_z <- ddirichlet_multinomial(sum(n_k),K,n_k, alpha_vec)
+    prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on mu
-    hyperprior_mu <- d_sA_mu(K, mu_vec)
+    hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
     #computing the whole log proportional posterior
-    results <- log_lik + prior_z + hyperprior_mu  +prior_P
+    results <- log_lik + prior_z + hyperprior_mu  + prior_P
   }
   return(results)
 }
@@ -204,11 +204,11 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
 
 P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                       sigma_squared, mu_vec,K, tau_P,
-                      acc.count_P, model){
+                      acc.count_P, model,t){
   
   P_current<- P
   #Updating each entry of P, one at the time
-  if(model =='Simple'){
+  if(model == 'Simple'){
     tau_P = matrix(.2,K,K)
   }
   ut <- upper.tri(P,diag = T) # get the logical matrix for upper triangular elements
@@ -243,14 +243,14 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                                                    P = P_prime,
                                                    K = K,mu_vec = mu_vec,
                                                    sigma_squared = sigma_squared,
-                                                   alpha_vec = alpha_vec,n_k = n_k,model)
+                                                   alpha_vec = alpha_vec,n_k = n_k,model,t)
     
     #evaluating the proportional posterior in P^(t)
     prop_posterior_current<- lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, 
                                                    mbar = mbar, P = P_current,
                                                    K = K,mu_vec = mu_vec,
                                                    sigma_squared = sigma_squared,
-                                                   alpha_vec = alpha_vec,n_k = n_k,model)
+                                                   alpha_vec = alpha_vec,n_k = n_k,model,t)
     
     #evaluating the proposal density g(P'| P^(t)) 
     log_proposal_prime <- log(dtruncnorm(P_prime[i_star,j_star],
@@ -293,7 +293,7 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
 
 mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
                              sigma_squared, mu_vec,tau_mu_vec, K,
-                             acc.count_mu_vec,model){
+                             acc.count_mu_vec,model,t){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
   mu_1_K_prime <- truncnorm::rtruncnorm(K,a = 0,b = 10, mean = mu_vec[2:(K+1)],sd = tau_mu_vec)
@@ -303,15 +303,15 @@ mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
   
   #computing the proportional posterior in mu'
   prop_posterior_prime <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,P = P, 
-                                                alpha_vec = alpha_vec,
+                                                alpha_vec = alpha_vec, 
                                                 n_k = n_k,sigma_squared = sigma_squared
-                                                ,mu_vec = mu_vec_prime,K = K,model=model)
+                                                ,mu_vec = mu_vec_prime,K = K,model=model,t = t)
   
   #evaluating the proportional posterior in mu^(t)
   prop_posterior_current <- lprop_posterior_withP(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
                                                   P = P,alpha_vec = alpha_vec,
                                                   n_k = n_k,sigma_squared = sigma_squared,
-                                                  mu_vec = mu_vec,K = K,model = model)
+                                                  mu_vec = mu_vec,K = K,model = model,t = t)
   
   #evaluating the proposal density g(mu'| mu^(t)) 
   log_proposal_mu_1_K_prime <- order_stat_truncnorm(K, mu = mu_1_K_prime, 
@@ -348,7 +348,7 @@ mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
 
 sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                                         sigma_squared, mu_vec,K, tau_sigma_squared,
-                                        acc.count_sigma_squared, model){
+                                        acc.count_sigma_squared, model,t){
   
   
   #simulating (sigma^2)' from a g ~ truncated normal
@@ -358,10 +358,10 @@ sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
   
   #computing the proportional posterior in (sigma^2)'
   prop_posterior_prime <- lprop_posterior_withP(lamdabar, ybar,mbar,P, 
-                                                alpha_vec, n_k,sigma_squared_prime, mu_vec,K,model = model)
+                                                alpha_vec, n_k,sigma_squared_prime, mu_vec,K,model = model,t = t)
   #evaluating the proportional posterior in (sigma^2)^(t)
   prop_posterior_current<- lprop_posterior_withP(lamdabar, ybar,mbar,P,
-                                                 alpha_vec, n_k,sigma_squared, mu_vec,K,model=model)
+                                                 alpha_vec, n_k,sigma_squared, mu_vec,K,model=model,t = t)
   
   #evaluating the proposal density g(sigma^2)') 
   log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = 1,
@@ -392,7 +392,7 @@ sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
 
 z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
                             K, 
-                            acc.count_z,labels_available,model){
+                            acc.count_z,labels_available,model,t){
   P<- inverse_logit_f(P)
   n<- nrow(N_ij)
   A_prime<- log_lik_f_binom(N = N_ij,Y = Y_ij,z =z,P = P,directed = T)
@@ -446,7 +446,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     
     B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
     
-    log_r= A_scanning - A_prime + B_scanning - B_prime
+    log_r= t*A_scanning - t*A_prime + B_scanning - B_prime
     #create statements that check conditiond to accept move
     GS_condition= min(log_r,0)>=log(runif(1))
     if(GS_condition){

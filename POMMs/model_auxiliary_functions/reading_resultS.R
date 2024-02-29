@@ -23,12 +23,12 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #where the data are stored
-data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/"
+data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024/raw/"
 #where the data are saved
-processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/Simple_true/"
+processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024/tennis/estimates/"
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   df_rank <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_rank.RData")
@@ -53,12 +53,12 @@ if(is.simulation==F){
   A = as_adjacency_matrix(g)
   true_model = "Tennis_data"
 }else if(is.simulation == T){
-  true_model = "Simple"
+  true_model = "SST"
 }
 
 
 for(est_model in c('SST','WST','Simple')){
-
+  
   filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
@@ -84,12 +84,12 @@ for(est_model in c('SST','WST','Simple')){
     P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
     P_est <- inverse_logit_f(P_est)
     
-    P_true_upper <- upper.tri.extractor(uploaded_results$chain1$ground_truth$P)
+    P_true_upper <- upper.tri.extractor(uploaded_results$chain1$est_containers$P[,,1])
     upper_tri_indices <- which(upper.tri(P_est, diag = T), arr.ind = TRUE)
     P_chain = uploaded_results$chain1$est_containers$P[,,-c(1:burnin)]
     
     
-
+    
     #---------------------------------------------------------------------------
     # SUMMARY PLOT PLOTS FOR z
     #---------------------------------------------------------------------------
@@ -192,7 +192,7 @@ for(est_model in c('SST','WST','Simple')){
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
- 
+    
     # Set up parallel backend
     cl <- makeCluster(4)  # Adjust the number of cores accordingly
     registerDoParallel(cl)
@@ -200,7 +200,7 @@ for(est_model in c('SST','WST','Simple')){
     # Export necessary variables to the workers
     clusterExport(cl, list("P_list_relab", "compute_likelihood_foreach","z_list_relab", "Y_ij", "N_ij", "inverse_logit_f", "vec2mat_0_P", "calculate_victory_probabilities", "dbinom", "P_chain"), envir = .GlobalEnv)
     
-
+    num_samples = N_iter - burnin
     # Perform parallel computation using foreach
     LL_list <- foreach(i = 1:4 ) %do% {
       z_chain <- z_list_relab[[i]]
@@ -209,8 +209,8 @@ for(est_model in c('SST','WST','Simple')){
       # Define the number of chunks in which to split the likelihood
       num_chunks <- 5
       # Split the columns into chunks for parallel processing
-      chunk_size <- ceiling(ncol(LL) / num_chunks)
-      chunks <- split(1:ncol(LL), cut(1:ncol(LL), breaks = num_chunks, labels = FALSE))
+      chunk_size <- ceiling(num_samples / num_chunks)
+      chunks <- split(1:num_samples, cut(1:num_samples, breaks = num_chunks, labels = FALSE))
       
       # Apply function to each chunk
       LL <- foreach(chunk_idx = 1:num_chunks, .combine = "cbind") %dopar% {
@@ -221,10 +221,10 @@ for(est_model in c('SST','WST','Simple')){
     }
     # Stop the cluster after the loop
     stopCluster(cl)
-
-
+    
+    
     LLik_sum <- lapply(LL_list,FUN = colSums)
-    saveRDS(LLik_sum,file = paste0("loglik",true_model,est_model,K))
+    saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K))
     #-------------------------------------------------------------------------------
     # printing traceplots of the likelihood
     #-------------------------------------------------------------------------------
@@ -246,14 +246,18 @@ for(est_model in c('SST','WST','Simple')){
     print(my_sexy_traceplot)
     dev.off()
     
-   #computing the 
+    #computing the 
     WAIC_est_1 = waic(t(LL_list[[1]]))
     LOO<-loo(t(LL_list[[1]]))
     
     z_s_table = data.frame(WAIC_est =WAIC_est_1$estimates[3],
-                         WAIC_SE =  WAIC_est_1$estimates[6],
-                         looic =LOO$estimates[3],
-                         loiic_SE = LOO$estimates[6])
+                           elpd_waic = WAIC_est_1$estimates[1],
+                           p_waic =  WAIC_est_1$estimates[2],
+                           WAIC_SE =  WAIC_est_1$estimates[6],
+                           looic =LOO$estimates[3],
+                           elpd_loo = LOO$estimates[1],
+                           p_loo = LOO$estimates[2],
+                           loiic_SE = LOO$estimates[6])
     
     
     if(is.simulation == T){

@@ -56,7 +56,7 @@ plot_P = function(p_container, p_true, burnin,K){
   return(p_combined)}
 
 # Define the function to be executed in parallel
-compute_likelihood_foreach <- function(t) {
+compute_likelihood_foreach <- function(t, P_chain, z_chain) {
   P <- inverse_logit_f(P_chain[,,t])
   z_mat <- vec2mat_0_P(z_chain[,t], P)
   P_ij <- calculate_victory_probabilities(z_mat, P)

@@ -35,9 +35,9 @@ setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/")
 
 
 is.simulation=T
-true_model = 'Simple'
+true_model = 'SST'
 #data.directory
-data_directory = "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/Simple_true/Simulated data/"
+data_directory = "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/SST_true/Simulated data/"
 filenames <- list.files(pattern = paste0(true_model),path = data_directory)
 
 print(filenames) #data to be estimated
@@ -47,7 +47,7 @@ choose_model_to_estimate = c('SST','WST','Simple')
 # read the files in the selected folder, estimate the SST, the WST and the Simple model
 #-----------------------------------------------------------------------------
 
-for(file in 1:1){
+for(file in 1:length(filenames)){
 
   data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
   data_to_be_estimated$data_plot
@@ -87,7 +87,7 @@ for(file in 1:1){
     chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
-                                          N = n, N_iter = N_iter,n_chains = n_chains, 
+                                          n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                           seed = chains_seeds, model = 'SST')
     
@@ -117,7 +117,7 @@ for(file in 1:1){
     chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
-                                          N = n, N_iter = N_iter,n_chains = n_chains, 
+                                          n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                           seed = chains_seeds, model = 'WST')
     my_names <- paste0("chain", 1:n_chains)
@@ -140,12 +140,11 @@ for(file in 1:1){
     
     estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=1)
     
-    
-    
+
     chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                              estimation_control = estimation_control, 
                                              ground_truth = ground_truth, 
-                                             N = n, N_iter = N_iter,n_chains = n_chains, 
+                                             n = n, N_iter = N_iter,n_chains = n_chains, 
                                              optimal_acceptance_rate=optimal_acceptance_rate, K = K,
                                              seed = chains_seeds, model = 'Simple')
     my_names <- paste0("chain", 1:n_chains)
