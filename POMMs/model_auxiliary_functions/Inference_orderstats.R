@@ -190,7 +190,7 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
   }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
   }
-  
+
   # Create row and column indices
   indices <- expand.grid(row = 1:N, col = 1:N)
   

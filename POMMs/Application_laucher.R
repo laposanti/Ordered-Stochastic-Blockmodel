@@ -33,6 +33,9 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 
+#choose between citation exchange data and tennis data
+#citation data::: set true_model =  "Citation_data"
+#tennis data::: tennis data = 'Tennis_data'
 
 true_model = 'Tennis_data'
 
@@ -40,16 +43,33 @@ true_model = 'Tennis_data'
 # uploading data
 ###############################################################################
 
+if(true_model == 'Tennis_data'){
+  Y_ij <- read.table("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/Y_ij.csv",header  = F,row.names = 1,sep = ",")
+  N_ij <- read.table("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/N_ij.csv",header  = F,row.names = 1,sep = ",")
+  
+  Y_ij = as.matrix(Y_ij)
+  N_ij = as.matrix(N_ij)
+}else if(true_model == 'Citation_data'){
+  Y_ij <- read.csv("/Users/lapo_santi/Desktop/Nial/MCMC_results/application_journals/RSSA-179-1-s001/Data/cross-citation-matrix.csv",header = T,row.names = 1)
+  diag(Y_ij) = 0
+  N_ij= matrix(0,47,47) +Y_ij*upper.tri(Y_ij)+t(Y_ij)*upper.tri(Y_ij)+C*lower.tri(Y_ij)+t(Y_ij)*lower.tri(Y_ij)
+  
+  Y_ij = as.matrix(Y_ij)
+  N_ij = as.matrix(N_ij)
+}
 
 
-#chosing where to save the files
-setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024//raw/")
-
+#chosing where to save the files depending on which model you are estimating
+if(true_model == 'Tennis_data'){
+setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_model/tennis/estimated_files/")
+} else if(true_model == 'Citation_data'){
+  setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_model/journals/estimated_files/")
+}
 
  #data to be estimated
 
 
-K_values <- c(3,4,5,6)  # Range of K values to explore
+K_values <- c(3,4,5,6,7)  # Range of K values to explore
 
 
 choose_model_to_estimate = c('SST', 'WST','Simple')
@@ -61,11 +81,7 @@ for(k_th in K_values){
   
 
   
-  Y_ij <- read.table("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/Y_ij.csv",header  = F,row.names = 1,sep = ",")
-  N_ij <- read.table("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/N_ij.csv",header  = F,row.names = 1,sep = ",")
-  
-  Y_ij = as.matrix(Y_ij)
-  N_ij = as.matrix(N_ij)
+
   
   n = nrow(N_ij)
   K = list(k_th,k_th,k_th,k_th)
@@ -100,7 +116,7 @@ for(k_th in K_values){
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'SST')
+                                          seed = chains_seeds, model = 'SST',t = 1, custom_init = NA)
     
     
     my_names <- paste0("chain", 1:n_chains)
@@ -130,7 +146,7 @@ for(k_th in K_values){
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'WST')
+                                          seed = chains_seeds, model = 'WST',t = 1, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_WST)<-my_names 
     
@@ -158,7 +174,7 @@ for(k_th in K_values){
                                              ground_truth = ground_truth, 
                                              n = n, N_iter = N_iter,n_chains = n_chains, 
                                              optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                             seed = chains_seeds, model = 'Simple')
+                                             seed = chains_seeds, model = 'Simple',t = 1, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_Simple)<- my_names 
     filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K[[1]],".RDS")

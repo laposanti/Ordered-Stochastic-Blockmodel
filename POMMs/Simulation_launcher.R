@@ -16,6 +16,7 @@ library(ggside)
 library(parallel)
 library(truncnorm)
 library(doRNG)
+
 source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Metropolis_within_Gibbs_code.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
@@ -66,7 +67,7 @@ for(file in 1:length(filenames)){
   ##############################################################################
   
   n_chains = 4
-  optimal_acceptance_rate =.30
+  optimal_acceptance_rate =.235
   N_iter= 100000
   chains_seeds = list(20,09,97,2024)
   
@@ -89,7 +90,7 @@ for(file in 1:length(filenames)){
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'SST')
+                                          seed = chains_seeds, model = 'SST',t=1, custom_init = NA)
     
     
     my_names <- paste0("chain", 1:n_chains)
@@ -119,7 +120,7 @@ for(file in 1:length(filenames)){
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
                                           optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'WST')
+                                          seed = chains_seeds, model = 'WST',t=1, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_WST)<-my_names 
     
@@ -146,7 +147,7 @@ for(file in 1:length(filenames)){
                                              ground_truth = ground_truth, 
                                              n = n, N_iter = N_iter,n_chains = n_chains, 
                                              optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                             seed = chains_seeds, model = 'Simple')
+                                             seed = chains_seeds, model = 'Simple',t=1, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_Simple)<- my_names 
     filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,".RDS")

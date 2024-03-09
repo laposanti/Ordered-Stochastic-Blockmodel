@@ -215,7 +215,7 @@ for(est_model in c('SST','WST','Simple')){
       # Apply function to each chunk
       LL <- foreach(chunk_idx = 1:num_chunks, .combine = "cbind") %dopar% {
         chunk <- chunks[[chunk_idx]]
-        sapply(chunk, compute_likelihood_foreach)
+        sapply(chunk, compute_likelihood_foreach,)
       }
       LL
     }

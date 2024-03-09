@@ -164,6 +164,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
                                   alpha_vec, n_k,sigma_squared, mu_vec,K, model,t){
   
   if(model=='Simple'){
+    
     #log likelihood
     log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P, K=K, t=t)
     #log prior on z
@@ -172,7 +173,9 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     prior_P<- P_prior_probability(P = P,K=K,mu_vec = mu_vec, sigma_squared = sigma, model=model)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z 
+    
   }else if (model=='WST'){
+    
     #log likelihood
     log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P,K=K,t=t)
     #log prior on z
@@ -185,7 +188,9 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z + hyperprior_mu + hyperprior_sigmasquared 
+    
   }else if(model =='SST'){
+    
     #log likelihood
     log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P,K=K,t=t)
     #log prior on P
@@ -196,6 +201,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
     #computing the whole log proportional posterior
     results <- log_lik + prior_z + hyperprior_mu  + prior_P
+    
   }
   return(results)
 }
