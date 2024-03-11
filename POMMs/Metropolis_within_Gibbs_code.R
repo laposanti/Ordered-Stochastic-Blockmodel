@@ -46,9 +46,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              library(EnvStats)
                                                              library(truncnorm)
                                                              library(dplyr)
-                                                             library(dplyr)
                                                              library(RColorBrewer)
-                                                             library(ggside)
                                                              library(parallel)
                                                              library(truncnorm)
                                                              library(label.switching)
@@ -71,7 +69,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              t <- as.numeric(t[[chain]])
                                                              
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
-                                                             if(  all(is.na(custom_init))){
+                                                             if(all(is.na(custom_init))){
                                                                #-------------------------------------------------------------------------
                                                                #Initializing z allocation vector 
                                                                #-------------------------------------------------------------------------

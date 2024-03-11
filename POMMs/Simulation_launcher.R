@@ -17,9 +17,12 @@ library(parallel)
 library(truncnorm)
 library(doRNG)
 
-source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/Functions_priorSST.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Metropolis_within_Gibbs_code.R")
-source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
+
+#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+
+source("./model_auxiliary_functions/Functions_priorSST.R")
+source("./Metropolis_within_Gibbs_code.R")
+source("./model_auxiliary_functions/MCMC_functions.R")
 
 
 
@@ -31,14 +34,14 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 #chosing where to save the files
 
-setwd("/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/raw/")
+
 
 
 
 is.simulation=T
 true_model = 'SST'
 #data.directory
-data_directory = "/Users/lapo_santi/Desktop/Nial/MCMC_results/simulation_31Jan2024/SST_true/Simulated data/"
+data_directory = "./Data/Simulation_data/"
 filenames <- list.files(pattern = paste0(true_model),path = data_directory)
 
 print(filenames) #data to be estimated
@@ -84,13 +87,14 @@ for(file in 1:length(filenames)){
     estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,P=1)
     
     
-    
+    K_chains = list(K,K,K,K)
+    t_chains = rep(1,n_chains)
     chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
-                                          optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'SST',t=1, custom_init = NA)
+                                          optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                          seed = chains_seeds, model = 'SST', t= t_chains, custom_init = NA)
     
     
     my_names <- paste0("chain", 1:n_chains)
@@ -98,7 +102,7 @@ for(file in 1:length(filenames)){
     
     
     
-    filename_SST <- paste0("True_Model",true_model,"Est_model_SST","_N", n,"_K", K,".RDS")
+    filename_SST <- paste0("./results/simulation/True_Model",true_model,"Est_model_SST","_N", n,"_K", K,".RDS")
     saveRDS(chains_SST, file = filename_SST) #saving results
     beep("coin")
   }
@@ -119,12 +123,12 @@ for(file in 1:length(filenames)){
                                           estimation_control = estimation_control, 
                                           ground_truth = ground_truth, 
                                           n = n, N_iter = N_iter,n_chains = n_chains, 
-                                          optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                          seed = chains_seeds, model = 'WST',t=1, custom_init = NA)
+                                          optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                          seed = chains_seeds, model = 'WST',t=t_chains, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_WST)<-my_names 
     
-    filename_WST <- paste0("True_Model",true_model,"Est_model_WST","_N", n,"_K", K,".RDS")
+    filename_WST <- paste0("./results/simulation/True_Model",true_model,"Est_model_WST","_N", n,"_K", K,".RDS")
     saveRDS(chains_WST, file = filename_WST) #saving results
     beep("coin")
     
@@ -146,11 +150,11 @@ for(file in 1:length(filenames)){
                                              estimation_control = estimation_control, 
                                              ground_truth = ground_truth, 
                                              n = n, N_iter = N_iter,n_chains = n_chains, 
-                                             optimal_acceptance_rate=optimal_acceptance_rate, K = K,
-                                             seed = chains_seeds, model = 'Simple',t=1, custom_init = NA)
+                                             optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                             seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
     my_names <- paste0("chain", 1:n_chains)
     names(chains_Simple)<- my_names 
-    filename_Simple <- paste0("True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,".RDS")
+    filename_Simple <- paste0("./results/simulation/True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,".RDS")
     saveRDS(chains_Simple, file = filename_Simple) #saving results
     beep("coin")
   }
