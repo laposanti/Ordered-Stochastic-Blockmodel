@@ -67,6 +67,9 @@ compute_likelihood_foreach <- function(t, P_chain, z_chain) {
 }
 
 
+
+
+
 # Define a function to relabel chains
 relabel_chain <- function(chain_index, permutations_z, chains, ncol_iter,n) {
   chain_relabeled = matrix(NA, nrow = n, ncol = ncol_iter)
@@ -140,7 +143,7 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 
 
 z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K, N, z , burnin,label_switch,tap){
-  
+
   Y_ij <-chains$chain1$Y_ij
   N_ij <- chains$chain1$N_ij
   z_chain = chains$chain1$est_containers$z[,-c(1:burnin)]
@@ -173,7 +176,8 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
       run_label_switch <- label.switching(method = "ECR" ,
                                           zpivot = z_pivot ,
                                           z = t(z_chain), 
-                                          K = K,groundTruth = chains$chain1$ground_truth$z)
+                                          K = K,
+                                          groundTruth = chains$chain1$ground_truth$z)
     }
     
     #permutations
@@ -219,9 +223,9 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
   
   plot_df = z_df_complete%>%
     inner_join(z_df, by = c("row" = "items")) %>%
-    rename(row_z = z) %>%
+    dplyr::rename(row_z = z) %>%
     inner_join(z_df, by = c("col" = "items")) %>%
-    rename(col_z = z) %>%
+    dplyr::rename(col_z = z) %>%
     mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
            col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
   

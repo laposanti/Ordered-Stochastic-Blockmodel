@@ -21,11 +21,11 @@
 
 adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control, 
                                      ground_truth,n, N_iter,n_chains, 
-                                     optimal_acceptance_rate, K, seed,model,t=1, custom_init=NA){
+                                     optimal_acceptance_rate_P,optimal_acceptance_rate_mu, K, seed,model,t=1, custom_init=NA){
   
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
-                       'optimal_acceptance_rate', 'K', 'seed','model','t', 'custom_init','p')
+                       'optimal_acceptance_rate_mu','optimal_acceptance_rate_P', 'K', 'seed','model','t', 'custom_init','p')
   
   registerDoFuture()
   reprex <- local({
@@ -36,27 +36,23 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                                add=variables_to_add), 
                                                            seed=TRUE)) %dofuture%{ 
 
-                                                             library(mcclust)
-                                                             library(doFuture)
-                                                             library(progressr)
-                                                             library(beepr)
-                                                             library(foreach)
-                                                             library(doParallel)
-                                                             library(tidyverse)
-                                                             library(EnvStats)
-                                                             library(truncnorm)
-                                                             library(dplyr)
-                                                             library(RColorBrewer)
-                                                             library(parallel)
-                                                             library(truncnorm)
-                                                             library(label.switching)
-                                                             library(doRNG)
                                                              
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
-                                                             source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/SaraWade.R")
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Inference_orderstats.R")
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Metropolis_within_Gibbs_code.R")
+                                                             library(doFuture,quietly = T)
+                                                             library(progressr,quietly = T)
+                                                             library(foreach,quietly = T)
+                                                             library(doParallel,quietly = T)
+                                                             library(tidyverse,quietly = T)
+                                                             library(EnvStats,quietly = T)
+                                                             library(truncnorm,quietly = T)
+                                                             library(dplyr,quietly = T)
+                                                             library(parallel,quietly = T)
+                                                             library(truncnorm,quietly = T)
+                                                             library(doRNG,quietly = T)
+                                                             
+                                                             source("./model_auxiliary_functions/Functions_priorSST.R")
+                                                             source("./model_auxiliary_functions/MCMC_functions.R")
+                                                             
+                                                             
                                                              
 
                                                              
@@ -281,7 +277,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                        
                                                                        tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
                                                                                                           sigma = tau_P[my_p,my_q],
-                                                                                                          acceptanceTarget = optimal_acceptance_rate,
+                                                                                                          acceptanceTarget = optimal_acceptance_rate_P,
                                                                                                           min_sigma = 0.00002)
                                                                        
                                                                      }
@@ -307,7 +303,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                    tau_sigma_squared <- tuning_proposal(iteration=j,
                                                                                                         acceptance_count = acc.count_sigma_squared,
                                                                                                         sigma = tau_sigma_squared,
-                                                                                                        acceptanceTarget = optimal_acceptance_rate,
+                                                                                                        acceptanceTarget = optimal_acceptance_rate_P,
                                                                                                         min_sigma = 0.02)
                                                                  }
                                                                }
@@ -328,7 +324,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                  if(j %% 50 == 0){
                                                                    tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
                                                                                                  sigma = tau_mu_vec,
-                                                                                                 acceptanceTarget = optimal_acceptance_rate,
+                                                                                                 acceptanceTarget = optimal_acceptance_rate_mu,
                                                                                                  min_sigma = 0.002)
                                                                  }
                                                                  

@@ -214,9 +214,6 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
   
   P_current<- P
   #Updating each entry of P, one at the time
-  if(model == 'Simple'){
-    tau_P = matrix(.2,K,K)
-  }
   ut <- upper.tri(P,diag = T) # get the logical matrix for upper triangular elements
   Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows

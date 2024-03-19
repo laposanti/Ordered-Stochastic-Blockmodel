@@ -18,5 +18,5 @@ cd $SLURM_SUBMIT_DIR
 module load R/4.3.1
 
 # command to use
-Rscript Simulation_launcher.R
+Rscript Model_selectionK4.R
  

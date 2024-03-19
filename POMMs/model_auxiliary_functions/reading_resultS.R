@@ -1,5 +1,4 @@
 
-
 library(ggside)
 library(ggrepel)
 library(igraph)
@@ -22,80 +21,124 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
 
 
-#where the data are stored
-data_wd<- "/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024/raw/"
-#where the data are saved
-processed_wd <- "/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024/tennis/estimates/"
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
-  df_rank <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_rank.RData")
-  df_match <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_match.RData")
-  ranks= df_rank   %>%
-    filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
   
-  top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
+  true_model = "Citation_data"
+  if(true_model == "Tennis_data"){
+    #where the data are stored
+    
+    data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Tennis_data/"
+    #where the data are saved
+    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Tennis_data/processed/"
+    
+    
+    
+    df_rank <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_rank.RData")
+    df_match <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_match.RData")
+    ranks= df_rank   %>%
+      filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
+    
+    top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
+    
+    #adding one extra column with the player id
+    df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
+    
+    #now, for each game I want to filter just those players in the top one-hundred
+    df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
+    
+    
+    my_edges = df_match %>% select(winner_slug, loser_slug)
+    g =graph_from_edgelist(as.matrix(my_edges),directed = T)
+    my_name = data.frame(player_slug=vertex_attr(g)$name)
+    players_df = inner_join(my_name,top100players, by="player_slug")
+    
+    A = as_adjacency_matrix(g)
+  }else if( true_model == 'Citation_data'){
+    data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Citation_data/"
+    #where the data are saved
+    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Citation_data/processed/"
+    
+    
+    scores=  read.csv("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Citations_application/journal-scores.csv")
+    
+    Y_ij=read.csv("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Citations_application/cross-citation-matrix.csv",header = T,row.names = 1)
+    diag(Y_ij) = 0
+    N_ij= matrix(0,47,47) +Y_ij*upper.tri(Y_ij)+
+      t(Y_ij)*upper.tri(Y_ij)+Y_ij*lower.tri(Y_ij)+t(Y_ij)*lower.tri(Y_ij)
+    rownames(Y_ij) %in% scores[,1]
+    
+    # Define the mapping between the acronyms in Y_ij and scores
+    acronym_mapping <- c("AmS" = "AmerStatist", "AISM" = "AnnInstStatMath", "AoS" = "AnnStat", "ANZS" = "ANZJStat", 
+                         "Bern" = "Bernoulli", "BioJ" = "BiometJ", "Bcs" = "Biometrics", "Bka" = "Biometrika", 
+                         "Biost" = "Biostatistics", "CJS" = "CanJStat", "CSSC" = "CommStatTM", "CSTM" = "CommStatTM", 
+                         "CmpSt" = "ComputatStat", "CSDA" = "CSDA", "EES" = "Econometrica", "Envr" = "Environmetrics", 
+                         "ISR" = "ISR", "JABES" = "JABES", "JASA" = "JASA", "JAS" = "JAP", "JBS" = "JbiopharmStat", 
+                         "JCGS" = "JCGS", "JMA" = "JMVA", "JNS" = "JRSSA", "JRSS-A" = "JRSSA", "JRSS-B" = "JRSSB", 
+                         "JRSS-C" = "JRSSC", "JSCS" = "JSCS", "JSPI" = "JSPI", "JSS" = "JStatSoft", "JTSA" = "JTSA", 
+                         "LDA" = "LDA", "Mtka" = "MCAP", "SJS" = "SJS", "StataJ" = "StatComput", "StCmp" = "StatMed", 
+                         "Stats" = "Statistics", "StMed" = "StatMed", "SMMR" = "SMMR", "StMod" = "StatMod", "StNee" = "StatNeerlandica", 
+                         "StPap" = "StatProbLett", "SPL" = "SPA", "StSci" = "StatSci", "StSin" = "StatSinica", "Tech" = "Technometrics", 
+                         "Test" = "TPA")
+    
+    
+    # Use mapvalues function to replace the entries
+    scores$shortName <- plyr::mapvalues(scores$shortName, from = acronym_mapping, to = names(acronym_mapping))
+    
+    
+    players_df = data.frame(player_slug = scores$shortName, points= scores$I2no)
+    
+    # Create a new column 'rank' with the ranking of each journal according to their median rank
+    players_df$median_rank <- rank(-players_df$points, ties.method = "min")
+    
+  }
   
-  #adding one extra column with the player id
-  df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
-  
-  #now, for each game I want to filter just those players in the top one-hundred
-  df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
   
   
-  my_edges = df_match %>% select(winner_slug, loser_slug)
-  g =graph_from_edgelist(as.matrix(my_edges),directed = T)
-  my_name = data.frame(player_slug=vertex_attr(g)$name)
-  players_df = inner_join(my_name,top100players, by="player_slug")
-  
-  A = as_adjacency_matrix(g)
-  true_model = "Tennis_data"
 }else if(is.simulation == T){
   true_model = "SST"
+  data_wd = "/Users/lapo_santi/Desktop/POMMs_sonic/results/simulation/SST_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/POMMs_sonic/results/simulation/SST_true/processed/"
+  
+  
+  
 }
 
 
 for(est_model in c('SST','WST','Simple')){
-  
-  filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
+
+  # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
+  filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
   for(file in 1:length(filenames)){
-    
+
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-    
-    
+
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
     n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = N_iter-20000
+    burnin = N_iter-10000
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
+    P_burned = uploaded_results$chain1$est_containers$P[,,-c(burnin:N_iter)]
     
-    P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
-    P_est <- inverse_logit_f(P_est)
-    
-    P_true_upper <- upper.tri.extractor(uploaded_results$chain1$est_containers$P[,,1])
-    upper_tri_indices <- which(upper.tri(P_est, diag = T), arr.ind = TRUE)
-    P_chain = uploaded_results$chain1$est_containers$P[,,-c(1:burnin)]
-    
-    
-    
-    #---------------------------------------------------------------------------
-    # SUMMARY PLOT PLOTS FOR z
-    #---------------------------------------------------------------------------
-    
-    # setwd(plots_dir)
-    my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = P_est,
+  
+
+    P_est = apply(P_burned, c(1,2), mean)
+    theta = inverse_logit_f(P_est)
+
+    my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = theta,
                       est_model = est_model, true_value =is.simulation, 
                       diag0.5 =diag0.5 , K=K, N=nrow(uploaded_results$chain1$Y_ij), z = uploaded_results$chain1$ground_truth$z ,
                       burnin =  burnin ,label_switch = T,tap= processed_wd)
@@ -106,7 +149,7 @@ for(est_model in c('SST','WST','Simple')){
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
     z_chain_permuted<- my_z_est$relabeled_chain
-    
+
     
     #---------------------------------------------------------------------------
     # P parameter estimate
@@ -124,15 +167,19 @@ for(est_model in c('SST','WST','Simple')){
     P_chain_permuted <- P_s_table$P_permuted
     P_est_relabeled<- P_s_table$P_hat
     
+
+    upper_tri_indices= which(upper.tri(P_est_relabeled, diag=T),arr.ind = T)
+
     
     
-    P_trace_df_post_switch <- do.call(rbind, lapply(1:10000, function(j) {
+    P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
       data.frame(iteration = j,
                  P = upper.tri.extractor(P_chain_permuted[,,j]), 
-                 P_true = P_true_upper, 
+                 P_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
                  P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
     }))
-    
+    P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
+      mutate(P_true = inverse_logit_f(P_true))
     
     traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
       geom_line(aes(y=P), alpha=.3)+
@@ -198,7 +245,7 @@ for(est_model in c('SST','WST','Simple')){
     registerDoParallel(cl)
     
     # Export necessary variables to the workers
-    clusterExport(cl, list("P_list_relab", "compute_likelihood_foreach","z_list_relab", "Y_ij", "N_ij", "inverse_logit_f", "vec2mat_0_P", "calculate_victory_probabilities", "dbinom", "P_chain"), envir = .GlobalEnv)
+    clusterExport(cl, list("P_list_relab", "compute_likelihood_foreach","z_list_relab", "Y_ij", "N_ij", "inverse_logit_f", "vec2mat_0_P", "calculate_victory_probabilities", "dbinom"), envir = .GlobalEnv)
     
     num_samples = N_iter - burnin
     # Perform parallel computation using foreach
@@ -215,7 +262,7 @@ for(est_model in c('SST','WST','Simple')){
       # Apply function to each chunk
       LL <- foreach(chunk_idx = 1:num_chunks, .combine = "cbind") %dopar% {
         chunk <- chunks[[chunk_idx]]
-        sapply(chunk, compute_likelihood_foreach,)
+        sapply(chunk, compute_likelihood_foreach,P_chain, z_chain)
       }
       LL
     }
@@ -224,13 +271,17 @@ for(est_model in c('SST','WST','Simple')){
     
     
     LLik_sum <- lapply(LL_list,FUN = colSums)
+    
+    
+
+
     saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K))
     #-------------------------------------------------------------------------------
     # printing traceplots of the likelihood
     #-------------------------------------------------------------------------------
     df_traceplot = data.frame(chain = c(rep(1,ncol(LL)), rep(2,ncol(LL)), rep(3,ncol(LL)),rep(4,ncol(LL))),
                               log_likelihood = c(LLik_sum[[1]],LLik_sum[[2]],LLik_sum[[3]],LLik_sum[[4]]),
-                              iterations = rep(1:(20000),4))
+                              iterations = rep(1:(10000),4))
     df_traceplot = df_traceplot %>% mutate(chain = factor(chain, levels = 1:4))
     
     my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, color = factor(chain), group=chain))+
@@ -246,32 +297,15 @@ for(est_model in c('SST','WST','Simple')){
     print(my_sexy_traceplot)
     dev.off()
     
-    #computing the 
-    WAIC_est_1 = waic(t(LL_list[[1]]))
-    LOO<-loo(t(LL_list[[1]]))
-    
-    z_s_table = data.frame(WAIC_est =WAIC_est_1$estimates[3],
-                           elpd_waic = WAIC_est_1$estimates[1],
-                           p_waic =  WAIC_est_1$estimates[2],
-                           WAIC_SE =  WAIC_est_1$estimates[6],
-                           looic =LOO$estimates[3],
-                           elpd_loo = LOO$estimates[1],
-                           p_loo = LOO$estimates[2],
-                           loiic_SE = LOO$estimates[6])
+    loo_model_fit = loo(t(LL))
+    plot(loo_model_fit)
+    waic_model_fit = waic(t(LL))
     
     
-    if(is.simulation == T){
-      z_true = uploaded_results$chain1$ground_truth$z
-      similarity_matrix <- pr_cc(z_list_relab[[1]])
-      point_est_minVI = minVI(similarity_matrix)$cl
-      
-      z_s_table$VIdist_minVI <- vi.dist(point_est_minVI, z_true)
-      z_s_table$VIdist_MAP <- vi.dist(point_est_z, z_true)
-      
-    }
-    
-    
-    
+
+    z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
+                           waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
+                           percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100 )
     z_s_table = z_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
     if(est_model=='SST'&file==1){
       z_container = z_s_table
@@ -279,8 +313,8 @@ for(est_model in c('SST','WST','Simple')){
       z_container =  rbind(z_container,z_s_table)
     }
     
-    
-    
+
+
     
     if(est_model ==  'WST'){
       
@@ -306,14 +340,14 @@ for(est_model in c('SST','WST','Simple')){
       #-------------------------------------------------------------------------------
       # 
       
-      mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
-                                            diag0.5 = TRUE, K = K, burnin = burnin)
-      
-      mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
-      if(est_model=='SST'&file==1){
-        mu_vec_container = mu_vec_s_table
-      }
-      mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
+      # mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
+      #                                       diag0.5 = TRUE, K = K, burnin = burnin)
+      # 
+      # mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
+      # if(est_model=='SST'&file==1){
+      #   mu_vec_container = mu_vec_s_table
+      # }
+      # mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
       
       
     }
@@ -332,8 +366,7 @@ for(est_model in c('SST','WST','Simple')){
                                    P = uploaded_results$chain1$ground_truth$P,
                                    burnin = burnin, N_iter = N_iter, label_switch =T)
     
-    
-    
+
     P_d_table_save <- P_d_table$results 
     
     P_d_table_save = P_d_table_save %>% mutate(model= est_model)%>% mutate(n_clust = K)
@@ -346,19 +379,19 @@ for(est_model in c('SST','WST','Simple')){
     # -------------------------------------------------------------------------------
     # z diagnostics
     # -------------------------------------------------------------------------------
-    
+
     z_d_table <- z_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
                                     K = K, burnin = N_iter*0.25, N_iter=N_iter,label_switch=F)
-    
+
     z_d_table = z_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
-    
+
     if(est_model=='SST'&file==1){
       z_d_container = z_d_table
     }else{
       z_d_container =  rbind(z_d_container,z_d_table)
     }
-    
-    
+
+    #
     
     
     if(est_model == 'WST'){
@@ -481,18 +514,23 @@ for(est_model in c('SST','WST','Simple')){
     # COMPARISON WITH THE EXTERNAL RANKING
     #---------------------------------------------------------------------------
     if(is.simulation==F){
-      my_names <- read.csv("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv")
       
+
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       # Save the plot with the constructed file name
+      
+      g = graph_from_adjacency_matrix(Y_ij)
       
       g_df =  data.frame(vertex_attr(g)) %>%
         rename(player_slug= name) %>%
         left_join(players_df, by="player_slug") %>%
         mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
         arrange()
-      est_df<- data.frame(player_slug = my_names$player_slug, est_cl = point_est_z)
+      
+      est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est_z)
       combined_df<- inner_join(g_df,est_df,by = 'player_slug')
+      combined_df = combined_df %>% dplyr::arrange(median_rank)
+      
       png(plot_name,width = 800, height = 627)
       print(rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model))
       dev.off()
@@ -501,8 +539,7 @@ for(est_model in c('SST','WST','Simple')){
       # CHECKING THE HOMOGENEITY OF THE CLUSTERS: HEATMAP
       #---------------------------------------------------------------------------
       
-      my_names <- read.csv("/Users/lapo_santi/Desktop/Nial/MCMC_results/applications_orderstats/tennis/rawdata/players_df.csv")
-      
+
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       
       A = uploaded_results$chain1$Y_ij
@@ -516,11 +553,11 @@ for(est_model in c('SST','WST','Simple')){
       all_possible_combinations=expand.grid(players_considered,players_considered)
       #counting how many times a player has won against every other player
       for(i in 1:nrow(all_possible_combinations)){
-        all_possible_combinations$victories[i]<- A[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
+        all_possible_combinations$victories[i]<- Y_ij[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
       }
       #counting how many times a player has played against every other player
       for(i in 1:nrow(all_possible_combinations)){
-        all_possible_combinations$games_played[i]<- N[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
+        all_possible_combinations$games_played[i]<- N_ij[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
       }
       #computing the percentage of victories as games_won/games_played
       all_possible_combinations = all_possible_combinations %>%
@@ -659,8 +696,8 @@ if(is.simulation==F){
   
   
   
-  uploaded_results<- readRDS(paste0(data_wd, 'True_ModelTennis_dataEst_model_',chosen_model$model,'_N95_K',chosen_model$K,'.RDS'))
-  K<- chosen_model$K
+  uploaded_results<- readRDS(paste0(data_wd, 'True_Model', true_model,'Est_model_',chosen_model$model,'_N',n,'_K',chosen_model$K,'.RDS'))
+ K<- chosen_model$K
   P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
   P_est <- inverse_logit_f(P_est)
   my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = P_est,
@@ -677,7 +714,7 @@ if(is.simulation==F){
     left_join(players_df, by="player_slug") %>%
     mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
     arrange()
-  est_df<- data.frame(player_slug = my_names$player_slug, est_cl = point_est)
+  est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est)
   combined_df<- inner_join(g_df,est_df,by = 'player_slug')
   
   colnames(A)<- rownames(A)
