@@ -7,15 +7,10 @@ tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget,
   #compute acceptance rate
   acceptanceRate <- acceptance_count / iteration
   #setting the change in the variance
-  delta= min(0.01, iteration**(-1/2))
+
   #passing top the log scale, to have a finer scale
-  lsi= log(sigma)
-  #if we are accepting too much ==> increase variance, otherwise, reduce it
-  if (acceptanceRate > acceptanceTarget) {
-    lsi <- lsi + delta
-  } else {
-    lsi <- lsi - delta}
-  
+  lsi= log(sigma) + (iteration**(-1/2))*(acceptanceRate - acceptanceTarget)
+
   # Update the proposal standard deviations
   sigma_updated <- max(min_sigma,exp(lsi))
   return(sigma_updated)

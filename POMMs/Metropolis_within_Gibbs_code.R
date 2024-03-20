@@ -242,10 +242,14 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                if (estimation_control$z == 1) {
                                                                  #z UPDATE-------------------------------------------------------------
                                                                  
-                                                                 z_update = z_update_f_withP(z = z_current, N_ij = N_ij, Y_ij = Y_ij,P = P_current,
-                                                                                             lamdabar = lamdabar,ybar=ybar,mbar=mbar,alpha_vec = alpha_vec,
+                                                                 z_update = z_update_f_withP(z = z_current, N_ij = N_ij, 
+                                                                                             Y_ij = Y_ij,P = P_current,
+                                                                                             lamdabar = lamdabar,ybar=ybar,
+                                                                                             mbar=mbar,alpha_vec = alpha_vec,
                                                                                              n_k = n_k,K = K,
-                                                                                             acc.count_z = acc.count_z,labels_available = labels_available,model, t=t)
+                                                                                             acc.count_z = acc.count_z,
+                                                                                             labels_available = labels_available,
+                                                                                             model, t=t)
                                                                  
                                                                  lamdabar = z_update$lamdabar
                                                                  ybar = z_update$ybar
@@ -275,7 +279,8 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                    for(my_p in 1:K){
                                                                      for(my_q in my_p:K){
                                                                        
-                                                                       tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
+                                                                       tau_P[my_p,my_q] = tuning_proposal(iteration = j,
+                                                                                                          acceptance_count = acc.count_P[my_p,my_q],
                                                                                                           sigma = tau_P[my_p,my_q],
                                                                                                           acceptanceTarget = optimal_acceptance_rate_P,
                                                                                                           min_sigma = 0.00002)
@@ -338,7 +343,8 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                tau_P_container[,,j]<- tau_P
                                                                
                                                                #storing results for inference
-                                                               A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,mbar = mbar, P = P_current, K=K, t=1)
+                                                               A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,
+                                                                                                             mbar = mbar, P = P_current, K=K, t=1)
                                                                z_container[,j] <- z_current
                                                                P_container[,,j] <- P_current
                                                                if(model == 'WST'){

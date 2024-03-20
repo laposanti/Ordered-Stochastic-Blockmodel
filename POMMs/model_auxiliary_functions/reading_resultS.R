@@ -100,8 +100,8 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/POMMs_sonic/results/simulation/SST_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/POMMs_sonic/results/simulation/SST_true/processed/"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/processed/"
   
   
   
@@ -115,7 +115,7 @@ for(est_model in c('SST','WST','Simple')){
   print(filenames)
   
   for(file in 1:length(filenames)){
-
+file=1
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
 
     print(paste0('Now estimating ', filenames[file]))
@@ -127,6 +127,8 @@ for(est_model in c('SST','WST','Simple')){
     burnin = N_iter-10000
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
+    
+
     
     #-------------------------------------------------------------------------------
     # P temporary estimate
@@ -188,6 +190,9 @@ for(est_model in c('SST','WST','Simple')){
       theme_bw()
     
     
+   
+    
+    
     
     plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_traceplot_P,width = 800, height = 800)
@@ -195,6 +200,24 @@ for(est_model in c('SST','WST','Simple')){
     print(traceplot_P)
     dev.off()
     
+    P_variance_df <- do.call(rbind, lapply(1:(N_iter), function(j) {
+      data.frame(iteration = j,
+                 P = upper.tri.extractor(uploaded_results$chain1$st.deviations$tau_P[,,j]), 
+                 P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+    }))                                       
+    
+    
+    traceplot_proposal_P = ggplot(P_variance_df, aes(x = iteration, color = P_ij, group=P_ij))+
+      geom_line(aes(y=P), alpha=.3)+
+      facet_wrap(~P_ij)+
+      theme_bw()+
+      labs(title = "Adaptive variances proposals for P", x = 'Iterations')
+    
+    plot_name_traceplot_proposal_P <- paste0(processed_wd,"//P_traceplot_proposal",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(plot_name_traceplot_proposal_P,width = 800, height = 800)
+    par(mar = c(1.5, 1.5,1.5,1.5))
+    print(traceplot_proposal_P)
+    dev.off()
     
     
     if(is.simulation==T){
