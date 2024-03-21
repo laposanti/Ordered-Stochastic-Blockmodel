@@ -194,7 +194,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter)
                                                                sigma_squared_container[1] <- sigma_squared_current
                                                                #initialising the adaptive variance
-                                                               tau_sigma_squared <- 0.2 
+                                                               tau_sigma_squared <- 0.5 
                                                                tau_sigma_squared_container = matrix(0,1, N_iter)
                                                                tau_sigma_squared_container[1] <- tau_sigma_squared
                                                              }else{
@@ -207,7 +207,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter)
                                                                mu_vec_container[,1] <- mu_vec_current
                                                                #initialising the adaptive variance
-                                                               tau_mu_vec <- 0.05
+                                                               tau_mu_vec <- 0.4
                                                                tau_mu_vec_container = matrix(0,1, N_iter)
                                                                tau_mu_vec_container[1] <- tau_mu_vec
                                                              }else{
@@ -220,7 +220,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              P_container[,,1] <- P_current
                                                              
                                                              tau_P_container = array(0,dim=c(K,K,N_iter))
-                                                             tau_P = matrix(0.2,K,K)
+                                                             tau_P = matrix(0.5,K,K)
                                                              tau_P_container[,,1] = tau_P
                                                              
                                                              

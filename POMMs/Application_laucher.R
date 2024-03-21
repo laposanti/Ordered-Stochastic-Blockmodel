@@ -19,7 +19,7 @@ library(doRNG)
 
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")
@@ -40,7 +40,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #choose between citation exchange data and tennis data
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
-for(application in c('Tennis_data', "Citation_data")){
+for(application in c("Citation_data")){
   true_model = application
   
   ###############################################################################
@@ -69,7 +69,7 @@ for(application in c('Tennis_data', "Citation_data")){
   #data to be estimated
   
   
-  K_values <- c(3,4,5,6,7)  # Range of K values to explore
+  K_values <- c(3,4,5,6)  # Range of K values to explore
   
   
   choose_model_to_estimate = c('SST', 'WST','Simple')
@@ -93,15 +93,16 @@ for(application in c('Tennis_data', "Citation_data")){
     ##############################################################################
     
     n_chains = 4
-    optimal_acceptance_rate =.235
-    N_iter= 110000
-    chains_seeds = list(20,09,97,2024)
+    optimal_acceptance_rate_P =.44
+    optimal_acceptance_rate_mu = .234
+    N_iter= 130000
+    chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
     # SST MODEL
     #-----------------------------------------------------------------------------
     if('SST' %in% choose_model_to_estimate){
-      print(paste0("Estimation of the SST model, K=",K))
+      print(paste0("Estimation of the SST model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
       
@@ -115,8 +116,9 @@ for(application in c('Tennis_data', "Citation_data")){
       chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, 
-                                            optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                            n = n, N_iter = N_iter,n_chains = n_chains, optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                            optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, 
+                                            K = K_chains,
                                             seed = chains_seeds, model = 'SST', t= t_chains, custom_init = NA)
       
       
@@ -135,7 +137,7 @@ for(application in c('Tennis_data', "Citation_data")){
     #-----------------------------------------------------------------------------
     
     if('WST' %in% choose_model_to_estimate){
-      print(paste0("Estimation of the WST model, K=",K))
+      print(paste0("Estimation of the WST model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
       
@@ -145,8 +147,9 @@ for(application in c('Tennis_data', "Citation_data")){
       chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, 
-                                            optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                            n = n, N_iter = N_iter,n_chains = n_chains,  
+                                            optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                            optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, K = K_chains,
                                             seed = chains_seeds, model = 'WST',t=t_chains, custom_init = NA)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
@@ -162,7 +165,7 @@ for(application in c('Tennis_data', "Citation_data")){
     
     
     if('Simple' %in% choose_model_to_estimate){
-      print(paste0("Estimation of Simple model, K=",K))
+      print(paste0("Estimation of Simple model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       
       
@@ -173,7 +176,8 @@ for(application in c('Tennis_data', "Citation_data")){
                                                estimation_control = estimation_control, 
                                                ground_truth = ground_truth, 
                                                n = n, N_iter = N_iter,n_chains = n_chains, 
-                                               optimal_acceptance_rate=optimal_acceptance_rate, K = K_chains,
+                                               optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                               optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, K = K_chains,
                                                seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 

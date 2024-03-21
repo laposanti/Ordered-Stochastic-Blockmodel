@@ -20,7 +20,6 @@ library(doRNG)
 
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 source("./model_auxiliary_functions/Functions_priorSST.R")
-source("./Metropolis_within_Gibbs_code.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
@@ -59,7 +58,8 @@ cat(paste0("True data--->", filenames[file], "\n"))
 # Decide for how many Ks we want to compute the marginal posterior
 ################################################################################
 n_temperatures=50
-optimal_acceptance_rate <- 0.235
+optimal_acceptance_rate_P =.44
+optimal_acceptance_rate_mu = .234
 N_iter <- 120000
 
 if('SST' %in% choose_model_to_estimate){
@@ -85,7 +85,9 @@ if('SST' %in% choose_model_to_estimate){
                                                     estimation_control = estimation_control,
                                                     ground_truth = ground_truth,
                                                     n = n, N_iter = N_iter, n_chains = n_chains, 
-                                                    optimal_acceptance_rate = optimal_acceptance_rate, K = K_est,true_model = true_model,
+                                                    optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                                    optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, 
+                                                    K = K_est,true_model = true_model,
                                                     seed = chains_seeds, est_model = 'SST', custom_init = custom_init)
   names(chains) = paste0('chain',unlist(K_est))
   

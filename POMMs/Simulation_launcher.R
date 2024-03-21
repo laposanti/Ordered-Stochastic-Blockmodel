@@ -47,13 +47,13 @@ for(true_model in  c('SST', 'WST', 'Simple')){
   filenames <- list.files(pattern = paste0(true_model),path =data_directory)
   print(filenames) #data to be estimated
   
-  choose_model_to_estimate = c('SST', 'WST', 'Simple')
+  choose_model_to_estimate = c('SST')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    
+    file=1
     data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
     data_to_be_estimated$data_plot
     
@@ -74,7 +74,7 @@ for(true_model in  c('SST', 'WST', 'Simple')){
     n_chains = 4
     optimal_acceptance_rate_P =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 130000
+    N_iter= 100000
     chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
@@ -167,11 +167,6 @@ for(true_model in  c('SST', 'WST', 'Simple')){
       beep("coin")
     }
   }
-  
-  
-  
-  
-  
   
   
   

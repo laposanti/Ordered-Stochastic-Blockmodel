@@ -65,8 +65,39 @@ if(is.simulation==F){
     
     scores=  read.csv("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Citations_application/journal-scores.csv")
     
+    
+    
+    # Creating the data frame
+    journal_data <- data.frame(
+      Rank = 1:47,
+      Journal = c("JRSS-B", "AoS", "Bka", "JASA", "Bcs", "JRSS-A", "Bern", "SJS", "Biost", "JCGS",
+                  "Tech", "AmS", "JTSA", "ISR", "AISM", "CJS", "StSin", "StSci", "LDA", "JRSS-C",
+                  "StMed", "ANZS", "StCmp", "StataJ", "SPL", "StNee", "Envr", "JABES", "Mtka",
+                  "StMod", "JSPI", "SMMR", "BioJ", "JMA", "EES", "CSDA", "JNS", "CmpSt", "Stats",
+                  "Test", "CSTM", "JSS", "JBS", "JSCS", "CSSC", "StPap", "JAS"),
+      SM = c(2.09, 1.38, 1.29, 1.26, 0.85, 0.70, 0.69, 0.66, 0.66, 0.64, 0.53, 0.40, 0.37, 0.33,
+             0.32, 0.30, 0.29, 0.11, 0.10, 0.09, 0.06, 0.06, 0.04, 0.02, -0.09, -0.10, -0.11,
+             -0.16, -0.18, -0.22, -0.33, -0.35, -0.40, -0.45, -0.48, -0.52, -0.53, -0.64, -0.65,
+             -0.70, -0.74, -0.80, -0.83, -0.92, -1.26, -1.35, -1.41),
+      QSE = c(0.11, 0.07, 0.08, 0.06, 0.07, 0.19, 0.15, 0.12, 0.11, 0.12, 0.15, 0.18, 0.20, 0.25,
+              0.16, 0.14, 0.09, 0.11, 0.17, 0.15, 0.07, 0.21, 0.15, 0.33, 0.09, 0.25, 0.18, 0.23,
+              0.17, 0.21, 0.07, 0.16, 0.12, 0.08, 0.25, 0.07, 0.15, 0.22, 0.18, 0.15, 0.10, 0.19,
+              0.16, 0.15, 0.14, 0.20, 0.15),
+      SMgrouped = c(1.87, 1.17, 1.11, 1.11, 0.65, 0.31, 0.31, 0.31, 0.31, 0.31, 0.31, 0.04, 0.04,
+                    0.04, 0.04, 0.04, 0.04, -0.04, -0.04, -0.04, -0.04, -0.04, -0.04, -0.04, -0.04,
+                    -0.04, -0.04, -0.04, -0.04, -0.04, -0.31, -0.31, -0.31, -0.36, -0.36, -0.36,
+                    -0.36, -0.36, -0.36, -0.36, -0.36, -0.36, -0.36,
+                    -0.36, -0.88, -0.88, -0.88)
+    )
+    
+    # Displaying the data frame
+    print(journal_data)
+    
+    
     Y_ij=read.csv("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Citations_application/cross-citation-matrix.csv",header = T,row.names = 1)
     diag(Y_ij) = 0
+    
+    
     N_ij= matrix(0,47,47) +Y_ij*upper.tri(Y_ij)+
       t(Y_ij)*upper.tri(Y_ij)+Y_ij*lower.tri(Y_ij)+t(Y_ij)*lower.tri(Y_ij)
     rownames(Y_ij) %in% scores[,1]
@@ -89,10 +120,10 @@ if(is.simulation==F){
     scores$shortName <- plyr::mapvalues(scores$shortName, from = acronym_mapping, to = names(acronym_mapping))
     
     
-    players_df = data.frame(player_slug = scores$shortName, points= scores$I2no)
+    players_df = data.frame(player_slug = journal_data$Journal, points= journal_data$SM, median_rank = journal_data$Rank)
     
     # Create a new column 'rank' with the ranking of each journal according to their median rank
-    players_df$median_rank <- rank(-players_df$points, ties.method = "min")
+    #players_df$median_rank <- rank(-players_df$points, ties.method = "min")
     
   }
   
@@ -109,15 +140,13 @@ if(is.simulation==F){
 
 
 for(est_model in c('SST','WST','Simple')){
-
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
   for(file in 1:length(filenames)){
-file=1
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-
+    
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
@@ -128,18 +157,18 @@ file=1
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
-
+    
     
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
     P_burned = uploaded_results$chain1$est_containers$P[,,-c(burnin:N_iter)]
     
-  
-
+    
+    
     P_est = apply(P_burned, c(1,2), mean)
     theta = inverse_logit_f(P_est)
-
+    
     my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = theta,
                       est_model = est_model, true_value =is.simulation, 
                       diag0.5 =diag0.5 , K=K, N=nrow(uploaded_results$chain1$Y_ij), z = uploaded_results$chain1$ground_truth$z ,
@@ -151,7 +180,7 @@ file=1
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
     z_chain_permuted<- my_z_est$relabeled_chain
-
+    
     
     #---------------------------------------------------------------------------
     # P parameter estimate
@@ -169,28 +198,38 @@ file=1
     P_chain_permuted <- P_s_table$P_permuted
     P_est_relabeled<- P_s_table$P_hat
     
-
+    
     upper_tri_indices= which(upper.tri(P_est_relabeled, diag=T),arr.ind = T)
-
+    if(is.simulation ==T){
+      P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+        data.frame(iteration = j,
+                   P = upper.tri.extractor(P_chain_permuted[,,j]), 
+                   P_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
+                   P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+      }))
+      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
+        mutate(P_true = inverse_logit_f(P_true))
+      
+      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
+        geom_line(aes(y=P), alpha=.3)+
+        geom_line(aes(y=P_true), linetype=2, color='red')+
+        facet_wrap(~P_ij)+
+        theme_bw()
+      
+    }else if(is.simulation ==F){
+      P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+        data.frame(iteration = j,
+                   P = upper.tri.extractor(P_chain_permuted[,,j]), 
+                   P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+      }))
+      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))
+      
+      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
+        geom_line(aes(y=P), alpha=.3)+
+        facet_wrap(~P_ij)+
+        theme_bw()
+    }
     
-    
-    P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
-      data.frame(iteration = j,
-                 P = upper.tri.extractor(P_chain_permuted[,,j]), 
-                 P_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
-                 P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-    }))
-    P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
-      mutate(P_true = inverse_logit_f(P_true))
-    
-    traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
-      geom_line(aes(y=P), alpha=.3)+
-      geom_line(aes(y=P_true), linetype=2, color='red')+
-      facet_wrap(~P_ij)+
-      theme_bw()
-    
-    
-   
     
     
     
@@ -296,8 +335,8 @@ file=1
     LLik_sum <- lapply(LL_list,FUN = colSums)
     
     
-
-
+    
+    
     saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K))
     #-------------------------------------------------------------------------------
     # printing traceplots of the likelihood
@@ -325,9 +364,9 @@ file=1
     waic_model_fit = waic(t(LL))
     
     
-
-    z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
-                           waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
+    
+    z_s_table = data.frame(lone_out = loo_model_fit$estimates[3],lone_out_se = loo_model_fit$estimates[6],
+                           waic = waic_model_fit$estimates[3], waic_se = waic_model_fit$estimates[6],
                            percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100 )
     z_s_table = z_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
     if(est_model=='SST'&file==1){
@@ -336,8 +375,8 @@ file=1
       z_container =  rbind(z_container,z_s_table)
     }
     
-
-
+    
+    
     
     if(est_model ==  'WST'){
       
@@ -361,16 +400,16 @@ file=1
       #-------------------------------------------------------------------------------
       # mu parameter estimate
       #-------------------------------------------------------------------------------
-      # 
+      #
       
-      # mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
-      #                                       diag0.5 = TRUE, K = K, burnin = burnin)
-      # 
-      # mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
-      # if(est_model=='SST'&file==1){
-      #   mu_vec_container = mu_vec_s_table
-      # }
-      # mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
+      mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
+                                            diag0.5 = TRUE, K = K, burnin = burnin)
+      
+      mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
+      if(est_model=='SST'&file==1){
+        mu_vec_container = mu_vec_s_table
+      }
+      mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
       
       
     }
@@ -389,7 +428,7 @@ file=1
                                    P = uploaded_results$chain1$ground_truth$P,
                                    burnin = burnin, N_iter = N_iter, label_switch =T)
     
-
+    
     P_d_table_save <- P_d_table$results 
     
     P_d_table_save = P_d_table_save %>% mutate(model= est_model)%>% mutate(n_clust = K)
@@ -402,18 +441,18 @@ file=1
     # -------------------------------------------------------------------------------
     # z diagnostics
     # -------------------------------------------------------------------------------
-
+    
     z_d_table <- z_diagnostic_table(chains = uploaded_results, true_value = is.simulation, diag0.5 = TRUE,
                                     K = K, burnin = N_iter*0.25, N_iter=N_iter,label_switch=F)
-
+    
     z_d_table = z_d_table %>% mutate(model= est_model) %>% mutate(n_clust = K)
-
+    
     if(est_model=='SST'&file==1){
       z_d_container = z_d_table
     }else{
       z_d_container =  rbind(z_d_container,z_d_table)
     }
-
+    
     #
     
     
@@ -452,6 +491,7 @@ file=1
         mu_vec_d_container =  rbind(mu_vec_d_container,mu_vec_d_table_save)
       }
     }
+    
     
     
     #---------------------------------------------------------------------------
@@ -538,11 +578,11 @@ file=1
     #---------------------------------------------------------------------------
     if(is.simulation==F){
       
-
+      
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       # Save the plot with the constructed file name
       
-      g = graph_from_adjacency_matrix(Y_ij)
+      g = graph_from_adjacency_matrix(as.matrix(Y_ij))
       
       g_df =  data.frame(vertex_attr(g)) %>%
         rename(player_slug= name) %>%
@@ -550,76 +590,123 @@ file=1
         mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
         arrange()
       
-      est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est_z)
-      combined_df<- inner_join(g_df,est_df,by = 'player_slug')
+      est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est_z, 
+                          degree_pl = rowSums(Y_ij)/(colSums(Y_ij)),
+                          degree_out = colSums(Y_ij)/(rowSums(Y_ij)))
+      combined_df<- inner_join(players_df,est_df,by = 'player_slug')
       combined_df = combined_df %>% dplyr::arrange(median_rank)
       
+      if(true_model=='Tennis_data'){
+        degree_plot <- ggplot(combined_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(est_cl) )) +
+          geom_bar(stat = "identity") +
+          labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
+               subtitle = 'Players are sorted according to their median rank in 2017') +
+          scale_color_discrete(name = "Cluster") +
+          theme_bw() +
+          theme(
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+            text = element_text(size = 10, family = "Arial"),
+            plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+            plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+            plot.margin = margin(20, 20, 20, 20)
+          )
+      }else if(true_model == 'Citation_data'){
+        degree_plot <- ggplot(combined_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(est_cl) )) +
+          geom_bar(stat = "identity") +
+          labs(x = "Journal Name", y = "Citations received / Citations made", fill='Cluster', 
+               title = "Citations received / citations made for each journal",
+               subtitle = 'Players are ranked by the Stigler model of Varin et al (2016)') +
+          scale_color_discrete(name = "Cluster") +
+          theme_bw() +
+          theme(
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 5),
+            text = element_text(size = 10, family = "Arial"),
+            plot.title = element_text(size = 13, face = "bold", margin = margin(r = 10)),
+            plot.subtitle = element_text(size = 10, margin = margin(t = 10, r = 10, b = 10)),  # Adjust the top margin
+            plot.margin = margin(20, 20, 20, 20)
+          )
+        
+        
+      }
       png(plot_name,width = 800, height = 627)
-      print(rank_vs_cluster(combined_df, combined_df$est_cl,est_model = est_model))
+      print(degree_plot)
       dev.off()
       # 
       #---------------------------------------------------------------------------
       # CHECKING THE HOMOGENEITY OF THE CLUSTERS: HEATMAP
       #---------------------------------------------------------------------------
       
-
+      
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       
-      A = uploaded_results$chain1$Y_ij
-      N = uploaded_results$chain1$N_ij
-      
-      
-      
-      
-      players_considered=rownames(uploaded_results$chain1$Y_ij)
-      #creating a dataframe with all the possible combinations among players
-      all_possible_combinations=expand.grid(players_considered,players_considered)
-      #counting how many times a player has won against every other player
-      for(i in 1:nrow(all_possible_combinations)){
-        all_possible_combinations$victories[i]<- Y_ij[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
+
+      colnames(Y_ij) <- rownames(Y_ij)
+      colnames(N_ij) <- rownames(N_ij)
+      indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
+      # Convert the matrix to a data frame
+      z_df_complete <- data.frame(
+        row = as.character(indices$row),
+        col = as.character(indices$col),
+        degree_value = NA,
+        Y = NA
+      )
+
+      for (i in seq_len(nrow(z_df_complete))) {
+        z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
       }
-      #counting how many times a player has played against every other player
-      for(i in 1:nrow(all_possible_combinations)){
-        all_possible_combinations$games_played[i]<- N_ij[all_possible_combinations$Var1[i],all_possible_combinations$Var2[i]]
+      for (i in seq_len(nrow(z_df_complete))) {
+        z_df_complete$N[i] <- N_ij[z_df_complete$col[i], z_df_complete$row[i]]
       }
-      #computing the percentage of victories as games_won/games_played
-      all_possible_combinations = all_possible_combinations %>%
-        mutate(percentage_won = victories/games_played)
-      #computing the percentage of defeats as (games_played-games_won)/games_played
-      all_possible_combinations = all_possible_combinations %>%
-        mutate(percentage_lost = (games_played-victories)/games_played)
-      #renaming player1 and player2 columns
-      all_possible_combinations = all_possible_combinations %>%
-        rename(player1= Var1, player2= Var2 )
+      for (i in seq_len(nrow(z_df_complete))) {
+        z_df_complete$degree_value[i] <- combined_df$degree_pl[which(combined_df$player_slug == z_df_complete$col[i])]
+      }
       
-      n_col_df<- ncol(all_possible_combinations)
-      #joining the informations about player 1
-      all_possible_combinations = all_possible_combinations %>%
-        inner_join(combined_df, by = c("player1" = "player_slug")) %>% #renaming varibales with suffix
-        rename_at(vars((n_col_df+1):(n_col_df+1+ncol(combined_df)-2)),function(x) paste0(x,"_player1"))
-      #joining infos about player 2
-      all_possible_combinations = all_possible_combinations %>%
-        inner_join(combined_df, by = c("player2" = "player_slug"))
+      plot_df = z_df_complete%>%
+        inner_join(est_df, by = c("row" = "player_slug")) %>%
+        inner_join(est_df, by = c("col" = "player_slug")) %>%
+        mutate(row = factor(row, levels = unique(row[order(est_cl.x , row)])),
+               col = factor(col, levels = unique(col[order(est_cl.y, col, decreasing = TRUE)])))%>%
+        mutate(relative_citations = Y/N)
       
-      #FULL HEATMAP --------------------------------------------------------------
-      combined_plot <- ggplot(all_possible_combinations, aes(x=reorder(player2,est_cl,decreasing = F), y= reorder(player1,est_cl_player1,decreasing = T)))+
-        geom_tile(aes(fill= percentage_won), color="grey9")+
-        geom_ysidecol(aes(x = degree_pl_player1, color=factor(est_cl_player1))) +
-        geom_xsidecol(aes(y = 1-degree_pl, color=factor(est_cl))) +
-        scale_fill_gradient(low = "white", high = "red") +
-        theme_bw()+ theme(legend.direction = "vertical",
-                          axis.text.x = element_blank(),
-                          axis.text.y = element_blank())+
-        labs(title = 'Heatmap filled with victory percentages',
-             x = paste0("Players ordered by blocks"),
-             y = paste0("Playersordered by blocks"),
-             fill = "% victories",
-             color = "Block")
+      if(true_model == 'Tennis_data'){
+        adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
+          geom_tile(aes(fill = relative_citations), color = "gray", show.legend = T) +
+          scale_fill_gradient(low = "white", high = "red") +
+          geom_ysidecol(aes(x = degree_pl.y, color=factor(est_cl.y))) +
+          labs(title = 'Heatmap filled with victory percentages',
+               x = paste0("Players ordered by blocks"),
+               y = paste0("Playersordered by blocks"),
+               fill = "% victories",
+               color = "Block")+
+          theme(legend.position = 'bottom', legend.direction = 'horizontal')+
+          theme_minimal() +
+          theme(axis.text.y = element_blank(),
+                axis.text.x = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank())
+      }else if(true_model == 'Citation_data'){
+        adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
+          geom_tile(aes(fill = relative_citations), color = "gray", show.legend = T) +
+          scale_fill_gradient(low = "white", high = "red") +
+          geom_ysidecol(aes(x = degree_pl.y, color=factor(est_cl.y))) +
+          labs(title = 'Heatmap filled with percetage citation received over citations made',
+               x = paste0("Players ordered by blocks"),
+               y = paste0("Playersordered by blocks"),
+               fill = "% relative citations",
+               color = "Block")+
+          theme(legend.position = 'bottom', legend.direction = 'horizontal')+
+          theme_minimal() +
+          theme(axis.text.y = element_text(angle=30),
+                axis.text.x = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank())
+      }
+      
       
       #saving the heatmap
       plot_name1<- paste0(processed_wd,"//Combined_plot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       png(plot_name1,width = 800, height = 594)
-      print(combined_plot)
+      print(adjacency_m)
       dev.off()
       
       
@@ -632,11 +719,11 @@ file=1
       set.seed(23)
       # Randomly sample a subset of labels to display
       sampled_labels <- combined_df[sample(nrow(combined_df), size = round(percentage_to_display / 100 * nrow(combined_df))), ]
-      
+      if(true_model == 'Citation_data'){
       rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
         geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
         geom_label_repel(
-          data = sampled_labels,  # Use the sampled labels for display
+          data = combined_df,  # Use the sampled labels for display
           aes(label = player_slug),
           size = 3,
           hjust = .5,
@@ -655,7 +742,30 @@ file=1
               plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
               plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
               plot.caption = element_text(face = "italic"))
-      
+      }else if(true_model == 'Tennis_data'){
+        rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
+          geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
+          geom_label_repel(
+            data = sampled_labels,  # Use the sampled labels for display
+            aes(label = player_slug),
+            size = 3,
+            hjust = .5,
+            vjust = 0,
+            show.legend = F,
+            alpha=.8
+          ) +
+          labs(title= "Rank of the players divided into blocks",
+               subtitle = "Not all names are displayed to avoid overlapping",
+               x = "Clusters",
+               y = "Median Rank 2017",
+               color = "Cluster",
+               fill = "Cluster")+
+          theme_classic()+
+          theme(legend.position = "bottom",
+                plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+                plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
+                plot.caption = element_text(face = "italic"))
+      }
       plot_name2<- paste0(processed_wd,"//Boxplot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       png(plot_name2,width = 800, height = 594)
       print(rank_boxplot)
@@ -715,12 +825,12 @@ mu_vec_d_container %>%  write.csv(file = paste0(processed_wd,"/mu_vec_d_containe
 if(is.simulation==F){
   #BLOCKWISE HEATMAP ---------------------------------------------------------
   
-  chosen_model <- z_container[which(z_container$WAIC_est ==  min(z_container$WAIC_est)),]
+  chosen_model <- z_container[which(z_container$waic ==  min(z_container$waic)),]
   
   
   
   uploaded_results<- readRDS(paste0(data_wd, 'True_Model', true_model,'Est_model_',chosen_model$model,'_N',n,'_K',chosen_model$K,'.RDS'))
- K<- chosen_model$K
+  K<- chosen_model$K
   P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
   P_est <- inverse_logit_f(P_est)
   my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = P_est,
@@ -740,7 +850,7 @@ if(is.simulation==F){
   est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est)
   combined_df<- inner_join(g_df,est_df,by = 'player_slug')
   
-  colnames(A)<- rownames(A)
+  colnames(Y)<- rownames(A)
   colnames(N)<- colnames(A)
   rownames(N)<- rownames(A)
   

@@ -21,11 +21,11 @@
 
 adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control, 
                                      ground_truth,n, N_iter,n_chains, true_model,
-                                     optimal_acceptance_rate, K, seed,est_model,n_temperatures, saving_directory, custom_init=NA){
+                                     optimal_acceptance_rate_P, optimal_acceptance_rate_mu, K, seed,est_model,n_temperatures, saving_directory, custom_init=NA){
   
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
-                       'optimal_acceptance_rate', 'K', 'seed','est_model', 'true_model', 'custom_init','p','n_temperatures','saving_directory')
+                       'optimal_acceptance_rate_P', 'optimal_acceptance_rate_mu', 'K', 'seed','est_model', 'true_model', 'custom_init','p','n_temperatures','saving_directory')
   
   registerDoFuture()
   reprex <- local({
@@ -284,7 +284,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                          
                                                                          tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
                                                                                                             sigma = tau_P[my_p,my_q],
-                                                                                                            acceptanceTarget = optimal_acceptance_rate,
+                                                                                                            acceptanceTarget = optimal_acceptance_rate_P,
                                                                                                             min_sigma = 0.00002)
                                                                          
                                                                        }
@@ -310,7 +310,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      tau_sigma_squared <- tuning_proposal(iteration=j,
                                                                                                           acceptance_count = acc.count_sigma_squared,
                                                                                                           sigma = tau_sigma_squared,
-                                                                                                          acceptanceTarget = optimal_acceptance_rate,
+                                                                                                          acceptanceTarget = optimal_acceptance_rate_P,
                                                                                                           min_sigma = 0.02)
                                                                    }
                                                                  }
@@ -331,7 +331,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    if(j %% 50 == 0){
                                                                      tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
                                                                                                    sigma = tau_mu_vec,
-                                                                                                   acceptanceTarget = optimal_acceptance_rate,
+                                                                                                   acceptanceTarget = optimal_acceptance_rate_mu,
                                                                                                    min_sigma = 0.002)
                                                                    }
                                                                    

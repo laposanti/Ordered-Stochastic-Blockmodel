@@ -1,3 +1,5 @@
+
+
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -20,9 +22,14 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 
-generate_theta_from_SST_prior = function(K){
+generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
   
-  mu_vec = c(rnorm(1), rtruncnorm(K,a = 0,b = Inf, mean =0, sd =1))
+  if(model == 'SST'&sigma!=0){
+    sigma=0
+    print('If model is SST, sigma should be zero')
+  }
+  
+  mu_vec = c(rnorm(1), rtruncnorm(K,a = 0,b = Inf, mean =0, sd = 1))
   mu_vec_sort = sort(mu_vec)
   
   ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
@@ -37,8 +44,8 @@ generate_theta_from_SST_prior = function(K){
     i_star<- uo$row[i_th]
     j_star<- uo$col[i_th]
     
-    lower.bound = mu_vec_sort[j_star - i_star + 1]
-    upper.bound = mu_vec_sort[j_star - i_star + 2]
+    lower.bound = mu_vec_sort[j_star - i_star + 1] - sigma
+    upper.bound = mu_vec_sort[j_star - i_star + 2] + sigma
     
     
     P_prime[i_star,j_star]<- runif(1, min  = lower.bound , max = upper.bound)
@@ -47,121 +54,133 @@ generate_theta_from_SST_prior = function(K){
   
   P_prime[lower.tri(P_prime)] = - t(P_prime)[lower.tri(P_prime)]
   
-
   
-  return(P_prime)
+  
+  return(list(P = P_prime, mu= mu_vec))
 }
 ###############################################################################
 # Generating data from the SST
 ###############################################################################
 
 true_model = 'SST'
-saving_directory="/Users/lapo_santi/Desktop/Nial/weekly material/priorposterior_predictivechecks/small_simulation/"
-simulations = 3
-
-for(n_simul in 1:simulations){
-  n = 100
-  M = 20
-  K=3
-  N_ij<- matrix(M,n,n)
-  seed =1234+n_simul-1
-  set.seed(seed)
-  if(true_model =='SST'){
-    P<- generate_theta_from_SST_prior(K)
-  }else if( true_model == 'WST'){
-    P = generate_theta_from_SST_prior(K)
-  }else if( true_model == 'Simple'){
+saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Simulation_data/"
+simulations = 1
+for(k in 3:6){
+  for(n_simul in 1:simulations){
+    n = 100
     
-    theta = matrix(NA, K, K)
-    theta[col(theta)-row(theta)==0] <-runif(K, .6,.85)
-    for(diag_i in 1:(K-1)){
-      theta[col(theta)-row(theta)==diag_i] <- runif( K-diag_i,0.01,.9)
+    K=k
+    seed =2009+n_simul-1
+    set.seed(seed)
+    if(true_model =='SST'){
+      prior_SST = generate_theta_from_SST_prior(K, model = 'SST',sigma = 0)
+      P<- prior_SST$P
+      mu_vec =  prior_SST$mu
+    }else if( true_model == 'WST'){
+      sigma_squared = 0.3
+      prior_WST = generate_theta_from_SST_prior(K, model = 'WST',sigma = sigma_squared)
+      P<- prior_WST$P
+      mu_vec =  prior_WST$mu
+    }else if( true_model == 'Simple'){
+      
+      theta = matrix(NA, K, K)
+      theta[col(theta)-row(theta)==0] <-runif(K, .6,.85)
+      for(diag_i in 1:(K-1)){
+        theta[col(theta)-row(theta)==diag_i] <- runif( K-diag_i,0.01,.9)
+      }
+      theta[lower.tri(theta)] = 1-t(theta)[lower.tri(theta)]
+      P = log(theta/(1-theta))
     }
-    theta[lower.tri(theta)] = 1-t(theta)[lower.tri(theta)]
-    P = log(theta/(1-theta))
-  }
-  
-  theta = inverse_logit_f(P)
-  z <- sample(1:K, n,replace=T)
-  z_P<- vec2mat_0_P(z,theta)
-  
-  P_nbyn<- calculate_victory_probabilities(z_P,theta)
-  #simulating Y_ij
-  
-  Y_ij <- matrix(0, n,n)
-  for(i in 1:n){
-    for(j in 1:n){
-      Y_ij[i,j]<- rbinom(1, N_ij[i,j],P_nbyn[i,j])
+    
+    theta = inverse_logit_f(P)
+    z <- sample(1:K, n,replace=T)
+    z_P<- vec2mat_0_P(z,theta)
+    P_nbyn<- calculate_victory_probabilities(z_P,theta)
+    
+    small_n_matrix = matrix(0, K,K)
+    small_n_matrix[1,] = (K:1)*K
+    for(i in 2:K){
+      small_n_matrix[i,] = abs( sample((K*(K-i+1):1) ,K, replace = T))
     }
+    small_n_matrix[lower.tri(small_n_matrix)]  = t(small_n_matrix)[lower.tri(small_n_matrix)]
+    N_ij = calculate_victory_probabilities(z_P,small_n_matrix)
+    #simulating Y_ij
+    
+    Y_ij <- matrix(0, n,n)
+    for(i in 1:n){
+      for(j in 1:n){
+        Y_ij[i,j]<- rbinom(1, N_ij[i,j],P_nbyn[i,j])
+      }
+    }
+    
+    Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
+    diag(Y_ij)<- 0
+    
+    indices <- expand.grid(row = 1:n, col = 1:n)
+    
+    
+    z_df <- data.frame(items = 1:n, 
+                       z = z)
+    
+    
+    # Convert the matrix to a data frame
+    z_df_complete <- data.frame(
+      row = indices$row,
+      col = indices$col,
+      similarity_value = NA,
+      Y = NA
+    )
+    
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
+    }
+    
+    plot_df = z_df_complete%>%
+      inner_join(z_df, by = c("row" = "items")) %>%
+      rename(row_z = z) %>%
+      inner_join(z_df, by = c("col" = "items")) %>%
+      rename(col_z = z) %>%
+      mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
+             col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
+    
+    
+    
+    adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
+      geom_tile(aes(fill = Y), color = "gray", show.legend = FALSE) +
+      scale_fill_gradient(low = "white", high = "black") +
+      geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
+      theme_minimal() +
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank())
+    
+    print(adjacency_m)
+    
+    
+    if(true_model == 'SST'){
+      ground_truth = list(z = z,
+                          sigma_squared=NA, 
+                          mu_vec_star = mu_vec,
+                          K=K,P=P) 
+    }else if(true_model == 'WST'){
+      ground_truth = list(z = z,
+                          sigma_squared=sigma_squared, 
+                          mu_vec_star = mu_vec,
+                          K=K,P=P) 
+    }else if(true_model == 'Simple'){
+      ground_truth = list(z = z,
+                          sigma_squared=NA, 
+                          mu_vec_star = NA,
+                          K=K,
+                          P=P) 
+    }
+    
+    
+    to_be_saved = list(Y_ij=Y_ij, N_ij =N_ij, ground_truth = ground_truth, 
+                       data_plot = adjacency_m, 
+                       seed=seed)
+    
+    saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_data",n_simul,".RDS"))
   }
-  
-  Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
-  diag(Y_ij)<- 0
-  
-  indices <- expand.grid(row = 1:n, col = 1:n)
-  
-  
-  z_df <- data.frame(items = 1:n, 
-                     z = z)
-  
-  
-  # Convert the matrix to a data frame
-  z_df_complete <- data.frame(
-    row = indices$row,
-    col = indices$col,
-    similarity_value = NA,
-    Y = NA
-  )
-  
-  for (i in seq_len(nrow(z_df_complete))) {
-    z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
-  }
-  
-  plot_df = z_df_complete%>%
-    inner_join(z_df, by = c("row" = "items")) %>%
-    rename(row_z = z) %>%
-    inner_join(z_df, by = c("col" = "items")) %>%
-    rename(col_z = z) %>%
-    mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
-           col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
-  
-  
-  
-  adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
-    geom_tile(aes(fill = Y), color = "gray", show.legend = FALSE) +
-    scale_fill_gradient(low = "white", high = "black") +
-    geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
-    theme_minimal() +
-    theme(axis.text.x = element_blank(),
-          axis.text.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_blank())
-  
-  adjacency_m
-  
-  
-  if(true_model == 'SST'){
-    ground_truth = list(z = z,
-                        sigma_squared=NA, 
-                        mu_vec_star = mu_vec_star,
-                        K=K,P=P) 
-  }else if(true_model == 'WST'){
-    ground_truth = list(z = z,
-                        sigma_squared=sigma_squared, 
-                        mu_vec_star = mu_vec_star,
-                        K=K,P=P) 
-  }else if(true_model == 'Simple'){
-    ground_truth = list(z = z,
-                        sigma_squared=NA, 
-                        mu_vec_star = NA,
-                        K=K,
-                        P=P) 
-  }
-  
-  
-  to_be_saved = list(Y_ij=Y_ij, N_ij =N_ij, ground_truth = ground_truth, 
-                     data_plot = adjacency_m, 
-                     seed=seed)
-  
-  saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_data",n_simul,".RDS"))
 }
