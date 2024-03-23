@@ -9,10 +9,11 @@ tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget,
   #setting the change in the variance
 
   #passing top the log scale, to have a finer scale
-  lsi= log(sigma) + (iteration**(-1/2))*(acceptanceRate - acceptanceTarget)
+  lsi= log(sigma) + (iteration**(-0.8))*(acceptanceRate - acceptanceTarget)
 
   # Update the proposal standard deviations
   sigma_updated <- max(min_sigma,exp(lsi))
+  sigma_updated <- min(sigma_updated, 0.5)
   return(sigma_updated)
 }
 
@@ -414,10 +415,35 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     # Sample a new label using the adjusted probabilities
     if(model != 'Simple'){
       labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
+      
+      #checking which adjacent labels are available, and if k_prime is among those, exclude it
+      avail_options_k_prime = setdiff(labels_to_sample, k_prime)
+      
+      #sample one from those available
+      k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
+      #the probability of extracting k_scanning is 1/number of labels available (either 1 or two)
+      probability_k_prime_given_k_current = 1/length(avail_options_k_prime)
+      #given k_scanning, what is the porbability of getting k_current?
+      #1) get the adjacent labels to k_scanning
+      labels_to_sample_current = c(min(k_scanning+1, K), max(k_scanning-1, 1))
+      #2) compute how many they are
+      avail_options_k_current = setdiff(labels_to_sample_current, k_scanning)
+      #3) let's compute the conditional probability to go from k_scanning to k_current
+      probability_k_current_given_k_prime = 1/length(avail_options_k_current)
     }else{
-      labels_to_sample = labels_available
+      #checking which adjacent labels are available, and if k_prime is among those, exclude it
+      avail_options_k_prime = setdiff(labels_available, k_prime)
+      
+      #sample one from those available
+      k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
+      
+      probability_k_prime_given_k_current = 1/(K-1)
+      probability_k_current_given_k_prime = 1/(K-1)
     }
-    k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
+    
+    
+    
+    
     
     z_scanning[i_th_turn] <- k_scanning
     
@@ -444,7 +470,8 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     
     B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
     
-    log_r= t*A_scanning - t*A_prime + B_scanning - B_prime
+    log_r= t*A_scanning - t*A_prime + B_scanning - B_prime + 
+      log(probability_k_current_given_k_prime) - log(probability_k_prime_given_k_current)
     #create statements that check conditiond to accept move
     GS_condition= min(log_r,0)>=log(runif(1))
     if(GS_condition){

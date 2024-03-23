@@ -140,25 +140,27 @@ if(is.simulation==F){
 
 
 for(est_model in c('SST','WST','Simple')){
+
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
-  for(file in 1:length(filenames)){
+  #for(file in 1:length(filenames)){
+  file=1
+  {
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-    
+
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
     n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = N_iter-10000
+    burnin = N_iter-5000
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
-    
-    
+
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
@@ -176,11 +178,13 @@ for(est_model in c('SST','WST','Simple')){
     
     
     point_est_z<- as.vector(my_z_est$point_est)
-    
+
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
     z_chain_permuted<- my_z_est$relabeled_chain
+
     
+
     
     #---------------------------------------------------------------------------
     # P parameter estimate
@@ -230,8 +234,7 @@ for(est_model in c('SST','WST','Simple')){
         theme_bw()
     }
     
-    
-    
+
     
     plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_traceplot_P,width = 800, height = 800)
@@ -337,7 +340,7 @@ for(est_model in c('SST','WST','Simple')){
     
     
     
-    saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K))
+    saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
     #-------------------------------------------------------------------------------
     # printing traceplots of the likelihood
     #-------------------------------------------------------------------------------
@@ -346,7 +349,8 @@ for(est_model in c('SST','WST','Simple')){
                               iterations = rep(1:(10000),4))
     df_traceplot = df_traceplot %>% mutate(chain = factor(chain, levels = 1:4))
     
-    my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, color = factor(chain), group=chain))+
+    my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, 
+                                                 color = factor(chain), group=chain))+
       geom_line(alpha = .5)+
       labs(title = "Log likelihood for the 4 chains",
            subtitle = paste0("Number of iterations: ", N_iter," || Burnin: ", burnin), 
@@ -406,11 +410,14 @@ for(est_model in c('SST','WST','Simple')){
                                             diag0.5 = TRUE, K = K, burnin = burnin)
       
       mu_vec_s_table = mu_vec_s_table %>% mutate(model=rep(est_model,nrow(mu_vec_s_table))) %>% mutate(n_clust = rep(K,nrow(mu_vec_s_table)))
+      if(is.simulation == T){
+        mu_vec_s_table %>% mutate(true_value = inverse_logit_f(uploaded_results$chain1$ground_truth$mu_vec_star))
+      }
       if(est_model=='SST'&file==1){
         mu_vec_container = mu_vec_s_table
-      }
+      }else{
       mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
-      
+      }
       
     }
     
@@ -437,6 +444,8 @@ for(est_model in c('SST','WST','Simple')){
     }else{
       P_d_container =  rbind(P_d_container,P_d_table_save)
     }
+
+    
     
     # -------------------------------------------------------------------------------
     # z diagnostics

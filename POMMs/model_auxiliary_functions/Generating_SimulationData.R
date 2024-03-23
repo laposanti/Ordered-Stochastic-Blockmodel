@@ -29,9 +29,9 @@ generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
     print('If model is SST, sigma should be zero')
   }
   
-  mu_vec = c(rnorm(1), rtruncnorm(K,a = 0,b = Inf, mean =0, sd = 1))
-  mu_vec_sort = sort(mu_vec)
-  
+
+  mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
+  mu_vec_sort = log(mu_vec_sort/(1-mu_vec_sort))
   ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
   Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   
@@ -56,7 +56,7 @@ generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
   
   
   
-  return(list(P = P_prime, mu= mu_vec))
+  return(list(P = P_prime, mu= mu_vec_sort))
 }
 ###############################################################################
 # Generating data from the SST
@@ -67,22 +67,21 @@ saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Simula
 simulations = 1
 for(k in 3:6){
   for(n_simul in 1:simulations){
-    n = 100
-    
+    n = 80
+    n_simul = 1
     K=k
-    seed =2009+n_simul-1
+    seed =2011+n_simul-1
     set.seed(seed)
     if(true_model =='SST'){
       prior_SST = generate_theta_from_SST_prior(K, model = 'SST',sigma = 0)
       P<- prior_SST$P
       mu_vec =  prior_SST$mu
-    }else if( true_model == 'WST'){
+    }else if(true_model == 'WST'){
       sigma_squared = 0.3
       prior_WST = generate_theta_from_SST_prior(K, model = 'WST',sigma = sigma_squared)
       P<- prior_WST$P
       mu_vec =  prior_WST$mu
     }else if( true_model == 'Simple'){
-      
       theta = matrix(NA, K, K)
       theta[col(theta)-row(theta)==0] <-runif(K, .6,.85)
       for(diag_i in 1:(K-1)){
@@ -94,22 +93,17 @@ for(k in 3:6){
     
     theta = inverse_logit_f(P)
     z <- sample(1:K, n,replace=T)
-    z_P<- vec2mat_0_P(z,theta)
-    P_nbyn<- calculate_victory_probabilities(z_P,theta)
+    z_P<- vec2mat_0_P(clust_lab = z,P = theta)
+    P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = theta)
     
-    small_n_matrix = matrix(0, K,K)
-    small_n_matrix[1,] = (K:1)*K
-    for(i in 2:K){
-      small_n_matrix[i,] = abs( sample((K*(K-i+1):1) ,K, replace = T))
-    }
-    small_n_matrix[lower.tri(small_n_matrix)]  = t(small_n_matrix)[lower.tri(small_n_matrix)]
-    N_ij = calculate_victory_probabilities(z_P,small_n_matrix)
+
+    N_ij= matrix(10,n,n) 
     #simulating Y_ij
     
     Y_ij <- matrix(0, n,n)
     for(i in 1:n){
       for(j in 1:n){
-        Y_ij[i,j]<- rbinom(1, N_ij[i,j],P_nbyn[i,j])
+        Y_ij[i,j]<- round(N_ij[i,j]*P_nbyn[i,j],0) + sample(c(1,-1),1)
       }
     }
     
