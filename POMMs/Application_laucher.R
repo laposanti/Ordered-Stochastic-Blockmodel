@@ -40,7 +40,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #choose between citation exchange data and tennis data
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
-for(application in c("Citation_data")){
+for(application in c("Citation_data", "Tennis_data")){
   true_model = application
   
   ###############################################################################

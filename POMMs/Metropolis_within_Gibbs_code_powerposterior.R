@@ -148,7 +148,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              
-                                                             labels_available<- 1:K
+                                                            
                                                              
                                                              
                                                              
@@ -161,7 +161,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              for(t in t_list){
                                                                
                                                                #initializing quantities
-                                                               n_k = as.vector(table(z_current))
+                                                               labels_available<- 1:K
+                                                               #checking that we have exactly K labels
+                                                               label_counts <- table(factor(z_current, levels = labels_available))
+                                                               n_k = as.numeric(label_counts)
+                                                               while(any(n_k==0)){
+                                                                 k_missing = which(n_k == 0)
+                                                                 for(i in 1:length(k_missing)){
+                                                                   z_current[sample(n, size = n*1/K, replace = F)] <- k_missing[i]
+                                                                   
+                                                                   label_counts <- table(factor(z_current, levels = labels_available))
+                                                                   n_k = as.numeric(label_counts)
+                                                                 }
+                                                               }
                                                                z_P = vec2mat(z_current)
                                                                # number of victories between block p and block q
                                                                # number of victories between block p and block q

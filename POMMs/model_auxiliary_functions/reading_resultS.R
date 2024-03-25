@@ -23,11 +23,11 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   
-  true_model = "Citation_data"
+  true_model = "Tennis_data"
   if(true_model == "Tennis_data"){
     #where the data are stored
     
@@ -145,9 +145,8 @@ for(est_model in c('SST','WST','Simple')){
   filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
   
-  #for(file in 1:length(filenames)){
-  file=1
-  {
+  for(file in 1:length(filenames)){
+
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
 
     print(paste0('Now estimating ', filenames[file]))
@@ -156,7 +155,7 @@ for(est_model in c('SST','WST','Simple')){
     n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = N_iter-5000
+    burnin = N_iter-10000
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
@@ -304,9 +303,9 @@ for(est_model in c('SST','WST','Simple')){
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
-    
+    n_clust=2
     # Set up parallel backend
-    cl <- makeCluster(4)  # Adjust the number of cores accordingly
+    cl <- makeCluster(n_clust)  # Adjust the number of cores accordingly
     registerDoParallel(cl)
     
     # Export necessary variables to the workers
@@ -314,12 +313,12 @@ for(est_model in c('SST','WST','Simple')){
     
     num_samples = N_iter - burnin
     # Perform parallel computation using foreach
-    LL_list <- foreach(i = 1:4 ) %do% {
+    LL_list <- foreach(i = 1:4) %do% {
       z_chain <- z_list_relab[[i]]
       P_chain <- P_list_relab[[i]]
       
       # Define the number of chunks in which to split the likelihood
-      num_chunks <- 5
+      num_chunks <- n_clust
       # Split the columns into chunks for parallel processing
       chunk_size <- ceiling(num_samples / num_chunks)
       chunks <- split(1:num_samples, cut(1:num_samples, breaks = num_chunks, labels = FALSE))
@@ -337,7 +336,7 @@ for(est_model in c('SST','WST','Simple')){
     
     LLik_sum <- lapply(LL_list,FUN = colSums)
     
-    
+
     
     
     saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
@@ -650,7 +649,9 @@ for(est_model in c('SST','WST','Simple')){
       
 
       colnames(Y_ij) <- rownames(Y_ij)
+      rownames(N_ij) <- rownames(Y_ij)
       colnames(N_ij) <- rownames(N_ij)
+
       indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
       # Convert the matrix to a data frame
       z_df_complete <- data.frame(
@@ -858,7 +859,7 @@ if(is.simulation==F){
     arrange()
   est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est)
   combined_df<- inner_join(g_df,est_df,by = 'player_slug')
-  
+  A = as_adjacency_matrix(g)
   colnames(Y)<- rownames(A)
   colnames(N)<- colnames(A)
   rownames(N)<- rownames(A)

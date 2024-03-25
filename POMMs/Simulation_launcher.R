@@ -50,12 +50,13 @@ for(true_model in  c('SST', 'WST', 'Simple')){
 
   
   #
-  choose_model_to_estimate = c('SST','WST','Simple')
+  choose_model_to_estimate = c('SST', 'WST', 'Simple')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
+    
     data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
 
     stopifnot(data_to_be_estimated$model == true_model)
@@ -122,7 +123,8 @@ for(true_model in  c('SST', 'WST', 'Simple')){
       print(paste0("Estimation of the WST model, K=",K))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
-      
+      K_chains = list(K,K,K,K)
+      t_chains = rep(1,n_chains)
       estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,P=1)
       
       
@@ -151,7 +153,8 @@ for(true_model in  c('SST', 'WST', 'Simple')){
       print(paste0("Estimation of Simple model, K=",K))
       print(paste0("Begin cycle at:",date()))
       
-      
+      K_chains = list(K,K,K,K)
+      t_chains = rep(1,n_chains)
       estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=1)
       
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 

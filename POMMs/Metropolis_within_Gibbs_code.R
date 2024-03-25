@@ -35,7 +35,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
     y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(F, 
                                                                                add=variables_to_add), 
                                                            seed=TRUE)) %dofuture%{ 
-
+                                                             
                                                              
                                                              library(doFuture,quietly = T)
                                                              library(progressr,quietly = T)
@@ -54,7 +54,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              
                                                              
                                                              
-
+                                                             
                                                              
                                                              
                                                              set.seed(seed[[chain]])
@@ -74,7 +74,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                if(estimation_control$z==1){
                                                                  
                                                                  z_current=  kmeans(Y_ij, K)$cl
-                                               
+                                                                 
                                                                }else{
                                                                  z_current=  matrix(ground_truth$z, n, 1)
                                                                }
@@ -149,9 +149,18 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              
                                                              
                                                              labels_available<- 1:K
-                                                             
-                                                             #initializing quantities
-                                                             n_k = as.vector(table(z_current))
+                                                             #checking that we have exactly K labels
+                                                             label_counts <- table(factor(z_current, levels = labels_available))
+                                                             n_k = as.numeric(label_counts)
+                                                             while(any(n_k==0)){
+                                                               k_missing = which(n_k == 0)
+                                                               for(i in 1:length(k_missing)){
+                                                                 z_current[sample(n, size = n*1/K, replace = F)] <- k_missing[i]
+                                                                 
+                                                                 label_counts <- table(factor(z_current, levels = labels_available))
+                                                                 n_k = as.numeric(label_counts)
+                                                               }
+                                                             }
                                                              z_P = vec2mat(z_current)
                                                              # number of victories between block p and block q
                                                              # number of victories between block p and block q
@@ -400,7 +409,6 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                          st.deviations=st.deviations, t=t, seed=seed))
                                                            }
   })
-  future:::ClusterRegistry("stop")
   return(reprex)
 } 
 

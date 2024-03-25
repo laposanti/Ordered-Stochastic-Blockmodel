@@ -12,8 +12,7 @@ tuning_proposal<- function(iteration, acceptance_count, sigma, acceptanceTarget,
   lsi= log(sigma) + (iteration**(-0.8))*(acceptanceRate - acceptanceTarget)
 
   # Update the proposal standard deviations
-  sigma_updated <- max(min_sigma,exp(lsi))
-  sigma_updated <- min(sigma_updated, 0.5)
+  sigma_updated <- min(max(min_sigma,exp(lsi)),0.3)
   return(sigma_updated)
 }
 
@@ -111,11 +110,10 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P, K, t=1){
 P_prior_probability = function(P,K,mu_vec, sigma_squared, model){
   p_P = matrix(0,K,K)
   if(model == "WST"){
-    sigma= sqrt(sigma_squared)
     for(diag_i in 0:(K-1)){
       p_P[col(p_P)-row(p_P)==diag_i] <- dunif(x = P[col(P)-row(P)==diag_i], 
-                                              min= mu_vec[diag_i+1]-sigma,
-                                              max = mu_vec[diag_i+2]+sigma)
+                                              min= mu_vec[diag_i+1]-sigma_squared,
+                                              max = mu_vec[diag_i+2]+sigma_squared)
     }
   }else if (model == "Simple"){
     theta = inverse_logit_f(P)
@@ -166,7 +164,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k),K = K,n_k = n_k,my_alpha =  alpha_vec)
     #log prior on P
-    prior_P<- P_prior_probability(P = P,K=K,mu_vec = mu_vec, sigma_squared = sigma, model=model)
+    prior_P<- P_prior_probability(P = P,K=K,mu_vec = mu_vec, sigma_squared = sigma_squared, model=model)
     #computing the whole log proportional posterior
     results<- log_lik+ prior_P + prior_z 
     
@@ -190,7 +188,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     #log likelihood
     log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,P =  P,K=K,t=t)
     #log prior on P
-    prior_P<- P_prior_probability(P = P, K = K,mu_vec = mu_vec, sigma_squared = sigma,model = model)
+    prior_P<- P_prior_probability(P = P, K = K,mu_vec = mu_vec, sigma_squared = sigma_squared,model = model)
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on mu
@@ -233,7 +231,7 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
     
     P_prime[i_star,j_star]<- rtruncnorm(1, a = lower.bound , b = upper.bound,
                                         mean = P_current[i_star,j_star], 
-                                        sd =  tau_P[i_star,j_star])
+                                        sd =  .2)
     
     P_prime[lower.tri(P_prime)] = - t(P_prime)[lower.tri(P_prime)]
     
@@ -295,8 +293,8 @@ mu_update_f_withP = function(lamdabar, ybar,mbar,P, alpha_vec, n_k,
                              acc.count_mu_vec,model,t){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
-  mu_1_K_prime <- truncnorm::rtruncnorm(K,a = 0,b = 10, mean = mu_vec[2:(K+1)],sd = tau_mu_vec)
-  mu_0_prime = truncnorm::rtruncnorm(1,a = -Inf,b = min(mu_1_K_prime), mean = mu_vec[1],sd = tau_mu_vec)
+  mu_1_K_prime <- truncnorm::rtruncnorm(K,a = 0,b = 10, mean = mu_vec[2:(K+1)],sd = .2)
+  mu_0_prime = truncnorm::rtruncnorm(1,a = -Inf,b = min(mu_1_K_prime), mean = mu_vec[1],sd = .2)
   mu_vec_prime <- c(mu_0_prime,sort(mu_1_K_prime))
   
   
@@ -392,16 +390,20 @@ sigma_squared_update_f_withP = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
 z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
                             K, 
                             acc.count_z,labels_available,model,t){
+  
+
   P<- inverse_logit_f(P)
   n<- nrow(N_ij)
   A_prime<- log_lik_f_binom(N = N_ij,Y = Y_ij,z =z,P = P,directed = T)
+  
+  labels_available <- 1:K
+  label_counts <- table(factor(z, levels = labels_available))
+  n_prime = as.numeric(label_counts)
+  
   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
   z_prime= z
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
-  n_prime = matrix(0,nrow(P),1)
-  for(h in 1:K){
-    n_prime[h] = sum(length(which(z_prime==h)))
-  }
+
   
   scanning_order = sample(1:n,n, replace=F)
   

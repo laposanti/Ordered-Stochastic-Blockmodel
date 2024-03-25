@@ -81,7 +81,8 @@ for(application in c('Tennis_data', "Citation_data")){
   # Estimation: set the parameters of the estimation
   ##############################################################################
   
-  optimal_acceptance_rate <- 0.235
+  optimal_acceptance_rate_P =.44
+  optimal_acceptance_rate_mu = .234
   N_iter <- 120000
   n_temperatures = 50
   #-----------------------------------------------------------------------------
@@ -111,11 +112,14 @@ for(application in c('Tennis_data', "Citation_data")){
     
     estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, P = 1)
     
-    chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,n_temperatures = n_temperatures,saving_directory = saving_directories,
+    chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,n_temperatures = n_temperatures,
+                                                      saving_directory = saving_directories,
                                                       estimation_control = estimation_control,
                                                       ground_truth = ground_truth,
                                                       n = n, N_iter = N_iter, n_chains = n_chains,
-                                                      optimal_acceptance_rate = optimal_acceptance_rate, K = K_est,true_model = true_model,
+                                                      optimal_acceptance_rate_P = optimal_acceptance_rate_P, 
+                                                      optimal_acceptance_rate_mu = optimal_acceptance_rate_mu,
+                                                      K = K_est,true_model = true_model,
                                                       seed = chains_seeds, est_model = 'SST', custom_init = custom_init)
     names(chains) = paste0('chain',unlist(K_est))
     
