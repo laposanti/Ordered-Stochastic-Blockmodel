@@ -63,14 +63,14 @@ generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
 ###############################################################################
 
 true_model = 'SST'
-saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Simulation_data/"
+saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data/"
 simulations = 1
 for(k in 3:6){
+
   for(n_simul in 1:simulations){
     n = 80
-    n_simul = 1
     K=k
-    seed =2011+n_simul-1
+    seed =2021+n_simul-1
     set.seed(seed)
     if(true_model =='SST'){
       prior_SST = generate_theta_from_SST_prior(K, model = 'SST',sigma = 0)
@@ -109,7 +109,7 @@ for(k in 3:6){
     
     Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
     diag(Y_ij)<- 0
-    
+
     indices <- expand.grid(row = 1:n, col = 1:n)
     
     

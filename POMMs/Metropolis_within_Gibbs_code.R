@@ -119,10 +119,10 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                                                                          max = mu_vec_current[d+2])
                                                                    }
                                                                  }else if(model =='WST'){
-                                                                   sigma=sqrt(sigma_squared_current)
+                                                                   
                                                                    for(d in 0:(K-1)){
-                                                                     P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma , 
-                                                                                                                         max = mu_vec_current[d+2]+sigma)
+                                                                     P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma_squared_current , 
+                                                                                                                         max = mu_vec_current[d+2]+sigma_squared_current)
                                                                    }
                                                                  }else if( model =='Simple'){
                                                                    for(d in 0:(K-1)){
@@ -242,142 +242,144 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                              
                                                              #READY TO BOMB!
                                                              iteration_time= vector()
-                                                             for(j in 2:N_iter){
-                                                               start_time <- Sys.time()
-                                                               
-                                                               
-                                                               if (estimation_control$z == 1) {
-                                                                 #z UPDATE-------------------------------------------------------------
-                                                                 
-                                                                 z_update = z_update_f_withP(z = z_current, N_ij = N_ij, 
-                                                                                             Y_ij = Y_ij,P = P_current,
-                                                                                             lamdabar = lamdabar,ybar=ybar,
-                                                                                             mbar=mbar,alpha_vec = alpha_vec,
-                                                                                             n_k = n_k,K = K,
-                                                                                             acc.count_z = acc.count_z,
-                                                                                             labels_available = labels_available,
-                                                                                             model, t=t)
-                                                                 
-                                                                 lamdabar = z_update$lamdabar
-                                                                 ybar = z_update$ybar
-                                                                 mbar = z_update$mbar
-                                                                 
-                                                                 z_current = z_update$z
-                                                                 acc.count_z = z_update$acc.moves
+                                                             tryCatch(
+                                                               for(j in 2:N_iter){
+                                                                 start_time <- Sys.time()
                                                                  
                                                                  
-                                                                 
-                                                                 
-                                                               }
-                                                               if (estimation_control$P == 1) {
-                                                                 #P UPDATE-------------------------------------------------------------
-                                                                 
-                                                                 P_update = P_update_f(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
-                                                                                       P = P_current,alpha_vec = alpha_vec,
-                                                                                       n_k = n_k,sigma_squared = sigma_squared_current,
-                                                                                       mu_vec = mu_vec_current,K = K,tau_P = tau_P,
-                                                                                       acc.count_P = acc.count_P,model,t=t)
-                                                                 
-                                                                 P_current = P_update$P
-                                                                 acc.count_P = P_update$acc.moves
-                                                                 
-                                                                 if(j %% 50 == 0){
+                                                                 if (estimation_control$z == 1) {
+                                                                   #z UPDATE-------------------------------------------------------------
                                                                    
-                                                                   for(my_p in 1:K){
-                                                                     for(my_q in my_p:K){
-                                                                       
-                                                                       tau_P[my_p,my_q] = tuning_proposal(iteration = j,
-                                                                                                          acceptance_count = acc.count_P[my_p,my_q],
-                                                                                                          sigma = tau_P[my_p,my_q],
-                                                                                                          acceptanceTarget = optimal_acceptance_rate_P,
-                                                                                                          min_sigma = 0.00002)
-                                                                       
-                                                                     }
-                                                                   }
+                                                                   z_update = z_update_f_withP(z = z_current, N_ij = N_ij, 
+                                                                                               Y_ij = Y_ij,P = P_current,
+                                                                                               lamdabar = lamdabar,ybar=ybar,
+                                                                                               mbar=mbar,alpha_vec = alpha_vec,
+                                                                                               n_k = n_k,K = K,
+                                                                                               acc.count_z = acc.count_z,
+                                                                                               labels_available = labels_available,
+                                                                                               model, t=t)
+                                                                   
+                                                                   lamdabar = z_update$lamdabar
+                                                                   ybar = z_update$ybar
+                                                                   mbar = z_update$mbar
+                                                                   
+                                                                   z_current = z_update$z
+                                                                   acc.count_z = z_update$acc.moves
+                                                                   
+                                                                   label_counts <- table(factor(z_current, levels = labels_available))
+                                                                   n_k = as.numeric(label_counts)
+                                                                   
+                                                                   
                                                                  }
-                                                               }
-                                                               
-                                                               if (estimation_control$sigma_squared == 1) {
-                                                                 #sigma_squared UPDATE----------------------------------------------------------------
-                                                                 
-                                                                 sigma_squared_update <- sigma_squared_update_f_withP(lamdabar = lamdabar, P = P_current,
-                                                                                                                      ybar = ybar,mbar=mbar,
-                                                                                                                      alpha_vec = alpha_vec, n_k = n_k,
-                                                                                                                      sigma_squared = sigma_squared_current, 
-                                                                                                                      mu_vec = mu_vec_current,
-                                                                                                                      K = K, tau_sigma_squared = tau_sigma_squared,
-                                                                                                                      acc.count_sigma_squared = acc.count_sigma_squared,model,t=t)
-                                                                 #updating quantities
-                                                                 
-                                                                 acc.count_sigma_squared = sigma_squared_update$acc.moves
-                                                                 sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                 if(j %% 50 == 0){
-                                                                   tau_sigma_squared <- tuning_proposal(iteration=j,
-                                                                                                        acceptance_count = acc.count_sigma_squared,
-                                                                                                        sigma = tau_sigma_squared,
-                                                                                                        acceptanceTarget = optimal_acceptance_rate_P,
-                                                                                                        min_sigma = 0.02)
-                                                                 }
-                                                               }
-                                                               if (estimation_control$mu== 1) {
-                                                                 #P UPDATE----------------------------------------------------------------
-                                                                 
-                                                                 mu_update=  mu_update_f_withP(lamdabar = lamdabar, ybar = ybar,mbar = mbar,  P = P_current,
-                                                                                               alpha_vec =  alpha_vec, n_k = n_k,
-                                                                                               sigma_squared = sigma_squared_current, 
-                                                                                               mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
-                                                                                               acc.count_mu_vec,model,t=t)
-                                                                 #updating quantities
-                                                                 mu_vec_current = mu_update$mu_vec
-                                                                 acc.count_mu_vec = mu_update$acc.moves
-                                                                 
-                                                                 
-                                                                 
-                                                                 if(j %% 50 == 0){
-                                                                   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                                                                                 sigma = tau_mu_vec,
-                                                                                                 acceptanceTarget = optimal_acceptance_rate_mu,
-                                                                                                 min_sigma = 0.002)
+                                                                 if (estimation_control$P == 1) {
+                                                                   #P UPDATE-------------------------------------------------------------
+                                                                   
+                                                                   P_update = P_update_f(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
+                                                                                         P = P_current,alpha_vec = alpha_vec,
+                                                                                         n_k = n_k,sigma_squared = sigma_squared_current,
+                                                                                         mu_vec = mu_vec_current,K = K,tau_P = tau_P,
+                                                                                         acc.count_P = acc.count_P,model,t=t)
+                                                                   
+                                                                   P_current = P_update$P
+                                                                   acc.count_P = P_update$acc.moves
+                                                                   
+                                                                   # if(j %% 50 == 0){
+                                                                   #   
+                                                                   #   for(my_p in 1:K){
+                                                                   #     for(my_q in my_p:K){
+                                                                   #       
+                                                                   #       tau_P[my_p,my_q] = tuning_proposal(iteration = j,
+                                                                   #                                          acceptance_count = acc.count_P[my_p,my_q],
+                                                                   #                                          sigma = tau_P[my_p,my_q],
+                                                                   #                                          acceptanceTarget = optimal_acceptance_rate_P,
+                                                                   #                                          min_sigma = 0.00002)
+                                                                   #       
+                                                                   #     }
+                                                                   #   }
+                                                                   # }
                                                                  }
                                                                  
+                                                                 if (estimation_control$sigma_squared == 1) {
+                                                                   #sigma_squared UPDATE----------------------------------------------------------------
+                                                                   
+                                                                   sigma_squared_update <- sigma_squared_update_f_withP(lamdabar = lamdabar, P = P_current,
+                                                                                                                        ybar = ybar,mbar=mbar,
+                                                                                                                        alpha_vec = alpha_vec, n_k = n_k,
+                                                                                                                        sigma_squared = sigma_squared_current, 
+                                                                                                                        mu_vec = mu_vec_current,
+                                                                                                                        K = K, tau_sigma_squared = tau_sigma_squared,
+                                                                                                                        acc.count_sigma_squared = acc.count_sigma_squared,model,t=t)
+                                                                   #updating quantities
+                                                                   
+                                                                   acc.count_sigma_squared = sigma_squared_update$acc.moves
+                                                                   sigma_squared_current = sigma_squared_update$sigma_squared
+                                                                   # if(j %% 50 == 0){
+                                                                   #   tau_sigma_squared <- tuning_proposal(iteration=j,
+                                                                   #                                        acceptance_count = acc.count_sigma_squared,
+                                                                   #                                        sigma = tau_sigma_squared,
+                                                                   #                                        acceptanceTarget = optimal_acceptance_rate_P,
+                                                                   #                                        min_sigma = 0.02)
+                                                                   # }
+                                                                 }
+                                                                 if (estimation_control$mu== 1) {
+                                                                   #P UPDATE----------------------------------------------------------------
+                                                                   
+                                                                   mu_update=  mu_update_f_withP(lamdabar = lamdabar, ybar = ybar,mbar = mbar,  P = P_current,
+                                                                                                 alpha_vec =  alpha_vec, n_k = n_k,
+                                                                                                 sigma_squared = sigma_squared_current, 
+                                                                                                 mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
+                                                                                                 acc.count_mu_vec,model,t=t)
+                                                                   #updating quantities
+                                                                   mu_vec_current = mu_update$mu_vec
+                                                                   acc.count_mu_vec = mu_update$acc.moves
+                                                                   
+                                                                   
+                                                                   
+                                                                   # if(j %% 50 == 0){
+                                                                   #   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
+                                                                   #                                 sigma = tau_mu_vec,
+                                                                   #                                 acceptanceTarget = optimal_acceptance_rate_mu,
+                                                                   #                                 min_sigma = 0.002)
+                                                                   # }
+                                                                   
+                                                                   
+                                                                   
+                                                                 }
+                                                                 
+                                                                 #storing scales
+                                                                 tau_sigma_squared_container[j]<- tau_sigma_squared
+                                                                 tau_mu_vec_container[j]<- tau_mu_vec
+                                                                 tau_P_container[,,j]<- tau_P
+                                                                 
+                                                                 #storing results for inference
+                                                                 A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,
+                                                                                                               mbar = mbar, P = P_current, K=K, t=1)
+                                                                 z_container[,j] <- z_current
+                                                                 P_container[,,j] <- P_current
+                                                                 if(model == 'WST'){
+                                                                   sigma_squared_container[1,j] = sigma_squared_current
+                                                                 }
+                                                                 if(model == 'WST'|| model=='SST'){
+                                                                   mu_vec_container[,j] <- mu_vec_current
+                                                                 }
                                                                  
                                                                  
-                                                               }
-                                                               
-                                                               #storing scales
-                                                               tau_sigma_squared_container[j]<- tau_sigma_squared
-                                                               tau_mu_vec_container[j]<- tau_mu_vec
-                                                               tau_P_container[,,j]<- tau_P
-                                                               
-                                                               #storing results for inference
-                                                               A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,
-                                                                                                             mbar = mbar, P = P_current, K=K, t=1)
-                                                               z_container[,j] <- z_current
-                                                               P_container[,,j] <- P_current
-                                                               if(model == 'WST'){
-                                                                 sigma_squared_container[1,j] = sigma_squared_current
-                                                               }
-                                                               if(model == 'WST'|| model=='SST'){
-                                                                 mu_vec_container[,j] <- mu_vec_current
-                                                               }
-                                                               
-                                                               
-                                                               
-                                                               
-                                                               
-                                                               end_time <- Sys.time()
-                                                               
-                                                               iteration_time<-append(iteration_time,as.numeric(difftime(end_time, start_time, units = "secs")))
-                                                               
-                                                               if(j%%5000==0){
-                                                                 avg_iteration<- mean(iteration_time)
-                                                                 current_time <- Sys.time() # Get the current time
                                                                  
-                                                                 # Calculate the expected finishing time
-                                                                 expected_finishing_time <- current_time + (avg_iteration * (N_iter - j) )
-                                                                 formatted_expected_finishing_time <- format(expected_finishing_time, "%H:%M:%S")
                                                                  
-                                                                 p(sprintf("Chain %d: mean acc.rate z %.3f%%, 
+                                                                 
+                                                                 end_time <- Sys.time()
+                                                                 
+                                                                 iteration_time<-append(iteration_time,as.numeric(difftime(end_time, start_time, units = "secs")))
+                                                                 
+                                                                 if(j%%5000==0){
+                                                                   avg_iteration<- mean(iteration_time)
+                                                                   current_time <- Sys.time() # Get the current time
+                                                                   
+                                                                   # Calculate the expected finishing time
+                                                                   expected_finishing_time <- current_time + (avg_iteration * (N_iter - j) )
+                                                                   formatted_expected_finishing_time <- format(expected_finishing_time, "%H:%M:%S")
+                                                                   
+                                                                   p(sprintf("Chain %d: mean acc.rate z %.3f%%,
                     mean acc.rate P %.3f%%,
                     mean acc.rate sigma_squared %.3f%%,
                     mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
@@ -387,10 +389,19 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                     100 * mean(acc.count_sigma_squared/j),
                     100 * mean(acc.count_mu_vec/j),
                     4, avg_iteration, formatted_expected_finishing_time), class = "sticky")
-                                                                 
-                                                                 
-                                                               }
-                                                             }
+                                                                   
+                                                                   
+                                                                 }
+                                                               },
+                    error = function(e){
+                      message("An error occurred:\n", e)
+                      saveRDS(file = list(z_current = z_current,
+                                          n_k = n_k,
+                                          sigma_squared_current=sigma_squared_current,
+                                          P_current, P_current,
+                                          mu_vec_current = mu_vec_current), object = paste0("./ERROR_iteration",j,".RDS"))
+                    }
+                                                             )
                                                              
                                                              acceptance_rates <- list(acc.count_P = acc.count_P, acc.count_z = acc.count_z,
                                                                                       acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)

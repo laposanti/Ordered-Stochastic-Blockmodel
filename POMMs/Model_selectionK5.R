@@ -36,7 +36,8 @@ is.simulation=T
 true_model = 'SST'
 est_model = 'SST'
 #where the data are stored
-data_wd<- "./Data/Simulation_data/"
+#where the data are stored
+data_wd<- "./Data/Sim1_data/"
 
 
 filenames <- list.files(pattern = paste0(true_model),path = data_wd)

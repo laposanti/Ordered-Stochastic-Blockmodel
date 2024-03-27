@@ -1,7 +1,7 @@
 
 
 
-
+1
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -24,7 +24,6 @@ library(doRNG)
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
-
 
 
 
@@ -72,7 +71,7 @@ for(application in c("Citation_data", "Tennis_data")){
   K_values <- c(3,4,5,6)  # Range of K values to explore
   
   
-  choose_model_to_estimate = c('SST', 'WST','Simple')
+  choose_model_to_estimate = c('WST', 'SST','Simple')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -95,7 +94,7 @@ for(application in c("Citation_data", "Tennis_data")){
     n_chains = 4
     optimal_acceptance_rate_P =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 130000
+    N_iter= 200000
     chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
@@ -140,7 +139,8 @@ for(application in c("Citation_data", "Tennis_data")){
       print(paste0("Estimation of the WST model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
-      
+      K_chains = list(k_th,k_th,k_th,k_th)
+      t_chains = rep(1,n_chains)
       estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,P=1)
       
       
@@ -168,7 +168,8 @@ for(application in c("Citation_data", "Tennis_data")){
       print(paste0("Estimation of Simple model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       
-      
+      K_chains = list(k_th,k_th,k_th,k_th)
+      t_chains = rep(1,n_chains)
       estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=1)
       
       

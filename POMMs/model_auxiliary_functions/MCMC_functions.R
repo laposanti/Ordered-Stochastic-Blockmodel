@@ -144,7 +144,7 @@ d_sA_mu = function(K,mu_vec){
 order_stat_truncnorm = function(K, mu, mean, sd, lb, ub){
   fac <- lfactorial(K)
   joint_density<- sum(log(dtruncnorm(mu,a = lb,b = ub, mean = mean,sd = sd)) - 
-                        log(pnorm(ub,mean = mean,sd = sd)- pnorm(lb,mean = mean,sd = sd)))
+                        log(pnorm(ub,mean = mean,sd = sd) - pnorm(lb,mean = mean,sd = sd)))
   return(fac+joint_density)
 }
 
@@ -175,7 +175,7 @@ lprop_posterior_withP <- function(lamdabar, ybar,mbar,P,
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on P
-    prior_P<- P_prior_probability(P = P, K=K,mu_vec = mu_vec, sigma_squared = sigma_squared,model = model)
+    prior_P<- P_prior_probability(P = P, K=K,mu_vec = mu_vec,  sigma_squared = sigma_squared,model = model)
     #log prior on mu
     hyperprior_mu <- d_sA_mu(K = K, mu_vec = mu_vec)
     #log prior on sigma^2
@@ -221,9 +221,9 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
       lower.bound = mu_vec[j_star - i_star + 1]
       upper.bound = mu_vec[j_star - i_star + 2]
     }else if(model == 'WST'){
-      sigma=sqrt(sigma_squared)
-      lower.bound = mu_vec[j_star - i_star + 1] - sigma
-      upper.bound = mu_vec[j_star - i_star + 2] + sigma
+
+      lower.bound = mu_vec[j_star - i_star + 1] - sigma_squared
+      upper.bound = mu_vec[j_star - i_star + 2] + sigma_squared
     }else if(model=='Simple'){
       lower.bound = -5
       upper.bound = +10
@@ -240,14 +240,14 @@ P_update_f = function(lamdabar,ybar,mbar,P, alpha_vec, n_k,
                                                    P = P_prime,
                                                    K = K,mu_vec = mu_vec,
                                                    sigma_squared = sigma_squared,
-                                                   alpha_vec = alpha_vec,n_k = n_k,model,t)
+                                                   alpha_vec = alpha_vec,n_k = n_k,model = model,t = t)
     
     #evaluating the proportional posterior in P^(t)
     prop_posterior_current<- lprop_posterior_withP(lamdabar = lamdabar, ybar = ybar, 
                                                    mbar = mbar, P = P_current,
                                                    K = K,mu_vec = mu_vec,
                                                    sigma_squared = sigma_squared,
-                                                   alpha_vec = alpha_vec,n_k = n_k,model,t)
+                                                   alpha_vec = alpha_vec,n_k = n_k,model = model,t = t)
     
     #evaluating the proposal density g(P'| P^(t)) 
     log_proposal_prime <- log(dtruncnorm(P_prime[i_star,j_star],

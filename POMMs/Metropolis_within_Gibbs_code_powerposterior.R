@@ -119,11 +119,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                                          max = mu_vec_current[d+2])
                                                                    }
                                                                  }else if(est_model =='WST'){
-                                                                   sigma=sqrt(sigma_squared_current)
+
                                                                    for(d in 0:(K-1)){
-                                                                     P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma , 
-                                                                                                                         max = mu_vec_current[d+2]+sigma)
+                                                                     P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma_squared_current , 
+                                                                                                                         max = mu_vec_current[d+2]+sigma_squared_current)
                                                                    }
+                                                                   
+                                                                   
+                                                      
+                                                                   
                                                                  }else if( est_model =='Simple'){
                                                                    for(d in 0:(K-1)){
                                                                      P_current[col(P_current)-row(P_current)==d]<- runif(K-d, min  = -5 , 
@@ -142,7 +146,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  mu_vec_current = custom_init$mu_vec
                                                                }
                                                                if(est_model == 'WST'){
-                                                                 sigma_current = custom_init$sigma
+                                                                 sigma_squared_current = custom_init$sigma
                                                                }
                                                              }
                                                              
@@ -159,7 +163,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              tau_P = matrix(0.2,K,K)
                                                              
                                                              for(t in t_list){
-                                                               
+                                                               tau_sigma_squared <- 0.2 
+                                                               tau_mu_vec <- 0.05
+                                                               tau_P = matrix(0.2,K,K)
                                                                #initializing quantities
                                                                labels_available<- 1:K
                                                                #checking that we have exactly K labels
@@ -271,6 +277,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    mbar = z_update$mbar
                                                                    
                                                                    z_current = z_update$z
+                                                                   label_counts <- table(factor(z_current, levels = labels_available))
+                                                                   n_k = as.numeric(label_counts)
                                                                    acc.count_z = z_update$acc.moves
                                                                    
                                                                    
@@ -279,7 +287,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  }
                                                                  if (estimation_control$P == 1) {
                                                                    #P UPDATE-------------------------------------------------------------
-                                                                   
+
                                                                    P_update = P_update_f(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
                                                                                          P = P_current,alpha_vec = alpha_vec,
                                                                                          n_k = n_k,sigma_squared = sigma_squared_current,
@@ -289,19 +297,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    P_current = P_update$P
                                                                    acc.count_P = P_update$acc.moves
                                                                    
-                                                                   if(j %% 50 == 0){
-                                                                     
-                                                                     for(my_p in 1:K){
-                                                                       for(my_q in my_p:K){
-                                                                         
-                                                                         tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
-                                                                                                            sigma = tau_P[my_p,my_q],
-                                                                                                            acceptanceTarget = optimal_acceptance_rate_P,
-                                                                                                            min_sigma = 0.00002)
-                                                                         
-                                                                       }
-                                                                     }
-                                                                   }
+                                                                   # if(j %% 50 == 0){
+                                                                   #   
+                                                                   #   for(my_p in 1:K){
+                                                                   #     for(my_q in my_p:K){
+                                                                   #       
+                                                                   #       tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
+                                                                   #                                          sigma = tau_P[my_p,my_q],
+                                                                   #                                          acceptanceTarget = optimal_acceptance_rate_P,
+                                                                   #                                          min_sigma = 0.00002)
+                                                                   #       
+                                                                   #     }
+                                                                   #   }
+                                                                   # }
                                                                  }
                                                                  
                                                                  if (estimation_control$sigma_squared == 1) {
@@ -313,18 +321,20 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                                         sigma_squared = sigma_squared_current, 
                                                                                                                         mu_vec = mu_vec_current,
                                                                                                                         K = K, tau_sigma_squared = tau_sigma_squared,
-                                                                                                                        acc.count_sigma_squared = acc.count_sigma_squared,model = est_model,t=t)
+                                                                                                                        acc.count_sigma_squared = acc.count_sigma_squared,
+                                                                                                                        model = est_model,t=t)
                                                                    #updating quantities
                                                                    
                                                                    acc.count_sigma_squared = sigma_squared_update$acc.moves
                                                                    sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                   if(j %% 50 == 0){
-                                                                     tau_sigma_squared <- tuning_proposal(iteration=j,
-                                                                                                          acceptance_count = acc.count_sigma_squared,
-                                                                                                          sigma = tau_sigma_squared,
-                                                                                                          acceptanceTarget = optimal_acceptance_rate_P,
-                                                                                                          min_sigma = 0.02)
-                                                                   }
+                                                                   
+                                                                   # if(j %% 50 == 0){
+                                                                   #   tau_sigma_squared <- tuning_proposal(iteration=j,
+                                                                   #                                        acceptance_count = acc.count_sigma_squared,
+                                                                   #                                        sigma = tau_sigma_squared,
+                                                                   #                                        acceptanceTarget = optimal_acceptance_rate_P,
+                                                                   #                                        min_sigma = 0.02)
+                                                                   # }
                                                                  }
                                                                  if (estimation_control$mu== 1) {
                                                                    #P UPDATE----------------------------------------------------------------
@@ -340,13 +350,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    
                                                                    
-                                                                   if(j %% 50 == 0){
-                                                                     tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                                                                                   sigma = tau_mu_vec,
-                                                                                                   acceptanceTarget = optimal_acceptance_rate_mu,
-                                                                                                   min_sigma = 0.002)
-                                                                   }
-                                                                   
+                                                                   # if(j %% 50 == 0){
+                                                                   #   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
+                                                                   #                                 sigma = tau_mu_vec,
+                                                                   #                                 acceptanceTarget = optimal_acceptance_rate_mu,
+                                                                   #                                 min_sigma = 0.002)
+                                                                   # }
+                                                                   # 
                                                                    
                                                                    
                                                                  }

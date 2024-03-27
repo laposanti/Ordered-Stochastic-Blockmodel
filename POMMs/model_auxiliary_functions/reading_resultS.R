@@ -130,9 +130,9 @@ if(is.simulation==F){
   
   
 }else if(is.simulation == T){
-  true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/processed/"
+  true_model = "WST"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/WST_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/WST_true/processed/"
   
   
   
@@ -140,7 +140,7 @@ if(is.simulation==F){
 
 
 for(est_model in c('SST','WST','Simple')){
-
+  
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
   print(filenames)
@@ -148,7 +148,7 @@ for(est_model in c('SST','WST','Simple')){
   for(file in 1:length(filenames)){
 
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-
+    
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
@@ -159,12 +159,12 @@ for(est_model in c('SST','WST','Simple')){
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
-
+    
+    
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
     P_burned = uploaded_results$chain1$est_containers$P[,,-c(burnin:N_iter)]
-    
     
     
     P_est = apply(P_burned, c(1,2), mean)
@@ -177,13 +177,13 @@ for(est_model in c('SST','WST','Simple')){
     
     
     point_est_z<- as.vector(my_z_est$point_est)
-
+    
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
     z_chain_permuted<- my_z_est$relabeled_chain
-
     
-
+    
+    
     
     #---------------------------------------------------------------------------
     # P parameter estimate
@@ -233,7 +233,7 @@ for(est_model in c('SST','WST','Simple')){
         theme_bw()
     }
     
-
+    
     
     plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_traceplot_P,width = 800, height = 800)
@@ -336,7 +336,7 @@ for(est_model in c('SST','WST','Simple')){
     
     LLik_sum <- lapply(LL_list,FUN = colSums)
     
-
+    
     
     
     saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
@@ -415,7 +415,7 @@ for(est_model in c('SST','WST','Simple')){
       if(est_model=='SST'&file==1){
         mu_vec_container = mu_vec_s_table
       }else{
-      mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
+        mu_vec_container =  rbind(mu_vec_container,mu_vec_s_table)
       }
       
     }
@@ -443,7 +443,7 @@ for(est_model in c('SST','WST','Simple')){
     }else{
       P_d_container =  rbind(P_d_container,P_d_table_save)
     }
-
+    
     
     
     # -------------------------------------------------------------------------------
@@ -647,11 +647,11 @@ for(est_model in c('SST','WST','Simple')){
       
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       
-
+      
       colnames(Y_ij) <- rownames(Y_ij)
       rownames(N_ij) <- rownames(Y_ij)
       colnames(N_ij) <- rownames(N_ij)
-
+      
       indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
       # Convert the matrix to a data frame
       z_df_complete <- data.frame(
@@ -660,7 +660,7 @@ for(est_model in c('SST','WST','Simple')){
         degree_value = NA,
         Y = NA
       )
-
+      
       for (i in seq_len(nrow(z_df_complete))) {
         z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
       }
@@ -730,28 +730,28 @@ for(est_model in c('SST','WST','Simple')){
       # Randomly sample a subset of labels to display
       sampled_labels <- combined_df[sample(nrow(combined_df), size = round(percentage_to_display / 100 * nrow(combined_df))), ]
       if(true_model == 'Citation_data'){
-      rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
-        geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
-        geom_label_repel(
-          data = combined_df,  # Use the sampled labels for display
-          aes(label = player_slug),
-          size = 3,
-          hjust = .5,
-          vjust = 0,
-          show.legend = F,
-          alpha=.8
-        ) +
-        labs(title= "Rank of the players divided into blocks",
-             subtitle = "Not all names are displayed to avoid overlapping",
-             x = "Clusters",
-             y = "Median Rank 2017",
-             color = "Cluster",
-             fill = "Cluster")+
-        theme_classic()+
-        theme(legend.position = "bottom",
-              plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
-              plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
-              plot.caption = element_text(face = "italic"))
+        rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
+          geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
+          geom_label_repel(
+            data = combined_df,  # Use the sampled labels for display
+            aes(label = player_slug),
+            size = 3,
+            hjust = .5,
+            vjust = 0,
+            show.legend = F,
+            alpha=.8
+          ) +
+          labs(title= "Rank of the players divided into blocks",
+               subtitle = "Not all names are displayed to avoid overlapping",
+               x = "Clusters",
+               y = "Median Rank 2017",
+               color = "Cluster",
+               fill = "Cluster")+
+          theme_classic()+
+          theme(legend.position = "bottom",
+                plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+                plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
+                plot.caption = element_text(face = "italic"))
       }else if(true_model == 'Tennis_data'){
         rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
           geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
@@ -859,10 +859,7 @@ if(is.simulation==F){
     arrange()
   est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est)
   combined_df<- inner_join(g_df,est_df,by = 'player_slug')
-  A = as_adjacency_matrix(g)
-  colnames(Y)<- rownames(A)
-  colnames(N)<- colnames(A)
-  rownames(N)<- rownames(A)
+  
   
   
   my_beauti_plottini = list()
@@ -874,8 +871,8 @@ if(is.simulation==F){
       players12 <- est_df %>% mutate(player_in_block_i = est_cl %in% block_i)%>%
         mutate(player_in_block_j = est_cl %in% block_j)
       
-      A_subset<- A[players12$player_in_block_i, players12$player_in_block_j]
-      N_subset<- N[players12$player_in_block_i, players12$player_in_block_j]
+      A_subset<- Y_ij[players12$player_in_block_i, players12$player_in_block_j]
+      N_subset<- N_ij[players12$player_in_block_i, players12$player_in_block_j]
       
       
       new_df<- as.data.frame(as.table(as.matrix(A_subset)))%>%

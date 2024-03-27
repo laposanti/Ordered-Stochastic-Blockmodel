@@ -42,8 +42,8 @@ is.simulation=T
 
 #data.directory
 
-data_directory = "./Data/Simulation_data/"
-for(true_model in  c('SST', 'WST', 'Simple')){
+data_directory = "./Data/Sim1_data/"
+for(true_model in  c('Simple','SST')){
 
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
@@ -110,7 +110,7 @@ for(true_model in  c('SST', 'WST', 'Simple')){
       names(chains_SST)<-my_names 
 
 
-      filename_SST <- paste0("./results/simulation/",true_model,"_true//True_Model",true_model,"Est_model_SST","N", n,"_K", K,".RDS")
+      filename_SST <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_SST","N", n,"_K", K,".RDS")
       saveRDS(chains_SST, file = filename_SST) #saving results
       beep("coin")
     }
@@ -139,7 +139,7 @@ for(true_model in  c('SST', 'WST', 'Simple')){
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
       
-      filename_WST <- paste0("./results/simulation/",true_model,"_true//True_Model",true_model,"Est_model_WST","_N", n,"_K", K,".RDS")
+      filename_WST <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_WST","_N", n,"_K", K,".RDS")
       saveRDS(chains_WST, file = filename_WST) #saving results
       beep("coin")
       
@@ -167,7 +167,7 @@ for(true_model in  c('SST', 'WST', 'Simple')){
                                                seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
-      filename_Simple <- paste0("./results/simulation/",true_model,"_true//True_Model",true_model,"Est_model_Simple","_N", n,"_K", K,".RDS")
+      filename_Simple <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_Simple","_N", n,"_K", K,".RDS")
       saveRDS(chains_Simple, file = filename_Simple) #saving results
       beep("coin")
     }

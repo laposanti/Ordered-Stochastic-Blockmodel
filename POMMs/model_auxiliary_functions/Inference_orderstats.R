@@ -419,7 +419,7 @@ sigma_squared_summary_table<- function(chains, true_value, diag0.5,K,burnin){
                        quantile05 = quantile(sigma_chain, probs = 0.05),
                        quantile95 = quantile(sigma_chain, probs = 0.95))
   if(true_value == T){
-    results = mutate(true_sigma = chains$chain1$ground_truth$sigma_squared)
+    results = results %>% mutate(true_sigma = chains$chain1$ground_truth$sigma_squared)
   }
   plot_df = data.frame(y = sigma_chain, x = 1:length(sigma_chain))
   
