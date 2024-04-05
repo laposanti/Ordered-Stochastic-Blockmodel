@@ -23,7 +23,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
   
@@ -130,19 +130,19 @@ if(is.simulation==F){
   
   
 }else if(is.simulation == T){
-  true_model = "WST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/WST_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/WST_true/processed/"
+  true_model = "Simple"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/processed/"
   
   
   
 }
 
 
-for(est_model in c('SST','WST','Simple')){
+for(est_model in c('WST','Simple')){
   
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
-  filenames <- list.files(pattern = paste0(true_model,'Est_model_', est_model),path = data_wd)
+  filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
   print(filenames)
   
   for(file in 1:length(filenames)){
@@ -155,7 +155,7 @@ for(est_model in c('SST','WST','Simple')){
     n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
     K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = N_iter-10000
+    burnin = N_iter-40000
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
@@ -164,15 +164,24 @@ for(est_model in c('SST','WST','Simple')){
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
-    P_burned = uploaded_results$chain1$est_containers$P[,,-c(burnin:N_iter)]
+    P_burned = uploaded_results$chain1$est_containers$P[,,-c(1:burnin)]
+    z_burned =  uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
+    if(est_model != 'Simple'){
+      m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,-c(1:burnin)]
+    }
+    if(est_model == 'WST'){
+      sigma_squared_burned = uploaded_results$chain1$est_containers$sigma_squared[-c(1:burnin)]
+    }
+    
+    
     
     
     P_est = apply(P_burned, c(1,2), mean)
     theta = inverse_logit_f(P_est)
     
-    my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = theta,
+    my_z_est<- z_plot(z_burned = z_burned,  Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = theta,
                       est_model = est_model, true_value =is.simulation, 
-                      diag0.5 =diag0.5 , K=K, N=nrow(uploaded_results$chain1$Y_ij), z = uploaded_results$chain1$ground_truth$z ,
+                      diag0.5 =diag0.5 , K=K, N=nrow(uploaded_results$chain1$Y_ij), z_true = uploaded_results$chain1$ground_truth$z ,
                       burnin =  burnin ,label_switch = T,tap= processed_wd)
     
     
@@ -189,11 +198,11 @@ for(est_model in c('SST','WST','Simple')){
     # P parameter estimate
     #-------------------------------------------------------------------------------
     
-    P_s_table <- P_summary_table(chains = uploaded_results,
+    P_s_table <- P_summary_table(P_burned = P_burned,
                                  true_value = is.simulation,
                                  permutations_z = permutations_z,
                                  diag0.5 = TRUE,
-                                 K = K, P = uploaded_results$chain1$ground_truth$P,
+                                 K = K, P_true = uploaded_results$chain1$ground_truth$P,
                                  burnin = burnin,
                                  label_switch = T)
     
@@ -287,15 +296,26 @@ for(est_model in c('SST','WST','Simple')){
     # relabeling the chains to correct for label switching
     #-------------------------------------------------------------------------------
     # Relabel remaining chains
-    chain_relabeled2 <- relabel_chain(2, permutations_z, uploaded_results, N_iter - burnin,n=n)
-    chain_relabeled3 <- relabel_chain(3, permutations_z, uploaded_results, N_iter - burnin,n=n)
-    chain_relabeled4 <- relabel_chain(4, permutations_z, uploaded_results, N_iter - burnin,n=n)
+    
+    z_burned_2 = uploaded_results$chain2$est_containers$z[,-c(1:burnin)]
+    z_burned_3 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
+    z_burned_4 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
+    
+    P_burned_2 = uploaded_results$chain2$est_containers$P[,,-c(1:burnin)]
+    P_burned_3 = uploaded_results$chain3$est_containers$P[,,-c(1:burnin)]
+    P_burned_4 = uploaded_results$chain3$est_containers$P[,,-c(1:burnin)]
+    
+    
+    
+    chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, ncol_iter = N_iter - burnin,n=n)
+    chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, ncol_iter =  N_iter - burnin,n=n)
+    chain_relabeled4 <- relabel_chain(4, permutations_z = permutations_z, z_chain = z_burned_4,    ncol_iter = N_iter - burnin,n=n)
     
     
     # Permute P matrices for the remaining chains
-    P_permuted2 <- permute_P(2, permutations_z, uploaded_results,K=K)
-    P_permuted3 <- permute_P(3, permutations_z, uploaded_results,K=K)
-    P_permuted4 <- permute_P(4, permutations_z, uploaded_results,K=K)
+    P_permuted2 <- permute_P(2, permutations_z, P_burned_2,K=K)
+    P_permuted3 <- permute_P(3, permutations_z, P_burned_3,K=K)
+    P_permuted4 <- permute_P(4, permutations_z, P_burned_4,K=K)
     
     z_list_relab = list(z1 = z_chain_permuted,z2=chain_relabeled2,z3=chain_relabeled3,z4=chain_relabeled4)
     P_list_relab = list(P1 = P_chain_permuted,P2=P_permuted2,P3=P_permuted3,P4=P_permuted4)
@@ -303,36 +323,33 @@ for(est_model in c('SST','WST','Simple')){
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
-    n_clust=2
-    # Set up parallel backend
-    cl <- makeCluster(n_clust)  # Adjust the number of cores accordingly
-    registerDoParallel(cl)
-    
-    # Export necessary variables to the workers
-    clusterExport(cl, list("P_list_relab", "compute_likelihood_foreach","z_list_relab", "Y_ij", "N_ij", "inverse_logit_f", "vec2mat_0_P", "calculate_victory_probabilities", "dbinom"), envir = .GlobalEnv)
-    
+
+
     num_samples = N_iter - burnin
-    # Perform parallel computation using foreach
-    LL_list <- foreach(i = 1:4) %do% {
+    
+    LL_list <- foreach(i=1:4, .packages='foreach') %do% {
       z_chain <- z_list_relab[[i]]
       P_chain <- P_list_relab[[i]]
       
-      # Define the number of chunks in which to split the likelihood
-      num_chunks <- n_clust
-      # Split the columns into chunks for parallel processing
-      chunk_size <- ceiling(num_samples / num_chunks)
-      chunks <- split(1:num_samples, cut(1:num_samples, breaks = num_chunks, labels = FALSE))
+      u_y = Y_ij[upper.tri(Y_ij)]
+      u_n = N_ij[upper.tri(N_ij)]
       
-      # Apply function to each chunk
-      LL <- foreach(chunk_idx = 1:num_chunks, .combine = "cbind") %dopar% {
-        chunk <- chunks[[chunk_idx]]
-        sapply(chunk, compute_likelihood_foreach,P_chain, z_chain)
+      P_inverse = array(apply(X = P_chain, MARGIN = 3, FUN = inverse_logit_f),dim=c(K,K,N_iter-burnin))
+      z_mat_array = array(apply(X = z_chain, MARGIN = 2, FUN = vec2mat_0_P,P=P_inverse[,,1]), dim=c(n, K, N_iter-burnin))
+      
+      llik = matrix(NA, (n*(n-1))/2, N_iter-burnin)
+      
+      for(t in 1:(N_iter- burnin)){
+        P_ij= calculate_victory_probabilities(z_mat_array[,,t], P_inverse[,,t])
+        llik[,t] = dbinom(x = u_y, size = u_n, P_ij[upper.tri(P_ij)], log=T)
       }
-      LL
+      
+      print(i)
+      return(llik)
     }
+    registerDoSEQ()
     # Stop the cluster after the loop
-    stopCluster(cl)
-    
+        
     
     LLik_sum <- lapply(LL_list,FUN = colSums)
     
@@ -340,13 +357,15 @@ for(est_model in c('SST','WST','Simple')){
     
     
     saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
+    LL = LL_list[[2]]
     #-------------------------------------------------------------------------------
     # printing traceplots of the likelihood
     #-------------------------------------------------------------------------------
     df_traceplot = data.frame(chain = c(rep(1,ncol(LL)), rep(2,ncol(LL)), rep(3,ncol(LL)),rep(4,ncol(LL))),
                               log_likelihood = c(LLik_sum[[1]],LLik_sum[[2]],LLik_sum[[3]],LLik_sum[[4]]),
-                              iterations = rep(1:(10000),4))
+                              iterations = rep(((burnin+1):N_iter),4))
     df_traceplot = df_traceplot %>% mutate(chain = factor(chain, levels = 1:4))
+    
     
     my_sexy_traceplot<- ggplot(df_traceplot, aes(x = iterations, y = log_likelihood, 
                                                  color = factor(chain), group=chain))+
@@ -355,7 +374,8 @@ for(est_model in c('SST','WST','Simple')){
            subtitle = paste0("Number of iterations: ", N_iter," || Burnin: ", burnin), 
            x = "Iterations",
            y = "Log likelihood",
-           color = "Chain")+
+           color = "Chain",
+           caption = paste0("True data: ", true_model, ", Fitted model: ", est_model, ", K = ", K))+
       theme_bw()
     traceplot_name <- paste0(processed_wd,"//traceplot",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(traceplot_name,width = 500, height = 250)
@@ -363,14 +383,23 @@ for(est_model in c('SST','WST','Simple')){
     dev.off()
     
     loo_model_fit = loo(t(LL))
+    
     plot(loo_model_fit)
     waic_model_fit = waic(t(LL))
     
     
-    
+    if(is.simulation==F){
     z_s_table = data.frame(lone_out = loo_model_fit$estimates[3],lone_out_se = loo_model_fit$estimates[6],
                            waic = waic_model_fit$estimates[3], waic_se = waic_model_fit$estimates[6],
                            percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100 )
+    }else if(is.simulation==T){
+      z_s_table = data.frame(lone_out = loo_model_fit$estimates[3],lone_out_se = loo_model_fit$estimates[6],
+                             waic = waic_model_fit$estimates[3], waic_se = waic_model_fit$estimates[6],
+                             percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100,
+                             vi_dist = vi.dist(uploaded_results$chain1$ground_truth$z, point_est_z)) 
+    }
+    
+    
     z_s_table = z_s_table %>% mutate(model=est_model)%>% mutate(n_clust = K)
     if(est_model=='SST'&file==1){
       z_container = z_s_table
@@ -387,7 +416,7 @@ for(est_model in c('SST','WST','Simple')){
       # sigma^2 parameter estimate
       #-------------------------------------------------------------------------------
       
-      sigma_squared_s_table<- sigma_squared_summary_table(chains = uploaded_results, 
+      sigma_squared_s_table<- sigma_squared_summary_table(sigma_burned = sigma_squared_burned, sigma_true = uploaded_results$chain1$ground_truth$sigma_squared,
                                                           true_value = is.simulation*(true_model=='WST') , 
                                                           diag0.5 = TRUE, K = K, burnin = burnin)
       
@@ -483,23 +512,24 @@ for(est_model in c('SST','WST','Simple')){
       
     }
     if(est_model!="Simple"){
-      
+
       #-------------------------------------------------------------------------
-      # mu diagnostics 
+      # mu diagnostics
       #-------------------------------------------------------------------------
-      
+
       mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'), diag0.5 = TRUE,
                                                 K = K, burnin = burnin,N_iter = N_iter)
-      
+
+
       mu_vec_d_table_save = mu_vec_d_table$results %>% mutate(model= est_model)%>% mutate(n_clust = K)
-      
+
       if(est_model=='SST'&file==1){
         mu_vec_d_container = mu_vec_d_table_save
       }else{
         mu_vec_d_container =  rbind(mu_vec_d_container,mu_vec_d_table_save)
       }
     }
-    
+
     
     
     #---------------------------------------------------------------------------

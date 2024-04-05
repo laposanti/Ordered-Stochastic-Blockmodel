@@ -21,10 +21,10 @@
 
 adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control, 
                                      ground_truth,n, N_iter,n_chains, 
-                                     optimal_acceptance_rate_P,optimal_acceptance_rate_mu, K, seed,model,t=1, custom_init=NA){
+                                     optimal_acceptance_rate_P, optimal_acceptance_rate_mu,K, seed,model,t=1, custom_init=NA){
   
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
-                       'ground_truth','n', 'N_iter','n_chains', 
+                       'ground_truth','n', 'N_iter','n_chains',
                        'optimal_acceptance_rate_mu','optimal_acceptance_rate_P', 'K', 'seed','model','t', 'custom_init','p')
   
   registerDoFuture()
@@ -73,7 +73,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                #if the parameters is fixed, setting it to the true value
                                                                if(estimation_control$z==1){
                                                                  
-                                                                 z_current=  kmeans(Y_ij, K)$cl
+                                                                 z_current=  sample(x = c(1:K), size = n,replace = T)
                                                                  
                                                                }else{
                                                                  z_current=  matrix(ground_truth$z, n, 1)
@@ -283,20 +283,20 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                    P_current = P_update$P
                                                                    acc.count_P = P_update$acc.moves
                                                                    
-                                                                   # if(j %% 50 == 0){
-                                                                   #   
-                                                                   #   for(my_p in 1:K){
-                                                                   #     for(my_q in my_p:K){
-                                                                   #       
-                                                                   #       tau_P[my_p,my_q] = tuning_proposal(iteration = j,
-                                                                   #                                          acceptance_count = acc.count_P[my_p,my_q],
-                                                                   #                                          sigma = tau_P[my_p,my_q],
-                                                                   #                                          acceptanceTarget = optimal_acceptance_rate_P,
-                                                                   #                                          min_sigma = 0.00002)
-                                                                   #       
-                                                                   #     }
-                                                                   #   }
-                                                                   # }
+                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+
+                                                                     for(my_p in 1:K){
+                                                                       for(my_q in my_p:K){
+
+                                                                         tau_P[my_p,my_q] = tuning_proposal(iteration = j,
+                                                                                                            acceptance_count = acc.count_P[my_p,my_q],
+                                                                                                            sigma = tau_P[my_p,my_q],
+                                                                                                            acceptanceTarget = optimal_acceptance_rate_P,
+                                                                                                            min_sigma = 0.00002)
+
+                                                                       }
+                                                                     }
+                                                                   }
                                                                  }
                                                                  
                                                                  if (estimation_control$sigma_squared == 1) {
@@ -313,13 +313,13 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                    
                                                                    acc.count_sigma_squared = sigma_squared_update$acc.moves
                                                                    sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                   # if(j %% 50 == 0){
-                                                                   #   tau_sigma_squared <- tuning_proposal(iteration=j,
-                                                                   #                                        acceptance_count = acc.count_sigma_squared,
-                                                                   #                                        sigma = tau_sigma_squared,
-                                                                   #                                        acceptanceTarget = optimal_acceptance_rate_P,
-                                                                   #                                        min_sigma = 0.02)
-                                                                   # }
+                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+                                                                     tau_sigma_squared <- tuning_proposal(iteration=j,
+                                                                                                          acceptance_count = acc.count_sigma_squared,
+                                                                                                          sigma = tau_sigma_squared,
+                                                                                                          acceptanceTarget = optimal_acceptance_rate_P,
+                                                                                                          min_sigma = 0.02)
+                                                                   }
                                                                  }
                                                                  if (estimation_control$mu== 1) {
                                                                    #P UPDATE----------------------------------------------------------------
@@ -335,23 +335,26 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                    
                                                                    
                                                                    
-                                                                   # if(j %% 50 == 0){
-                                                                   #   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                                                   #                                 sigma = tau_mu_vec,
-                                                                   #                                 acceptanceTarget = optimal_acceptance_rate_mu,
-                                                                   #                                 min_sigma = 0.002)
-                                                                   # }
+                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+                                                                     tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
+                                                                                                   sigma = tau_mu_vec,
+                                                                                                   acceptanceTarget = optimal_acceptance_rate_mu,
+                                                                                                   min_sigma = 0.002)
+                                                                   }
                                                                    
                                                                    
                                                                    
                                                                  }
                                                                  
+                                                                 if(j < N_iter*0.1){
                                                                  #storing scales
                                                                  tau_sigma_squared_container[j]<- tau_sigma_squared
                                                                  tau_mu_vec_container[j]<- tau_mu_vec
                                                                  tau_P_container[,,j]<- tau_P
-                                                                 
+                                                                 }
                                                                  #storing results for inference
+                                                           
+                                                                   
                                                                  A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,
                                                                                                                mbar = mbar, P = P_current, K=K, t=1)
                                                                  z_container[,j] <- z_current
@@ -362,6 +365,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                  if(model == 'WST'|| model=='SST'){
                                                                    mu_vec_container[,j] <- mu_vec_current
                                                                  }
+                                                                 
                                                                  
                                                                  
                                                                  

@@ -434,6 +434,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
       probability_k_current_given_k_prime = 1/length(avail_options_k_current)
     }else{
       #checking which adjacent labels are available, and if k_prime is among those, exclude it
+
       avail_options_k_prime = setdiff(labels_available, k_prime)
       
       #sample one from those available
@@ -474,6 +475,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     
     log_r= t*A_scanning - t*A_prime + B_scanning - B_prime + 
       log(probability_k_current_given_k_prime) - log(probability_k_prime_given_k_current)
+    
     #create statements that check conditiond to accept move
     GS_condition= min(log_r,0)>=log(runif(1))
     if(GS_condition){

@@ -297,19 +297,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    P_current = P_update$P
                                                                    acc.count_P = P_update$acc.moves
                                                                    
-                                                                   # if(j %% 50 == 0){
-                                                                   #   
-                                                                   #   for(my_p in 1:K){
-                                                                   #     for(my_q in my_p:K){
-                                                                   #       
-                                                                   #       tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
-                                                                   #                                          sigma = tau_P[my_p,my_q],
-                                                                   #                                          acceptanceTarget = optimal_acceptance_rate_P,
-                                                                   #                                          min_sigma = 0.00002)
-                                                                   #       
-                                                                   #     }
-                                                                   #   }
-                                                                   # }
+                                                                   if(j %% 50 == 0){
+
+                                                                     for(my_p in 1:K){
+                                                                       for(my_q in my_p:K){
+
+                                                                         tau_P[my_p,my_q] = tuning_proposal(iteration=j,acceptance_count = acc.count_P[my_p,my_q],
+                                                                                                            sigma = tau_P[my_p,my_q],
+                                                                                                            acceptanceTarget = optimal_acceptance_rate_P,
+                                                                                                            min_sigma = 0.00002)
+
+                                                                       }
+                                                                     }
+                                                                   }
                                                                  }
                                                                  
                                                                  if (estimation_control$sigma_squared == 1) {

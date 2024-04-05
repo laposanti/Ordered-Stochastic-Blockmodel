@@ -71,19 +71,19 @@ compute_likelihood_foreach <- function(t, P_chain, z_chain) {
 
 
 # Define a function to relabel chains
-relabel_chain <- function(chain_index, permutations_z, chains, ncol_iter,n) {
+relabel_chain <- function(chain_index, permutations_z, z_chain, ncol_iter,n) {
   chain_relabeled = matrix(NA, nrow = n, ncol = ncol_iter)
   for (i in 1:ncol(chain_relabeled)) {
-    chain_relabeled[, i] <- permutations_z[i,][chains[[paste0("chain", chain_index)]]$est_containers$z[, i]]
+    chain_relabeled[, i] <- permutations_z[i,][z_chain[, i]]
   }
   return(chain_relabeled)
 }
 
 # Define a function to permute P matrices
-permute_P <- function(chain_index, permutations_z, chains,K) {
+permute_P <- function(chain_index, permutations_z, P_chain,K) {
   P_permuted = array(NA, dim = c(K, K, nrow(permutations_z)))
   for (i in 1:nrow(permutations_z)) {
-    P_permuted[, , i] <- chains[[paste0("chain", chain_index)]]$est_containers$P[permutations_z[i,], permutations_z[i,], i]
+    P_permuted[, , i] <- P_chain[permutations_z[i,], permutations_z[i,], i]
   }
   return(P_permuted)
 }
@@ -142,11 +142,11 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 }
 
 
-z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K, N, z , burnin,label_switch,tap){
+z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, true_value, P_est, diag0.5 , K, N, z_true , burnin, label_switch, tap){
 
-  Y_ij <-chains$chain1$Y_ij
-  N_ij <- chains$chain1$N_ij
-  z_chain = chains$chain1$est_containers$z[,-c(1:burnin)]
+
+  
+  z_chain = z_burned
   
   psm<- comp.psm(t(z_chain))
   
@@ -164,7 +164,7 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
                       z = z_chain,
                       P = P_est))
     llik = as.matrix(llik)
-    z_MAP <- z_chain[,which.max(llik)]
+    z_MAP <- z_chain[,which.max(chains_Simple$chain1$control_containers$A)]
     z_pivot = z_MAP
     if(true_value==F){
       run_label_switch <- label.switching(method = "ECR" ,
@@ -177,7 +177,7 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
                                           zpivot = z_pivot ,
                                           z = t(z_chain), 
                                           K = K,
-                                          groundTruth = chains$chain1$ground_truth$z)
+                                          groundTruth = z_true)
     }
     
     #permutations
@@ -194,13 +194,13 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
   }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
   }
-
+  
   # Create row and column indices
   indices <- expand.grid(row = 1:N, col = 1:N)
   
   if(true_value == T){
     z_df <- data.frame(items = 1:N, 
-                       z = chains$chain1$ground_truth$z)
+                       z = z_true)
   }else if(true_value ==F){
     z_df <- data.frame(items = 1:N, 
                        z = as.vector(point_est_z))
@@ -278,7 +278,7 @@ z_plot<- function(chains, true_model, est_model, true_value, P_est, diag0.5 , K,
 
 z_summary_table<- function(chains , true_value, z_list_relab = z_list_relab, P_list_relab = P_list_relab, z_est,  
                            diag0.5, K, burnin,N_iter, label_switch = T,tap){
-
+  
   
   return(list(table=results, LL=LL))
 }
@@ -310,10 +310,10 @@ z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_
 ###
 
 
-P_summary_table <- function(chains, permutations_z, true_value, diag0.5, P, K, burnin, label_switch){
+P_summary_table <- function(P_burned, permutations_z, true_value, diag0.5, P_true, K, burnin, label_switch){
   
   
-  P_samples <- chains$chain1$est_containers$P[,,-c(1:burnin)]
+  P_samples <- P_burned
   if (label_switch == TRUE){
     P_permuted = array(NA, dim=c(K,K,nrow(permutations_z)))
     for(i in 1: nrow(permutations_z)){
@@ -339,7 +339,7 @@ P_summary_table <- function(chains, permutations_z, true_value, diag0.5, P, K, b
     mutate(quantile95 = inverse_logit_f(quantile95))
   
   if(true_value ==T){
-    P_true = chains$chain1$ground_truth$P
+    P_true = P_true
     P_true = inverse_logit_f(P_true)
     results=results %>% mutate(P_true = P_true[upper.tri(P_true,diag = T)]) %>%
       mutate(P_true = inverse_logit_f(P_true))%>%
@@ -412,14 +412,14 @@ P_diagnostic_table<- function(chains, true_value, permutations_z, diag0.5,P,K,bu
 }
 
 #_squared inference and diagnostics
-sigma_squared_summary_table<- function(chains, true_value, diag0.5,K,burnin){
+sigma_squared_summary_table<- function(sigma_burned, true_value, sigma_true ,diag0.5,K,burnin){
   
-  sigma_chain<- c(chains$chain1$est_containers$sigma_squared[-c(1:burnin)])
+  sigma_chain<- sigma_burned
   results = data.frame(est_mean = mean(sigma_chain),
                        quantile05 = quantile(sigma_chain, probs = 0.05),
                        quantile95 = quantile(sigma_chain, probs = 0.95))
   if(true_value == T){
-    results = results %>% mutate(true_sigma = chains$chain1$ground_truth$sigma_squared)
+    results = results %>% mutate(true_sigma = sigma_true)
   }
   plot_df = data.frame(y = sigma_chain, x = 1:length(sigma_chain))
   
@@ -554,24 +554,37 @@ mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter, 
                 mcmc(t(mu_samples_list[[4]])))
   
   
-  
-  results = data.frame(mu = 1:K,
-                       gelman.diag(mm)$psrf[,1],
-                       ESS=effectiveSize(mm),
-                       acceptance_rate =  AcceptanceRate(mm))
-  
-  convergence_within_chain = matrix(NA, nrow = nrow(results), ncol=4)
-  #using geweke convergence diagnostics to compute the z_score for the difference in means from the first part of the chain and the last part of the chain
-  for(chain in 1:4){
-    #finding chains that haven't converged: ---------------
-    #value 1 for z_score outside the 95percent interval,
-    #value 0 for z_score within the 95percent interval
-    convergence_within_chain[,chain]<- (unlist(coda::geweke.diag(mm)[[chain]]$z) < qnorm(.05))+
-      (unlist(coda::geweke.diag(mm)[[chain]]$z) >qnorm(.95))
+  results = tryCatch({
+    results = data.frame(mu = 1:K,
+                         Gelman = gelman.diag(mm)$psrf[,1],
+                         ESS=effectiveSize(mm),
+                         acceptance_rate =  AcceptanceRate(mm))
+    
+    
+    convergence_within_chain = matrix(NA, nrow = nrow(results), ncol=4)
+    #using geweke convergence diagnostics to compute the z_score for the difference in means from the first part of the chain and the last part of the chain
+    for(chain in 1:4){
+      #finding chains that haven't converged: ---------------
+      #value 1 for z_score outside the 95percent interval,
+      #value 0 for z_score within the 95percent interval
+      convergence_within_chain[,chain]<- (unlist(coda::geweke.diag(mm)[[chain]]$z) < qnorm(.05))+
+        (unlist(coda::geweke.diag(mm)[[chain]]$z) >qnorm(.95))
+    }
+    
+    results$n_chain_converged = rep(4,nrow(results)) - rowSums(convergence_within_chain)
+    results$best_chain = rep(which.min(colSums(convergence_within_chain)), nrow(results))
+ results
+  },error = function(error) {
+    print(paste0("ERROR:",error))
+    results = data.frame(mu = 1:K,
+                         Gelman = rep(NA,K),
+                         ESS= rep(NA,K),
+                         acceptance_rate = rep(NA,K),
+                         n_chain_converged= rep(NA,K),
+                         best_chain= rep(NA,K))
+results
   }
-  
-  results$n_chain_converged = rep(4,nrow(results)) - rowSums(convergence_within_chain)
-  results$best_chain = rep(which.min(colSums(convergence_within_chain)), nrow(results))
+  )
   
   
   return(list(results=results, plots_list=mm))
