@@ -56,7 +56,6 @@ for(true_model in  c('Simple','SST')){
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    file=3
     data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
 
     stopifnot(data_to_be_estimated$model == true_model)
@@ -67,7 +66,7 @@ for(true_model in  c('Simple','SST')){
     ground_truth =data_to_be_estimated$ground_truth
     data_to_be_estimated$data_plot
     
-    K= nrow(data_to_be_estimated$ground_truth$P)
+    K= nrow(data_to_be_estimated$ground_truth$theta)
     
     print(paste0("True data--->", filenames[file]))
     
@@ -76,9 +75,9 @@ for(true_model in  c('Simple','SST')){
     ##############################################################################
     
     n_chains = 4
-    optimal_acceptance_rate_P =.44
+    optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 20000
+    N_iter= 120000
     chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
@@ -91,7 +90,7 @@ for(true_model in  c('Simple','SST')){
       
       
       
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,theta=1)
 
       
       K_chains = list(K,K,K,K)
@@ -100,7 +99,7 @@ for(true_model in  c('Simple','SST')){
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
                                             n = n, N_iter = N_iter,n_chains = n_chains, 
-                                            optimal_acceptance_rate_P =optimal_acceptance_rate_P, 
+                                            optimal_acceptance_rate_theta = optimal_acceptance_rate_theta, 
                                             optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
                                             K = K_chains,
                                             seed = chains_seeds, model = 'SST', t= t_chains, custom_init = NA)
@@ -125,14 +124,14 @@ for(true_model in  c('Simple','SST')){
       #initializing each chain
       K_chains = list(K,K,K,K)
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,theta=1)
       
       
       chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
                                             n = n, N_iter = N_iter,n_chains = n_chains, 
-                                            optimal_acceptance_rate_P =optimal_acceptance_rate_P, 
+                                            optimal_acceptance_rate_theta =optimal_acceptance_rate_theta, 
                                             optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
                                             K = K_chains,
                                             seed = chains_seeds, model = 'WST',t=t_chains, custom_init = NA)
@@ -144,6 +143,7 @@ for(true_model in  c('Simple','SST')){
       beep("coin")
       
     }
+    
     #-----------------------------------------------------------------------------
     # Simple model
     #-----------------------------------------------------------------------------
@@ -152,16 +152,17 @@ for(true_model in  c('Simple','SST')){
     if('Simple' %in% choose_model_to_estimate){
       print(paste0("Estimation of Simple model, K=",K))
       print(paste0("Begin cycle at:",date()))
-      
+ 
       K_chains = list(K,K,K,K)
+
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=0)
+      estimation_control = list(z = 0,sigma_squared=0, mu_vec=0,K=0,theta=1)
       
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                                estimation_control = estimation_control, 
                                                ground_truth = ground_truth, 
                                                n = n, N_iter = N_iter,n_chains = n_chains, 
-                                               optimal_acceptance_rate_P = optimal_acceptance_rate_P , 
+                                               optimal_acceptance_rate_theta = optimal_acceptance_rate_theta , 
                                                optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
                                                K = K_chains,
                                                seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
@@ -176,14 +177,17 @@ for(true_model in  c('Simple','SST')){
 
 }
 
+
 upper_tri_indices= which(upper.tri(chains_Simple$chain1$ground_truth$P, diag=T),arr.ind = T)
+
 
 P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter), function(j) {
   data.frame(iteration = j,
-             P = upper.tri.extractor(chains_Simple$chain1$est_containers$P[,,j]), 
+             P = upper.tri.extractor(chains_Simple$chain1$est_containers$theta[,,j]), 
              P_true = upper.tri.extractor(chains_Simple$chain1$ground_truth$P), 
              P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
 }))
+
 P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
   mutate(P_true = inverse_logit_f(P_true))
 
@@ -193,6 +197,6 @@ traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, gr
   facet_wrap(~P_ij)+
   theme_bw()
 
-
-
+traceplot_P
+ 
 

@@ -145,7 +145,7 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, true_value, P_est, diag0.5 , K, N, z_true , burnin, label_switch, tap){
 
 
-  
+  z_burned = chains_Simple$chain1$est_containers$z
   z_chain = z_burned
   
   psm<- comp.psm(t(z_chain))

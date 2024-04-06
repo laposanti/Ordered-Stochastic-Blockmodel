@@ -1,7 +1,6 @@
 
 
 
-1
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -92,7 +91,7 @@ for(application in c("Citation_data", "Tennis_data")){
     ##############################################################################
     
     n_chains = 4
-    optimal_acceptance_rate_P =.44
+    optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     N_iter= 200000
     chains_seeds = list(20,21,22,23)
@@ -107,7 +106,7 @@ for(application in c("Citation_data", "Tennis_data")){
       
       
       
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,theta=1)
       
       
       K_chains = list(k_th,k_th,k_th,k_th)
@@ -115,7 +114,7 @@ for(application in c("Citation_data", "Tennis_data")){
       chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                            n = n, N_iter = N_iter,n_chains = n_chains, optimal_acceptance_rate_theta = optimal_acceptance_rate_theta,
                                             optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, 
                                             K = K_chains,
                                             seed = chains_seeds, model = 'SST', t= t_chains, custom_init = NA)
@@ -141,14 +140,14 @@ for(application in c("Citation_data", "Tennis_data")){
       #initializing each chain
       K_chains = list(k_th,k_th,k_th,k_th)
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,theta=1)
       
       
       chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
                                             n = n, N_iter = N_iter,n_chains = n_chains,  
-                                            optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                            optimal_acceptance_rate_theta = optimal_acceptance_rate_theta,
                                             optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, K = K_chains,
                                             seed = chains_seeds, model = 'WST',t=t_chains, custom_init = NA)
       my_names <- paste0("chain", 1:n_chains)
@@ -170,14 +169,14 @@ for(application in c("Citation_data", "Tennis_data")){
       
       K_chains = list(k_th,k_th,k_th,k_th)
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
       
       
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                                estimation_control = estimation_control, 
                                                ground_truth = ground_truth, 
                                                n = n, N_iter = N_iter,n_chains = n_chains, 
-                                               optimal_acceptance_rate_P = optimal_acceptance_rate_P,
+                                               optimal_acceptance_rate_theta = optimal_acceptance_rate_theta,
                                                optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, K = K_chains,
                                                seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
       my_names <- paste0("chain", 1:n_chains)

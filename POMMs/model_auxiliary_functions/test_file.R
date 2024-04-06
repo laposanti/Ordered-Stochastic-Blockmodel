@@ -14,7 +14,7 @@ naive_version = function(Y_ij, N_ij, z_current, theta, z_prime){
   z_mat = vec2mat_0_P(z_current, theta)
   P_ij = calculate_victory_probabilities(z_mat, theta)
   A_cur = dbinom(Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij[upper.tri(P_ij)],log = T)
-  
+
   z_mat_prime = vec2mat_0_P(z_prime, theta)
   P_ij_prime = calculate_victory_probabilities(z_mat_prime, theta)
   A_prime = dbinom(Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij_prime[upper.tri(P_ij)],log = T)
@@ -35,7 +35,7 @@ current_version = function(Y_ij, N_ij, z_current, theta,A, z_prime,item_changed,
     sum(dbinom(upper.tri_Y_ij[,item_changed], upper.tri_N_ij[,item_changed], upper.tri_P_ij[,item_changed], log=T)) 
   
   #update P_NbyN
-  P_ij_prime = P_ij
+  P_ij_prime = upper.tri_P_ij
   for(nodes in 1:n){
     P_ij_prime[item_changed,nodes]<- theta[z_prime[item_changed],z_prime[nodes]]
     P_ij_prime[nodes,item_changed]<- theta[z_prime[nodes],z_prime[item_changed]]
@@ -43,8 +43,10 @@ current_version = function(Y_ij, N_ij, z_current, theta,A, z_prime,item_changed,
   
   upper.tri_P_ij_prime = P_ij_prime*upper.tri(P_ij_prime)
   #compute the likelihood of the same points with the new assignment
-  A_plus = sum(dbinom(upper.tri_Y_ij[item_changed,], upper.tri_N_ij[item_changed,], upper.tri_P_ij_prime[item_changed,], log=T)) + 
-    sum(dbinom(upper.tri_Y_ij[,item_changed], upper.tri_N_ij[,item_changed], upper.tri_P_ij_prime[,item_changed], log=T)) 
+  A_plus = sum(dbinom(upper.tri_Y_ij[item_changed,], upper.tri_N_ij[item_changed,],
+                      upper.tri_P_ij_prime[item_changed,], log=T)) + 
+    sum(dbinom(upper.tri_Y_ij[,item_changed], upper.tri_N_ij[,item_changed], 
+               upper.tri_P_ij_prime[,item_changed], log=T)) 
   
   #Updating the likelihood
   A_prime = sum(A_cur) - A_minus + A_plus

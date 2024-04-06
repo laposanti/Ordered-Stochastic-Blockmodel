@@ -29,7 +29,7 @@ generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
     print('If model is SST, sigma should be zero')
   }
   
-
+  
   mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
   mu_vec_sort = log(mu_vec_sort/(1-mu_vec_sort))
   ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
@@ -62,11 +62,11 @@ generate_theta_from_SST_prior = function(K, model='WST', sigma=0){
 # Generating data from the SST
 ###############################################################################
 
-true_model = 'SST'
-saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data/"
+true_model = 'WST'
+saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data///"
 simulations = 1
 for(k in 3:6){
-
+  
   for(n_simul in 1:simulations){
     n = 80
     K=k
@@ -74,42 +74,45 @@ for(k in 3:6){
     set.seed(seed)
     if(true_model =='SST'){
       prior_SST = generate_theta_from_SST_prior(K, model = 'SST',sigma = 0)
-      P<- prior_SST$P
+      theta<- prior_SST$P
       mu_vec =  prior_SST$mu
     }else if(true_model == 'WST'){
       sigma_squared = 0.3
       prior_WST = generate_theta_from_SST_prior(K, model = 'WST',sigma = sigma_squared)
-      P<- prior_WST$P
+      theta<- prior_WST$P
       mu_vec =  prior_WST$mu
     }else if( true_model == 'Simple'){
-      theta = matrix(NA, K, K)
-      theta[col(theta)-row(theta)==0] <-runif(K, .6,.85)
+      P = matrix(NA, K, K)
+      P[col(P)-row(P)==0] <-runif(K, .6,.85)
       for(diag_i in 1:(K-1)){
-        theta[col(theta)-row(theta)==diag_i] <- runif( K-diag_i,0.01,.9)
+        P[col(P)-row(P)==diag_i] <- runif( K-diag_i,0.01,.9)
       }
-      theta[lower.tri(theta)] = 1-t(theta)[lower.tri(theta)]
-      P = log(theta/(1-theta))
+      P[lower.tri(P)] = 1-t(P)[lower.tri(P)]
+      theta = log(P/(1-P))
     }
     
-    theta = inverse_logit_f(P)
+    P = inverse_logit_f(theta)
     z <- sample(1:K, n,replace=T)
     z_P<- vec2mat_0_P(clust_lab = z,P = theta)
-    P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = theta)
+    P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
     
-
-    N_ij= matrix(10,n,n) 
+    N_blocks = matrix(sample(x = (6:12),size = K**2,replace = T), nrow = K,ncol = K)
+    N_blocks = make_symmetric(N_blocks)
+    
+    N_ij= calculate_victory_probabilities(z_mat = z_P,P = N_blocks)
+    diag(N_ij) = 0
     #simulating Y_ij
     
     Y_ij <- matrix(0, n,n)
     for(i in 1:n){
       for(j in 1:n){
-        Y_ij[i,j]<- round(N_ij[i,j]*P_nbyn[i,j],0) + sample(c(1,-1),1)
+        Y_ij[i,j]<-rbinom(1,N_ij[i,j], P_nbyn[i,j])
       }
     }
     
     Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
     diag(Y_ij)<- 0
-
+    
     indices <- expand.grid(row = 1:n, col = 1:n)
     
     
@@ -156,18 +159,21 @@ for(k in 3:6){
       ground_truth = list(z = z,
                           sigma_squared=NA, 
                           mu_vec_star = mu_vec,
-                          K=K,P=P) 
+                          K=K,theta=theta,
+                          model = true_model) 
     }else if(true_model == 'WST'){
       ground_truth = list(z = z,
                           sigma_squared=sigma_squared, 
                           mu_vec_star = mu_vec,
-                          K=K,P=P) 
+                          K=K,theta=theta,
+                          model = true_model) 
     }else if(true_model == 'Simple'){
       ground_truth = list(z = z,
                           sigma_squared=NA, 
                           mu_vec_star = NA,
                           K=K,
-                          P=P) 
+                          theta=theta,
+                          model = true_model)
     }
     
     
