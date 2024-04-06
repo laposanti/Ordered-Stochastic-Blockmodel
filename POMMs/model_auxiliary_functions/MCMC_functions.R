@@ -95,14 +95,16 @@ llike_integrated_out = function(lamdabar, ybar,mbar,K,U_vec, sigma_squared){
 # Likelihood
 
 llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, P, K, t=1){
-  #llik<- sum(bin_coef+ ybar*log(P) + (mbar)*log(1-P))
-  llik = matrix(0,K,K)
-  for(diag_iii in 0:(K-1)){
-    llik[col(P)-row(P)==diag_iii] <- lamdabar[col(P)-row(P)==diag_iii]+ ybar[col(P)-row(P)==diag_iii]*P[col(P)-row(P)==diag_iii] -
-      (mbar[col(P)-row(P)==diag_iii]+ybar[col(P)-row(P)==diag_iii])*log(1+exp(P[col(P)-row(P)==diag_iii]))
-  }
+  P = inverse_logit_f(P)
+  A_current = t*sum(lamdabar + ybar * log(P)+ (mbar)*log(1 -  P))
   
-  return(t*sum(llik))
+   # llik = matrix(0,K,K)
+  # for(diag_iii in 0:(K-1)){
+  #   llik[col(P)-row(P)==diag_iii] <- lamdabar[col(P)-row(P)==diag_iii]+ ybar[col(P)-row(P)==diag_iii]*P[col(P)-row(P)==diag_iii] -
+  #     (mbar[col(P)-row(P)==diag_iii]+ybar[col(P)-row(P)==diag_iii])*log(1+exp(P[col(P)-row(P)==diag_iii]))
+  # }
+  # return(t*sum(llik))
+  return(A_current)
 }
 
 # Density for P
@@ -402,8 +404,11 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
   
   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
   z_prime= z
-  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
-
+  P_ij<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
+  
+  upper.tri_Y_ij = Y_ij*upper.tri(Y_ij)
+  upper.tri_N_ij = N_ij*upper.tri(N_ij)
+  upper.tri_P_ij_prime = P_ij*upper.tri(P_ij)
   
   scanning_order = sample(1:n,n, replace=F)
   
@@ -434,7 +439,6 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
       probability_k_current_given_k_prime = 1/length(avail_options_k_current)
     }else{
       #checking which adjacent labels are available, and if k_prime is among those, exclude it
-
       avail_options_k_prime = setdiff(labels_available, k_prime)
       
       #sample one from those available
@@ -446,24 +450,30 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
     
     
     
-    
-    
     z_scanning[i_th_turn] <- k_scanning
     
     
+    A_minus = sum(dbinom(upper.tri_Y_ij[i_th_turn,], upper.tri_N_ij[i_th_turn,],
+                         upper.tri_P_ij_prime[i_th_turn,], log=T)) + 
+      sum(dbinom(upper.tri_Y_ij[,i_th_turn], upper.tri_N_ij[,i_th_turn], 
+                 upper.tri_P_ij_prime[,i_th_turn], log=T)) 
+    
     #compute the likelihood of the data with the current assignment just for i_th_turn
-    A_minus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_prime[i_th_turn,], log=T)) + 
-      sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_prime[,i_th_turn], log=T)) 
+
     
     #update P_NbyN
-    P_NbyN_scanning = P_NbyN_prime
+    P_ij_scanning = upper.tri_P_ij_prime
     for(nodes in 1:n){
-      P_NbyN_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
-      P_NbyN_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
+      P_ij_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
+      P_ij_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
     }
+    upper.tri_P_ij_scanning = P_ij_scanning*upper.tri(P_ij_scanning)
     #compute the likelihood of the same points with the new assignment
-    A_plus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_scanning[i_th_turn,], log=T)) + sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_scanning[,i_th_turn], log=T)) 
-    
+    A_plus = sum(dbinom(upper.tri_Y_ij[i_th_turn,], upper.tri_N_ij[i_th_turn,],
+                        upper.tri_P_ij_scanning[i_th_turn,], log=T)) + 
+      sum(dbinom(upper.tri_Y_ij[,i_th_turn], upper.tri_N_ij[,i_th_turn], 
+                 upper.tri_P_ij_scanning[,i_th_turn], log=T)) 
+
     #Updating the likelihood
     A_scanning = A_prime - A_minus + A_plus
     
@@ -483,7 +493,7 @@ z_update_f_withP = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, P, alpha_vec, n_k,
       z_prime<-z_scanning
       A_prime<- A_scanning
       B_prime<- B_scanning
-      P_NbyN_prime <- P_NbyN_scanning
+      P_ij_prime <- P_ij_scanning
       n_prime <- n_scanning
     }
     #labels_available are the same

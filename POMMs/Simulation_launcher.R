@@ -56,9 +56,9 @@ for(true_model in  c('Simple','SST')){
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    
+    file=3
     data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
-file=3
+
     stopifnot(data_to_be_estimated$model == true_model)
     
     N_ij = data_to_be_estimated$N_ij
@@ -78,7 +78,7 @@ file=3
     n_chains = 4
     optimal_acceptance_rate_P =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 120000
+    N_iter= 20000
     chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ file=3
       
       K_chains = list(K,K,K,K)
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 0,sigma_squared=0, mu_vec=0,K=0,P=1)
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,P=0)
       
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                                estimation_control = estimation_control, 

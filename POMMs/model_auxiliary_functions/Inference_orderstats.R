@@ -150,7 +150,7 @@ z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, tru
   
   psm<- comp.psm(t(z_chain))
   
-  
+ 
   
   if(label_switch==T){
     
@@ -185,13 +185,15 @@ z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, tru
     point_est_z<- as.vector(run_label_switch$clusters)
     
     #relabeled chain
+    
     chain_relabeled = matrix(NA, nrow=N, ncol = N_iter-burnin)
     for(i in 1:ncol(chain_relabeled)){
       chain_relabeled[,i] <- permutations_z[i,][z_chain[,i]]
     }
     
     
-  }else if(label_switch==F){
+  
+    }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
   }
   
