@@ -86,10 +86,8 @@ for(true_model in  c('Simple','SST')){
     if('SST' %in% choose_model_to_estimate){
       print(paste0("Estimation of the SST model, K=",K))
       print(paste0("Begin cycle at:", date()))
+      
       #initializing each chain
-      
-      
-      
       estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,theta=1)
 
       
@@ -156,7 +154,7 @@ for(true_model in  c('Simple','SST')){
       K_chains = list(K,K,K,K)
 
       t_chains = rep(1,n_chains)
-      estimation_control = list(z = 0,sigma_squared=0, mu_vec=0,K=0,theta=1)
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
       
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                                estimation_control = estimation_control, 
@@ -188,15 +186,6 @@ P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter), function(j) {
              P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
 }))
 
-P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
-  mutate(P_true = inverse_logit_f(P_true))
 
-traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
-  geom_line(aes(y=P), alpha=.3)+
-  geom_line(aes(y=P_true), linetype=2, color='red')+
-  facet_wrap(~P_ij)+
-  theme_bw()
-
-traceplot_P
  
 

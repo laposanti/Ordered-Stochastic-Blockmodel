@@ -20,12 +20,12 @@
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
 adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control, 
-                                     ground_truth,n, N_iter,n_chains, true_model,
-                                     optimal_acceptance_rate_theta, optimal_acceptance_rate_mu, K, seed,model,n_temperatures, saving_directory, custom_init=NA){
+                                                    ground_truth,n, N_iter,n_chains, burnin, true_model,
+                                                    optimal_acceptance_rate_theta, optimal_acceptance_rate_mu, K, seed,model,n_temperatures, saving_directory, custom_init=NA){
   
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
-                       'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K', 'seed','model', 'true_model', 'custom_init','p','n_temperatures','saving_directory')
+                       'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K', 'burnin', 'seed','model', 'true_model', 'custom_init','p','n_temperatures','saving_directory')
   
   registerDoFuture()
   reprex <- local({
@@ -60,7 +60,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #setting hyperparams
                                                              K <- as.numeric(K[[chain]])
                                                              alpha_vec = as.vector(rep(1/K,K))
-                                                
+                                                             
                                                              
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
                                                              if(all(is.na(custom_init))){
@@ -169,103 +169,107 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    n_k = as.numeric(label_counts)
                                                                  }
                                                                }
+                                                               
                                                                z_P = vec2mat(z_current)
-                                                             
-                                                             labels_available<- 1:K
-                                                             #checking that we have exactly K labels
-                                                             label_counts <- table(factor(z_current, levels = labels_available))
-                                                             n_k = as.numeric(label_counts)
-                                                             while(any(n_k==0)){
-                                                               k_missing = which(n_k == 0)
-                                                               for(i in 1:length(k_missing)){
-                                                                 z_current[sample(n, size = n*1/K, replace = F)] <- k_missing[i]
-                                                                 
-                                                                 label_counts <- table(factor(z_current, levels = labels_available))
-                                                                 n_k = as.numeric(label_counts)
+                                                               
+                                                               labels_available<- 1:K
+                                                               #checking that we have exactly K labels
+                                                               label_counts <- table(factor(z_current, levels = labels_available))
+                                                               n_k = as.numeric(label_counts)
+                                                               while(any(n_k==0)){
+                                                                 k_missing = which(n_k == 0)
+                                                                 for(i in 1:length(k_missing)){
+                                                                   z_current[sample(n, size = n*1/K, replace = F)] <- k_missing[i]
+                                                                   
+                                                                   label_counts <- table(factor(z_current, levels = labels_available))
+                                                                   n_k = as.numeric(label_counts)
+                                                                 }
                                                                }
-                                                             }
-                                                             z_P = vec2mat(z_current)
-                                                             # number of victories between block p and block q
-                                                             # number of victories between block p and block q
-                                                             ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
-                                                             # number of missed victories between block p and block q
-                                                             n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-                                                             # number of missed victories between block p and block q
-                                                             mbar<- t(z_P)%*%n_minus_y1%*%z_P
-                                                             
-                                                             coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-                                                             lamdabar <- t(z_P)%*%(coef1)%*%z_P
-                                                             
-                                                             
-                                                             
-                                                             
-                                                             A_current = llik_over_blocks_f_binomial(lamdabar = lamdabar, ybar = ybar,
-                                                                                                     mbar = mbar,theta =theta_current,K = K, t=t)
-                                                             
-                                                             check = lprop_posterior(lamdabar = lamdabar,
-                                                                                     ybar = ybar,
-                                                                                     mbar = mbar,
-                                                                                     theta =theta_current,
-                                                                                     alpha_vec = alpha_vec,
-                                                                                     n_k = n_k,
-                                                                                     sigma_squared = sigma_squared_current,
-                                                                                     mu_vec = mu_vec_current,
-                                                                                     K = K, 
-                                                                                     model = model,  t=t)
-                                                             
-                                                             #--------------------------------------------------------------------------
-                                                             #setting and initialising containers
-                                                             #--------------------------------------------------------------------------
-                                                             #initialising the chain
-                                                             z_container= matrix(0, nrow = n, ncol = N_iter)
-                                                             z_container[,1] = z_current
-                                                             if(model == 'WST'){
+                                                               z_P = vec2mat(z_current)
+                                                               # number of victories between block p and block q
+                                                               # number of victories between block p and block q
+                                                               ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
+                                                               # number of missed victories between block p and block q
+                                                               n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
+                                                               # number of missed victories between block p and block q
+                                                               mbar<- t(z_P)%*%n_minus_y1%*%z_P
+                                                               
+                                                               coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
+                                                               lamdabar <- t(z_P)%*%(coef1)%*%z_P
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               A_current = llik_over_blocks_f_binomial(lamdabar = lamdabar, ybar = ybar,
+                                                                                                       mbar = mbar,theta =theta_current,K = K, t=t)
+                                                               
+                                                               check = lprop_posterior(lamdabar = lamdabar,
+                                                                                       ybar = ybar,
+                                                                                       mbar = mbar,
+                                                                                       theta =theta_current,
+                                                                                       alpha_vec = alpha_vec,
+                                                                                       n_k = n_k,
+                                                                                       sigma_squared = sigma_squared_current,
+                                                                                       mu_vec = mu_vec_current,
+                                                                                       K = K, 
+                                                                                       model = model,  t=t)
+                                                               
+                                                               #--------------------------------------------------------------------------
+                                                               #setting and initialising containers
+                                                               #--------------------------------------------------------------------------
                                                                #initialising the chain
-                                                               sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter)
-                                                               sigma_squared_container[1] <- sigma_squared_current
-                                                               #initialising the adaptive variance
-                                                               tau_sigma_squared <- 0.2
-                                                               tau_sigma_squared_container = matrix(0,1, N_iter)
-                                                               tau_sigma_squared_container[1] <- tau_sigma_squared
-                                                             }else{
-                                                               tau_sigma_squared <- NA
-                                                               sigma_squared_container <- NA
-                                                               tau_sigma_squared_container <- NA
-                                                             }
-                                                             if(model == 'WST'||model == 'SST'){
-                                                               #initialising the chain
-                                                               mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter)
-                                                               mu_vec_container[,1] <- mu_vec_current
-                                                               #initialising the adaptive variance
-                                                               tau_mu_vec <- 0.2
-                                                               tau_mu_vec_container = matrix(0,1, N_iter)
-                                                               tau_mu_vec_container[1] <- tau_mu_vec
-                                                             }else{
-                                                               mu_vec_container <- NA
-                                                               tau_mu_vec <- NA
-                                                               tau_mu_vec_container <- NA
-                                                             }
-                                                             #initialing theta and its adaptive variance container
-                                                             theta_container = array(0, dim = c(K,K,N_iter))
-                                                             theta_container[,,1] <- theta_current
-                                                             
-                                                             tau_theta_container = array(0,dim=c(K,K,N_iter))
-                                                             tau_theta =matrix(0.2,K,K)
-                                                             tau_theta_container[,,1] = tau_theta
-                                                             
-                                                             
-                                                             A_container= matrix(0, nrow=1, ncol=N_iter)
-                                                             A_container[1] <- A_current
-                                                             
-                                                             #containers for the counts of accepted proposals
-                                                             acc.count_z = rep(1,n)
-                                                             acc.count_sigma_squared=1
-                                                             acc.count_mu_vec = 1
-                                                             acc.count_theta<- matrix(1,K,K)
-                                                             
-                                                             #READY TO BOMB!
-                                                             iteration_time= vector()
-                                                             tryCatch(
+                                                               z_container= matrix(0, nrow = n, ncol = N_iter-burnin)
+                                                               z_container[,1] = z_current
+                                                               if(model == 'WST'){
+                                                                 #initialising the chain
+                                                                 sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter-burnin)
+                                                                 sigma_squared_container[1] <- sigma_squared_current
+                                                                 #initialising the adaptive variance
+                                                                 tau_sigma_squared <- 0.2
+                                                                 tau_sigma_squared_container = matrix(0,1, N_iter-burnin)
+                                                                 tau_sigma_squared_container[1] <- tau_sigma_squared
+                                                               }else{
+                                                                 tau_sigma_squared <- NA
+                                                                 sigma_squared_container <- NA
+                                                                 tau_sigma_squared_container <- NA
+                                                               }
+                                                               if(model == 'WST'||model == 'SST'){
+                                                                 #initialising the chain
+                                                                 mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter-burnin)
+                                                                 mu_vec_container[,1] <- mu_vec_current
+                                                                 #initialising the adaptive variance
+                                                                 tau_mu_vec <- 0.2
+                                                                 tau_mu_vec_container = matrix(0,1, N_iter)
+                                                                 tau_mu_vec_container[1] <- tau_mu_vec
+                                                               }else{
+                                                                 mu_vec_container <- NA
+                                                                 tau_mu_vec <- NA
+                                                                 tau_mu_vec_container <- NA
+                                                               }
+                                                               #initialing theta and its adaptive variance container
+                                                               theta_container = array(0, dim = c(K,K,))
+                                                               theta_container[,,1] <- theta_current
+                                                               
+                                                               tau_theta_container = array(0,dim=c(K,K,N_iter))
+                                                               tau_theta =matrix(0.2,K,K)
+                                                               tau_theta_container[,,1] = tau_theta
+                                                               
+                                                               
+                                                               A_container= matrix(0, nrow=(n*(n-1))/2, ncol=)
+                                                               P_ij<- inverse_logit_f(theta_current)
+                                                               P_zizj<- calculate_victory_probabilities(vec2mat_0_P(z_current,P = P_ij), P_ij)
+                                                               A_container[,1] =  dbinom(x = Y_ij[upper.tri(Y_ij)], 
+                                                                                         size = N_ij[upper.tri(N_ij)],
+                                                                                         prob = P_zizj[upper.tri(P_zizj)], log = T)
+                                                               
+                                                               #containers for the counts of accepted proposals
+                                                               acc.count_z = rep(1,n)
+                                                               acc.count_sigma_squared=1
+                                                               acc.count_mu_vec = 1
+                                                               acc.count_theta<- matrix(1,K,K)
+                                                               
+                                                               #READY TO BOMB!
+                                                               iteration_time= vector()
                                                                for(j in 2:N_iter){
                                                                  start_time <- Sys.time()
                                                                  
@@ -306,7 +310,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    theta_current = theta_update$theta
                                                                    acc.count_theta =theta_update$acc.moves
                                                                    
-                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+                                                                   if(j %% 50 == 0){
                                                                      
                                                                      for(my_p in 1:K){
                                                                        for(my_q in my_p:K){
@@ -336,7 +340,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    acc.count_sigma_squared = sigma_squared_update$acc.moves
                                                                    sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+                                                                   if(j %% 50 == 0 ){
                                                                      tau_sigma_squared <- tuning_proposal(iteration=j,
                                                                                                           acceptance_count = acc.count_sigma_squared,
                                                                                                           sigma = tau_sigma_squared,
@@ -358,7 +362,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    
                                                                    
-                                                                   if(j %% 50 == 0 && j < N_iter*0.1){
+                                                                   if(j %% 50 == 0){
                                                                      tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
                                                                                                    sigma = tau_mu_vec,
                                                                                                    acceptanceTarget = optimal_acceptance_rate_mu,
@@ -369,17 +373,21 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                  }
                                                                  
-                                                                 if(j < N_iter*0.1){
-                                                                   #storing scales
-                                                                   tau_sigma_squared_container[j]<- tau_sigma_squared
-                                                                   tau_mu_vec_container[j]<- tau_mu_vec
-                                                                   tau_theta_container[,,j]<- tau_theta
-                                                                 }
+                                                                 
+                                                                 #storing scales
+                                                                 tau_sigma_squared_container[j]<- tau_sigma_squared
+                                                                 tau_mu_vec_container[j]<- tau_mu_vec
+                                                                 tau_theta_container[,,j]<- tau_theta
+                                                                 
                                                                  #storing results for inference
                                                                  
+                                                                 if(j>=burnin){
+                                                                 P_ij<- inverse_logit_f(theta_current)
+                                                                 P_zizj<- calculate_victory_probabilities(vec2mat_0_P(z_current,P = P_ij), P_ij)
+                                                                 A_container[,j] =  dbinom(x = Y_ij[upper.tri(Y_ij)], 
+                                                                                           size = N_ij[upper.tri(N_ij)],
+                                                                                           prob = P_zizj[upper.tri(P_zizj)], log = T)
                                                                  
-                                                                 A_container[j] = llik_over_blocks_f_binomial( lamdabar = lamdabar, ybar = ybar,
-                                                                                                               mbar = mbar, theta =theta_current, K=K, t=1)
                                                                  z_container[,j] <- z_current
                                                                  theta_container[,,j] <- theta_current
                                                                  if(model == 'WST'){
@@ -388,7 +396,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  if(model == 'WST'|| model=='SST'){
                                                                    mu_vec_container[,j] <- mu_vec_current
                                                                  }
-                                                                 
+                                                                 }
                                                                  
                                                                  
                                                                  
@@ -419,41 +427,35 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    
                                                                  }
-                                                                 acceptance_rates <- list(acc.count_theta = acc.count_theta, acc.count_z = acc.count_z,
-                                                                                          acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)
-                                                                 
-                                                                 st.deviations<- list(tau_P = tau_theta_container,
-                                                                                      tau_sigma_squared = tau_sigma_squared_container, 
-                                                                                      tau_mu_vec= tau_mu_vec_container)
-                                                                 
-                                                                 est_containers = list(z = z_container,theta = theta_container,
-                                                                                       sigma_squared= sigma_squared_container,
-                                                                                       mu_vec = mu_vec_container)
-                                                                 
-                                                                 control_containers = list(A = A_container)
-                                                                 
-                                                                 chains = list(Y_ij= Y_ij, N_ij = N_ij,
-                                                                               seed = seed, ground_truth=ground_truth,est_containers=est_containers, 
-                                                                               control_containers=control_containers, acceptance_rates= acceptance_rates, 
-                                                                               st.deviations=st.deviations, t=t, seed=seed)
-                                                                 
-                                                                 my_names <- paste0("chain")
-                                                                 where_to_save = saving_directory[[chain]]
-                                                                 my_filename <- paste0(where_to_save,true_model, "Est_model",model,"_estK_", K,"_N", n, "iteration", which(t == t_list),".RDS")
-                                                                 saveRDS(object = chains, file = my_filename) # saving results
-                                                                 
-                                                               },
-                    error = function(e){
-                      message("An error occurred:\n", e)
-                      save_file =  list(z_current = z_current,
-                                        n_k = n_k,
-                                        sigma_squared_current=sigma_squared_current,
-                                        theta_current= theta_current,
-                                        mu_vec_current = mu_vec_current)
-                      saveRDS(object = save_file, file=paste0(where_to_save,"ERROR_model_",model,K,"iteration",j,".RDS"))
-                    }
-                                                             )
+                                                               }
+                                                               
+                                                               
+                                                               
+                                                               acceptance_rates <- list(acc.count_theta = acc.count_theta, acc.count_z = acc.count_z,
+                                                                                        acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)
+                                                               
+                                                               st.deviations<- list(tau_P = tau_theta_container,
+                                                                                    tau_sigma_squared = tau_sigma_squared_container, 
+                                                                                    tau_mu_vec= tau_mu_vec_container)
+                                                               
+                                                               est_containers = list(z = z_container,theta = theta_container,
+                                                                                     sigma_squared= sigma_squared_container,
+                                                                                     mu_vec = mu_vec_container)
+                                                               
+                                                               control_containers = list(A = A_container)
+                                                               
+                                                               chains = list(Y_ij= Y_ij, N_ij = N_ij,
+                                                                             seed = seed, ground_truth=ground_truth,est_containers=est_containers, 
+                                                                             control_containers=control_containers, acceptance_rates= acceptance_rates, 
+                                                                             st.deviations=st.deviations, t=t, seed=seed)
+                                                               
+                                                               my_names <- paste0("chain")
+                                                               where_to_save = saving_directory[[chain]]
+                                                               my_filename <- paste0(where_to_save,true_model, "Est_model",model,"_estK_", K,"_N", n, "iteration", which(t == t_list),".RDS")
+                                                               saveRDS(object = chains, file = my_filename) # saving results
                                                              }
+                                                             
+                                                             
                                                              acceptance_rates <- list(acc.count_theta =acc.count_theta, acc.count_z = acc.count_z,
                                                                                       acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)
                                                              

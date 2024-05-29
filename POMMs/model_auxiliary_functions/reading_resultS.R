@@ -23,40 +23,96 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   
   true_model = "Tennis_data"
   if(true_model == "Tennis_data"){
     #where the data are stored
+    setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/')
+    Y_ij <- read.table("./Data/Tennis application/Y_ij.csv",header  = F,row.names = 1,sep = ",")
+    N_ij <- read.table("./Data/Tennis application/N_ij.csv",header  = F,row.names = 1,sep = ",")
+    
+    Y_ij = as.matrix(Y_ij)
+    N_ij = as.matrix(N_ij)
     
     data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Tennis_data/"
     #where the data are saved
     processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Tennis_data/processed/"
-    
-    
-    
+
     df_rank <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_rank.RData")
+    
+
+    
+    ranks= df_rank   %>%
+      filter(week_year==2017)
+    
+    
     df_match <- readRDS("/Users/lapo_santi/Desktop/Nial/weekly material/Tennis application/data/df_match.RData")
     ranks= df_rank   %>%
-      filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),max_r = max(rank_number),min_r = min(rank_number))
+      filter(week_year==2017)  %>% group_by(player_slug) %>% summarise(median_rank = median(rank_number),
+                                                                       max_r = max(rank_number),
+                                                                       min_r = min(rank_number))
     
     top100players = ranks %>% filter(median_rank <= 100) %>% arrange(median_rank)
+
     
-    #adding one extra column with the player id
-    df_r =  inner_join(ranks,df_rank%>% select(player_slug,player_id), by='player_slug')
-    
+    players_df = data.frame(Id = rownames(Y_ij)) %>% inner_join(top100players,by= c('Id'='player_slug'))
     #now, for each game I want to filter just those players in the top one-hundred
-    df_match = df_match %>% filter(winner_slug %in% top100players$player_slug) %>% filter(loser_slug %in% top100players$player_slug)
     
     
-    my_edges = df_match %>% select(winner_slug, loser_slug)
-    g =graph_from_edgelist(as.matrix(my_edges),directed = T)
-    my_name = data.frame(player_slug=vertex_attr(g)$name)
-    players_df = inner_join(my_name,top100players, by="player_slug")
+    colnames(Y_ij) <- rownames(Y_ij)
+    rownames(N_ij) <- rownames(Y_ij)
+    colnames(N_ij) <- rownames(N_ij)
     
-    A = as_adjacency_matrix(g)
+    indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
+    # Convert the matrix to a data frame
+    z_df_complete <- data.frame(
+      row = as.character(indices$row),
+      col = as.character(indices$col),
+      Y = NA
+    )
+    
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$Y[i] <- Y_ij[z_df_complete$row[i], z_df_complete$col[i]]
+    }
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$row[i],])/sum(Y_ij[,z_df_complete$row[i]])
+    }
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$N[i] <- N_ij[z_df_complete$row[i], z_df_complete$col[i]]
+    }
+    
+    
+    z_df_complete$L = (z_df_complete$N -  z_df_complete$Y)
+    Y_mat = matrix(z_df_complete$Y,ncol=1)
+    L_mat = matrix(z_df_complete$L,ncol=1)
+    
+    
+    BT_mat = cbind(Y_mat,L_mat)
+    player2 = factor(z_df_complete$col, levels = unique(c(z_df_complete$row, z_df_complete$col)))
+    player1 = factor(z_df_complete$row, levels = unique(c(z_df_complete$row, z_df_complete$col)))
+    library(BradleyTerry2)
+    BTM = BTm(outcome = BT_mat,player1 =player1 ,player2 =player2)
+    
+    abilities = BTabilities(BTM)
+    bt_rank_df = data.frame(Id = rownames(abilities)[order(abilities[,1])], BTrank = 95:1)
+    players_df = players_df %>% inner_join(bt_rank_df, by = 'Id') %>%
+      mutate(degree_pl = rowSums(Y_ij)/colSums(Y_ij))
+
+    
+    
+    comparison = plot(players_df$median_rank,players_df$BTrank)
+    
+    
+    
+    
+    
+    
+    
+    
+    
   }else if( true_model == 'Citation_data'){
     data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/application/Citation_data/"
     #where the data are saved
@@ -120,10 +176,55 @@ if(is.simulation==F){
     scores$shortName <- plyr::mapvalues(scores$shortName, from = acronym_mapping, to = names(acronym_mapping))
     
     
-    players_df = data.frame(player_slug = journal_data$Journal, points= journal_data$SM, median_rank = journal_data$Rank)
+    players_df = data.frame(Id = journal_data$Journal, points= journal_data$SM, median_rank = journal_data$Rank)
     
-    # Create a new column 'rank' with the ranking of each journal according to their median rank
-    #players_df$median_rank <- rank(-players_df$points, ties.method = "min")
+
+    #now, for each game I want to filter just those players in the top one-hundred
+    
+    
+    colnames(Y_ij) <- rownames(Y_ij)
+    rownames(N_ij) <- rownames(Y_ij)
+    colnames(N_ij) <- rownames(N_ij)
+    
+    indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
+    # Convert the matrix to a data frame
+    z_df_complete <- data.frame(
+      row = as.character(indices$row),
+      col = as.character(indices$col),
+      Y = NA
+    )
+    
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$Y[i] <- Y_ij[z_df_complete$row[i], z_df_complete$col[i]]
+    }
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$row[i],])/sum(Y_ij[,z_df_complete$row[i]])
+    }
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$N[i] <- N_ij[z_df_complete$row[i], z_df_complete$col[i]]
+    }
+    
+    
+    z_df_complete$L = (z_df_complete$N -  z_df_complete$Y)
+    Y_mat = matrix(z_df_complete$Y,ncol=1)
+    L_mat = matrix(z_df_complete$L,ncol=1)
+    
+    
+    BT_mat = cbind(Y_mat,L_mat)
+    player2 = factor(z_df_complete$col, levels = unique(c(z_df_complete$row, z_df_complete$col)))
+    player1 = factor(z_df_complete$row, levels = unique(c(z_df_complete$row, z_df_complete$col)))
+    library(BradleyTerry2)
+    BTM = BTm(outcome = BT_mat,player1 =player1 ,player2 =player2)
+    
+    abilities = BTabilities(BTM)
+    bt_rank_df = data.frame(Id = rownames(abilities)[order(abilities[,1])], BTrank = nrow(Y_ij):1)
+    players_df = players_df %>% inner_join(bt_rank_df, by = 'Id') %>%
+      mutate(degree_pl = rowSums(Y_ij)/colSums(Y_ij))
+    
+    
+    
+    comparison = plot(players_df$median_rank,players_df$BTrank)
+    
     
   }
   
@@ -131,16 +232,16 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "Simple"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/processed/"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/simulation/Simple_true//"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/simulation/Simple_true/processed/"
   
   
   
 }
 
 
-for(est_model in c('WST','Simple')){
-  
+for(est_model in c('SST','WST','Simple')){
+  est_model = 'SST'
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
   print(filenames)
@@ -148,14 +249,14 @@ for(est_model in c('WST','Simple')){
   for(file in 1:length(filenames)){
 
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-    
+    uploaded_results <- chains_SST
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
     n=N
     N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
-    K = dim(uploaded_results$chain1$est_containers$P)[[1]]
-    burnin = N_iter-40000
+    K = dim(uploaded_results$chain1$est_containers$theta)[[1]]
+    burnin = max(N_iter - 40000,1)
     Y_ij <- uploaded_results$chain1$Y_ij
     N_ij <- uploaded_results$chain1$N_ij
     
@@ -164,7 +265,7 @@ for(est_model in c('WST','Simple')){
     #-------------------------------------------------------------------------------
     # P temporary estimate
     #-------------------------------------------------------------------------------
-    P_burned = uploaded_results$chain1$est_containers$P[,,-c(1:burnin)]
+    P_burned = uploaded_results$chain1$est_containers$theta[,,-c(1:burnin)]
     z_burned =  uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
     if(est_model != 'Simple'){
       m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,-c(1:burnin)]
@@ -176,16 +277,19 @@ for(est_model in c('WST','Simple')){
     
     
     
-    P_est = apply(P_burned, c(1,2), mean)
-    theta = inverse_logit_f(P_est)
+    theta = apply(P_burned, c(1,2), mean)
+    P_est = inverse_logit_f(theta)
     
-    my_z_est<- z_plot(z_burned = z_burned,  Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = theta,
+    my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[-c(1:burnin)],Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
                       est_model = est_model, true_value =is.simulation, 
                       diag0.5 =diag0.5 , K=K, N=nrow(uploaded_results$chain1$Y_ij), z_true = uploaded_results$chain1$ground_truth$z ,
                       burnin =  burnin ,label_switch = T,tap= processed_wd)
     
     
     point_est_z<- as.vector(my_z_est$point_est)
+    
+    table(point_est_z)
+    
     
     K_est<- length(unique(point_est_z))
     permutations_z<- my_z_est$permutations
@@ -202,43 +306,45 @@ for(est_model in c('WST','Simple')){
                                  true_value = is.simulation,
                                  permutations_z = permutations_z,
                                  diag0.5 = TRUE,
-                                 K = K, P_true = uploaded_results$chain1$ground_truth$P,
+                                 K = K, P_true = uploaded_results$chain1$ground_truth$theta,
                                  burnin = burnin,
                                  label_switch = T)
     
     P_s_table_save <-P_s_table$table
-    P_chain_permuted <- P_s_table$P_permuted
+    theta_chain_permuted <- P_s_table$P_permuted
     P_est_relabeled<- P_s_table$P_hat
     
+    inverse_logit_f(P_est_relabeled)
     
+    #some traceplots
     upper_tri_indices= which(upper.tri(P_est_relabeled, diag=T),arr.ind = T)
     if(is.simulation ==T){
       P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
         data.frame(iteration = j,
-                   P = upper.tri.extractor(P_chain_permuted[,,j]), 
-                   P_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
-                   P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
+                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$theta), 
+                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
       }))
-      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))%>%
-        mutate(P_true = inverse_logit_f(P_true))
+      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(theta))%>%
+        mutate(P_true = inverse_logit_f(theta_true))
       
-      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
+      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
         geom_line(aes(y=P), alpha=.3)+
         geom_line(aes(y=P_true), linetype=2, color='red')+
-        facet_wrap(~P_ij)+
+        facet_wrap(~entry)+
         theme_bw()
       
     }else if(is.simulation ==F){
       P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
-        data.frame(iteration = j,
-                   P = upper.tri.extractor(P_chain_permuted[,,j]), 
-                   P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+        data.frame(iteration = j+burnin,
+                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
+                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
       }))
-      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(P))
+      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(theta))
       
-      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = P_ij, group=P_ij))+
+      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
         geom_line(aes(y=P), alpha=.3)+
-        facet_wrap(~P_ij)+
+        facet_wrap(~entry)+
         theme_bw()
     }
     
@@ -252,17 +358,17 @@ for(est_model in c('WST','Simple')){
     
     P_variance_df <- do.call(rbind, lapply(1:(N_iter), function(j) {
       data.frame(iteration = j,
-                 P = upper.tri.extractor(uploaded_results$chain1$st.deviations$tau_P[,,j]), 
+                 P = upper.tri.extractor(uploaded_results$chain1$st.deviations$tau_theta[,,j]),
                  P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-    }))                                       
-    
-    
+    }))
+
+
     traceplot_proposal_P = ggplot(P_variance_df, aes(x = iteration, color = P_ij, group=P_ij))+
       geom_line(aes(y=P), alpha=.3)+
       facet_wrap(~P_ij)+
       theme_bw()+
       labs(title = "Adaptive variances proposals for P", x = 'Iterations')
-    
+
     plot_name_traceplot_proposal_P <- paste0(processed_wd,"//P_traceplot_proposal",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_traceplot_proposal_P,width = 800, height = 800)
     par(mar = c(1.5, 1.5,1.5,1.5))
@@ -301,24 +407,27 @@ for(est_model in c('WST','Simple')){
     z_burned_3 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
     z_burned_4 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
     
-    P_burned_2 = uploaded_results$chain2$est_containers$P[,,-c(1:burnin)]
-    P_burned_3 = uploaded_results$chain3$est_containers$P[,,-c(1:burnin)]
-    P_burned_4 = uploaded_results$chain3$est_containers$P[,,-c(1:burnin)]
+    theta_burned_2 = uploaded_results$chain2$est_containers$theta[,,-c(1:burnin)]
+    theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
+    theta_burned_4 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
     
     
     
-    chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, ncol_iter = N_iter - burnin,n=n)
-    chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, ncol_iter =  N_iter - burnin,n=n)
-    chain_relabeled4 <- relabel_chain(4, permutations_z = permutations_z, z_chain = z_burned_4,    ncol_iter = N_iter - burnin,n=n)
+    chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, 
+                                      ncol_iter = N_iter - burnin,n=n)
+    chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, 
+                                      ncol_iter =  N_iter - burnin,n=n)
+    chain_relabeled4 <- relabel_chain(4, permutations_z = permutations_z, z_chain = z_burned_4,
+                                      ncol_iter = N_iter - burnin,n=n)
     
     
     # Permute P matrices for the remaining chains
-    P_permuted2 <- permute_P(2, permutations_z, P_burned_2,K=K)
-    P_permuted3 <- permute_P(3, permutations_z, P_burned_3,K=K)
-    P_permuted4 <- permute_P(4, permutations_z, P_burned_4,K=K)
+    theta_permuted2 <- permute_P(chain_index = 2,  permutations_z = permutations_z, P_chain = theta_burned_2,K=K)
+    theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
+    theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
     
     z_list_relab = list(z1 = z_chain_permuted,z2=chain_relabeled2,z3=chain_relabeled3,z4=chain_relabeled4)
-    P_list_relab = list(P1 = P_chain_permuted,P2=P_permuted2,P3=P_permuted3,P4=P_permuted4)
+    theta_list_relab = list(P1 = theta_chain_permuted,P2=theta_permuted2,P3=theta_permuted3,P4=theta_permuted4)
     
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
@@ -329,25 +438,27 @@ for(est_model in c('WST','Simple')){
     
     LL_list <- foreach(i=1:4, .packages='foreach') %do% {
       z_chain <- z_list_relab[[i]]
-      P_chain <- P_list_relab[[i]]
+      theta_chain <- theta_list_relab[[i]]
       
-      u_y = Y_ij[upper.tri(Y_ij)]
-      u_n = N_ij[upper.tri(N_ij)]
+      u_y = Y_ij[upper.tri(N_ij)&(N_ij!=0)]
+      u_n = N_ij[upper.tri(N_ij)&(N_ij!=0)]
+
       
-      P_inverse = array(apply(X = P_chain, MARGIN = 3, FUN = inverse_logit_f),dim=c(K,K,N_iter-burnin))
-      z_mat_array = array(apply(X = z_chain, MARGIN = 2, FUN = vec2mat_0_P,P=P_inverse[,,1]), dim=c(n, K, N_iter-burnin))
       
-      llik = matrix(NA, (n*(n-1))/2, N_iter-burnin)
+      P_chain = array(apply(X = theta_chain, MARGIN = 3, FUN = inverse_logit_f),dim=c(K,K,N_iter-burnin))
+      z_mat_array = array(apply(X = z_chain, MARGIN = 2, FUN = vec2mat_0_P,P=P_chain[,,1]), dim=c(n, K, N_iter-burnin))
+      
+      llik = matrix(NA, length(u_n), N_iter-burnin)
       
       for(t in 1:(N_iter- burnin)){
-        P_ij= calculate_victory_probabilities(z_mat_array[,,t], P_inverse[,,t])
-        llik[,t] = dbinom(x = u_y, size = u_n, P_ij[upper.tri(P_ij)], log=T)
+        P_ij= calculate_victory_probabilities(z_mat_array[,,t], P_chain[,,t])
+        llik[,t] = dbinom(x = u_y, size = u_n, P_ij[upper.tri(N_ij)&(N_ij!=0)], log=T)
       }
       
       print(i)
       return(llik)
     }
-    registerDoSEQ()
+
     # Stop the cluster after the loop
         
     
@@ -383,6 +494,7 @@ for(est_model in c('WST','Simple')){
     dev.off()
     
     loo_model_fit = loo(t(LL))
+    
     
     plot(loo_model_fit)
     waic_model_fit = waic(t(LL))
@@ -434,6 +546,22 @@ for(est_model in c('WST','Simple')){
       #-------------------------------------------------------------------------------
       #
       
+      mu_chain<- uploaded_results$chain1$est_containers$mu_vec
+      mu_df = data.frame(mu_chain = 0, n_iter = 0, level_set =0)
+      for(i in 1:(K+1)){
+      mu_df = rbind(mu_df, 
+                    data.frame(mu_chain = mu_chain[i,], n_iter = 1:ncol(mu_chain), 
+                               level_set = i))
+      }
+      
+      
+      mu_plot = mu_df %>%ggplot(aes(n_iter, mu_chain, group = level_set,color= as.factor(level_set)))+
+        geom_line() 
+      ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
+      
+      
+      
+      
       mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
                                             diag0.5 = TRUE, K = K, burnin = burnin)
       
@@ -457,10 +585,10 @@ for(est_model in c('WST','Simple')){
     #-------------------------------------------------------------------------------
     # 
     
-    P_d_table<- P_diagnostic_table(chains = uploaded_results, true_value = is.simulation, 
+    P_d_table<- P_diagnostic_table(chains = theta_list_relab, true_value = is.simulation, 
                                    permutations_z = permutations_z,
                                    diag0.5 = TRUE,K = K,
-                                   P = uploaded_results$chain1$ground_truth$P,
+                                   P = uploaded_results$chain1$ground_truth$theta,
                                    burnin = burnin, N_iter = N_iter, label_switch =T)
     
     
@@ -517,7 +645,8 @@ for(est_model in c('WST','Simple')){
       # mu diagnostics
       #-------------------------------------------------------------------------
 
-      mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'), diag0.5 = TRUE,
+      mu_vec_d_table <- mu_vec_diagnostic_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'), 
+                                                diag0.5 = TRUE,
                                                 K = K, burnin = burnin,N_iter = N_iter)
 
 
@@ -541,7 +670,7 @@ for(est_model in c('WST','Simple')){
     
     if(is.simulation==T){
       P_true_title <- paste0(processed_wd,'/P_true_matrix',true_model,K, '.csv')
-      P_true <- round(uploaded_results$chain1$ground_truth$P,3) %>% data.frame()
+      P_true <- round(uploaded_results$chain1$ground_truth$theta,3) %>% inverse_logit_f() %>% data.frame() 
       P_true %>% write.csv(file = P_true_title)
     }
     
@@ -583,7 +712,7 @@ for(est_model in c('WST','Simple')){
     #---------------------------------------------------------------------------
     
     if(est_model != 'Simple'){
-      
+      tryCatch({
       #Gelman Rubin
       plot_name_gelman_U <- paste0(processed_wd,"//U_gelman_rubin_plot%03d",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       # Save the plot with the constructed file name
@@ -607,9 +736,11 @@ for(est_model in c('WST','Simple')){
       png(plot_name_auto_U,width = 800, height = 800)
       print(auto_plot_U)
       dev.off()
+      }, error = function(e){
+        message("An error occurred:\n", e)}
+    )
+    
     }
-    
-    
     
     #---------------------------------------------------------------------------
     # COMPARISON WITH THE EXTERNAL RANKING
@@ -620,25 +751,17 @@ for(est_model in c('WST','Simple')){
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       # Save the plot with the constructed file name
       
-      g = graph_from_adjacency_matrix(as.matrix(Y_ij))
-      
-      g_df =  data.frame(vertex_attr(g)) %>%
-        rename(player_slug= name) %>%
-        left_join(players_df, by="player_slug") %>%
-        mutate(degree_pl = degree(g,mode = 'out')/degree(g,mode = 'all')) %>%
-        arrange()
-      
-      est_df<- data.frame(player_slug = rownames(Y_ij), est_cl = point_est_z, 
-                          degree_pl = rowSums(Y_ij)/(colSums(Y_ij)),
-                          degree_out = colSums(Y_ij)/(rowSums(Y_ij)))
-      combined_df<- inner_join(players_df,est_df,by = 'player_slug')
-      combined_df = combined_df %>% dplyr::arrange(median_rank)
+  
+
+      est_df<- data.frame(Id = rownames(Y_ij), est_cl = point_est_z) 
+
+      combined_df = players_df %>% inner_join(est_df, by = 'Id')%>% dplyr::arrange(median_rank)
       
       if(true_model=='Tennis_data'){
-        degree_plot <- ggplot(combined_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(est_cl) )) +
+        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, BTrank), y = degree_pl, fill =factor(est_cl) )) +
           geom_bar(stat = "identity") +
           labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
-               subtitle = 'Players are sorted according to their median rank in 2017') +
+               subtitle = 'Players are sorted according to their Bradley Terry model') +
           scale_color_discrete(name = "Cluster") +
           theme_bw() +
           theme(
@@ -649,7 +772,7 @@ for(est_model in c('WST','Simple')){
             plot.margin = margin(20, 20, 20, 20)
           )
       }else if(true_model == 'Citation_data'){
-        degree_plot <- ggplot(combined_df, aes(x = reorder(player_slug, median_rank), y = degree_pl, fill =factor(est_cl) )) +
+        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, median_rank), y = degree_pl, fill =factor(est_cl) )) +
           geom_bar(stat = "identity") +
           labs(x = "Journal Name", y = "Citations received / Citations made", fill='Cluster', 
                title = "Citations received / citations made for each journal",
@@ -678,57 +801,63 @@ for(est_model in c('WST','Simple')){
       plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
       
       
-      colnames(Y_ij) <- rownames(Y_ij)
-      rownames(N_ij) <- rownames(Y_ij)
-      colnames(N_ij) <- rownames(N_ij)
       
-      indices <- expand.grid(row = rownames(Y_ij), col = colnames(Y_ij))
-      # Convert the matrix to a data frame
-      z_df_complete <- data.frame(
-        row = as.character(indices$row),
-        col = as.character(indices$col),
-        degree_value = NA,
-        Y = NA
-      )
-      
-      for (i in seq_len(nrow(z_df_complete))) {
-        z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
-      }
-      for (i in seq_len(nrow(z_df_complete))) {
-        z_df_complete$N[i] <- N_ij[z_df_complete$col[i], z_df_complete$row[i]]
-      }
-      for (i in seq_len(nrow(z_df_complete))) {
-        z_df_complete$degree_value[i] <- combined_df$degree_pl[which(combined_df$player_slug == z_df_complete$col[i])]
-      }
       
       plot_df = z_df_complete%>%
-        inner_join(est_df, by = c("row" = "player_slug")) %>%
-        inner_join(est_df, by = c("col" = "player_slug")) %>%
-        mutate(row = factor(row, levels = unique(row[order(est_cl.x , row)])),
-               col = factor(col, levels = unique(col[order(est_cl.y, col, decreasing = TRUE)])))%>%
-        mutate(relative_citations = Y/N)
+        inner_join(est_df, by = c("col" = "Id")) %>%
+        inner_join(est_df, by = c("row" = "Id")) %>%
+        mutate(col = factor(col, levels = unique(col[order(est_cl.x, col)])),
+               row = factor(row, levels = unique(row[order(est_cl.y , row, decreasing = TRUE)])))%>%
+        mutate(perc_success = Y/N)
+      
+      # est_df_disordered = est_df %>% mutate(est_cl = sample(1:5, 47,T))
+      # plot_df_disordered = z_df_complete%>%
+      #   inner_join(est_df_disordered, by = c("col" = "Id")) %>%
+      #   inner_join(est_df_disordered, by = c("row" = "Id")) %>%
+      #   mutate(perc_success = Y/N) %>%
+      #   mutate(col = factor(col, levels = unique(col[order(est_cl.x, col)])),
+      #          row = factor(row, levels = unique(row[order(est_cl.y , row, decreasing = TRUE)])))
+      #   
+      
+      
       
       if(true_model == 'Tennis_data'){
-        adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
-          geom_tile(aes(fill = relative_citations), color = "gray", show.legend = T) +
+      adjacency_m   <- ggplot(plot_df, aes(x = col, y = row)) +
+          geom_tile(aes(fill = perc_success), color = "gray", show.legend = T) +
           scale_fill_gradient(low = "white", high = "red") +
-          geom_ysidecol(aes(x = degree_pl.y, color=factor(est_cl.y))) +
+          geom_ysidecol(aes(x = degree_pl_row, color=factor(est_cl.y))) +
           labs(title = 'Heatmap filled with victory percentages',
                x = paste0("Players ordered by blocks"),
                y = paste0("Playersordered by blocks"),
                fill = "% victories",
                color = "Block")+
           theme(legend.position = 'bottom', legend.direction = 'horizontal')+
-          theme_minimal() +
+          theme_minimal()+
           theme(axis.text.y = element_blank(),
                 axis.text.x = element_blank(),
                 axis.title.x = element_blank(),
                 axis.title.y = element_blank())
       }else if(true_model == 'Citation_data'){
-        adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
-          geom_tile(aes(fill = relative_citations), color = "gray", show.legend = T) +
+        adjacency_m<- ggplot(plot_df, aes(x = col, y = row)) +
+          geom_tile(aes(fill = perc_success), color = "gray", show.legend = T) +
           scale_fill_gradient(low = "white", high = "red") +
-          geom_ysidecol(aes(x = degree_pl.y, color=factor(est_cl.y))) +
+          geom_ysidecol(aes(x = degree_pl_row, color=factor(est_cl.y))) +
+          labs(title = 'Heatmap filled with percetage citation received over citations made',
+               x = paste0("Players ordered by blocks"),
+               y = paste0("Playersordered by blocks"),
+               fill = "% relative citations",
+               color = "Block")+
+          theme(legend.position = 'bottom', legend.direction = 'horizontal')+
+          theme_minimal() +
+          theme(axis.text.y = element_text(angle=30),
+                axis.text.x = element_blank(),
+                axis.title.x = element_blank(),
+                axis.title.y = element_blank())
+        
+        adjacency_m_disordered<- ggplot(plot_df_disordered, aes(x = col, y = row)) +
+          geom_tile(aes(fill = perc_success), color = "gray", show.legend = T) +
+          scale_fill_gradient(low = "white", high = "red") +
+          geom_ysidecol(aes(x = degree_pl_row, color=factor(est_cl.y))) +
           labs(title = 'Heatmap filled with percetage citation received over citations made',
                x = paste0("Players ordered by blocks"),
                y = paste0("Playersordered by blocks"),
@@ -764,7 +893,7 @@ for(est_model in c('WST','Simple')){
           geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
           geom_label_repel(
             data = combined_df,  # Use the sampled labels for display
-            aes(label = player_slug),
+            aes(label = Id),
             size = 3,
             hjust = .5,
             vjust = 0,
@@ -774,7 +903,7 @@ for(est_model in c('WST','Simple')){
           labs(title= "Rank of the players divided into blocks",
                subtitle = "Not all names are displayed to avoid overlapping",
                x = "Clusters",
-               y = "Median Rank 2017",
+               y = "Varin et al rank",
                color = "Cluster",
                fill = "Cluster")+
           theme_classic()+
@@ -783,11 +912,11 @@ for(est_model in c('WST','Simple')){
                 plot.subtitle = element_text(face = "bold.italic", hjust = 0.5),
                 plot.caption = element_text(face = "italic"))
       }else if(true_model == 'Tennis_data'){
-        rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = median_rank,color = factor(est_cl))) +
+        rank_boxplot<- ggplot(combined_df, aes(x = factor(est_cl), y = BTrank,color = factor(est_cl))) +
           geom_boxplot(aes(fill=factor(est_cl)),alpha=.3) +
           geom_label_repel(
             data = sampled_labels,  # Use the sampled labels for display
-            aes(label = player_slug),
+            aes(label = Id),
             size = 3,
             hjust = .5,
             vjust = 0,
@@ -797,7 +926,7 @@ for(est_model in c('WST','Simple')){
           labs(title= "Rank of the players divided into blocks",
                subtitle = "Not all names are displayed to avoid overlapping",
                x = "Clusters",
-               y = "Median Rank 2017",
+               y = "Bradley Terry rank",
                color = "Cluster",
                fill = "Cluster")+
           theme_classic()+
@@ -871,10 +1000,13 @@ if(is.simulation==F){
   
   uploaded_results<- readRDS(paste0(data_wd, 'True_Model', true_model,'Est_model_',chosen_model$model,'_N',n,'_K',chosen_model$K,'.RDS'))
   K<- chosen_model$K
-  P_est <- apply(uploaded_results$chain1$est_containers$P[,,-c(1:burnin)], MARGIN = c(1,2), mean)
-  P_est <- inverse_logit_f(P_est)
-  my_z_est<- z_plot(chains = uploaded_results , true_model= true_model,P_est = P_est,
-                    est_model = est_model, true_value =is.simulation, 
+  theta_est <- apply(uploaded_results$chain1$est_containers$theta[,,-c(1:burnin)], MARGIN = c(1,2), mean)
+  P_est <- inverse_logit_f(theta_est)
+  z_burned <- uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
+  
+  my_z_est<- z_plot(z_burned = z_burned ,A =uploaded_results$chain1$control_containers$A[,-c(1:burnin)], Y_ij = Y_ij, N_ij = N_ij, 
+                    true_model= true_model,P_est = P_est,est_model = chosen_model$model
+                    , true_value =is.simulation, 
                     diag0.5 =diag0.5 , K=chosen_model$K, N=nrow(uploaded_results$chain1$Y_ij), z = uploaded_results$chain1$ground_truth$z ,
                     burnin =  burnin ,label_switch = T,tap= processed_wd)
   

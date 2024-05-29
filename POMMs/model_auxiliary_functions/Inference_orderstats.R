@@ -142,10 +142,8 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 }
 
 
-z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, true_value, P_est, diag0.5 , K, N, z_true , burnin, label_switch, tap){
+z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, true_value, P_est, diag0.5 , K, N, z_true , burnin, label_switch, tap){
 
-
-  z_burned = chains_Simple$chain1$est_containers$z
   z_chain = z_burned
   
   psm<- comp.psm(t(z_chain))
@@ -158,13 +156,8 @@ z_plot<- function(z_burned, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, tru
     
     #computing the MAP --------------------------
     #computing the likelihood of every partition
-    llik<- apply(z_chain, 2, function(z_chain) 
-      log_lik_f_binom(N = N_ij,  
-                      Y = Y_ij,
-                      z = z_chain,
-                      P = P_est))
-    llik = as.matrix(llik)
-    z_MAP <- z_chain[,which.max(chains_Simple$chain1$control_containers$A)]
+
+    z_MAP <- z_chain[,which.max(A)]
     z_pivot = z_MAP
     if(true_value==F){
       run_label_switch <- label.switching(method = "ECR" ,
@@ -364,22 +357,10 @@ P_diagnostic_table<- function(chains, true_value, permutations_z, diag0.5,P,K,bu
   Y_ij <- chains$chain1$Y_ij
   
   
-  P_samples_list = list(P_1 = chains$chain1$est_containers$P[,,-c(1:burnin)],
-                        P_2 = chains$chain2$est_containers$P[,,-c(1:burnin)],
-                        P_3 = chains$chain3$est_containers$P[,,-c(1:burnin)],
-                        P_4 = chains$chain4$est_containers$P[,,-c(1:burnin)])
-  
-  if (label_switch == TRUE){
-    for(chain in 1:4){
-      P_permuted = array(NA, dim=c(K,K,nrow(permutations_z)))
-      P_chain_i = P_samples_list[[chain]]
-      for(i in 1: nrow(permutations_z)){
-        # Permute the rows of matrix P
-        P_permuted[,,i] <- P_chain_i[permutations_z[i,], permutations_z[i,],i]
-      }
-      P_samples_list[[chain]]<- P_permuted
-    }
-  }
+  P_samples_list = list(P_1 = chains$P1,
+                        P_2 = chains$P2,
+                        P_3 = chains$P3,
+                        P_4 = chains$P4)
   
   
   
@@ -396,19 +377,6 @@ P_diagnostic_table<- function(chains, true_value, permutations_z, diag0.5,P,K,bu
                        gelman_rubin = gelman.diag(mm)$psrf[,1],
                        acceptance_rate =  AcceptanceRate(mm)*100)
   
-  convergence_within_chain = matrix(NA, nrow = nrow(results), ncol=4)
-  #using geweke convergence diagnostics to compute the z_score for the difference in means from the first part of the chain and the last part of the chain
-  for(chain in 1:4){
-    #finding chains that haven't converged: ---------------
-    #value 1 for z_score outside the 95percent interval,
-    #value 0 for z_score within the 95percent interval
-    convergence_within_chain[,chain]<- (unlist(coda::geweke.diag(mm)[[chain]]$z) < qnorm(.05))+(unlist(coda::geweke.diag(mm)[[chain]]$z) >qnorm(.95))
-  }
-  
-  # results$n_chain_converged = rep(4,nrow(results)) - rowSums(convergence_within_chain)
-  # best_chain = which.min(colSums(convergence_within_chain))
-  # results$best_chain = rep(which.min(colSums(convergence_within_chain)), nrow(results))
-  # 
   return(list(results = results, 
               plots_list = mm))
 }
