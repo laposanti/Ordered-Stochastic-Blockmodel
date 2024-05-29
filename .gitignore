@@ -1,2 +1,6 @@
 POMMS/results/
 POMMS/data
+.DS_Store
+POMMs/.DS_Store
+POMMs/.RData
+POMMs/.Rhistory
