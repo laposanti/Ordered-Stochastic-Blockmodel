@@ -15,7 +15,7 @@
 
 # run from current directory
 cd $SLURM_SUBMIT_DIR
-module load R/4.3.1
+module load R/4.4.0 
 
 # command to use
 Rscript Application_laucher.R

@@ -218,15 +218,18 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #setting and initialising containers
                                                                #--------------------------------------------------------------------------
                                                                #initialising the chain
-                                                               z_container= matrix(0, nrow = n, ncol = N_iter-burnin)
-                                                               z_container[,1] = z_current
+                                                               A_container <- matrix(0, nrow = 1, ncol = N_iter-burnin)
+                                                               A_container[1] <- A_current
+                                                               #initialising the chain
+                                                               z_container <- matrix(0, nrow = n, ncol = N_iter-burnin)
+                                                               z_container[,1] <- z_current
                                                                if(model == 'WST'){
                                                                  #initialising the chain
                                                                  sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter-burnin)
                                                                  sigma_squared_container[1] <- sigma_squared_current
                                                                  #initialising the adaptive variance
                                                                  tau_sigma_squared <- 0.2
-                                                                 tau_sigma_squared_container = matrix(0,1, N_iter-burnin)
+                                                                 tau_sigma_squared_container = matrix(0,1, N_iter)
                                                                  tau_sigma_squared_container[1] <- tau_sigma_squared
                                                                }else{
                                                                  tau_sigma_squared <- NA
@@ -238,7 +241,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter-burnin)
                                                                  mu_vec_container[,1] <- mu_vec_current
                                                                  #initialising the adaptive variance
-                                                                 tau_mu_vec <- 0.2
+                                                                 tau_mu_vec <- 0.1
                                                                  tau_mu_vec_container = matrix(0,1, N_iter)
                                                                  tau_mu_vec_container[1] <- tau_mu_vec
                                                                }else{
@@ -247,25 +250,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  tau_mu_vec_container <- NA
                                                                }
                                                                #initialing theta and its adaptive variance container
-                                                               theta_container = array(0, dim = c(K,K,))
+                                                               theta_container = array(0, dim = c(K,K,N_iter-burnin))
                                                                theta_container[,,1] <- theta_current
                                                                
                                                                tau_theta_container = array(0,dim=c(K,K,N_iter))
-                                                               tau_theta =matrix(0.2,K,K)
+                                                               tau_theta =matrix(0.25,K,K)
                                                                tau_theta_container[,,1] = tau_theta
                                                                
                                                                
-                                                               A_container= matrix(0, nrow=(n*(n-1))/2, ncol=)
-                                                               P_ij<- inverse_logit_f(theta_current)
-                                                               P_zizj<- calculate_victory_probabilities(vec2mat_0_P(z_current,P = P_ij), P_ij)
-                                                               A_container[,1] =  dbinom(x = Y_ij[upper.tri(Y_ij)], 
-                                                                                         size = N_ij[upper.tri(N_ij)],
-                                                                                         prob = P_zizj[upper.tri(P_zizj)], log = T)
                                                                
                                                                #containers for the counts of accepted proposals
                                                                acc.count_z = rep(1,n)
                                                                acc.count_sigma_squared=1
-                                                               acc.count_mu_vec = 1
+                                                               acc.count_mu_vec = rep(1, K+1)
                                                                acc.count_theta<- matrix(1,K,K)
                                                                
                                                                #READY TO BOMB!
@@ -310,20 +307,20 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    theta_current = theta_update$theta
                                                                    acc.count_theta =theta_update$acc.moves
                                                                    
-                                                                   if(j %% 50 == 0){
-                                                                     
-                                                                     for(my_p in 1:K){
-                                                                       for(my_q in my_p:K){
-                                                                         
-                                                                         tau_theta[my_p,my_q] = tuning_proposal(iteration = j,
-                                                                                                                acceptance_count = acc.count_theta[my_p,my_q],
-                                                                                                                sigma = tau_theta[my_p,my_q],
-                                                                                                                acceptanceTarget = optimal_acceptance_rate_theta,
-                                                                                                                min_sigma = 0.00002)
-                                                                         
-                                                                       }
-                                                                     }
-                                                                   }
+                                                                   # if(j %% 50 == 0){
+                                                                   #   
+                                                                   #   for(my_p in 1:K){
+                                                                   #     for(my_q in my_p:K){
+                                                                   #       
+                                                                   #       tau_theta[my_p,my_q] = tuning_proposal(iteration = j,
+                                                                   #                                              acceptance_count = acc.count_theta[my_p,my_q],
+                                                                   #                                              sigma = tau_theta[my_p,my_q],
+                                                                   #                                              acceptanceTarget = optimal_acceptance_rate_theta,
+                                                                   #                                              min_sigma = 0.00002)
+                                                                   #       
+                                                                   #     }
+                                                                   #   }
+                                                                   # }
                                                                  }
                                                                  
                                                                  if (estimation_control$sigma_squared == 1) {
@@ -340,13 +337,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    acc.count_sigma_squared = sigma_squared_update$acc.moves
                                                                    sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                   if(j %% 50 == 0 ){
-                                                                     tau_sigma_squared <- tuning_proposal(iteration=j,
-                                                                                                          acceptance_count = acc.count_sigma_squared,
-                                                                                                          sigma = tau_sigma_squared,
-                                                                                                          acceptanceTarget = optimal_acceptance_rate_theta,
-                                                                                                          min_sigma = 0.02)
-                                                                   }
+                                                                   # if(j %% 50 == 0 ){
+                                                                   #   tau_sigma_squared <- tuning_proposal(iteration=j,
+                                                                   #                                        acceptance_count = acc.count_sigma_squared,
+                                                                   #                                        sigma = tau_sigma_squared,
+                                                                   #                                        acceptanceTarget = optimal_acceptance_rate_theta,
+                                                                   #                                        min_sigma = 0.02)
+                                                                   # }
                                                                  }
                                                                  if (estimation_control$mu== 1) {
                                                                    #mu UPDATE----------------------------------------------------------------
@@ -361,42 +358,41 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    acc.count_mu_vec = mu_update$acc.moves
                                                                    
                                                                    
-                                                                   
-                                                                   if(j %% 50 == 0){
-                                                                     tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                                                                                   sigma = tau_mu_vec,
-                                                                                                   acceptanceTarget = optimal_acceptance_rate_mu,
-                                                                                                   min_sigma = 0.002)
-                                                                   }
-                                                                   
+                                                                   # 
+                                                                   # if(j %% 50 == 0){
+                                                                   #   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
+                                                                   #                                 sigma = tau_mu_vec,
+                                                                   #                                 acceptanceTarget = optimal_acceptance_rate_mu,
+                                                                   #                                 min_sigma = 0.002)
+                                                                   # }
+                                                                   # 
                                                                    
                                                                    
                                                                  }
                                                                  
                                                                  
                                                                  #storing scales
-                                                                 tau_sigma_squared_container[j]<- tau_sigma_squared
-                                                                 tau_mu_vec_container[j]<- tau_mu_vec
-                                                                 tau_theta_container[,,j]<- tau_theta
-                                                                 
+                                                                 # tau_sigma_squared_container[j]<- tau_sigma_squared
+                                                                 # tau_mu_vec_container[j]<- tau_mu_vec
+                                                                 # tau_theta_container[,,j]<- tau_theta
+                                                                 # 
                                                                  #storing results for inference
                                                                  
-                                                                 if(j>=burnin){
-                                                                 P_ij<- inverse_logit_f(theta_current)
-                                                                 P_zizj<- calculate_victory_probabilities(vec2mat_0_P(z_current,P = P_ij), P_ij)
-                                                                 A_container[,j] =  dbinom(x = Y_ij[upper.tri(Y_ij)], 
-                                                                                           size = N_ij[upper.tri(N_ij)],
-                                                                                           prob = P_zizj[upper.tri(P_zizj)], log = T)
+                                                                 if(j > burnin){
+                                                                   j_burned = j - burnin
+                                                                   z_container[,j_burned] <- z_current
+                                                                   theta_container[,,j_burned] <- theta_current
+                                                                   if(model == 'WST'){
+                                                                     sigma_squared_container[1,j_burned] = sigma_squared_current
+                                                                   }
+                                                                   if(model == 'WST'|| model=='SST'){
+                                                                     mu_vec_container[,j_burned] <- mu_vec_current
+                                                                   }
+                                                                   
+                                                                   
+                                                                   A_container[j_burned] =  llik_over_blocks_f_binomial(lamdabar, ybar, mbar, theta_current, K, t=1)
+                                                                 }
                                                                  
-                                                                 z_container[,j] <- z_current
-                                                                 theta_container[,,j] <- theta_current
-                                                                 if(model == 'WST'){
-                                                                   sigma_squared_container[1,j] = sigma_squared_current
-                                                                 }
-                                                                 if(model == 'WST'|| model=='SST'){
-                                                                   mu_vec_container[,j] <- mu_vec_current
-                                                                 }
-                                                                 }
                                                                  
                                                                  
                                                                  

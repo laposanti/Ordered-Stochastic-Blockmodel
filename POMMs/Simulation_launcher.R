@@ -78,6 +78,7 @@ for(true_model in  c('Simple','SST')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     N_iter= 120000
+    burnin = 80000
     chains_seeds = list(20,21,22,23)
     
     #-----------------------------------------------------------------------------
@@ -95,7 +96,7 @@ for(true_model in  c('Simple','SST')){
       t_chains = rep(1,n_chains)
       chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
-                                            ground_truth = ground_truth, 
+                                            ground_truth = ground_truth, burnin=burnin,
                                             n = n, N_iter = N_iter,n_chains = n_chains, 
                                             optimal_acceptance_rate_theta = optimal_acceptance_rate_theta, 
                                             optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
@@ -128,7 +129,7 @@ for(true_model in  c('Simple','SST')){
       chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control, 
                                             ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, 
+                                            n = n, N_iter = N_iter,n_chains = n_chains, burnin = burnin,
                                             optimal_acceptance_rate_theta =optimal_acceptance_rate_theta, 
                                             optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
                                             K = K_chains,
@@ -159,7 +160,7 @@ for(true_model in  c('Simple','SST')){
       chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                                estimation_control = estimation_control, 
                                                ground_truth = ground_truth, 
-                                               n = n, N_iter = N_iter,n_chains = n_chains, 
+                                               n = n, N_iter = N_iter,n_chains = n_chains, burnin = burnin,
                                                optimal_acceptance_rate_theta = optimal_acceptance_rate_theta , 
                                                optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
                                                K = K_chains,

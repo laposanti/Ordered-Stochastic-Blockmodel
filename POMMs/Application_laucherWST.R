@@ -83,6 +83,7 @@ for(application in c('Tennis_data', "Citation_data")){
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   N_iter <- 120000
+  burnin = 80000
   n_temperatures = 50
   #-----------------------------------------------------------------------------
   # SST MODEL
@@ -115,6 +116,7 @@ for(application in c('Tennis_data', "Citation_data")){
     chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,n_temperatures = n_temperatures,
                                                       saving_directory = saving_directories,
                                                       estimation_control = estimation_control,
+                                                      burnin = burnin,
                                                       ground_truth = ground_truth,
                                                       n = n, N_iter = N_iter, n_chains = n_chains,
                                                       optimal_acceptance_rate_theta = optimal_acceptance_rate_theta, 
