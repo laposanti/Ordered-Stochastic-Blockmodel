@@ -82,19 +82,13 @@ theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
 
 #mu prior distribution
 d_sA_mu = function(K,mu_vec){
-  # mu_0_lp = dnorm(mu_vec[1],0,1,log=T)
-  fac <- lfactorial(K+1)
-  joint_density<- sum(log(dtruncnorm(mu_vec[1:(K+1)],a = 0,mean = 0,sd = 3)) - 
+  mu_0_lp = dnorm(mu_vec[1],0,2,log=T)
+  fac <- lfactorial(K)
+  joint_density<- sum(log(dtruncnorm(mu_vec[2:(K+1)],a = 0,mean = 0,sd = 3)) - 
                         log(1- pnorm(0,mean = 0,sd = 3)))
-  return(joint_density+fac)
+  return(joint_density+fac+mu_0_lp)
 }
 
-order_stat_truncnorm = function(K, mu, mean, sd, lb, ub){
-  fac <- lfactorial(K+1)
-  joint_density<- sum(log(dtruncnorm(mu,a = lb,b = ub, mean = mean,sd = sd)) - 
-                        log(pnorm(ub,mean = mean,sd = sd) - pnorm(lb,mean = mean,sd = sd)))
-  return(fac+joint_density)
-}
 
 
 
@@ -178,7 +172,7 @@ theta_update_f = function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
     
     theta_prime[i_star,j_star]<- rtruncnorm(1, a = lower.bound , b = upper.bound,
                                             mean = theta_current[i_star,j_star], 
-                                            sd =  .25)
+                                            sd =  tau_theta[i_star,j_star])
     
     theta_prime[lower.tri(theta_prime)] = - t(theta_prime)[lower.tri(theta_prime)]
     
@@ -245,19 +239,46 @@ mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
   # mu_vec_prime <- c(mu_0_prime,sort(mu_1_K_prime))
   
   
+  
   split = diag_split_matrix(theta)
   mins = vector()
   maxs = vector()
-  for(splittino in 1:length(split)){
-    mins <- append(mins,max(split[[splittino]]))
-    maxs <- append(maxs,min(split[[splittino]]))
-  }
-  lbs = c(0, mins)
-  ubs = c(maxs, 10)
-  mu_vec[1] =0 
-  for(mu in 2:length(mu_vec)){
-    mu_1_K_prime <- rtruncnorm(1,a = lbs[mu],b = ubs[mu],mean = mu_vec[mu],sd = 1)
+  # if(model == 'SST'){
+    for(splittino in 1:length(split)){
+      mins <- append(mins,max(split[[splittino]]))
+      maxs <- append(maxs,min(split[[splittino]]))
+    }
+    
+#   }else{
+#     lbs = -10
+#     ubs= vector()
+#     lb_mu = c(-10,mu_vec[1:K])
+#     ub_mu = c(mu_vec[2:(K+1)],10)
+#     
+#     for(splittino in 1:length(split)){
+# splittino=2
+#       lb_theta <- max(split[[splittino]])-sigma_squared
+#       ub_theta <- min(split[[splittino]])+sigma_squared
+#       
+#       lb = max(lb_mu[splittino],lb_theta)
+#       ub = min(ub_mu[splittino], ub_theta)
+#       
+#       lbs = append(lbs, lb)
+#       ubs = append(ubs, ub)
+#     }
+#     ubs =append(ubs,10)
+#   }
+#   
+  lbs = c(-10,mins)
+  ubs = c(maxs,10)
 
+  for(mu in 1:length(mu_vec)){
+    if(model == "WST"){
+      lbs = c(-10, mu_vec[1:K])
+      ubs = c(mu_vec[2:(K+1)],10)
+    }
+    mu_1_K_prime <- rtruncnorm(1,a = lbs[mu],b = ubs[mu],mean = mu_vec[mu],sd = .2)
+    
     mu_vec_prime= mu_vec
     mu_vec_prime[mu] <- mu_1_K_prime
     
@@ -274,8 +295,8 @@ mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
                                               mu_vec = mu_vec,K = K,model = model,t = t)
     
     #evaluating the proposal density g(mu'| mu^(t)) 
-    p_proposal_prime = dtruncnorm(mu_1_K_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = 1)
-    p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_1_K_prime,sd = 1)
+    p_proposal_prime = dtruncnorm(mu_1_K_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = .2)
+    p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_1_K_prime,sd = .2)
     #evaluating the proposal density g(mu^(t)| mu') 
     # log_proposal_mu_1_K_current <-order_stat_truncnorm(K, mu = mu_vec[1:(K+1)], mean = mu_1_K_prime,
     #                                                    sd =tau_mu_vec,lb = 0,ub = 10)
@@ -346,10 +367,115 @@ sigma_squared_update_f= function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
   
 } 
 
+log_lik_f_binom = function(N,Y,z,P, directed=T){
+  z_P<- vec2mat_0_P(z,P)
+  P_nbyn<- calculate_victory_probabilities(z_P, P)
+  if(directed==T){
+    #computing the pairwise log-probabilitiees
+    bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
+    #remember to subtract the diagonal
+    log_lik= sum(bigM) - sum(diag(bigM))
+  }else if(directed==F){
+    bigM = lchoose(N,Y)+(Y* log(P_nbyn)+(N-Y)*log(1 - P_nbyn))
+    #remember to subtract the diagonal
+    log_lik= sum(bigM*upper.tri(bigM))
+  }
+  return(log_lik)
+}
+
 
 z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
                       K, 
                       acc.count_z,labels_available,model,t){
+  P<- inverse_logit_f(theta)
+  n<- nrow(N_ij)
+  A_prime<- log_lik_f_binom(N = N_ij,Y = Y_ij,z =z,P = P,directed = T)
+  B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
+  z_prime= z
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
+  n_prime = matrix(0,nrow(P),1)
+  for(h in 1:K){
+    n_prime[h] = sum(length(which(z_prime==h)))
+  }
+  
+  scanning_order = sample(1:n,n, replace=F)
+  
+  # full sweep
+  for(i_th_turn in scanning_order){
+    
+    z_scanning = z_prime
+    #save current label of z_ii
+    k_prime <- z_prime[i_th_turn]
+    
+    # Sample a new label using the adjusted probabilities
+    if(model != 'Simple'){
+      labels_to_sample = labels_available
+      
+      
+      
+    }else{
+      labels_to_sample = labels_available
+    }
+    k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
+    
+    z_scanning[i_th_turn] <- k_scanning
+    
+    
+    #compute the likelihood of the data with the current assignment just for i_th_turn
+    A_minus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_prime[i_th_turn,], log=T)) + 
+      sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_prime[,i_th_turn], log=T)) 
+    
+    #update P_NbyN
+    P_NbyN_scanning = P_NbyN_prime
+    for(nodes in 1:n){
+      P_NbyN_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
+      P_NbyN_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
+    }
+    #compute the likelihood of the same points with the new assignment
+    A_plus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_scanning[i_th_turn,], log=T)) + sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_scanning[,i_th_turn], log=T)) 
+    
+    #Updating the likelihood
+    A_scanning = A_prime - A_minus + A_plus
+    
+    
+    n_scanning<- n_prime
+    n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
+    
+    B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
+    
+    log_r= A_scanning - A_prime + B_scanning - B_prime
+    #create statements that check conditiond to accept move
+    GS_condition= min(log_r,0)>=log(runif(1))
+    if(GS_condition){
+      acc.count_z[i_th_turn]=acc.count_z[i_th_turn]+1
+      z_prime<-z_scanning
+      A_prime<- A_scanning
+      B_prime<- B_scanning
+      P_NbyN_prime <- P_NbyN_scanning
+      n_prime <- n_scanning
+    }
+    #labels_available are the same
+    #else, z_prime[ii] stays equal to z_current[ii]
+  }
+  z<- z_prime
+  z_P<- vec2mat_0_P(z,P)
+  # number of victories between block p and block q
+  ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
+  # number of missed victories between block p and block q
+  n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
+  # number of missed victories between block p and block q
+  mbar<- t(z_P)%*%n_minus_y1%*%z_P
+  
+  coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
+  lamdabar <- t(z_P)%*%(coef1)%*%z_P
+  
+  return(list(acc.moves = acc.count_z, z_current= z, ybar =ybar, mbar=mbar, lamdabar= lamdabar))
+} 
+
+
+z_update_f1 = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
+                       K, 
+                       acc.count_z,labels_available,model,t){
   
   P = inverse_logit_f(theta)
   #redefining prior quantities

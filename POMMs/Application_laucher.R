@@ -18,7 +18,7 @@ library(doRNG)
 
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")
@@ -50,7 +50,6 @@ for(application in c("Tennis_data","Citation_data")){
     Y_ij <- read.table("./Data/Tennis application/Y_ij.csv",header  = F,row.names = 1,sep = ",")
     N_ij <- read.table("./Data/Tennis application/N_ij.csv",header  = F,row.names = 1,sep = ",")
     
-
     Y_ij = as.matrix(Y_ij)
     N_ij = as.matrix(N_ij)
   }else if(true_model == 'Citation_data'){
@@ -64,7 +63,7 @@ for(application in c("Tennis_data","Citation_data")){
   
   
   #chosing where to save the files depending on which model you are estimating
-
+  
   
   #data to be estimated
   
@@ -78,26 +77,19 @@ for(application in c("Tennis_data","Citation_data")){
   #-----------------------------------------------------------------------------
   
   for(k_th in K_values){
-    
-    k_th = 5
-    
-    
-    
-    n = nrow(N_ij)
-   
-    ground_truth = NA
-    
+
     
     ##############################################################################
     # Estimation: set the parameters of the estimation
     ##############################################################################
-    
-    n_chains = 4
+    ground_truth = NA
+    n = nrow(N_ij)
+    n_chains = 1
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 10000
-    burnin= 5000
-    chains_seeds = list(20,21,22,23)
+    N_iter= 120000
+    burnin= 80000
+    chains_seeds = list(30,31,32,33)
     
     #-----------------------------------------------------------------------------
     # SST MODEL
@@ -115,24 +107,15 @@ for(application in c("Tennis_data","Citation_data")){
       K_chains = list(k_th,k_th,k_th,k_th)
       t_chains = rep(1,n_chains)
       
-      
-      
-      P_init = read_csv('/Users/lapo_santi/Desktop/Nial/MCMC_results/application_13Feb2024/tennis/estimates/P_est_matrixTennis_dataSST5.csv',
-               col_names = T)
-      
-      theta_init = as.matrix(P_init[,-1])
 
-      P_est_relabeled - theta_init
-  
       
-      ground_truth = list(theta = theta_init, 
-                          mu_vec =mu_vec)
-
+      
       
       chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
                                             estimation_control = estimation_control,  burnin = burnin,
                                             ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, optimal_acceptance_rate_theta = optimal_acceptance_rate_theta,
+                                            n = n, N_iter = N_iter,n_chains = n_chains, 
+                                            optimal_acceptance_rate_theta = optimal_acceptance_rate_theta,
                                             optimal_acceptance_rate_mu = optimal_acceptance_rate_mu, 
                                             K = K_chains,
                                             seed = chains_seeds, model = 'SST', t= t_chains, 
@@ -208,3 +191,4 @@ for(application in c("Tennis_data","Citation_data")){
   
   
 }
+

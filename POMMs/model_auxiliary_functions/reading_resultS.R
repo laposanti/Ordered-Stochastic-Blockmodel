@@ -241,7 +241,7 @@ if(is.simulation==F){
 
 
 for(est_model in c('SST','WST','Simple')){
-  est_model = 'SST'
+  est_model = 'WST'
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
   print(filenames)
@@ -249,7 +249,7 @@ for(est_model in c('SST','WST','Simple')){
   for(file in 1:length(filenames)){
 
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
-    uploaded_results <- chains_SST
+    uploaded_results <- chains_WST
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
     N= nrow(uploaded_results$chain1$Y_ij)
@@ -310,6 +310,7 @@ for(est_model in c('SST','WST','Simple')){
                                  burnin = burnin,
                                  label_switch = T)
     
+    
     P_s_table_save <-P_s_table$table
     theta_chain_permuted <- P_s_table$P_permuted
     P_est_relabeled<- P_s_table$P_hat
@@ -347,6 +348,26 @@ for(est_model in c('SST','WST','Simple')){
         facet_wrap(~entry)+
         theme_bw()
     }
+    
+    traceplot_P
+    
+    mu_vec_df <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+      data.frame(iteration = j+burnin,
+                 mu = uploaded_results$chain1$est_containers$mu_vec[,j], 
+                 entry = factor(1:(K+1)))
+    }))
+    
+    
+    ggplot(mu_vec_df, aes(x = iteration, color = entry, group=entry))+
+      geom_line(aes(y=mu), alpha=.3)+
+      theme_bw()
+
+    
+    mu_vec_df %>% group_by(entry) %>%
+      summarise(mean = mean(mu),
+                quantile5 = quantile(probs = 0.05, x = mu),
+                quantile95 = quantile(probs = 0.95, x = mu))
+    
     
     
     

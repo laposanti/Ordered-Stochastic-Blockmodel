@@ -94,9 +94,10 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                # if model WST ore SST is selected: initialise the means of the level sets mu_vec
                                                                if(model == 'WST' || model == 'SST'){
                                                                  if(estimation_control$mu_vec==1){
-                                                                   mu_vec_1_K_1<- sort(rtruncnorm(K+1,a = 0, b = 20, mean = 0,sd = 1.5))
-                                                                   # mu_vec0 = rtruncnorm(1,a = -Inf, b = min(mu_vec_1_K_1), mean = 0,sd = 1)
-                                                                   mu_vec_current = mu_vec_1_K_1
+                                                                   
+                                                                   mu_vec_1_K_1<- sort(rtruncnorm(K,a = 0, b = 20, mean = 0,sd = 1.5))
+                                                                   mu_vec0 = rtruncnorm(1,a = -Inf, b = min(mu_vec_1_K_1), mean = 0,sd = 1)
+                                                                   mu_vec_current = c(mu_vec0, mu_vec_1_K_1)
                                                                  }else{
                                                                    mu_vec_current=  as.numeric(ground_truth$mu_vec)
                                                                  }
