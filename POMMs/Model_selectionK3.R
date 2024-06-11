@@ -61,8 +61,8 @@ print(paste0("True data--->", filenames[file], "\n"))
 n_temperatures=50
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
-N_iter <- 120
-burnin <- 80
+N_iter <- 120000
+burnin <- 80000
 
 if('SST' %in% choose_model_to_estimate){
   

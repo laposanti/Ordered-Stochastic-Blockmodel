@@ -18,12 +18,11 @@ library(doRNG)
 
 
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
-
 
 
 
@@ -39,7 +38,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 for(application in c("Tennis_data","Citation_data")){
-  application<- "Tennis_data"
+  application<- "Citation_data"
   true_model = application
   
   ###############################################################################
@@ -71,7 +70,7 @@ for(application in c("Tennis_data","Citation_data")){
   K_values <- c(3,4,5,6,7)  # Range of K values to explore
   
   print(paste0('Estimating now:',true_model))
-  choose_model_to_estimate = c('SST','WST')
+  choose_model_to_estimate = c('Simple')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -84,7 +83,7 @@ for(application in c("Tennis_data","Citation_data")){
     ##############################################################################
     ground_truth = NA
     n = nrow(N_ij)
-    n_chains = 1
+    n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     N_iter= 120000

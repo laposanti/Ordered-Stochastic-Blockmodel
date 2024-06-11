@@ -43,7 +43,7 @@ is.simulation=T
 #data.directory
 
 data_directory = "./Data/Sim1_data/"
-for(true_model in  c('Simple','SST')){
+for(true_model in  c('Simple','WST')){
 
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated

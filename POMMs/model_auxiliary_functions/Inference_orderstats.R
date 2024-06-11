@@ -143,20 +143,19 @@ save_table_to_file <- function(table_code, filename, title = NULL, subtitle = NU
 
 
 z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, true_value, P_est, diag0.5 , K, N, z_true , burnin, label_switch, tap){
-
+  
   z_chain = z_burned
   
   psm<- comp.psm(t(z_chain))
   
- 
+  
   
   if(label_switch==T){
     
     #if we do not have the ground truth, use the MAP as pivotal partitioning for label switching
     
     #computing the MAP --------------------------
-    #computing the likelihood of every partition
-
+    
     z_MAP <- z_chain[,which.max(A)]
     z_pivot = z_MAP
     if(true_value==F){
@@ -178,15 +177,17 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
     point_est_z<- as.vector(run_label_switch$clusters)
     
     #relabeled chain
-    
+    label_switch_count = matrix(NA, nrow=1, ncol = N_iter-burnin)
     chain_relabeled = matrix(NA, nrow=N, ncol = N_iter-burnin)
     for(i in 1:ncol(chain_relabeled)){
       chain_relabeled[,i] <- permutations_z[i,][z_chain[,i]]
+      label_switch_count[i]<- table(chain_relabeled[,i] != z_chain[,i])[1]
     }
+
     
+  table(chain_relabeled[,1] != z_chain[,1])[1]
     
-  
-    }else if(label_switch==F){
+  }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
   }
   
@@ -195,10 +196,15 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
   
   if(true_value == T){
     z_df <- data.frame(items = 1:N, 
-                       z = z_true)
+                       z = z_true,
+                       unique_identifier = runif(N, -0.001,0.001))%>%
+      mutate(unique_identifier = unique_identifier+z)
   }else if(true_value ==F){
     z_df <- data.frame(items = 1:N, 
-                       z = as.vector(point_est_z))
+                       z = as.vector(point_est_z),
+                       unique_identifier = runif(N, -0.001,0.001))%>%
+      mutate(unique_identifier = unique_identifier+z)
+    
   }
   
   # Convert the matrix to a data frame
@@ -209,11 +215,18 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
     Y = NA
   )
   
+  
   for (i in seq_len(nrow(z_df_complete))) {
     z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
   }
   for (i in seq_len(nrow(z_df_complete))) {
     z_df_complete$similarity_value[i] <- psm[z_df_complete$col[i], z_df_complete$row[i]]
+  }
+  for(i in seq_len(nrow(z_df_complete))){
+    z_df_complete$marginal_victories_row[i] <- sum(Y_ij[z_df_complete$row[i],]/z_df$unique_identifier)/sum(Y_ij[,z_df_complete$row[i]]*z_df$unique_identifier)
+  }
+  for(i in seq_len(nrow(z_df_complete))){
+    z_df_complete$marginal_victories_col[i] <- sum(Y_ij[z_df_complete$col[i],]/z_df$unique_identifier)/sum(Y_ij[,z_df_complete$col[i]]*z_df$unique_identifier)
   }
   
   plot_df = z_df_complete%>%
@@ -221,20 +234,28 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
     dplyr::rename(row_z = z) %>%
     inner_join(z_df, by = c("col" = "items")) %>%
     dplyr::rename(col_z = z) %>%
-    mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
-           col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
+    mutate(row = factor(row, levels = unique(row[order(row_z, -marginal_victories_row)])),
+           col = factor(col, levels = unique(col[order(col_z, -marginal_victories_col, decreasing = TRUE)]))) 
   
+  v_lines_list = list()
+  for(k in 1:(K-1)){
+    lines_df = plot_df %>% filter(row_z == k, col_z == k)
+    v_lines_list[[k]] <- lines_df$row[which.min(lines_df$marginal_victories_row)]
+  }
   
-  
-  similarity_m <- ggplot(plot_df, aes(x = reorder(row, row_z), y = reorder(col, col_z, decreasing=T))) +
+  similarity_m <- ggplot(plot_df, aes(x = row, y = col)) +
     geom_tile(aes(fill = similarity_value), color = "gray",show.legend = F) +
     scale_fill_gradient(low = "white", high = "black") +
+    geom_vline(xintercept = unlist(v_lines_list), color='red3')+
+    geom_hline(yintercept = unlist(v_lines_list), color='red3')+
     geom_ysidetile(aes(color=factor(col_z)), show.legend = F, width=.5)+
     theme_minimal() +
     theme(axis.text.x = element_blank(),
           axis.text.y = element_blank(),
           axis.title.x = element_blank(),
           axis.title.y = element_blank())
+  similarity_m
+  
   
   adjacency_m<- ggplot(plot_df, aes(x = row, y = col)) +
     geom_tile(aes(fill = Y), color = "gray", show.legend = FALSE) +
@@ -265,9 +286,10 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
   # Close the device to save the plot
   dev.off()
   if(label_switch == T){
-    return(list(point_est= point_est_z, relabeled_chain=chain_relabeled, permutations = permutations_z ))
+    return(list(point_est= point_est_z, relabeled_chain=chain_relabeled, 
+                permutations = permutations_z ,label_switch_count = mean(label_switch_count)))
   }else{
-    return(point_est= point_est_z)
+    return(list(point_est= point_est_z, label_switch_count = mean(label_switch_count)))
   }
 }
 
@@ -543,7 +565,7 @@ mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter, 
     
     results$n_chain_converged = rep(4,nrow(results)) - rowSums(convergence_within_chain)
     results$best_chain = rep(which.min(colSums(convergence_within_chain)), nrow(results))
- results
+    results
   },error = function(error) {
     print(paste0("ERROR:",error))
     results = data.frame(mu = 1:K,
@@ -552,7 +574,7 @@ mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter, 
                          acceptance_rate = rep(NA,K),
                          n_chain_converged= rep(NA,K),
                          best_chain= rep(NA,K))
-results
+    results
   }
   )
   

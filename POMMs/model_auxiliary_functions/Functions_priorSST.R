@@ -591,14 +591,14 @@ vec2mat <- function(clust_lab){
 
 
 
-pr_cc <- function(z_post){
+pr_cc <- function(z_post, P){
   # in: posterior sample of assignments (VxN_iter matrix)
   # out: VxV matrix c with elements c[vu]=fraction of iterations in which v and u are in the same cluster
   V <- nrow(z_post)    
   N_iter <- ncol(z_post)
   c <- matrix(0,V,V)
   for (t in 1:N_iter){
-    Z <- vec2mat(z_post[,t])
+    Z <- vec2mat_0_P(z_post[,t], P)
     c <- c + Z%*%t(Z)
   }
   return(c/N_iter)
