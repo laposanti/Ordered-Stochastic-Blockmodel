@@ -45,7 +45,7 @@ n <- nrow(N_ij)
 
 #--------------------------------
 #which model to fit
-est_model = 'WST'
+est_model = 'Simple'
 
 #which parameters to estimate: 1 estimated, 0 fixed. if 0 is selected, provide some initial quantity
 estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0, K = 0, theta = 1)

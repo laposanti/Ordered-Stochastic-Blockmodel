@@ -4,7 +4,7 @@
 #SBATCH -N 1
 
 # specify number of tasks/cores per node required
-#SBATCH --ntasks-per-node 25
+#SBATCH --ntasks-per-node 24
 
 # specify the walltime e.g 20 mins
 #SBATCH -t 330:00:00
