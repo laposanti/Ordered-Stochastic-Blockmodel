@@ -4,7 +4,7 @@
 #SBATCH -N 1
 
 # specify number of tasks/cores per node required
-#SBATCH --ntasks-per-node 50
+#SBATCH --ntasks-per-node 24
 
 # specify the walltime e.g 20 mins
 #SBATCH -t 330:00:00
@@ -20,11 +20,8 @@ module load R/4.4.0
 # command to use
 git pull
 Rscript Application_laucherSST_Citations.R &
-Rscript Application_laucherSST_Tennis.R &
 Rscript Application_laucherWST_Citations.R &
-Rscript Application_laucherWST_Tennis.R &
-Rscript Application_laucherSimple_Citations.R &
-Rscript Application_laucherSimple_Tennis.R &
+Rscript Application_laucherSimple_Citations.R
 
 
 
