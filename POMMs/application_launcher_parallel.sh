@@ -4,7 +4,7 @@
 #SBATCH -N 1
 
 # specify number of tasks/cores per node required
-#SBATCH --ntasks-per-node 10
+#SBATCH --ntasks-per-node 50
 
 # specify the walltime e.g 20 mins
 #SBATCH -t 330:00:00
@@ -18,5 +18,14 @@ cd $SLURM_SUBMIT_DIR
 module load R/4.4.0 
 
 # command to use
-Rscript Application_laucherSST.R
+git pull
+Rscript Application_laucherSST_Citations.R &
+Rscript Application_laucherSST_Tennis.R &
+Rscript Application_laucherWST_Citations.R &
+Rscript Application_laucherWST_Tennis.R &
+Rscript Application_laucherSimple_Citations.R &
+Rscript Application_laucherSimple_Tennis.R &
+
+
+
  

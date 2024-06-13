@@ -18,5 +18,6 @@ cd $SLURM_SUBMIT_DIR
 module load R/4.4.0 
 
 # command to use
+git pull
 Rscript Application_laucher.R
  

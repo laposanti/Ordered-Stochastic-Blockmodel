@@ -35,7 +35,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     n_temperatures=50
     where_to_save =list()
     for(i in 1:length(K_est)){
-      where_to_save[[i]] =  file.path(saving_directory, paste0("MCMC_output/K", K_est[[i]],"/"))
+      where_to_save[[i]] =  file.path(saving_directory, paste0("model_selection/MCMC_output/",data_description,"/K", K_est[[i]],"/"))
       dir.create(where_to_save[[i]], showWarnings = T, recursive = T)
     }
   }
@@ -77,7 +77,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              
-                                                             set.seed(chains_seed[[chain]])
+                                                             
                                                              save_dir = where_to_save[[chain]]
                                                              #setting hyperparams
                                                              K <- as.numeric(K_est[[chain]])
@@ -296,6 +296,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #READY TO BOMB!
                                                                iteration_time= vector()
                                                                for(j in 2:N_iter){
+                                                                 set.seed(chains_seed[[chain]])
                                                                  start_time <- Sys.time()
                                                                  
                                                                  
