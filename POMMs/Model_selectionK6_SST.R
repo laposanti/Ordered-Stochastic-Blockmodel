@@ -36,7 +36,7 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 data_wd<- "./Data/power_posterior_data/"
 data_description = 'SST'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
-data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
+data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[4]))
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
 Y_ij <- data_to_be_estimated$Y_ij
@@ -49,14 +49,14 @@ ground_truth <- data_to_be_estimated$ground_truth
 # Decide for how many Ks we want to compute the marginal posterior
 ################################################################################
 
-print(paste0("True data--->", filenames[1], "\n"))
+print(paste0("True data--->", filenames[4], "\n"))
 is.simulation=T
 
 est_model = 'SST'
 
 #setting up the chain hyperparameter
-N_iter <- 12 #number of iterations
-burnin <- 2  #number of discarded iterations
+N_iter <- 120000 #number of iterations
+burnin <- 80000  #number of discarded iterations
 
 K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
 
