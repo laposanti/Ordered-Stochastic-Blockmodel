@@ -34,8 +34,8 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
 #where the data are stored
 data_wd<- "./Data/power_posterior_data/"
-data_description = 'SST_K3'
-filenames <- list.files(pattern = paste0(data_description),path = data_wd)
+data_description = 'SST3'
+filenames <- list.files(pattern = paste0('SST'),path = data_wd)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)

@@ -34,9 +34,9 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
 #where the data are stored
 data_wd<- "./Data/power_posterior_data/"
-data_description = 'SST_K5'
+data_description = 'SST5'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
-data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[3]))
+data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
 Y_ij <- data_to_be_estimated$Y_ij
@@ -49,7 +49,7 @@ ground_truth <- data_to_be_estimated$ground_truth
 # Decide for how many Ks we want to compute the marginal posterior
 ################################################################################
 
-print(paste0("True data--->", filenames[3], "\n"))
+print(paste0("True data--->", filenames[1], "\n"))
 is.simulation=T
 
 est_model = 'SST'
