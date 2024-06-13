@@ -52,7 +52,7 @@ ground_truth <- data_to_be_estimated$ground_truth
 print(paste0("True data--->", filenames[2], "\n"))
 is.simulation=T
 
-est_model = 'SST'
+est_model = 'Simple'
 
 #setting up the chain hyperparameter
 N_iter <- 120000 #number of iterations
@@ -69,13 +69,13 @@ saving_directory = "./Results/"
 power_posterior_apprach = T
 custom_init <- NA
 
-print(paste0("Estimation of the SST model, K=", K_est))
+print(paste0("Estimation of the", est_model," model, K=", K_est))
 print(paste0("Begin cycle at:", date(), "\n"))
 
 
 seed=23
 
-estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
+estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0, K = 0, theta = 1)
 
 chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   saving_directory = saving_directory,

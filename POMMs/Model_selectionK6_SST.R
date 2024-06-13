@@ -62,7 +62,7 @@ K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
 
 
 #where to save the data
-saving_directory = "./Results/
+saving_directory = "./Results/"
 
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
@@ -85,7 +85,7 @@ chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   n = n, N_iter = N_iter, 
                                                   K_est = K_est,data_description = data_description,
                                                   seed = seed, 
-                                                  model = 'SST', 
+                                                  model = est_model, 
                                                   custom_init = custom_init,
                                                   power_posterior_apprach = T)
 names(chains) = paste0('chain',unlist(K_est))
