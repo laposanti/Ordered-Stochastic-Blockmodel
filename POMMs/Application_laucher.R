@@ -38,7 +38,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 for(application in c("Tennis_data","Citation_data")){
-  application<- "Citation_data"
+  application<- "Tennis_data"
   true_model = application
   
   ###############################################################################

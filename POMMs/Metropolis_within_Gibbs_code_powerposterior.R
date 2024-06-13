@@ -20,7 +20,7 @@
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
 adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control, 
-                                                    ground_truth,n, N_iter, burnin, data_description,
+                                                    ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
                                                     custom_init=NA,power_posterior_apprach = T){
   #setting for each chain a different seed
