@@ -50,7 +50,7 @@ est_model = 'SST'
 #which parameters to estimate: 1 estimated, 0 fixed. if 0 is selected, provide some initial quantity
 estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
 custom_init <- NA #whether you want to initialize the parameters manually
-
+ground_truth = NA
 
 #----------------------------------
 #setting chains' features

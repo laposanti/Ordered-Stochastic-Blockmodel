@@ -50,7 +50,7 @@ est_model = 'WST'
 #which parameters to estimate: 1 estimated, 0 fixed. if 0 is selected, provide some initial quantity
 estimation_control <- list(z = 1, sigma_squared = 1, mu_vec = 1, K = 0, theta = 1)
 custom_init <- NA #whether you want to initialize the parameters manually
-
+ground_truth = NA
 
 #----------------------------------
 #setting chains' features
@@ -78,7 +78,7 @@ chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   K_est = K_est,
                                                   data_description = data_description,
                                                   seed = seed, 
-                                                  model = 'WST', 
+                                                  model = est_model, 
                                                   custom_init = custom_init,
                                                   power_posterior_apprach = power_posterior_apprach)
 names(chains) = paste0('chain',unlist(K_est))

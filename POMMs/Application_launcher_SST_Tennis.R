@@ -64,8 +64,9 @@ power_posterior_apprach = T
 
 #whether you want to initialize the parameters manually
 custom_init <- NA
+ground_truth = NA
 seed=23
-estimation_control <- list(z = 1, sigma_squared = 1, mu_vec = 1, K = 0, theta = 1)
+estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
 
 
 print(paste0("Estimation of the ", est_model," model, K=", K_est))
