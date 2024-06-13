@@ -78,7 +78,7 @@ chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   K_est = K_est,
                                                   data_description = data_description,
                                                   seed = seed, 
-                                                  model = 'WST', 
+                                                  model = est_model, 
                                                   custom_init = custom_init,
                                                   power_posterior_apprach = power_posterior_apprach)
 names(chains) = paste0('chain',unlist(K_est))

@@ -57,7 +57,7 @@ ground_truth = NA
 
 N_iter <- 120000 #number of iterations
 burnin <- 80000  #number of discarded iterations
-K_est = list(2,3,4,5,6,7,8) #K values to be fitted
+K_est = list(2,3,4,5,6) #K values to be fitted
 power_posterior_apprach = T #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
 seed=23 #the seed for the chains
 #----------------------------------
