@@ -238,9 +238,9 @@ if(is.simulation==F){
   
   
 }else if(is.simulation == T){
-  true_model = "WST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/processed/"
+  true_model = "SST"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/processed/"
   
   
   
@@ -252,10 +252,9 @@ for(est_model in c('SST','WST',"Simple")){
   
   filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
   print(filenames)
-  
-  est_model = 'SST'
+
   for(file in 1:length(filenames)){
-    file = 5
+
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
