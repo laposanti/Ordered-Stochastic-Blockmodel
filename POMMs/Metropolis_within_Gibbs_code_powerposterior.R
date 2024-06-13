@@ -35,7 +35,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     n_temperatures=50
     where_to_save =list()
     for(i in 1:length(K_est)){
-      where_to_save[[i]] =  file.path(saving_directory, paste0("model_selection/MCMC_output/",data_description,"/K", K_est[[i]],"/"))
+      where_to_save[[i]] =  file.path(saving_directory, paste0("model_selection/MCMC_output/",data_description,"/",model,"/K", K_est[[i]],"/"))
       dir.create(where_to_save[[i]], showWarnings = T, recursive = T)
     }
   }
