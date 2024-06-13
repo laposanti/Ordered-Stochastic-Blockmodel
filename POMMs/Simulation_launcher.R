@@ -43,7 +43,7 @@ is.simulation=T
 #data.directory
 
 data_directory = "./Data/Sim1_data/"
-for(true_model in  c('Simple','WST')){
+for(true_model in  c('WST')){
 
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
@@ -175,17 +175,6 @@ for(true_model in  c('Simple','WST')){
   
 
 }
-
-
-upper_tri_indices= which(upper.tri(chains_Simple$chain1$ground_truth$P, diag=T),arr.ind = T)
-
-
-P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter), function(j) {
-  data.frame(iteration = j,
-             P = upper.tri.extractor(chains_Simple$chain1$est_containers$theta[,,j]), 
-             P_true = upper.tri.extractor(chains_Simple$chain1$ground_truth$P), 
-             P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-}))
 
 
  

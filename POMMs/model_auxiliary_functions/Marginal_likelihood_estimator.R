@@ -25,7 +25,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #estimating marginal likelihood
-est_model = 'SST'
+est_model = 'WST'
 est_marg_lik = function(directory, est_model, is.simulation){
   
   filenames <- list.files(pattern = paste0(est_model),path = directory)
@@ -33,7 +33,6 @@ est_marg_lik = function(directory, est_model, is.simulation){
     log_z_t = data.frame(t= 0, expected_evidence = 0, k=0, sd = 0,k_true=0 )
   }else{
     log_z_t = data.frame(t= 0, expected_evidence = 0, k=0, sd = 0)
-    z_container = data.frame(z = 0, k_est = 0)
   }
   
   n_temperatures = length(filenames)
@@ -137,38 +136,46 @@ est_marg_lik = function(directory, est_model, is.simulation){
   
   marginal_likelihood = sum(log_z_t$riemann,na.rm = T)
   
-  return(list(df = log_z_t, marginal_likelihood = marginal_likelihood, WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij))
+  return(list(df = log_z_t, marginal_likelihood = marginal_likelihood, 
+              WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij))
 }
 
-is.simulation = F
+is.simulation = T
 if(is.simulation ==F){
   sav_dir = 'application'
+  k_true = NA
 }else{
   sav_dir = 'model_choice'
+  k_true = 3
 }
 
-true_model = 'Citation_data'
-est_model = 'SST'
-directories = list()
+general_df = data.frame(t =NA, expected_evidence=NA , sd=NA , k=NA, riemann=NA,k_true = NA)
+marginal_likelohood_df = data.frame( k_est=NA, marginal_likelihood=NA,WAIC_est=NA,k_true = NA)
+z_container = data.frame(z = 0, k_est = 0,k_true =0)
 
-general_df = data.frame(t =0, expected_evidence=0 , sd=0 , k=0, riemann=0)
-marginal_likelohood_df = data.frame( k_est=0, marginal_likelihood=0,WAIC_est=0)
-z_container = data.frame(z = 0, k_est = 0)
+true_model = 'SST'
+est_model = 'SST'
+
+
+
 for(k_est in 2:7){
   
-  directory = paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/',sav_dir,'/',true_model,'/SST/K',k_est,'/')
-  
-  estimation = est_marg_lik(directory = directory,est_model = est_model,is.simulation = F)
+  # directory = paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/',
+  #                    sav_dir,'/',true_model,'/',est_model,'/K',k_est,'/')
+  # 
+  directory =  paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/model_selection/K3true/raw/K',k_est,'/')
+  estimation = est_marg_lik(directory = directory,est_model = est_model,is.simulation = T)
   general_df = rbind(general_df, estimation$df)
   marginal_likelohood_df = rbind(marginal_likelohood_df, 
                                  data.frame(k_est=k_est, 
                                             marginal_likelihood=estimation$marginal_likelihood,
-                                            WAIC_est = estimation$WAIC)) 
-  z_container = rbind(z_container, estimation$z_container)
+                                            WAIC_est = estimation$WAIC,
+                                            k_true = k_true)) 
   
   print(marginal_likelohood_df)
   
 }
+
 marginal_likelohood_df = marginal_likelohood_df[-1,]
 
 # saveRDS(marginal_likelohood_df, paste0('./results/',sav_dir,'/',true_model,'/study_on_model_selection_cite_4June.RDS'))

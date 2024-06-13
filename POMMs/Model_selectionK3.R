@@ -31,69 +31,66 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 #                        step 1: upload the data
 ################################################################################
 
-is.simulation=T
 
-true_model = 'SST'
-est_model = 'SST'
-#where the data are stored
 #where the data are stored
 data_wd<- "./Data/power_posterior_data/"
-
-filenames <- list.files(pattern = paste0(true_model),path = data_wd)
-
-choose_model_to_estimate=c('SST','WST','Simple')
-
-#choose which data you want to use
-# Choose which data you want to use
-file=1
-data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[file]))
+data_description = 'SST'
+filenames <- list.files(pattern = paste0(data_description),path = data_wd)
+data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
 Y_ij <- data_to_be_estimated$Y_ij
 K <- data_to_be_estimated$ground_truth$K
 ground_truth <- data_to_be_estimated$ground_truth
 
-print(paste0("True data--->", filenames[file], "\n"))
+
 
 ################################################################################
 # Decide for how many Ks we want to compute the marginal posterior
 ################################################################################
-n_temperatures=50
-optimal_acceptance_rate_theta =.44
-optimal_acceptance_rate_mu = .234
-N_iter <- 120000
-burnin <- 80000
 
-if('SST' %in% choose_model_to_estimate){
-  
-  
-  K_est = list(2,3,4,5,6,7)
-  saving_directories = list()
-  chains_seeds <- list()
-  for(i in 1:length(K_est)){
-    saving_directories[[i]]<-  paste0("./results/model_selection/K", file + 2, "true/raw/K", K_est[[i]],"//")
-    chains_seeds[[i]] = 20+i
-  }
-  
-  
-  print(paste0("Estimation of the SST model, K=", K_est))
-  print(paste0("Begin cycle at:", date(), "\n"))
-  custom_init <- NA
-  
-  n_chains <- 6
-  estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
-  
-  chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,n_temperatures = n_temperatures,saving_directory = saving_directories,
-                                                    estimation_control = estimation_control,burnin = burnin,
-                                                    ground_truth = ground_truth,
-                                                    n = n, N_iter = N_iter, n_chains = n_chains, 
-                                                    optimal_acceptance_rate_theta  = optimal_acceptance_rate_theta, 
-                                                    optimal_acceptance_rate_mu = optimal_acceptance_rate_mu,
-                                                    K = K_est,true_model = true_model,
-                                                    seed = chains_seeds,model = 'SST', custom_init = custom_init)
-  names(chains) = paste0('chain',unlist(K_est))
-  
-  
-  
-  
-}
+print(paste0("True data--->", filenames[1], "\n"))
+is.simulation=T
+
+est_model = 'SST'
+
+#setting up the chain hyperparameter
+N_iter <- 12 #number of iterations
+burnin <- 2  #number of discarded iterations
+
+K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
+
+
+#where to save the data
+saving_directory = "./results/model_selection/"
+
+
+#Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+power_posterior_apprach = T
+custom_init <- NA
+
+print(paste0("Estimation of the SST model, K=", K_est))
+print(paste0("Begin cycle at:", date(), "\n"))
+
+
+seed=23
+
+estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
+
+chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                  saving_directory = saving_directory,
+                                                  estimation_control = estimation_control,
+                                                  burnin = burnin,
+                                                  ground_truth = ground_truth,
+                                                  n = n, N_iter = N_iter, 
+                                                  K_est = K_est,data_description = data_description,
+                                                  seed = seed, 
+                                                  model = 'SST', 
+                                                  custom_init = custom_init,
+                                                  power_posterior_apprach = T)
+names(chains) = paste0('chain',unlist(K_est))
+
+
+
+
+

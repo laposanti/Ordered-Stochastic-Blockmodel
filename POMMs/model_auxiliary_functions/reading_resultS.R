@@ -28,7 +28,7 @@ is.simulation = F
 
 if(is.simulation==F){
   
-  true_model = "Citation_data"
+  true_model = "Tennis_data"
   if(true_model == "Tennis_data"){
     #where the data are stored
     setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/')
@@ -238,22 +238,24 @@ if(is.simulation==F){
   
   
 }else if(is.simulation == T){
-  true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true//"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/processed/"
+  true_model = "WST"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/Simple_true/processed/"
   
   
   
 }
 
 
-for(est_model in c('SST')){
+for(est_model in c('SST','WST',"Simple")){
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
+  
   filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
   print(filenames)
   
+  est_model = 'SST'
   for(file in 1:length(filenames)){
-    
+    file = 5
     uploaded_results<- readRDS(paste0(data_wd,"/",filenames[file]))
     print(paste0('Now estimating ', filenames[file]))
     print(paste0(length(filenames)-file+1,' within the same class left '))
@@ -814,14 +816,17 @@ for(est_model in c('SST')){
       
       
       est_df<- data.frame(Id = rownames(Y_ij), 
+                          marginal_victories = rowSums(Y_ij),
+                          marginal_losses = colSums(Y_ij),
                           est_cl = point_est_z, 
                           unique_identifier = runif(N, -0.001,0.001))%>%
-        mutate(unique_identifier = unique_identifier+est_cl)
+        mutate(unique_identifier = unique_identifier+est_cl)%>%
+        mutate(relative_victories = marginal_victories/marginal_losses)
       
       combined_df = players_df %>% inner_join(est_df, by = 'Id')%>% dplyr::arrange(median_rank)
       
       if(true_model=='Tennis_data'){
-        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, BTrank), y = degree_pl, fill =factor(est_cl) )) +
+        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, BTrank), y = marginal_victories, fill =factor(est_cl) )) +
           geom_bar(stat = "identity") +
           labs(x = "Player Name", y = "Percentage Victories", fill='Cluster', title = "Percentage of victories for each player",
                subtitle = 'Players are sorted according to their Bradley Terry model') +
@@ -835,7 +840,7 @@ for(est_model in c('SST')){
             plot.margin = margin(20, 20, 20, 20)
           )
       }else if(true_model == 'Citation_data'){
-        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, median_rank), y = degree_pl, fill =factor(est_cl) )) +
+        degree_plot <- ggplot(combined_df, aes(x = reorder(Id, median_rank), y = relative_victories, fill =factor(est_cl) )) +
           geom_bar(stat = "identity") +
           labs(x = "Journal Name", y = "Citations received / Citations made", fill='Cluster', 
                title = "Citations received / citations made for each journal",
@@ -872,6 +877,7 @@ for(est_model in c('SST')){
       for(i in seq_len(nrow(z_df_complete))){
         z_df_complete$marginal_victories_col[i] <- sum(Y_ij[z_df_complete$col[i],]/est_df$unique_identifier,na.rm = T)/sum(Y_ij[,z_df_complete$col[i]]*est_df$unique_identifier,na.rm = T)
       }
+      
       
       
       plot_df = z_df_complete%>%
