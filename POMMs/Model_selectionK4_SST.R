@@ -62,7 +62,7 @@ K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
 
 
 #where to save the data
-saving_directory = "./results/model_selection/"
+saving_directory = "./Results/"
 
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
