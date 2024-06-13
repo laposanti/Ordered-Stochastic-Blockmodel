@@ -52,7 +52,7 @@ ground_truth <- data_to_be_estimated$ground_truth
 print(paste0("True data--->", filenames[1], "\n"))
 is.simulation=T
 
-est_model = 'SST'
+est_model = 'SST_K3'
 
 #setting up the chain hyperparameter
 N_iter <- 120000 #number of iterations
