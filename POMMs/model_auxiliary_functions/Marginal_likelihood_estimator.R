@@ -172,6 +172,7 @@ for(k_est in 2:7){
                                             WAIC_est = estimation$WAIC,
                                             k_true = k_true)) 
   
+  
   print(marginal_likelohood_df)
   
 }
