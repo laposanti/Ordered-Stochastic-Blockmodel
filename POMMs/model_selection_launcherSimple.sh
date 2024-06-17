@@ -16,11 +16,18 @@
 # run from current directory
 cd $SLURM_SUBMIT_DIR
 module load R/4.4.0 
+module load python/3.3.6
 
 # command to use
 git pull
 Rscript Model_selectionK3_Simple.R &
 Rscript Model_selectionK4_Simple.R &
 Rscript Model_selectionK5_Simple.R &
-Rscript Model_selectionK6_Simple.R
- 
+Rscript Model_selectionK6_Simple.R &
+
+wait;
+
+python3 name_to_upload
+
+
+

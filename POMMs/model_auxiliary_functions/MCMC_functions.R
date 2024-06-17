@@ -52,6 +52,8 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, theta, K, t=1){
   return(A_current)
 }
 
+
+
 # Density for P
 
 theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
@@ -96,13 +98,18 @@ d_sA_mu = function(K,mu_vec){
 # Proportional posterior
 
 
-lprop_posterior <- function(lamdabar, ybar,mbar,theta, 
-                            alpha_vec, n_k,sigma_squared, mu_vec,K, model,t){
-  
+lprop_posterior <- function(Y_ij, N_ij, z,theta,
+                            alpha_vec, n_k,sigma_squared, mu_vec,K, model,t,llik=NULL){
+  if (is.null(llik)) {
+    # Compute log likelihood only if llik is not provided
+    log_lik <- ll_naive(z = z, theta = theta, Y_ij = Y_ij, N_ij = N_ij) * t
+  } else {
+    # Use provided llik
+    log_lik <- llik
+    
+  }
   if(model=='Simple'){
     
-    #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,theta = theta, K=K, t=t)
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k),K = K,n_k = n_k,my_alpha =  alpha_vec)
     #log prior on P
@@ -111,9 +118,6 @@ lprop_posterior <- function(lamdabar, ybar,mbar,theta,
     results<- log_lik+ prior_theta + prior_z 
     
   }else if (model=='WST'){
-    
-    #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,theta = theta,K=K,t=t)
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on P
@@ -126,9 +130,6 @@ lprop_posterior <- function(lamdabar, ybar,mbar,theta,
     results<- log_lik+ prior_theta + prior_z + hyperprior_mu + hyperprior_sigmasquared 
     
   }else if(model =='SST'){
-    
-    #log likelihood
-    log_lik <- llik_over_blocks_f_binomial(lamdabar = lamdabar,ybar =  ybar,  mbar = mbar,theta = theta,K=K,t=t)
     #log prior on P
     prior_theta<- theta_prior_probability(theta = theta, K = K,mu_vec = mu_vec, sigma_squared = sigma_squared,model = model)
     #log prior on z
@@ -144,18 +145,27 @@ lprop_posterior <- function(lamdabar, ybar,mbar,theta,
 
 #-------------------------- MCMC steps -----------------------------------------
 
-theta_update_f = function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
+theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
                           sigma_squared, mu_vec,K, tau_theta,
                           acc.count_theta, model,t){
   
-  theta_current<- theta
+  theta_prime <- theta
+  n<- nrow(N_ij)
+  P_prime<- inverse_logit_f(theta_prime)
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z,P_prime),P_prime)
+  
+  A_prime<-   sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
+  C_prime<- theta_prior_probability(theta = theta_prime, K=K,mu_vec = mu_vec,  sigma_squared = sigma_squared,model = model)
+  
   #Updating each entry of P, one at the time
   ut <- upper.tri(theta,diag = T) # get the logical matrix for upper triangular elements
   theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(theta_combn[sample(nrow(theta_combn)), ])# permuting the order of the rows
   
   for(i_th in 1:nrow(uo)){
-    theta_prime<-theta_current
+    theta_scanning <- theta_prime
+    P_NbyN_scanning = P_NbyN_prime
+    
     i_star<- uo$row[i_th]
     j_star<- uo$col[i_th]
     if(model=="SST"){
@@ -169,59 +179,109 @@ theta_update_f = function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
       lower.bound = -5
       upper.bound = +10
     }
+    #saving for convenience, to avoid multiple computations
+    theta_ij_prime<- theta_prime[i_star,j_star]
+
+    #proposing a new value for theta p_q
+    theta_ij_scanning <- rtruncnorm(1, a = lower.bound , b = upper.bound,
+                                    mean = theta_ij_prime, 
+                                    sd =  tau_theta[i_star,j_star])
     
-    theta_prime[i_star,j_star]<- rtruncnorm(1, a = lower.bound , b = upper.bound,
-                                            mean = theta_current[i_star,j_star], 
-                                            sd =  tau_theta[i_star,j_star])
     
-    theta_prime[lower.tri(theta_prime)] = - t(theta_prime)[lower.tri(theta_prime)]
+    #the items in cluster i_star
+    Z_i_star = which(z == i_star)
+    #the items in cluster j_star
+    Z_j_star = which(z == j_star)
     
-    #computing the proportional posterior in P'
-    prop_posterior_prime <-  lprop_posterior(lamdabar = lamdabar, ybar = ybar, mbar = mbar, 
-                                             theta = theta_prime,
-                                             K = K,mu_vec = mu_vec,
-                                             sigma_squared = sigma_squared,
-                                             alpha_vec = alpha_vec,n_k = n_k,model = model,t = t)
     
-    #evaluating the proportional posterior in P^(t)
-    prop_posterior_current<- lprop_posterior(lamdabar = lamdabar, ybar = ybar, 
-                                             mbar = mbar, theta = theta_current,
-                                             K = K,mu_vec = mu_vec,
-                                             sigma_squared = sigma_squared,
-                                             alpha_vec = alpha_vec,n_k = n_k,model = model,t = t)
+    logical_matrix1 = matrix(FALSE, n,n)
+    logical_matrix1[Z_i_star,]<-TRUE
+    logical_matrix1[,Z_j_star]<-TRUE
+    
+    logical_matrix2 = matrix(FALSE, n,n)
+    logical_matrix2[Z_j_star,]<-TRUE
+    logical_matrix2[,Z_i_star]<-TRUE
+    # Get the upper triangular indices for the relevant clusters
+    upper_tri_indices <- upper.tri(Y_ij)
+    
+    # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
+    filtering_matrix = (logical_matrix1|logical_matrix2)*upper_tri_indices == T
+    # Filter the relevant entries
+    Y_ij_upper <- Y_ij[filtering_matrix]
+    
+    N_ij_upper <- N_ij[filtering_matrix]
+    P_NbyN_prime_upper <- P_NbyN_prime[filtering_matrix]
+    
+    #---------------------------------------------------------------------------
+    #compute the likelihood of the the interactions between items in clusters i_star,j_star. All the rest are unaffected
+    
+    #First, subtract the contribution to the likelihood of those items
+    A_minus = sum(dbinom(Y_ij_upper, N_ij_upper,P_NbyN_prime_upper,log = T))
+    
+    #Second, subtract also the contribution of the theta[i_star,j_star] entry to the prior
+    C_minus = dunif(theta_ij_prime,min = lower.bound, max = upper.bound, log = T)
+    
+    #recompute the interaction success probabilities, just those that were affected
+    
+    p_ij_scanning = inverse_logit_f( theta_ij_scanning )
+    
+    P_NbyN_scanning[Z_i_star,Z_j_star]<- p_ij_scanning
+    if(i_star != j_star){
+      P_NbyN_scanning[Z_j_star,Z_i_star]<- 1 - p_ij_scanning
+    }
+    P_NbyN_scanning_upper = P_NbyN_scanning[filtering_matrix]
+    
+    #Third,add the contribution to the likelihood of those items with new interaction probabilities
+    A_plus= sum(dbinom(x = Y_ij_upper,size = N_ij_upper,prob = P_NbyN_scanning_upper,log = T))
+    #Fourth,add the contribution to the prior
+    C_plus = dunif(theta_ij_scanning,min = lower.bound, max = upper.bound, log = T)
+    
+    #Updating the likelihood
+    A_scanning = A_prime - A_minus + A_plus
+    
+    
+    #Update the prior
+    C_scanning = C_prime - C_minus + C_plus
     
     #evaluating the proposal density g(P'| P^(t)) 
-    log_proposal_prime <- log(dtruncnorm(theta_prime[i_star,j_star],
-                                         mean = theta_current[i_star,j_star],
-                                         sd = tau_theta[i_star,j_star], 
-                                         a =   lower.bound, 
-                                         b  = upper.bound))
+    log_proposal_scanning <- log(dtruncnorm(theta_ij_scanning,
+                                            mean = theta_ij_prime,
+                                            sd = tau_theta[i_star,j_star], 
+                                            a =   lower.bound, 
+                                            b  = upper.bound))
     
     #evaluating the proposal density g(P^(t)| P') 
-    log_proposal_current <- log(dtruncnorm(theta_current[i_star,j_star],
-                                           mean = theta_prime[i_star,j_star],
-                                           sd = tau_theta[i_star,j_star], 
-                                           a =  lower.bound,
-                                           b  = upper.bound))
+    log_proposal_prime <- log(dtruncnorm(theta_ij_prime,
+                                         mean =theta_ij_scanning,
+                                         sd = tau_theta[i_star,j_star], 
+                                         a =  lower.bound,
+                                         b  = upper.bound))
     
-    #acceptance ratio
-    log_r=  prop_posterior_prime + log_proposal_current - 
-      prop_posterior_current - log_proposal_prime
+    
+    log_r= A_scanning*t - A_prime*t + C_scanning - C_prime + log_proposal_scanning - log_proposal_prime
+    
     
     
     #create statements that check conditiond to accept move
     MH_condition_P_update= min(log_r,0)>=log(runif(1))
     if(MH_condition_P_update){
       acc.count_theta[i_star,j_star] =acc.count_theta[i_star,j_star] +1
-      theta_current = theta_prime
+      A_prime = A_scanning
+      C_prime = C_scanning
+      theta_prime[i_star,j_star] <- theta_ij_scanning
+      if(i_star != j_star){
+        theta_prime[j_star,i_star] <- -theta_ij_scanning
+      }
+      P_NbyN_prime = P_NbyN_scanning
     }
     
   }
-  
-  theta_current= theta_prime
+  theta_current = theta_prime
+  A_current = A_prime
   
   return(list(acc.moves = acc.count_theta,
-              theta= theta_current))
+              theta = theta_current,
+              llik  = A_current))
   
 } 
 
@@ -229,9 +289,9 @@ theta_update_f = function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
 
 
 
-mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
+mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
                        sigma_squared, mu_vec,tau_mu_vec, K,
-                       acc.count_mu_vec,model,t){
+                       acc.count_mu_vec,model,t, llik = NULL){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
   #mu_1_K_prime <- truncnorm::rtruncnorm(K+1,a = 0,b = 10, mean = mu_vec[1:(K+1)],sd = .05)
@@ -244,34 +304,14 @@ mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
   mins = vector()
   maxs = vector()
   # if(model == 'SST'){
-    for(splittino in 1:length(split)){
-      mins <- append(mins,max(split[[splittino]]))
-      maxs <- append(maxs,min(split[[splittino]]))
-    }
-    
-#   }else{
-#     lbs = -10
-#     ubs= vector()
-#     lb_mu = c(-10,mu_vec[1:K])
-#     ub_mu = c(mu_vec[2:(K+1)],10)
-#     
-#     for(splittino in 1:length(split)){
-# splittino=2
-#       lb_theta <- max(split[[splittino]])-sigma_squared
-#       ub_theta <- min(split[[splittino]])+sigma_squared
-#       
-#       lb = max(lb_mu[splittino],lb_theta)
-#       ub = min(ub_mu[splittino], ub_theta)
-#       
-#       lbs = append(lbs, lb)
-#       ubs = append(ubs, ub)
-#     }
-#     ubs =append(ubs,10)
-#   }
-#   
+  for(splittino in 1:length(split)){
+    mins <- append(mins,max(split[[splittino]]))
+    maxs <- append(maxs,min(split[[splittino]]))
+  }
+  
   lbs = c(-10,mins)
   ubs = c(maxs,10)
-
+  
   for(mu in 1:length(mu_vec)){
     if(model == "WST"){
       lbs = c(-10, mu_vec[1:K])
@@ -283,28 +323,20 @@ mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
     mu_vec_prime[mu] <- mu_1_K_prime
     
     #computing the proportional posterior in mu'
-    prop_posterior_prime <- lprop_posterior(lamdabar = lamdabar,ybar = ybar,mbar = mbar,theta = theta, 
+    prop_posterior_prime <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, theta = theta,
                                             alpha_vec = alpha_vec, 
                                             n_k = n_k,sigma_squared = sigma_squared
-                                            ,mu_vec = mu_vec_prime,K = K,model=model,t = t)
+                                            ,mu_vec = mu_vec_prime,K = K,model=model,t = t, llik=llik)
     
     #evaluating the proportional posterior in mu^(t)
-    prop_posterior_current <- lprop_posterior(lamdabar = lamdabar,ybar = ybar,mbar = mbar,
+    prop_posterior_current <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z,
                                               theta = theta,alpha_vec = alpha_vec,
                                               n_k = n_k,sigma_squared = sigma_squared,
-                                              mu_vec = mu_vec,K = K,model = model,t = t)
+                                              mu_vec = mu_vec,K = K,model = model,t = t,llik=llik)
     
     #evaluating the proposal density g(mu'| mu^(t)) 
     p_proposal_prime = dtruncnorm(mu_1_K_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = .2)
     p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_1_K_prime,sd = .2)
-    #evaluating the proposal density g(mu^(t)| mu') 
-    # log_proposal_mu_1_K_current <-order_stat_truncnorm(K, mu = mu_vec[1:(K+1)], mean = mu_1_K_prime,
-    #                                                    sd =tau_mu_vec,lb = 0,ub = 10)
-    # log_proposal_mu0_current <- log(truncnorm::dtruncnorm(mu_vec[1] ,a= -Inf,b = min(mu_1_K_prime), 
-    #                                                       mean = mu_0_prime,sd = tau_mu_vec))
-    # 
-    # log_proposal_mu_current = log_proposal_mu_1_K_current
-    
     
     log_r =  prop_posterior_prime  - prop_posterior_current + log(p_proposal_current) - log(p_proposal_prime)
     
@@ -324,9 +356,9 @@ mu_update_f = function(lamdabar, ybar,mbar,theta, alpha_vec, n_k,
 
 
 
-sigma_squared_update_f= function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
+sigma_squared_update_f= function(Y_ij, N_ij, z,theta, alpha_vec, n_k,
                                  sigma_squared, mu_vec,K, tau_sigma_squared,
-                                 acc.count_sigma_squared, model,t){
+                                 acc.count_sigma_squared, model,t,llik = NULL){
   
   
   #simulating (sigma^2)' from a g ~ truncated normal
@@ -335,11 +367,13 @@ sigma_squared_update_f= function(lamdabar,ybar,mbar,theta, alpha_vec, n_k,
                                     sd = tau_sigma_squared)
   
   #computing the proportional posterior in (sigma^2)'
-  prop_posterior_prime <- lprop_posterior(lamdabar, ybar,mbar,theta, 
-                                          alpha_vec, n_k,sigma_squared_prime, mu_vec,K,model = model,t = t)
+  prop_posterior_prime <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, 
+                                          theta =theta, 
+                                          alpha_vec, n_k,sigma_squared_prime, mu_vec,K,model = model,t = t,llik=llik)
   #evaluating the proportional posterior in (sigma^2)^(t)
-  prop_posterior_current<- lprop_posterior(lamdabar, ybar,mbar,theta,
-                                           alpha_vec, n_k,sigma_squared, mu_vec,K,model=model,t = t)
+  prop_posterior_current<- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z,
+                                           theta=theta,
+                                           alpha_vec, n_k,sigma_squared, mu_vec,K,model=model,t = t,llik=llik)
   
   #evaluating the proposal density g(sigma^2)') 
   log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = 1,
@@ -383,16 +417,29 @@ log_lik_f_binom = function(N,Y,z,P, directed=T){
   return(log_lik)
 }
 
+ll_naive = function(z,theta,Y_ij, N_ij){
+  P = inverse_logit_f(theta)
+  z_mat = vec2mat_0_P(z,  P)
+  P_ij = calculate_victory_probabilities(z_mat,  P)
+  A_cur = dbinom(  Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij[upper.tri(P_ij)],log = T)
+  return(sum(A_cur))
+}
+
+
 
 z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
                       K, 
                       acc.count_z,labels_available,model,t){
   P<- inverse_logit_f(theta)
   n<- nrow(N_ij)
-  A_prime<- log_lik_f_binom(N = N_ij,Y = Y_ij,z =z,P = P,directed = T)
-  B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
   z_prime= z
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
+
+ 
+  A_prime<-  sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
+  B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
+
+
   n_prime = matrix(0,nrow(P),1)
   for(h in 1:K){
     n_prime[h] = sum(length(which(z_prime==h)))
@@ -420,10 +467,29 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
     
     z_scanning[i_th_turn] <- k_scanning
     
+    #the items in cluster i_star
+
+
+    
+    
+    logical_matrix1 = matrix(FALSE, n,n)
+    logical_matrix1[i_th_turn,]<-TRUE
+    logical_matrix1[,i_th_turn]<-TRUE
+    
+
+    # Get the upper triangular indices for the relevant clusters
+    upper_tri_indices <- upper.tri(Y_ij)
+    
+    # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
+    filtering_matrix = (logical_matrix1)*upper_tri_indices == T
+    # Filter the relevant entries
+    Y_ij_upper <- Y_ij[filtering_matrix]
+    
+    N_ij_upper <- N_ij[filtering_matrix]
+    P_NbyN_prime_upper <- P_NbyN_prime[filtering_matrix]
     
     #compute the likelihood of the data with the current assignment just for i_th_turn
-    A_minus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_prime[i_th_turn,], log=T)) + 
-      sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_prime[,i_th_turn], log=T)) 
+    A_minus = sum(dbinom(Y_ij_upper, N_ij_upper, P_NbyN_prime_upper, log=T)) 
     
     #update P_NbyN
     P_NbyN_scanning = P_NbyN_prime
@@ -431,19 +497,20 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
       P_NbyN_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
       P_NbyN_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
     }
+    P_NbyN_scanning_upper <- P_NbyN_scanning[filtering_matrix]
     #compute the likelihood of the same points with the new assignment
-    A_plus = sum(dbinom(Y_ij[i_th_turn,], N_ij[i_th_turn,], P_NbyN_scanning[i_th_turn,], log=T)) + sum(dbinom(Y_ij[,i_th_turn], N_ij[,i_th_turn], P_NbyN_scanning[,i_th_turn], log=T)) 
+    A_plus = sum(dbinom(Y_ij_upper, N_ij_upper, P_NbyN_scanning_upper, log=T)) 
     
     #Updating the likelihood
     A_scanning = A_prime - A_minus + A_plus
-    
-    
+
     n_scanning<- n_prime
     n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
     
     B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
     
-    log_r= A_scanning - A_prime + B_scanning - B_prime
+    log_r= t*A_scanning - t*A_prime + B_scanning - B_prime
+    
     #create statements that check conditiond to accept move
     GS_condition= min(log_r,0)>=log(runif(1))
     if(GS_condition){
@@ -460,16 +527,16 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
   z<- z_prime
   z_P<- vec2mat_0_P(z,P)
   # number of victories between block p and block q
-  ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
-  # number of missed victories between block p and block q
-  n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-  # number of missed victories between block p and block q
-  mbar<- t(z_P)%*%n_minus_y1%*%z_P
+  # ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
+  # # number of missed victories between block p and block q
+  # n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
+  # # number of missed victories between block p and block q
+  # mbar<- t(z_P)%*%n_minus_y1%*%z_P
+  # 
+  # coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
+  # lamdabar <- t(z_P)%*%(coef1)%*%z_P
   
-  coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-  lamdabar <- t(z_P)%*%(coef1)%*%z_P
-  
-  return(list(acc.moves = acc.count_z, z_current= z, ybar =ybar, mbar=mbar, lamdabar= lamdabar))
+  return(list(acc.moves = acc.count_z, z_current= z, A_prime = A_prime))
 } 
 
 

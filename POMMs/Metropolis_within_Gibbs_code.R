@@ -160,17 +160,7 @@ adaptive_MCMC_orderstats <- function(Y_ij, N_ij , estimation_control,
                                                                }
                                                              }
                                                              z_P = vec2mat(z_current)
-                                                             # number of victories between block p and block q
-                                                             # number of victories between block p and block q
-                                                             ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
-                                                             # number of missed victories between block p and block q
-                                                             n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-                                                             # number of missed victories between block p and block q
-                                                             mbar<- t(z_P)%*%n_minus_y1%*%z_P
-                                                             
-                                                             coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-                                                             lamdabar <- t(z_P)%*%(coef1)%*%z_P
-                                                             
+                                                     
                                                              
                                                              
                                                              

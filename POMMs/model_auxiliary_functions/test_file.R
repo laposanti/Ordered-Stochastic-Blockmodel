@@ -10,6 +10,18 @@
 #outputs
 #1) the two likelihoods
 
+faster_version = function(Y_ij, N_ij, z_current, theta, z_prime){
+  
+  z_mat = vec2mat_0_P(z_current, theta)
+  P_ij = calculate_victory_probabilities(z_mat, theta)
+  A_cur = dbinom(  Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij[upper.tri(P_ij)])
+  
+  z_mat_prime = vec2mat_0_P(z_prime, theta)
+  P_ij_prime = calculate_victory_probabilities(z_mat_prime, theta)
+  A_prime = dbinom(Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij_prime[upper.tri(P_ij)])
+  return(list(A_cur = sum(log(A_cur)), A_prime = sum(log(A_prime))))
+}
+
 naive_version = function(Y_ij, N_ij, z_current, theta, z_prime){
   z_mat = vec2mat_0_P(z_current, theta)
   P_ij = calculate_victory_probabilities(z_mat, theta)

@@ -67,7 +67,7 @@ for(application in c("Tennis_data","Citation_data")){
   #data to be estimated
   
   
-  K_values <- c(3,4,5,6,7)  # Range of K values to explore
+  K_values <- c(6,7)  # Range of K values to explore
   
   print(paste0('Estimating now:',true_model))
   choose_model_to_estimate = c('Simple')

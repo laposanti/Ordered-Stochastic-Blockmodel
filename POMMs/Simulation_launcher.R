@@ -5,6 +5,7 @@ library(progressr)
 library(beepr)
 library(foreach)
 library(doParallel)
+
 library(tidyverse)
 library(EnvStats)
 library(truncnorm)
@@ -18,10 +19,10 @@ library(truncnorm)
 library(doRNG)
 
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
-source("./Metropolis_within_Gibbs_code.R")
+source("./Metropolis_within_Gibbs_code_powerposterior.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
 
 
@@ -43,11 +44,11 @@ is.simulation=T
 #data.directory
 
 data_directory = "./Data/Sim1_data/"
-for(true_model in  c('WST')){
-
+for(true_model in  c('SST','WST','Simple')){
+  
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
-
+  
   
   #
   choose_model_to_estimate = c('SST', 'WST', 'Simple')
@@ -57,17 +58,17 @@ for(true_model in  c('WST')){
   
   for(file in 1:length(filenames)){
     data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
-
+    
     stopifnot(data_to_be_estimated$model == true_model)
     
     N_ij = data_to_be_estimated$N_ij
     n = nrow(N_ij)
     Y_ij = data_to_be_estimated$Y_ij
     ground_truth =data_to_be_estimated$ground_truth
-    data_to_be_estimated$data_plot
+    
     
     K= nrow(data_to_be_estimated$ground_truth$theta)
-    
+    data_description = paste0(true_model,K)
     print(paste0("True data--->", filenames[file]))
     
     ##############################################################################
@@ -77,10 +78,15 @@ for(true_model in  c('WST')){
     n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
-    N_iter= 120000
-    burnin = 80000
-    chains_seeds = list(20,21,22,23)
+    seed=20
+    N_iter <- 40000 #number of iterations
+    burnin <- 10000  #number of discarded iterations
     
+    K_est = rep(K, n_chains) #number of clusters to fit
+    
+    is.simulation=T
+    
+    print(paste0("True data--->", filenames[file], "\n"))
     #-----------------------------------------------------------------------------
     # SST MODEL
     #-----------------------------------------------------------------------------
@@ -88,29 +94,52 @@ for(true_model in  c('WST')){
       print(paste0("Estimation of the SST model, K=",K))
       print(paste0("Begin cycle at:", date()))
       
-      #initializing each chain
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=1,K=0,theta=1)
-
-      
-      K_chains = list(K,K,K,K)
-      t_chains = rep(1,n_chains)
-      chains_SST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
-                                            estimation_control = estimation_control, 
-                                            ground_truth = ground_truth, burnin=burnin,
-                                            n = n, N_iter = N_iter,n_chains = n_chains, 
-                                            optimal_acceptance_rate_theta = optimal_acceptance_rate_theta, 
-                                            optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
-                                            K = K_chains,
-                                            seed = chains_seeds, model = 'SST', t= t_chains, custom_init = NA)
-      
-      
-      my_names<- paste0("chain", 1:n_chains)
-      names(chains_SST)<-my_names 
 
 
-      filename_SST <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_SST","N", n,"_K", K,".RDS")
-      saveRDS(chains_SST, file = filename_SST) #saving results
+      est_model = 'SST'
+      
+      #setting up the chain hyperparameter
+
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
+      
+      print(paste0("Estimation of the SST model, K=", K_est))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      
+      
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 1)
+      
+      chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                            saving_directory = saving_directory,
+                                                            estimation_control = estimation_control,
+                                                            burnin = burnin,
+                                                            ground_truth = ground_truth,
+                                                            n = n, N_iter = N_iter, 
+                                                            K_est = K_est,data_description = data_description,
+                                                            seed = seed, 
+                                                            model = est_model, 
+                                                            custom_init = custom_init,
+                                                            power_posterior_apprach = power_posterior_apprach)
+      
+      
+      
+
+      
+      my_names <- paste0("chain", 1:n_chains)
+      names(chains_SST)<- my_names 
+
+      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      saveRDS(object = chains_SST, file = my_filename) 
       beep("coin")
+      
+      
+      
+      
     }
     
     #-----------------------------------------------------------------------------
@@ -121,24 +150,43 @@ for(true_model in  c('WST')){
       print(paste0("Estimation of the WST model, K=",K))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
-      K_chains = list(K,K,K,K)
-      t_chains = rep(1,n_chains)
-      estimation_control = list(z = 1,sigma_squared=1, mu_vec=1,K=0,theta=1)
       
       
-      chains_WST = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
-                                            estimation_control = estimation_control, 
-                                            ground_truth = ground_truth, 
-                                            n = n, N_iter = N_iter,n_chains = n_chains, burnin = burnin,
-                                            optimal_acceptance_rate_theta =optimal_acceptance_rate_theta, 
-                                            optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
-                                            K = K_chains,
-                                            seed = chains_seeds, model = 'WST',t=t_chains, custom_init = NA)
+      est_model = 'WST'
+      
+      #setting up the chain hyperparameter
+      
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
+      print(paste0("Estimation of the WST model, K=", K_est))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      estimation_control <- list(z = 1, sigma_squared = 1, mu_vec = 1 ,K = 0, theta = 1)
+      
+      chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                            saving_directory = saving_directory,
+                                                            estimation_control = estimation_control,
+                                                            burnin = burnin,
+                                                            ground_truth = ground_truth,
+                                                            n = n, N_iter = N_iter, 
+                                                            K_est = K_est,data_description = data_description,
+                                                            seed = seed, 
+                                                            model = est_model, 
+                                                            custom_init = custom_init,
+                                                            power_posterior_apprach = power_posterior_apprach)
+      
+      
+      
+  
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
-      
-      filename_WST <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_WST","_N", n,"_K", K,".RDS")
-      saveRDS(chains_WST, file = filename_WST) #saving results
+      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      saveRDS(object = chains_WST, file = my_filename) 
+
       beep("coin")
       
     }
@@ -149,33 +197,47 @@ for(true_model in  c('WST')){
     
     
     if('Simple' %in% choose_model_to_estimate){
+      
       print(paste0("Estimation of Simple model, K=",K))
       print(paste0("Begin cycle at:",date()))
- 
-      K_chains = list(K,K,K,K)
-
-      t_chains = rep(1,n_chains)
+      
+      
+      est_model = 'Simple'
+      
+      #setting up the chain hyperparameter
+      
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
       estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
       
-      chains_Simple = adaptive_MCMC_orderstats(Y_ij = Y_ij, N_ij = N_ij , 
-                                               estimation_control = estimation_control, 
-                                               ground_truth = ground_truth, 
-                                               n = n, N_iter = N_iter,n_chains = n_chains, burnin = burnin,
-                                               optimal_acceptance_rate_theta = optimal_acceptance_rate_theta , 
-                                               optimal_acceptance_rate_mu =optimal_acceptance_rate_mu,
-                                               K = K_chains,
-                                               seed = chains_seeds, model = 'Simple',t=t_chains, custom_init = NA)
+      chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                              saving_directory = saving_directory,
+                                                              estimation_control = estimation_control,
+                                                              burnin = burnin,
+                                                              ground_truth = ground_truth,
+                                                              n = n, N_iter = N_iter, 
+                                                              K_est = K_est,data_description = data_description,
+                                                              seed = seed, 
+                                                              model = est_model, 
+                                                              custom_init = custom_init,
+                                                              power_posterior_apprach = power_posterior_apprach)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
-      filename_Simple <- paste0("./results/simulation/",true_model,"_true//True_Model",filenames[file],"Est_model_Simple","_N", n,"_K", K,".RDS")
-      saveRDS(chains_Simple, file = filename_Simple) #saving results
+      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      saveRDS(object = chains_Simple, file = my_filename) 
+      
       beep("coin")
     }
   }
   
-
+  
 }
 
 
- 
+
 

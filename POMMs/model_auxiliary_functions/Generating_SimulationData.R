@@ -25,13 +25,12 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
   
   print(paste0('You are simulating theta according to the ', model, ' model prior'))
-  if(model == 'SST'&sigma!=0){
+  if(model == 'SST'){
     sigma=0
     print('If model is SST, sigma should be zero')
     
     
     mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
-    mu_vec_sort = log(mu_vec_sort/(1-mu_vec_sort))
     ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
     Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
     
@@ -52,13 +51,13 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
       
     }
     
-    P_prime[lower.tri(P_prime)] = - t(P_prime)[lower.tri(P_prime)]
+    P_prime[lower.tri(P_prime)] = 1- t(P_prime)[lower.tri(P_prime)]
     
     
   }else if(model == 'WST'&sigma!=0){
-    stopifnot(sigma!=0)
+
     mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
-    mu_vec_sort = log(mu_vec_sort/(1-mu_vec_sort))
+    
     ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
     Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
     
@@ -79,7 +78,7 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
       
     }
     
-    P_prime[lower.tri(P_prime)] = - t(P_prime)[lower.tri(P_prime)]
+    P_prime[lower.tri(P_prime)] = 1- t(P_prime)[lower.tri(P_prime)]
     
   }else if(model == 'Simple'){
     #upper triangular entries should not be greater than 0.5 (WST axiom) 
@@ -102,7 +101,7 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
   }
   
   if(model != 'Simple'){
-  to_be_returned = list(theta = theta_prime, mu= mu_vec_sort)
+  to_be_returned = list(P = P_prime, mu= mu_vec_sort)
   }else{
     to_be_returned = list(P = P_prime)
   }

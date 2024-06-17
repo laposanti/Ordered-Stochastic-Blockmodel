@@ -24,7 +24,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
   
@@ -239,8 +239,8 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation/SST_true/processed/"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/processed/"
   
   
   
@@ -250,7 +250,7 @@ if(is.simulation==F){
 for(est_model in c('SST','WST',"Simple")){
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   
-  filenames <- list.files(pattern = paste0("Est_model_",est_model),path = data_wd)
+  filenames <- list.files(pattern = paste0(est_model),path = data_wd)
   print(filenames)
 
   for(file in 1:length(filenames)){
@@ -401,7 +401,7 @@ for(est_model in c('SST','WST',"Simple")){
                   quantile5 = quantile(probs = 0.05, x = mu),
                   quantile95 = quantile(probs = 0.95, x = mu))
       
-      
+   
     }
     
     
