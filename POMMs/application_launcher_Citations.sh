@@ -19,9 +19,9 @@ module load R/4.4.0
 
 # command to use
 git pull
-Rscript Application_laucherSST_Citations.R &
-Rscript Application_laucherWST_Citations.R &
-Rscript Application_laucherSimple_Citations.R&
+Rscript Application_launcherSST_Citations.R &
+Rscript Application_launcherWST_Citations.R &
+Rscript Application_launcherSimple_Citations.R&
 
 wait;
 
