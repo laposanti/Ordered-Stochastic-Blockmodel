@@ -21,8 +21,10 @@ library(doRNG)
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
-source("./Metropolis_within_Gibbs_code.R")
+source("./Metropolis_within_Gibbs_code_powerposterior.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
+
+
 
 
 
@@ -85,7 +87,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     ground_truth = NA
     n = nrow(N_ij)
 
-    
+    power_posterior_apprach=F
     n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
