@@ -98,7 +98,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     # SST MODEL
     #-----------------------------------------------------------------------------
     if('SST' %in% choose_model_to_estimate){
-      print(paste0("Estimation of the SST model, K=",K))
+      print(paste0("Estimation of the SST model, K=",k_th))
       print(paste0("Begin cycle at:", date()))
       
       
@@ -154,7 +154,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     #-----------------------------------------------------------------------------
     
     if('WST' %in% choose_model_to_estimate){
-      print(paste0("Estimation of the WST model, K=",K))
+      print(paste0("Estimation of the WST model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       #initializing each chain
       
@@ -205,7 +205,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     
     if('Simple' %in% choose_model_to_estimate){
       
-      print(paste0("Estimation of Simple model, K=",K))
+      print(paste0("Estimation of Simple model, K=",k_th))
       print(paste0("Begin cycle at:",date()))
       
       
