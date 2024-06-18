@@ -30,14 +30,16 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
     print('If model is SST, sigma should be zero')
     
     
-    mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
+    mu_vec_01_sort = seq(0.4,0.9, (0.9-0.4)/(K))
+    mu_vec_sort = log(mu_vec_01_sort/(1-mu_vec_01_sort))
+    
     ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
     Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
     
     uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows
     n_P_entries<- nrow(uo)
     
-    P_prime<-matrix(0,K,K)
+    theta_prime<-matrix(0,K,K)
     for(i_th in 1:n_P_entries){
       
       i_star<- uo$row[i_th]
@@ -47,16 +49,18 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
       upper.bound = mu_vec_sort[j_star - i_star + 2] 
       
       
-      P_prime[i_star,j_star]<- runif(1, min  = lower.bound , max = upper.bound)
+      theta_prime[i_star,j_star]<- runif(1, min  = lower.bound , max = upper.bound)
       
     }
     
-    P_prime[lower.tri(P_prime)] = 1- t(P_prime)[lower.tri(P_prime)]
+    theta_prime[lower.tri(theta_prime)] = - t(theta_prime)[lower.tri(theta_prime)]
     
+    P_prime = inverse_logit_f(theta_prime)
     
   }else if(model == 'WST'&sigma!=0){
-
-    mu_vec_sort = seq(0.4,0.9, (0.9-0.4)/(K))
+    
+    mu_vec_01_sort = seq(0.4,0.9, (0.9-0.4)/(K))
+    mu_vec_sort = log(mu_vec_01_sort/(1-mu_vec_01_sort))
     
     ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
     Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
@@ -64,7 +68,7 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
     uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows
     n_P_entries<- nrow(uo)
     
-    P_prime<-matrix(0,K,K)
+    theta_prime<-matrix(0,K,K)
     for(i_th in 1:n_P_entries){
       
       i_star<- uo$row[i_th]
@@ -74,34 +78,40 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
       upper.bound = mu_vec_sort[j_star - i_star + 2] + sigma
       
       
-      P_prime[i_star,j_star]<- runif(1, min  = lower.bound , max = upper.bound)
+      theta_prime[i_star,j_star]<- runif(1, min  = lower.bound , max = upper.bound)
       
     }
     
-    P_prime[lower.tri(P_prime)] = 1- t(P_prime)[lower.tri(P_prime)]
+    theta_prime[lower.tri(theta_prime)] = - t(theta_prime)[lower.tri(theta_prime)]
+    
+    P_prime = inverse_logit_f(theta_prime)
+    
     
   }else if(model == 'Simple'){
     #upper triangular entries should not be greater than 0.5 (WST axiom) 
     #nor increasing in the columns and decreasing in the rows (SST axiom)
     
-    P = matrix(NA, K, K)
-    P[col(P)-row(P)==0] <-runif(K, 0,1)
+    P_prime = matrix(NA, K, K)
+    P_prime[col(P_prime)-row(P_prime)==0] <-runif(K, 0,1)
     for(diag_i in 1:(K-1)){
-      P[col(P)-row(P)==diag_i] <- runif( K-diag_i,0,1)
+      P_prime[col(P_prime)-row(P_prime)==diag_i] <- runif( K-diag_i,min = 0,max = 1)
     }
     #check for P
-    violating_WST_percent = 1- sum(P >=0.5 & upper.tri(P,diag = T))/sum(upper.tri(P,diag = T))
+    violating_WST_percent = 1- sum(P_prime >=0.5 & upper.tri(P_prime,diag = T))/sum(upper.tri(P_prime,diag = T))
+    
     while(violating_WST_percent < .4){
-      scrambler_matrix = matrix(0,K,K)
-      scrambler_matrix[upper.tri(scrambler_matrix,diag = T)] = sample(x = c(1,-1),size = (K*(K-1))/2 + K,replace = T)
-      P = scrambler_matrix*P
-      violating_WST_percent = 1- sum(P >=0.5 & upper.tri(P,diag = T))/sum(upper.tri(P,diag = T))
+      P_prime = matrix(NA, K, K)
+      P_prime[col(P_prime)-row(P_prime)==0] <-runif(K, 0,1)
+      for(diag_i in 1:(K-1)){
+        P_prime[col(P_prime)-row(P_prime)==diag_i] <- runif( K-diag_i,min = 0,max = 1)
       }
+      violating_WST_percent = 1- sum(P_prime >=0.5 & upper.tri(P_prime,diag = T))/sum(upper.tri(P_prime,diag = T))
+    }
     
   }
   
   if(model != 'Simple'){
-  to_be_returned = list(P = P_prime, mu= mu_vec_sort)
+    to_be_returned = list(P = P_prime, mu= mu_vec_sort)
   }else{
     to_be_returned = list(P = P_prime)
   }
@@ -116,7 +126,7 @@ generate_theta_from_theta_prior = function(K, model='WST', sigma=0){
 true_model = 'Simple'
 saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data///"
 simulations = 1
-k=3
+
 for(k in 3:6){
   
   for(n_simul in 1:simulations){
@@ -125,24 +135,34 @@ for(k in 3:6){
     seed =2021+n_simul-1
     set.seed(seed)
     if(true_model =='SST'){
-      prior_SST = generate_theta_from_SST_prior(K, model = 'SST',sigma = 0)
-      theta<- prior_SST$P
+      prior_SST = generate_theta_from_theta_prior(K, model = 'SST',sigma = 0)
+      P <- prior_SST$P
       mu_vec =  prior_SST$mu
+      
+      theta = log(P/(1-P))
+      
     }else if(true_model == 'WST'){
       sigma_squared = 0.3
-      prior_WST = generate_theta_from_SST_prior(K, model = 'WST',sigma = sigma_squared)
-      theta<- prior_WST$P
+      prior_WST = generate_theta_from_theta_prior(K, model = 'WST',sigma = sigma_squared)
+      P <- prior_WST$P
       mu_vec =  prior_WST$mu
-    }else if( true_model == 'Simple'){
-      generate_theta_from_theta_prior(K,model = 'Simple',sigma = NA)
-      P[lower.tri(P)] = 1-t(P)[lower.tri(P)]
+      
       theta = log(P/(1-P))
+      
+    }else if( true_model == 'Simple'){
+      
+      prior_Simple =  generate_theta_from_theta_prior(K,model = 'Simple',sigma = NA)
+      P = prior_Simple$P
+      P[lower.tri(P)] = 1- t(P)[lower.tri(P)]
+      print(P)
+      theta = log(P/(1-P))
+      
     }
     
-    P = inverse_logit_f(theta)
-    P
+    
+    print(P)
     z <- sample(1:K, n,replace=T)
-    z_P<- vec2mat_0_P(clust_lab = z,P = theta)
+    z_P<- vec2mat_0_P(clust_lab = z,P = P)
     P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
     
     N_blocks = matrix(sample(x = (6:12),size = K**2,replace = T), nrow = K,ncol = K)

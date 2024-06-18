@@ -45,20 +45,19 @@ is.simulation=T
 
 data_directory = "./Data/Sim1_data/"
 for(true_model in  c('SST','WST','Simple')){
-  
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
+
   
-  
-  #
+
   choose_model_to_estimate = c('SST', 'WST', 'Simple')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    data_to_be_estimated <- readRDS(paste0(data_directory,"/",filenames[file]))
-    
+    data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
+    data_to_be_estimated
     stopifnot(data_to_be_estimated$model == true_model)
     
     N_ij = data_to_be_estimated$N_ij
@@ -80,7 +79,7 @@ for(true_model in  c('SST','WST','Simple')){
     optimal_acceptance_rate_mu = .234
     seed=20
     N_iter <- 40000 #number of iterations
-    burnin <- 10000  #number of discarded iterations
+    burnin <- 10000 #number of discarded iterations
     
     K_est = rep(K, n_chains) #number of clusters to fit
     
@@ -114,7 +113,7 @@ for(true_model in  c('SST','WST','Simple')){
       
       estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 1)
       
-      chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+      chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                             saving_directory = saving_directory,
                                                             estimation_control = estimation_control,
                                                             burnin = burnin,
@@ -133,7 +132,7 @@ for(true_model in  c('SST','WST','Simple')){
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
 
-      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
       beep("coin")
       
@@ -184,7 +183,7 @@ for(true_model in  c('SST','WST','Simple')){
   
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
-      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
 
       beep("coin")
@@ -228,7 +227,7 @@ for(true_model in  c('SST','WST','Simple')){
                                                               power_posterior_apprach = power_posterior_apprach)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
-      my_filename = paste0(saving_directory, '/MCMC_output/Fixed_K/', model, "/est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
       beep("coin")

@@ -19,7 +19,7 @@
 #gamma_vec: the hyperprior on the block sizes
 #diag0.5: whether the main diagonal is set to 0.5 (diag0.5=T) or not (diag0.5=F)
 
-adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control, 
+adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control,
                                                     ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
                                                     custom_init=NA,power_posterior_apprach = T){
@@ -38,11 +38,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   where_to_save =list()
   for(i in 1:length(K_est)){
     if(power_posterior_apprach==T){
-      where_to_save[[i]] =  file.path(saving_directory, paste0("/MCMC_output/powerposterior/Data_",data_description,"/Est_",model,"/K", K_est[[i]],"/"))}
+      where_to_save[[i]] =  file.path(saving_directory, paste0("/MCMC_output/powerposterior/Data_",data_description,"/Est_",model,"/K", K_est[[i]],"/"))
+      dir.create(where_to_save[[i]], showWarnings = F, recursive = T)
+      }
+
     else{
-      where_to_save[[i]] =  file.path(saving_directory, paste0("/MCMC_output/Fixed_K/"))
+      if(is.simulation==T){
+        where_to_save[[i]] =  NA
+      }
     }
-    dir.create(where_to_save[[i]], showWarnings = T, recursive = T)
+    
   }
   
   
@@ -307,7 +312,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                iteration_time= vector()
                                                                set.seed(chains_seed[[chain]])
                                                                for(j in 2:N_iter){
-                                                                
+                                                                 
                                                                  start_time <- Sys.time()
                                                                  
                                                                  
@@ -335,7 +340,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  }
                                                                  if (estimation_control$theta == 1) {
                                                                    #theta UPDATE-------------------------------------------------------------
-                                                                  
+                                                                   
                                                                    theta_update = theta_update_f(z = z_current, N_ij = N_ij, 
                                                                                                  Y_ij = Y_ij,
                                                                                                  theta = theta_current,alpha_vec = alpha_vec,
@@ -524,7 +529,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     
   })
   
-
+  
   
   
   

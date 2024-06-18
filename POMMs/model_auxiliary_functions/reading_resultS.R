@@ -239,8 +239,8 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/processed/"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/SST/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/SST/processed/"
   
   
   
@@ -250,7 +250,7 @@ if(is.simulation==F){
 for(est_model in c('SST','WST',"Simple")){
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   
-  filenames <- list.files(pattern = paste0(est_model),path = data_wd)
+  filenames <- list.files(pattern = paste0('est_model',est_model),path = data_wd)
   print(filenames)
 
   for(file in 1:length(filenames)){
@@ -1095,6 +1095,7 @@ top_block_df_container = top_block_df_container %>% arrange(n_clust) %>%
   relocate (n_clust) %>% relocate(where(is.character)) %>% rename(K = n_clust)
 top_block_df_container %>%  write.csv(file = paste0(processed_wd,"/top_block_df.csv"))
 }
+
 z_container = z_container %>% arrange(n_clust) %>% 
   relocate (n_clust) %>% relocate(where(is.character)) %>% rename(K = n_clust)
 
