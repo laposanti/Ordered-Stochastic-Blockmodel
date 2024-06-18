@@ -43,9 +43,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
       }
 
     else{
-      if(is.simulation==T){
         where_to_save[[i]] =  NA
-      }
     }
     
   }
