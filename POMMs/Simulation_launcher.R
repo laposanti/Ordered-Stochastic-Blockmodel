@@ -132,7 +132,7 @@ for(true_model in  c('SST','WST','Simple')){
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
 
-      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
       beep("coin")
       
@@ -183,7 +183,7 @@ for(true_model in  c('SST','WST','Simple')){
   
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
-      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
 
       beep("coin")
@@ -227,7 +227,7 @@ for(true_model in  c('SST','WST','Simple')){
                                                               power_posterior_apprach = power_posterior_apprach)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
-      my_filename = paste0('./results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
       beep("coin")
