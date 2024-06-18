@@ -19,5 +19,5 @@ module load R/4.4.0
 
 # command to use
 git pull
-Rscript Application_launcher.R
+Rscript Application_launcher_fixed_K.R
  
