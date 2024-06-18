@@ -56,8 +56,8 @@ is.simulation=T
 est_model = 'WST'
 
 #setting up the chain hyperparameter
-N_iter <- 120000 #number of iterations
-burnin <- 80000  #number of discarded iterations
+N_iter <- 50000 #number of iterations
+burnin <- 20000  #number of discarded iterations
 
 K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
 

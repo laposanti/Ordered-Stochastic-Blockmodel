@@ -27,7 +27,7 @@ Rscript Model_selectionK6_Simple.R &
 
 wait;
 
-python3 name_to_upload
+
 
 
 

@@ -22,5 +22,7 @@ git pull
 Rscript Model_selectionK3_SST.R &
 Rscript Model_selectionK4_SST.R &
 Rscript Model_selectionK5_SST.R &
-Rscript Model_selectionK6_SST.R
+Rscript Model_selectionK6_SST.R &
+
+wait;
  
