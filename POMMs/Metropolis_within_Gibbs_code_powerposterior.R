@@ -90,7 +90,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              save_dir = where_to_save[[chain]]
                                                              #setting hyperparams
                                                              K <- as.numeric(K_est[[chain]])
-                                                             alpha_vec = as.vector(rep(1/K,K))
+                                                             
+                                                          
                                                              
                                                              
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
@@ -175,6 +176,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  sigma_current = custom_init$sigma
                                                                }
                                                              }
+                                                             
+                                                             e_0 <- (K*(K-1))/2+2*K+1
+                                                             
+                                                             alpha_vec = as.vector(rep(e_0,K))
                                                              
                                                              if(power_posterior_apprach==T){
                                                                i <- 0:n_temperatures

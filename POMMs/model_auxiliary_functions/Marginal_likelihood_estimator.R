@@ -26,119 +26,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 #estimating marginal likelihood
 est_model = 'WST'
-est_marg_lik = function(directory, est_model, is.simulation){
-  
-  filenames <- list.files(pattern = paste0(est_model),path = directory)
-  if(is.simulation ==T){
-    log_z_t = data.frame(t= 0, expected_evidence = 0, k=0, sd = 0,k_true=0 )
-  }else{
-    log_z_t = data.frame(t= 0, expected_evidence = 0, k=0, sd = 0)
-  }
-  
-  n_temperatures = length(filenames)
-  
-  print(paste0('Computing power posterior with ',n_temperatures, 'temperatures'))
-  for(i in 1:n_temperatures){
-    if(i %% 10 == 0){
-      print(paste0("estimating K=", k_est, " ---- ", n_temperatures - i, ' to go'))
-    }
-    #---------------------------------------------------------------------------
-    #---------------------------------------------------------------------------
-    #importing the MCMC function output
-    MCMC_output <- readRDS(file = paste0(directory,"/",filenames[i]))
-    Y_ij = MCMC_output$Y_ij
-    N_ij = MCMC_output$N_ij
-    n = nrow(Y_ij)
-    #number of clusters
-    k_est = dim(MCMC_output$est_containers$theta)[1]
-    # parameters sampled
-    z_burned = MCMC_output$est_containers$z
-    theta_burned = MCMC_output$est_containers$theta
-    n_samples = dim(z_burned)[2]
-    
-    # z_pivot <- z_burned[,which.max(MCMC_output$control_containers$A[-c(1:burnin)])]
-    # 
-    # 
-    # # Apply function to each chunk
-    # run_label_switch <- label.switching(method = "ECR" ,
-    #                                     zpivot = z_pivot ,
-    #                                     z = t(z_burned),
-    #                                     K = k_est)
-    # if(MCMC_output$t == 1){
-    #   z_est = as.numeric(run_label_switch$clusters)
-    #   z_container = rbind(z_container, data.frame(z = z_est, k_est = rep(k_est,nrow(Y_ij))))
-    # }
-    # 
-    # permutation_z = run_label_switch$permutations$ECR
-    # 
-    # 
-    # z_permuted = matrix(NA, nrow=nrow(Y_ij), ncol = num_samples)
-    # for(iii in 1:ncol(z_permuted)){
-    #   z_permuted[,iii] <- permutation_z[iii,][z_burned[,iii]]
-    # }
-    # 
-    # theta_permuted = array(NA, dim=c(K,K,nrow(permutation_z)))
-    # for(uuu in 1:num_samples){
-    #   # Permute the rows of matrix P
-    #   theta_permuted[,,uuu] <- theta_burned[permutation_z[uuu,], permutation_z[uuu,],uuu]
-    # }
-    
-    #----------------
-    # computing the likelihood of a given interaction outcome between each pair of items
-    
-    #likelihood container
-    
-    u_y = Y_ij[upper.tri(N_ij)&(N_ij!=0)]
-    u_n = N_ij[upper.tri(N_ij)&(N_ij!=0)]
-    
-    
-    LL = matrix(NA, length(u_n), n_samples)
-    
-    P_chain = array(apply(X = theta_burned, MARGIN = 3, FUN = inverse_logit_f),dim=c(k_est,k_est,n_samples))
-    z_mat_array = array(apply(X = z_burned, MARGIN = 2, FUN = vec2mat_0_P,P=theta_burned[,,1]), dim=c(n, k_est, n_samples))
-    
 
-    for(iter in 1:n_samples){
-      P_ij= calculate_victory_probabilities(z_mat_array[,,iter], P_chain[,,iter])
-      LL[,iter] = dbinom(x = u_y, size = u_n, prob = P_ij[upper.tri(N_ij)&(N_ij!=0)], log=T)
-    }
-    if(MCMC_output$t == 1){
-      WAIC_t51 = waic(t(LL))$estimates[3]
-    }
-    #obtaining the likelihood for a given iteration
-    LLik_sum_item = colSums(LL)
-
-    #mean likelihood across iterations (expected deviance) of a given temperature t
-    expected_evidence = mean(LLik_sum_item)
-    
-    
-    if(is.simulation ==T){
-      log_z_t = rbind(log_z_t, data.frame(t = MCMC_output$t , expected_evidence= expected_evidence,
-                                          sd= sd(LLik_sum_item),
-                                          k=k_est, k_true = MCMC_output$ground_truth$K))
-    }else{
-      log_z_t = rbind(log_z_t, data.frame(t = MCMC_output$t , expected_evidence= expected_evidence, 
-                                          sd= sd(LLik_sum_item),
-                                          k=k_est))
-    }
-    
-  }
-  
-  log_z_t = log_z_t[-1,]
-  
-  log_z_t = log_z_t %>% arrange(t)
-  log_z_t$riemann = rep(NA, nrow(log_z_t))
-  for(row_i in 1:(nrow(log_z_t)-1)){
-    ith_sum = (log_z_t$t[row_i+1] - log_z_t$t[row_i])*(log_z_t$expected_evidence[row_i]+log_z_t$expected_evidence[row_i+1])/2
-    log_z_t$riemann[row_i] = ith_sum
-  }
-  
-  
-  marginal_likelihood = sum(log_z_t$riemann,na.rm = T)
-  
-  return(list(df = log_z_t, marginal_likelihood = marginal_likelihood, 
-              WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij))
-}
 
 is.simulation = T
 if(is.simulation ==F){
@@ -148,33 +36,56 @@ if(is.simulation ==F){
   sav_dir = 'model_choice'
   k_true = 3
 }
-
-general_df = data.frame(t =NA, expected_evidence=NA , sd=NA , k=NA, riemann=NA,k_true = NA)
-marginal_likelohood_df = data.frame( k_est=NA, marginal_likelihood=NA,WAIC_est=NA,k_true = NA)
-z_container = data.frame(z = 0, k_est = 0,k_true =0)
-
-true_model = 'SST'
-est_model = 'SST'
+# Define the is.simulation variable before using it
+is.simulation <- FALSE
 
 
+complete_df <- data.frame(
+  data_description = NA, est_model = NA, t = NA, expected_evidence = NA,
+  sd = NA, K_est = NA, riemann = NA, K_true = NA
+)
+marginal_likelihood_df <- data.frame(
+  data_description = NA, est_model = NA, K_est = NA,
+  marginal_likelihood = NA, WAIC_est = NA, K_true = NA
+)
 
-for(k_est in 2:7){
-  
-  # directory = paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/',
-  #                    sav_dir,'/',true_model,'/',est_model,'/K',k_est,'/')
-  # 
-  directory =  paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/model_selection/K3true/raw/K',k_est,'/')
-  estimation = est_marg_lik(directory = directory,est_model = est_model,is.simulation = T)
-  general_df = rbind(general_df, estimation$df)
-  marginal_likelohood_df = rbind(marginal_likelohood_df, 
-                                 data.frame(k_est=k_est, 
-                                            marginal_likelihood=estimation$marginal_likelihood,
-                                            WAIC_est = estimation$WAIC,
-                                            k_true = k_true)) 
+
+# Initialize an empty data frame
+z_container <- data.frame(z = 0, k_est = 0, k_true = 0)
+
+# Set the values for the variables
+data_description <- 'Citations_application'
+for(est_model in c("SST",'WST','Simple')){
+  est_model <- est_model
   
   
-  print(marginal_likelohood_df)
-  
+  # Iterate over the range of k_est values
+  for (k_est in 2:8) {
+    # Construct the directory path
+    directory <- paste0(
+      '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/powerposterior/Data_',
+      data_description, '/Est_', est_model, '/K', k_est, '/'
+    )
+    
+    # est_marg_lik is a function that returns a list with 'df', 'marginal_likelihood', and 'WAIC'
+    estimation <- est_marg_lik(directory = directory, est_model = est_model, is.simulation = is.simulation, data_description = data_description, k_est = k_est)
+    
+    # Append the estimation data to the general data frame
+    complete_df <- rbind(complete_df, estimation$complete_df)
+    
+    # Append the marginal likelihood data to the respective data frame
+    marginal_likelihood_df <- rbind(marginal_likelihood_df, data.frame(
+      data_description = data_description,
+      est_model = est_model,
+      K_est = k_est,
+      marginal_likelihood = estimation$marginal_likelihood,
+      WAIC_est = estimation$WAIC,
+      K_true = estimation$K_true  # Ensure k_true is defined
+    ))
+    
+    # Print the marginal likelihood data frame
+    print(marginal_likelihood_df)
+  }
 }
 
 marginal_likelohood_df = marginal_likelohood_df[-1,]

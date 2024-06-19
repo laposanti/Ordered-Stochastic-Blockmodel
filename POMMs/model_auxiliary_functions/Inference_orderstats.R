@@ -183,9 +183,9 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
       chain_relabeled[,i] <- permutations_z[i,][z_chain[,i]]
       label_switch_count[i]<- table(chain_relabeled[,i] != z_chain[,i])[1]
     }
-
     
-  table(chain_relabeled[,1] != z_chain[,1])[1]
+    
+    table(chain_relabeled[,1] != z_chain[,1])[1]
     
   }else if(label_switch==F){
     point_est_z <- minVI(psm = psm)$cl
@@ -585,7 +585,110 @@ mu_vec_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter, 
 
 
 
-
+#-------------------------------------------------------------------------------
+# Power Posterior estimation of the marginal likelihood
+#-------------------------------------------------------------------------------
+est_marg_lik = function(directory, est_model, is.simulation, data_description, k_est){
+  
+  #all the files in a given folder
+  filenames <- list.files(pattern = paste0(est_model),path = directory)
+  
+  #if it is a simulation study, where 
+  
+  complete_df = data.frame(t= NA, expected_evidence = NA, K_est =NA, sd = NA, K_true=NA, data_description = NA, est_model = NA )
+  
+  
+  n_temperatures = length(filenames)
+  
+  print(paste0('Computing power posterior with ',n_temperatures, 'temperatures'))
+  print(paste0('Data are: ', data_description))
+  print(paste0('Model is: ', est_model))
+  MCMC_output0 <- readRDS(file = paste0(directory,"/",filenames[1]))
+  
+  Y_ij = MCMC_output0$Y_ij
+  N_ij = MCMC_output0$N_ij
+  
+  n = nrow(Y_ij)
+  
+  Y_ij_upper_tri = Y_ij[upper.tri(Y_ij)]
+  N_ij_upper_tri = N_ij[upper.tri(N_ij)]
+  
+  K_est = dim(MCMC_output0$est_containers$theta)[1]
+  #check
+  stopifnot(K_est == k_est)
+  for(i in 1:n_temperatures){
+    if(i %% 10 == 0){
+      print(paste0("estimating K=", k_est, " ---- ", n_temperatures - i, ' to go'))
+    }
+    #---------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
+    #importing the MCMC function output
+    MCMC_output <- readRDS(file = paste0(directory,"/",filenames[i]))
+    
+    
+    
+    
+    # parameters sampled
+    z_burned = MCMC_output$est_containers$z
+    theta_burned = MCMC_output$est_containers$theta
+    n_samples = dim(z_burned)[2]
+    
+    
+    #----------------
+    # computing the pairwise density of a given interaction outcome between each pair of items
+    LL_ij = matrix(NA, length(Y_ij_upper_tri), n_samples)
+    
+    P_chain = array(apply(X = theta_burned, MARGIN = 3, FUN = inverse_logit_f),dim=c(K_est,K_est,n_samples))
+    z_mat_array = array(apply(X = z_burned, MARGIN = 2, FUN = vec2mat_0_P,P=theta_burned[,,1]), dim=c(n, K_est, n_samples))
+    
+    
+    for(iter in 1:n_samples){
+      P_ij_NbyN= calculate_victory_probabilities(z_mat_array[,,iter], P_chain[,,iter])
+      LL_ij[,iter] = dbinom(x = Y_ij_upper_tri, size = N_ij_upper_tri, prob = P_ij_NbyN[upper.tri(N_ij)], log=T)
+    }
+    
+    if(MCMC_output$t == 1){
+      WAIC_t51 = waic(t(LL_ij))$estimates[3]
+    }
+    
+    #obtaining the likelihood for a given iteration
+    LL = colSums(LL_ij)
+    
+    #mean likelihood across iterations (expected deviance) of a given temperature t
+    expected_evidence = mean(LL)
+    
+    
+    if(is.simulation ==T){
+      K_true = MCMC_output$ground_truth$K
+      complete_df = rbind(complete_df, data.frame(t = MCMC_output$t , expected_evidence= expected_evidence,
+                                          sd= sd(LL),
+                                          k=K_est, K_true = K_true, data_description = data_description, est_model = est_model))
+    }else{
+      K_true = NA
+      complete_df = rbind(complete_df, data.frame(t = MCMC_output$t , expected_evidence= expected_evidence, 
+                                          sd= sd(LL),
+                                          K_est =K_est, 
+                                          K_true = K_true,
+                                          data_description = data_description, est_model = est_model))
+    }
+    
+  }
+  
+  complete_df = complete_df[-1,]
+  
+  complete_df = complete_df %>% arrange(t)
+  complete_df$riemann = rep(NA, nrow(complete_df))
+  for(row_i in 1:(nrow(complete_df)-1)){
+    ith_sum = (complete_df$t[row_i+1] - complete_df$t[row_i])*(complete_df$expected_evidence[row_i]+complete_df$expected_evidence[row_i+1])/2
+    complete_df$riemann[row_i] = ith_sum
+  }
+  
+  
+  marginal_likelihood = sum(complete_df$riemann)
+  
+  return(list(complete_df = complete_df, marginal_likelihood = marginal_likelihood, K_true = K_true,
+              WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij))
+}
 
 
 
