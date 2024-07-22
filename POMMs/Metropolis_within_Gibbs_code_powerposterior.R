@@ -26,10 +26,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   #setting for each chain a different seed
   #if the given seed is 20, the chains' seeds will be 21 for chain 1, 22 for chain 2 and so on...
   
-  chains_seed <- list()
-  for(i in 1:length(K_est)){
-    chains_seed[[i]] = seed + i
-  }
+
   
   if(power_posterior_apprach == T){
     n_temperatures=50
@@ -57,7 +54,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
-                       'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K_est', 'burnin', 'chains_seed','model','data_description',
+                       'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K_est', 'burnin', 'seed','model','data_description',
                        'power_posterior_apprach' ,'true_model', 'custom_init','p','n_temperatures','where_to_save')
   
   registerDoFuture()
@@ -85,7 +82,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              
-                                                             
+                                                             set.seed(seed + chain)
                                                              
                                                              save_dir = where_to_save[[chain]]
                                                              #setting hyperparams
@@ -129,9 +126,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                if(model == 'WST' || model == 'SST'){
                                                                  if(estimation_control$mu_vec==1){
                                                                    
-                                                                   mu_vec_1_K_1<- sort(rtruncnorm(K,a = 0, b = 20, mean = 0,sd = 1.5))
-                                                                   mu_vec0 = rtruncnorm(1,a = -Inf, b = min(mu_vec_1_K_1), mean = 0,sd = 1)
-                                                                   mu_vec_current = c(mu_vec0, mu_vec_1_K_1)
+                                                                   mu_vec_current<- sort(rtruncnorm(K,a = 0, b = 20, mean = 0,sd = 1.5))
+                                                                  
                                                                  }else{
                                                                    mu_vec_current=  as.numeric(ground_truth$mu_vec)
                                                                  }
@@ -144,16 +140,20 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                if(estimation_control$theta==1){
                                                                  theta_current = matrix(NA,K,K)
                                                                  if(model =='SST'){
-                                                                   for(d in 0:(K-1)){
+                                                                   diag(theta_current) <- runif(K, min  = -5 , max = +10)
+                                                                   for(d in 1:(K-1)){
                                                                      theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, 
-                                                                                                                                     min  = mu_vec_current[d+1] , 
-                                                                                                                                     max = mu_vec_current[d+2])
+                                                                                                                                     min  = mu_vec_current[d] , 
+                                                                                                                                     max = mu_vec_current[d+1])
                                                                    }
                                                                  }else if(model =='WST'){
-                                                                   
-                                                                   for(d in 0:(K-1)){
-                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, min  = mu_vec_current[d+1]-sigma_squared_current , 
-                                                                                                                                     max = mu_vec_current[d+2]+sigma_squared_current)
+                                                                   diag(theta_current) <- runif(K, min  = -5 , max = +10)
+                                                                   for(d in 1:(K-1)){
+                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, 
+                                                                                                                                     min  = mu_vec_current[d]-
+                                                                                                                                       sigma_squared_current , 
+                                                                                                                                     max = mu_vec_current[d+1]+
+                                                                                                                                       sigma_squared_current)
                                                                    }
                                                                  }else if( model =='Simple'){
                                                                    for(d in 0:(K-1)){
@@ -177,8 +177,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                              }
                                                              
-                                                             e_0 <- (K*(K-1))/2+2*K+1
-                                                             
+                                                             e_0 <- length(theta_current[upper.tri(theta_current,diag = T)])
+                                                             if(model != 'Simple'){
+                                                               e_0 = e_0 + length(mu_vec_current)
+                                                             }
+                                                             e_0 = e_0/2+1
+                                                             # e_0 = 1
                                                              alpha_vec = as.vector(rep(e_0,K))
                                                              
                                                              if(power_posterior_apprach==T){
@@ -284,10 +288,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                                if(model == 'WST'||model == 'SST'){
                                                                  #initialising the chain
-                                                                 mu_vec_container = matrix(0, nrow = K+1, ncol = N_iter-burnin)
+                                                                 mu_vec_container = matrix(0, nrow = K, ncol = N_iter-burnin)
                                                                  mu_vec_container[,1] <- mu_vec_current
                                                                  #initialising the adaptive variance
-                                                                 tau_mu_vec <- 0.1
+                                                                 tau_mu_vec <- 0.3
                                                                  tau_mu_vec_container = matrix(0,1, N_iter)
                                                                  tau_mu_vec_container[1] <- tau_mu_vec
                                                                }else{
@@ -308,12 +312,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #containers for the counts of accepted proposals
                                                                acc.count_z = rep(1,n)
                                                                acc.count_sigma_squared=1
-                                                               acc.count_mu_vec = rep(1, K+1)
+                                                               acc.count_mu_vec = rep(1, K)
                                                                acc.count_theta<- matrix(1,K,K)
                                                                
                                                                #READY TO BOMB!
                                                                iteration_time= vector()
-                                                               set.seed(chains_seed[[chain]])
+                                                           
                                                                for(j in 2:N_iter){
                                                                  
                                                                  start_time <- Sys.time()
@@ -396,13 +400,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  }
                                                                  if (estimation_control$mu== 1) {
                                                                    #mu UPDATE----------------------------------------------------------------
-                                                                   
+                                                                  
                                                                    mu_update=  mu_update_f(z = z_current, N_ij = N_ij, llik=llik,
                                                                                            Y_ij = Y_ij,  theta =theta_current,
                                                                                            alpha_vec =  alpha_vec, n_k = n_k,
                                                                                            sigma_squared = sigma_squared_current, 
                                                                                            mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
                                                                                            acc.count_mu_vec,model,t=t)
+                                                                   
                                                                    #updating quantities
                                                                    mu_vec_current = mu_update$mu_vec
                                                                    acc.count_mu_vec = mu_update$acc.moves
@@ -497,7 +502,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  
                                                                  chains = list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers,
                                                                                control_containers=control_containers, acceptance_rates= acceptance_rates,
-                                                                               st.deviations=st.deviations, t=t, seed=chains_seed[[chain]])
+                                                                               st.deviations=st.deviations, t=t, seed= seed + chain)
                                                                  
                                                                  #storing the results of each chain
                                                                  my_names <- paste0("chain")
@@ -519,11 +524,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              est_containers = list(z = z_container,theta = theta_container,
                                                                                    sigma_squared= sigma_squared_container, mu_vec = mu_vec_container)
                                                              
-                                                             control_containers = list(A = A_container)
+                                                             control_containers = list(A = A_container, alpha_vec = alpha_vec)
                                                              
                                                              return(list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers, 
                                                                          control_containers=control_containers, acceptance_rates= acceptance_rates, 
-                                                                         st.deviations=st.deviations, t=t, seed=chains_seed[[chain]]))
+                                                                         st.deviations=st.deviations, t=t, seed = seed + chain))
                                                              
                                                              
                                                            }

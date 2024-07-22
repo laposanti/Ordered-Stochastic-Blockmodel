@@ -1,6 +1,3 @@
-
-
-
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -18,7 +15,7 @@ library(doRNG)
 
 
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -39,6 +36,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #choose between citation exchange data and tennis data
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
+
 for(data_description in c("Tennis_data","Citation_data")){
 
   
@@ -47,8 +45,8 @@ for(data_description in c("Tennis_data","Citation_data")){
   ###############################################################################
   
   if(data_description == 'Tennis_data'){
-    Y_ij <- read.table("./Data/Tennis application/Y_ij.csv",header  = F,row.names = 1,sep = ",")
-    N_ij <- read.table("./Data/Tennis application/N_ij.csv",header  = F,row.names = 1,sep = ",")
+    Y_ij <- readRDS("./Data/Tennis application/Y_new.rds")
+    N_ij <- readRDS("./Data/Tennis application/N_new.rds")
     
     Y_ij = as.matrix(Y_ij)
     N_ij = as.matrix(N_ij)
@@ -65,15 +63,11 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  
-  #data to be estimated
-  
-  
   K_values <- c(3,4,5,6,7)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c('SST', 'WST','Simple')
+  choose_model_to_estimate = c('SST')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -92,8 +86,9 @@ for(data_description in c("Tennis_data","Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 40000 #number of iterations
-    burnin <- 10000 #number of discarded iterations
+    N_iter <- 80000 #number of iterations
+    burnin <- 20000 #number of discarded iterations
+    
     
     K_est = rep(k_th, n_chains) #number of clusters to fit
     #-----------------------------------------------------------------------------
@@ -106,8 +101,6 @@ for(data_description in c("Tennis_data","Citation_data")){
       
       
       est_model = 'SST'
-      
-      #setting up the chain hyperparameter
       
       #where to save the data
       saving_directory = "./Results/"
@@ -134,10 +127,6 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach)
-      
-      
-      
-      
       
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 

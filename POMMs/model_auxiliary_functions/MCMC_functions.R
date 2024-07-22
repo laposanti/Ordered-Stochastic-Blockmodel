@@ -59,10 +59,12 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, theta, K, t=1){
 theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
   p_theta = matrix(0,K,K)
   if(model == "WST"){
-    for(diag_i in 0:(K-1)){
+    theta_diag = inverse_logit_f(diag(theta))
+    diag(p_theta) <- dbeta(theta_diag,1,1)*(exp(theta_diag)/((1+exp(theta_diag))**2))
+    for(diag_i in 1:(K-1)){
       p_theta[col(p_theta)-row(p_theta)==diag_i] <- dunif(x = theta[col(theta)-row(theta)==diag_i], 
-                                                          min= mu_vec[diag_i+1]-sigma_squared,
-                                                          max = mu_vec[diag_i+2]+sigma_squared)
+                                                          min= mu_vec[diag_i]-sigma_squared,
+                                                          max = mu_vec[diag_i+1]+sigma_squared)
     }
   }else if (model == "Simple"){
     P = inverse_logit_f(theta)
@@ -70,11 +72,12 @@ theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
     
     p_theta[upper.tri(p_theta,diag=T)] = dbeta(P_upper.tri,1,1)*(exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
   }else if(model =='SST'){
-    
-    for(diag_i in 0:(K-1)){
+    theta_diag = inverse_logit_f(diag(theta))
+    diag(p_theta) <- dbeta(theta_diag,1,1)*(exp(theta_diag)/((1+exp(theta_diag))**2))
+    for(diag_i in 1:(K-1)){
       p_theta[col(p_theta)-row(p_theta)==diag_i] <- dunif(x = theta[col(theta)-row(theta)==diag_i], min= 
-                                                            mu_vec[diag_i+1],
-                                                          max = mu_vec[diag_i+2])
+                                                            mu_vec[diag_i],
+                                                          max = mu_vec[diag_i+1])
     }
   }
   log_p_theta = sum(log(p_theta[upper.tri(p_theta,diag = T)]))
@@ -84,17 +87,13 @@ theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
 
 #mu prior distribution
 d_sA_mu = function(K,mu_vec){
-  mu_0_lp = dnorm(mu_vec[1],0,2,log=T)
   fac <- lfactorial(K)
-  joint_density<- sum(log(dtruncnorm(mu_vec[2:(K+1)],a = 0,mean = 0,sd = 3)) - 
-                        log(1- pnorm(0,mean = 0,sd = 3)))
-  return(joint_density+fac+mu_0_lp)
+  joint_density<- sum(log(dtruncnorm(mu_vec[1:(K)],a = 0,mean = 0,sd = 2.5)) - 
+                        log(1- pnorm(0,mean = 0,sd = 2.5)))
+  return(joint_density+fac)
 }
 
-
-
-
-
+      
 # Proportional posterior
 
 
@@ -168,20 +167,21 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
     
     i_star<- uo$row[i_th]
     j_star<- uo$col[i_th]
-    if(model=="SST"){
-      lower.bound = mu_vec[j_star - i_star + 1]
-      upper.bound = mu_vec[j_star - i_star + 2]
-    }else if(model == 'WST'){
+    if(model=="SST" &i_star!= j_star){
       
-      lower.bound = mu_vec[j_star - i_star + 1] - sigma_squared
-      upper.bound = mu_vec[j_star - i_star + 2] + sigma_squared
-    }else if(model=='Simple'){
+      lower.bound = mu_vec[j_star - i_star ]
+      upper.bound = mu_vec[j_star - i_star + 1]
+    }else if(model == 'WST'&i_star!= j_star){
+      
+      lower.bound = mu_vec[j_star - i_star ] - sigma_squared
+      upper.bound = mu_vec[j_star - i_star + 1] + sigma_squared
+    }else{
       lower.bound = -5
       upper.bound = +10
     }
     #saving for convenience, to avoid multiple computations
     theta_ij_prime<- theta_prime[i_star,j_star]
-
+    
     #proposing a new value for theta p_q
     theta_ij_scanning <- rtruncnorm(1, a = lower.bound , b = upper.bound,
                                     mean = theta_ij_prime, 
@@ -299,28 +299,17 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
   # mu_vec_prime <- c(mu_0_prime,sort(mu_1_K_prime))
   
   
-  
-  split = diag_split_matrix(theta)
-  mins = vector()
-  maxs = vector()
-  # if(model == 'SST'){
-  for(splittino in 1:length(split)){
-    mins <- append(mins,max(split[[splittino]]))
-    maxs <- append(maxs,min(split[[splittino]]))
-  }
-  
-  lbs = c(-10,mins)
-  ubs = c(maxs,10)
-  
+
   for(mu in 1:length(mu_vec)){
-    if(model == "WST"){
-      lbs = c(-10, mu_vec[1:K])
-      ubs = c(mu_vec[2:(K+1)],10)
-    }
-    mu_1_K_prime <- rtruncnorm(1,a = lbs[mu],b = ubs[mu],mean = mu_vec[mu],sd = .2)
+    
+    lbs = c(0,mu_vec[1:(K-1)])
+    ubs = c(mu_vec[2:K],10)
     
     mu_vec_prime= mu_vec
-    mu_vec_prime[mu] <- mu_1_K_prime
+    mu_k_prime <- rtruncnorm(1,a = lbs[mu],b = ubs[mu],mean = mu_vec[mu],sd = .25)
+    
+    
+    mu_vec_prime[mu] <- mu_k_prime
     
     #computing the proportional posterior in mu'
     prop_posterior_prime <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, theta = theta,
@@ -335,8 +324,8 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
                                               mu_vec = mu_vec,K = K,model = model,t = t,llik=llik)
     
     #evaluating the proposal density g(mu'| mu^(t)) 
-    p_proposal_prime = dtruncnorm(mu_1_K_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = .2)
-    p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_1_K_prime,sd = .2)
+    p_proposal_prime = dtruncnorm(mu_k_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = .25)
+    p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_k_prime,sd = .25)
     
     log_r =  prop_posterior_prime  - prop_posterior_current + log(p_proposal_current) - log(p_proposal_prime)
     
@@ -434,12 +423,12 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
   n<- nrow(N_ij)
   z_prime= z
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
-
- 
+  
+  
   A_prime<-  sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
-
-
+  
+  
   n_prime = matrix(0,nrow(P),1)
   for(h in 1:K){
     n_prime[h] = sum(length(which(z_prime==h)))
@@ -468,15 +457,15 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
     z_scanning[i_th_turn] <- k_scanning
     
     #the items in cluster i_star
-
-
+    
+    
     
     
     logical_matrix1 = matrix(FALSE, n,n)
     logical_matrix1[i_th_turn,]<-TRUE
     logical_matrix1[,i_th_turn]<-TRUE
     
-
+    
     # Get the upper triangular indices for the relevant clusters
     upper_tri_indices <- upper.tri(Y_ij)
     
@@ -503,7 +492,7 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
     
     #Updating the likelihood
     A_scanning = A_prime - A_minus + A_plus
-
+    
     n_scanning<- n_prime
     n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
     

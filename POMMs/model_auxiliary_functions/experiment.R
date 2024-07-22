@@ -44,48 +44,38 @@ check_WST <- function(mat) {
 
 
 
-experiment_df = data.frame(K = 2:8, check_across_samplesSST = NA, check_across_samplesWST = NA)
-for(K in 2:8){
+experiment_df = data.frame(K = 2:7, check_across_samplesSST = NA, check_across_samplesWST = NA)
+for(K in 2:7){
   
   check_across_samplesWST = 0
   check_across_samplesSST = 0
   
-  for(i in 1:10000){
+  for(i in 1:1000){
     check_across_permutation_WST = 0
     check_across_permutation_SST = 0
     P_sample = matrix(0,K,K)
     P_sample[upper.tri(P_sample,diag =T)]<-runif((K*(K-1))/2+K)
     P_sample[lower.tri(P_sample)] = 1 - P_sample[upper.tri(P_sample)]
-    for(i in 1:K){
+    
+    
+    permutation_matrix = permutations( n = K, r = K, v = 1:K)
+    for(j in 1:nrow(permutation_matrix)){
+      mat_permuted <- P_sample[permutation_matrix[j,], permutation_matrix[j,]]
       
-      new_order = c(i:K, 1:(i-1))
-      if(i==1){
-        new_order = 1:K
-      }
       
-      mat_permuted <- P_sample[new_order, new_order]
-      # if(check_WST(mat_permuted)>0){
-      #   print("WST matrix")
-      #   print(mat_permuted)
-      # }
-      # 
-      # if(check_SST(mat_permuted)>0){
-      #   print("SST matrix")
-      #   print(mat_permuted)
-      # }
-      check_across_permutation_WST = check_across_permutation_WST + check_WST(mat_permuted)
       check_across_permutation_SST=  check_across_permutation_SST+ check_SST(mat_permuted)
       
-    }
-    if(check_across_permutation_WST > 0 ){
-      check_across_samplesWST =check_across_samplesWST+1
-    }
-    if(check_across_permutation_SST>0){
-      check_across_samplesSST=check_across_samplesSST+1
+      
+      
+      check_across_samplesWST =check_across_samplesWST+ check_WST(mat_permuted)
+      
+      
+      check_across_samplesSST=check_across_samplesSST+check_SST(mat_permuted)
+      
     }
   }
   experiment_df[which(experiment_df$K == K),2] = check_across_samplesSST
   experiment_df[which(experiment_df$K == K),3] = check_across_samplesWST
-
+  
 }
 experiment_df

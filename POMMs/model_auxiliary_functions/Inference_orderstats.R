@@ -269,7 +269,7 @@ z_plot<- function(z_burned,A, Y_ij = Y_ij, N_ij = N_ij, true_model, est_model, t
   
   
   #plotting it
-  plot_name <- paste0(tap,"//adjacency_",true_model,est_model, "_K",K,"_N",N,".png")
+  plot_name <- paste0(tap,"//adjacency_matrix",true_model,est_model, "_K",K,"_N",N,".png")
   # Save the plot with the constructed file name
   png(plot_name,width = 800, height = 800)
   #similarity_plot(Y_ij, z, z) #checking mixing
@@ -648,6 +648,16 @@ est_marg_lik = function(directory, est_model, is.simulation, data_description, k
     }
     
     if(MCMC_output$t == 1){
+      count_nonempty_clusters <- function(x, K_est) {
+        y <- length(unique(x))
+        K0 <- K_est - y
+        return(K0)
+      }
+      
+      K0 <- apply(X = z_burned, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K_est))
+      
+      K0_hat <- mean(K0)
+      
       WAIC_t51 = waic(t(LL_ij))$estimates[3]
     }
     
@@ -677,7 +687,7 @@ est_marg_lik = function(directory, est_model, is.simulation, data_description, k
   complete_df = complete_df[-1,]
   
   complete_df = complete_df %>% arrange(t)
-  complete_df$riemann = rep(NA, nrow(complete_df))
+
   for(row_i in 1:(nrow(complete_df)-1)){
     ith_sum = (complete_df$t[row_i+1] - complete_df$t[row_i])*(complete_df$expected_evidence[row_i]+complete_df$expected_evidence[row_i+1])/2
     complete_df$riemann[row_i] = ith_sum
@@ -687,10 +697,15 @@ est_marg_lik = function(directory, est_model, is.simulation, data_description, k
   marginal_likelihood = sum(complete_df$riemann)
   
   return(list(complete_df = complete_df, marginal_likelihood = marginal_likelihood, K_true = K_true,
-              WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij))
+              WAIC = WAIC_t51, z_container = z_container, Y_ij= Y_ij, N_ij = N_ij, K0_hat = K0_hat))
 }
 
 
 
+count_nonempty_clusters <- function(x, K_est) {
+  y <- length(unique(x))
+  K0 <- K_est - y
+  return(K0)
+}
 
 

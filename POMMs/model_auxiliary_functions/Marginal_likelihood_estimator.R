@@ -46,7 +46,7 @@ complete_df <- data.frame(
 )
 marginal_likelihood_df <- data.frame(
   data_description = NA, est_model = NA, K_est = NA,
-  marginal_likelihood = NA, WAIC_est = NA, K_true = NA
+  marginal_likelihood = NA, WAIC_est = NA, K_true = NA, K0_hat = NA
 )
 
 
@@ -55,7 +55,8 @@ z_container <- data.frame(z = 0, k_est = 0, k_true = 0)
 
 # Set the values for the variables
 data_description <- 'Citations_application'
-for(est_model in c("SST",'WST','Simple')){
+est_models = c("SST",'WST','Simple')
+for(est_model in est_models){
   est_model <- est_model
   
   
@@ -63,10 +64,18 @@ for(est_model in c("SST",'WST','Simple')){
   for (k_est in 2:8) {
     # Construct the directory path
     directory <- paste0(
-      '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/powerposterior/Data_',
+      '/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/powerposterior/Data_Citations_application/Data_',
       data_description, '/Est_', est_model, '/K', k_est, '/'
     )
     
+    # ur = readRDS("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/powerposterior/Data_Citations_application/Est_WST/K8/Citations_applicationEst_modelWST_estK_8_N47iteration51.RDS")
+    # z_burned = ur$est_containers$z
+    # z_b_vec = vector()
+    # for(i in 1:ncol(z_burned)){
+    #   l_z_burned = length(unique(z_burned[,i]))
+    #   z_b_vec = append(z_b_vec, l_z_burned)
+    # }
+    # summary(z_b_vec)
     # est_marg_lik is a function that returns a list with 'df', 'marginal_likelihood', and 'WAIC'
     estimation <- est_marg_lik(directory = directory, est_model = est_model, is.simulation = is.simulation, data_description = data_description, k_est = k_est)
     
@@ -80,7 +89,8 @@ for(est_model in c("SST",'WST','Simple')){
       K_est = k_est,
       marginal_likelihood = estimation$marginal_likelihood,
       WAIC_est = estimation$WAIC,
-      K_true = estimation$K_true  # Ensure k_true is defined
+      K_true = estimation$K_true, 
+      K0_hat = estimation$K0_hat# Ensure k_true is defined
     ))
     
     # Print the marginal likelihood data frame
@@ -88,9 +98,10 @@ for(est_model in c("SST",'WST','Simple')){
   }
 }
 
-marginal_likelohood_df = marginal_likelohood_df[-1,]
+marginal_likelihood_df = marginal_likelihood_df[-1,]
 
-# saveRDS(marginal_likelohood_df, paste0('./results/',sav_dir,'/',true_model,'/study_on_model_selection_cite_4June.RDS'))
+saveRDS(marginal_likelihood_df, file = paste0('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/powerposterior/Data_',
+        data_description,'/EST_models_SSTWSTSimple_marginal_likelihood.RDS'))
 # saveRDS(general_df, paste0('./results/',sav_dir,'/',true_model,'/general_df_4June.RDS'))
 # 
 
