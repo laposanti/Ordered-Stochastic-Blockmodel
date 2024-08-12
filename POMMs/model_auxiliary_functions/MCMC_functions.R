@@ -185,10 +185,10 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
     
     if(model == 'WST'){
       lower.bound = 0
-      upper.bound = 9.21024
+      upper.bound = 9.21023
     }else{
-      lower.bound = -9.21024
-      upper.bound = 9.21024
+      lower.bound = -9.21023
+      upper.bound = 9.21023
     }
     #saving for convenience, to avoid multiple computations
     theta_ij_prime<- theta_prime[i_star,j_star]

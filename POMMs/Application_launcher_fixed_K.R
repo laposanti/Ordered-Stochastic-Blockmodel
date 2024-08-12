@@ -63,7 +63,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  K_values <- c(3,4,5,6,7)  # Range of K values to explore
+  K_values <- c(4,5,6,7)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   

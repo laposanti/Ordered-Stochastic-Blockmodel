@@ -139,12 +139,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  diag(theta_current) =0
                                                                if(model =='WST'){
                                                                    for(d in 1:(K-1)){
-                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d,0, 10)
+                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d,0, 9.21023)
                                                                    }
                                                                  }else if( model =='Simple'){
                                                                    for(d in 1:(K-1)){
-                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, min  = -5 , 
-                                                                                                                                     max = +10)
+                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, min  = -9.21023, 
+                                                                                                                                     max = 9.21023)
                                                                    }
                                                                  }
                                                                  theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]

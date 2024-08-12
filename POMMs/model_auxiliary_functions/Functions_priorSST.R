@@ -1,9 +1,10 @@
 
 
 
-generate_theta_from_theta_prior = function(K, model){
-  
+generate_theta_from_theta_prior = function(K, model,quietly.S=F){
+  if(quietly.S==F){
   print(paste0('You are simulating theta according to the ', model, ' model prior'))
+    }
   if(model == 'SST'){
     
     mu_vec_01_sort = seq(from = 0.5,to = 0.9, length.out = K)
