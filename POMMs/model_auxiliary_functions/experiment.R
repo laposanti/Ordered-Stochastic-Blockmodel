@@ -1,6 +1,13 @@
 #experiment
 
+source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/Functions_priorSST.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Metropolis_within_Gibbs_code.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
 
+library(truncnorm)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
 # Define a function to check the matrix
 check_SST <- function(mat) {
   n <- nrow(mat)
@@ -79,3 +86,36 @@ for(K in 2:7){
   
 }
 experiment_df
+
+
+#experiment 2
+#check how the SST condition is modified when individual covariates come into play
+
+
+n=100
+w = rtruncnorm(n,0,Inf)
+
+theta_f = generate_theta_from_theta_prior(6,'SST')
+theta = log(theta_f$P/(1-theta_f$P))
+
+library(tidyr)
+
+combn = data.frame(col = tidyr::expand_grid(w,w))
+colnames(combn) = c('col_1', 'col_2')
+for(i in 1:nrow(combn)){
+   p = inverse_logit_f(theta + combn$col_1[i] + combn$col_2[i])
+   check = check_SST(p)
+   combn$checkSST[i] = check
+}
+
+combn %>%
+  ggplot(aes(x = col_1, y = col_2,color= checkSST))+
+  geom_point()
+
+combn =combn%>% mutate(diff_v = abs(col_1 - col_2))%>%
+  mutate(sum_v = abs(col_1 +col_2))
+
+combn%>%
+  ggplot(aes(x = sum_v, y = diff_v, color=checkSST))+
+  geom_point(alpha=.5)
+

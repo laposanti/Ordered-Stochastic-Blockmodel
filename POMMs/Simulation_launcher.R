@@ -5,7 +5,6 @@ library(progressr)
 library(beepr)
 library(foreach)
 library(doParallel)
-
 library(tidyverse)
 library(EnvStats)
 library(truncnorm)
@@ -19,7 +18,7 @@ library(truncnorm)
 library(doRNG)
 
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -41,6 +40,7 @@ print('Simulation study for fixed K, for K=3,4,5,6')
 
 is.simulation=T
 
+
 #data.directory
 
 data_directory = "./Data/Sim1_data/"
@@ -59,7 +59,7 @@ for(true_model in  c('SST','WST','Simple')){
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
     data_to_be_estimated
     stopifnot(data_to_be_estimated$model == true_model)
-    
+    recovery_capability = data_to_be_estimated$recovery_capability
     N_ij = data_to_be_estimated$N_ij
     n = nrow(N_ij)
     Y_ij = data_to_be_estimated$Y_ij
@@ -111,7 +111,7 @@ for(true_model in  c('SST','WST','Simple')){
       print(paste0("Begin cycle at:", date(), "\n"))
       
       
-      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 1)
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 0)
       
       chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                             saving_directory = saving_directory,
@@ -131,8 +131,10 @@ for(true_model in  c('SST','WST','Simple')){
       
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
-
-      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      chains_SST[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
       beep("coin")
       
@@ -164,7 +166,7 @@ for(true_model in  c('SST','WST','Simple')){
       custom_init <- NA
       print(paste0("Estimation of the WST model, K=", K_est))
       print(paste0("Begin cycle at:", date(), "\n"))
-      estimation_control <- list(z = 1, sigma_squared = 1, mu_vec = 1 ,K = 0, theta = 1)
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
       
       chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                             saving_directory = saving_directory,
@@ -183,7 +185,11 @@ for(true_model in  c('SST','WST','Simple')){
   
       my_names <- paste0("chain", 1:n_chains)
       names(chains_WST)<-my_names 
-      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      chains_WST[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
+                           data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
 
       beep("coin")
@@ -227,7 +233,11 @@ for(true_model in  c('SST','WST','Simple')){
                                                               power_posterior_apprach = power_posterior_apprach)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
-      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
+      chains_Simple[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
+                           data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
       beep("coin")

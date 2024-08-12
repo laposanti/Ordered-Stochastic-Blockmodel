@@ -67,7 +67,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c('SST')
+  choose_model_to_estimate = c("Simple",'WST')
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -114,7 +114,8 @@ for(data_description in c("Tennis_data","Citation_data")){
       print(paste0("Begin cycle at:", date(), "\n"))
       
       
-      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 1)
+      estimation_control <- list(z = 1, mu_vec = 1 ,K = 0, theta = 0)
+      
       
       chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                             saving_directory = saving_directory,
@@ -163,7 +164,7 @@ for(data_description in c("Tennis_data","Citation_data")){
       custom_init <- NA
       print(paste0("Estimation of the WST model, K=", K_est))
       print(paste0("Begin cycle at:", date(), "\n"))
-      estimation_control <- list(z = 1, sigma_squared = 1, mu_vec = 1 ,K = 0, theta = 1)
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
       
       chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                             saving_directory = saving_directory,

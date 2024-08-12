@@ -56,33 +56,40 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, theta, K, t=1){
 
 # Density for P
 
-theta_prior_probability = function(theta,K,mu_vec, sigma_squared, model){
+theta_prior_probability = function(theta,K, mu_vec, model){
   p_theta = matrix(0,K,K)
   if(model == "WST"){
-    theta_diag = inverse_logit_f(diag(theta))
-    diag(p_theta) <- dbeta(theta_diag,1,1)*(exp(theta_diag)/((1+exp(theta_diag))**2))
-    for(diag_i in 1:(K-1)){
-      p_theta[col(p_theta)-row(p_theta)==diag_i] <- dunif(x = theta[col(theta)-row(theta)==diag_i], 
-                                                          min= mu_vec[diag_i]-sigma_squared,
-                                                          max = mu_vec[diag_i+1]+sigma_squared)
-    }
+    
+    P = inverse_logit_f(theta)
+    
+    P_upper.tri = P[upper.tri(P,diag = F)]
+    
+    p_prod = dunif(P_upper.tri,0.5,0.999)*
+      (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+    
+    log_p_sum = sum(log(p_prod))
+    
   }else if (model == "Simple"){
     P = inverse_logit_f(theta)
-    P_upper.tri =upper.tri.extractor(P)
+    P_upper.tri = P[upper.tri(P,diag = F)]
     
-    p_theta[upper.tri(p_theta,diag=T)] = dbeta(P_upper.tri,1,1)*(exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+    p_prod = dunif(P_upper.tri,0.0001,0.999)*
+      (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+    
+    log_p_sum = sum(log(p_prod))
+    
   }else if(model =='SST'){
-    theta_diag = inverse_logit_f(diag(theta))
-    diag(p_theta) <- dbeta(theta_diag,1,1)*(exp(theta_diag)/((1+exp(theta_diag))**2))
-    for(diag_i in 1:(K-1)){
-      p_theta[col(p_theta)-row(p_theta)==diag_i] <- dunif(x = theta[col(theta)-row(theta)==diag_i], min= 
-                                                            mu_vec[diag_i],
-                                                          max = mu_vec[diag_i+1])
-    }
+    
+    fac <- lfactorial(K-1)
+    joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 2.5)) - 
+                          log(1- pnorm(0,mean = 0,sd = 2.5)))  
+    check_ord = all(sort(mu_vec) == mu_vec)
+    log_p_sum = joint_density + fac + log(check_ord)
+    
   }
-  log_p_theta = sum(log(p_theta[upper.tri(p_theta,diag = T)]))
   
-  return(log_p_theta)
+  
+  return(log_p_sum)
 }
 
 #mu prior distribution
@@ -93,12 +100,12 @@ d_sA_mu = function(K,mu_vec){
   return(joint_density+fac)
 }
 
-      
+
 # Proportional posterior
 
 
 lprop_posterior <- function(Y_ij, N_ij, z,theta,
-                            alpha_vec, n_k,sigma_squared, mu_vec,K, model,t,llik=NULL){
+                            alpha_vec,mu_vec, n_k,K, model,t,llik=NULL){
   if (is.null(llik)) {
     # Compute log likelihood only if llik is not provided
     log_lik <- ll_naive(z = z, theta = theta, Y_ij = Y_ij, N_ij = N_ij) * t
@@ -112,31 +119,36 @@ lprop_posterior <- function(Y_ij, N_ij, z,theta,
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k),K = K,n_k = n_k,my_alpha =  alpha_vec)
     #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta,K=K,mu_vec = mu_vec, sigma_squared = sigma_squared, model=model)
+    prior_theta<- theta_prior_probability(theta = theta,K=K,
+                                          mu_vec = mu_vec, model=model)
     #computing the whole log proportional posterior
-    results<- log_lik+ prior_theta + prior_z 
+    results<- log_lik+ prior_z + prior_theta 
     
   }else if (model=='WST'){
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta, K=K,mu_vec = mu_vec,  sigma_squared = sigma_squared,model = model)
+    prior_theta<- theta_prior_probability(theta = theta, K=K
+                                          ,mu_vec = mu_vec,
+                                          model = model)
     #log prior on mu
-    hyperprior_mu <- d_sA_mu(K = K, mu_vec = mu_vec)
+    #hyperprior_mu <- d_sA_mu(K = K, mu_vec = mu_vec)
     #log prior on sigma^2
-    hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
+    #hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
     #computing the whole log proportional posterior
-    results<- log_lik+ prior_theta + prior_z + hyperprior_mu + hyperprior_sigmasquared 
+    results<- log_lik+ prior_z + prior_theta  
     
   }else if(model =='SST'){
     #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta, K = K,mu_vec = mu_vec, sigma_squared = sigma_squared,model = model)
+    prior_theta<- theta_prior_probability(theta = theta, K = K,
+                                          mu_vec = mu_vec,
+                                          model = model)
     #log prior on z
     prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
     #log prior on mu
-    hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
+    #hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
     #computing the whole log proportional posterior
-    results <- log_lik + prior_z + hyperprior_mu  + prior_theta
+    results <- log_lik + prior_z  + prior_theta
     
   }
   return(results)
@@ -144,8 +156,7 @@ lprop_posterior <- function(Y_ij, N_ij, z,theta,
 
 #-------------------------- MCMC steps -----------------------------------------
 
-theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
-                          sigma_squared, mu_vec,K, tau_theta,
+theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_theta,
                           acc.count_theta, model,t){
   
   theta_prime <- theta
@@ -154,10 +165,13 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z,P_prime),P_prime)
   
   A_prime<-   sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
-  C_prime<- theta_prior_probability(theta = theta_prime, K=K,mu_vec = mu_vec,  sigma_squared = sigma_squared,model = model)
+  C_prime<- theta_prior_probability(theta = theta_prime, K=K,
+                                    mu_vec = mu_vec,  model = model)
   
   #Updating each entry of P, one at the time
-  ut <- upper.tri(theta,diag = T) # get the logical matrix for upper triangular elements
+  
+  ut <- upper.tri(theta)
+  
   theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(theta_combn[sample(nrow(theta_combn)), ])# permuting the order of the rows
   
@@ -167,16 +181,13 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
     
     i_star<- uo$row[i_th]
     j_star<- uo$col[i_th]
-    if(model=="SST" &i_star!= j_star){
-      
-      lower.bound = mu_vec[j_star - i_star ]
-      upper.bound = mu_vec[j_star - i_star + 1]
-    }else if(model == 'WST'&i_star!= j_star){
-      
-      lower.bound = mu_vec[j_star - i_star ] - sigma_squared
-      upper.bound = mu_vec[j_star - i_star + 1] + sigma_squared
+    # print(paste0('theta_prime = ', theta_prime[i_star, j_star]))
+    
+    if(model == 'WST'){
+      lower.bound = 0
+      upper.bound = +10
     }else{
-      lower.bound = -5
+      lower.bound = -10
       upper.bound = +10
     }
     #saving for convenience, to avoid multiple computations
@@ -187,6 +198,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
                                     mean = theta_ij_prime, 
                                     sd =  tau_theta[i_star,j_star])
     
+    # print(paste0("proposed:", round(theta_ij_scanning,2)))
     
     #the items in cluster i_star
     Z_i_star = which(z == i_star)
@@ -289,8 +301,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k,
 
 
 
-mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
-                       sigma_squared, mu_vec,tau_mu_vec, K,
+mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
                        acc.count_mu_vec,model,t, llik = NULL){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
@@ -299,45 +310,65 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
   # mu_vec_prime <- c(mu_0_prime,sort(mu_1_K_prime))
   
   
-
-  for(mu in 1:length(mu_vec)){
+  theta_prime = theta
+  mu_vec_prime = mu_vec
+  for(mu in 2:length(mu_vec)){
     
-    lbs = c(0,mu_vec[1:(K-1)])
-    ubs = c(mu_vec[2:K],10)
+    ub = ifelse(test = mu != length(mu_vec), 
+                yes = mu_vec_prime[mu+1],
+                no = 10)
+    mu_k_scanning <- rtruncnorm(1,a = mu_vec_prime[mu-1],b = ub,
+                                mean = mu_vec_prime[mu],sd = tau_mu_vec[mu])
     
-    mu_vec_prime= mu_vec
-    mu_k_prime <- rtruncnorm(1,a = lbs[mu],b = ubs[mu],mean = mu_vec[mu],sd = .25)
+    theta_scanning = theta_prime
+    theta_scanning[which(col(theta_prime) - row(theta_prime) == (mu-1))] <- mu_k_scanning
     
-    
-    mu_vec_prime[mu] <- mu_k_prime
     
     #computing the proportional posterior in mu'
-    prop_posterior_prime <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, theta = theta,
-                                            alpha_vec = alpha_vec, 
-                                            n_k = n_k,sigma_squared = sigma_squared
-                                            ,mu_vec = mu_vec_prime,K = K,model=model,t = t, llik=llik)
+    prop_posterior_scanning <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, 
+                                               theta = theta_scanning,
+                                               alpha_vec = alpha_vec, 
+                                               mu_vec = mu_vec,
+                                               n_k = n_k,K = K,model=model,
+                                               t = t, llik=NULL)
     
     #evaluating the proportional posterior in mu^(t)
     prop_posterior_current <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z,
-                                              theta = theta,alpha_vec = alpha_vec,
-                                              n_k = n_k,sigma_squared = sigma_squared,
-                                              mu_vec = mu_vec,K = K,model = model,t = t,llik=llik)
+                                              theta = theta_prime,
+                                              alpha_vec = alpha_vec,
+                                              mu_vec = mu_vec,
+                                              n_k = n_k,K = K,model = model,
+                                              t = t,llik=NULL)
     
     #evaluating the proposal density g(mu'| mu^(t)) 
-    p_proposal_prime = dtruncnorm(mu_k_prime,a = lbs[mu],b = ubs[mu], mean = mu_vec[mu],sd = .25)
-    p_proposal_current = dtruncnorm(mu_vec[mu],a = lbs[mu],b = ubs[mu], mean = mu_k_prime,sd = .25)
+    p_proposal_scanning = dtruncnorm(mu_k_scanning, 
+                                     a = mu_vec_prime[mu-1],
+                                     b =ub,
+                                     mean = mu_vec_prime[mu],
+                                     sd = tau_mu_vec[mu])
     
-    log_r =  prop_posterior_prime  - prop_posterior_current + log(p_proposal_current) - log(p_proposal_prime)
+    p_proposal_current = dtruncnorm(mu_vec_prime[mu],
+                                    a = mu_vec_prime[mu-1],
+                                    b = ub, 
+                                    mean = mu_k_scanning,
+                                    sd = tau_mu_vec[mu])
+    
+    log_r =  prop_posterior_scanning  - prop_posterior_current + 
+      log(p_proposal_current) - log(p_proposal_scanning)
     
     #create statements that check conditionion to accept move
     MH_condition_mu_vec= min(log_r,0)>=log(runif(1))
     if(MH_condition_mu_vec){
       acc.count_mu_vec[mu] = acc.count_mu_vec[mu] +1
-      mu_vec <- mu_vec_prime
+      mu_vec_prime[mu] <- mu_k_scanning
+      theta_prime <- theta_scanning
     }
   }
+  mu_vec = mu_vec_prime
+  theta =theta_prime
   return(list(acc.moves = acc.count_mu_vec,
-              mu_vec=mu_vec))
+              mu_vec = mu_vec,
+              theta = theta))
   
 } 
 
@@ -345,50 +376,6 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k,
 
 
 
-sigma_squared_update_f= function(Y_ij, N_ij, z,theta, alpha_vec, n_k,
-                                 sigma_squared, mu_vec,K, tau_sigma_squared,
-                                 acc.count_sigma_squared, model,t,llik = NULL){
-  
-  
-  #simulating (sigma^2)' from a g ~ truncated normal
-  sigma_squared_prime <- rtruncnorm(1,a = 0,b = 1 ,
-                                    mean = sigma_squared,
-                                    sd = tau_sigma_squared)
-  
-  #computing the proportional posterior in (sigma^2)'
-  prop_posterior_prime <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, 
-                                          theta =theta, 
-                                          alpha_vec, n_k,sigma_squared_prime, mu_vec,K,model = model,t = t,llik=llik)
-  #evaluating the proportional posterior in (sigma^2)^(t)
-  prop_posterior_current<- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z,
-                                           theta=theta,
-                                           alpha_vec, n_k,sigma_squared, mu_vec,K,model=model,t = t,llik=llik)
-  
-  #evaluating the proposal density g(sigma^2)') 
-  log_proposal_prime <- log(dtruncnorm(sigma_squared_prime,a = 0,b = 1,
-                                       mean = sigma_squared,
-                                       sd = tau_sigma_squared))
-  
-  #evaluating the proposal density g(sigma^2)^(t)) 
-  log_proposal_current <- log(dtruncnorm(sigma_squared,a = 0,b = 1,
-                                         mean = sigma_squared_prime,
-                                         sd = tau_sigma_squared))
-  #acceptance ratio
-  log_r=  prop_posterior_prime + log_proposal_current - 
-    prop_posterior_current - log_proposal_prime
-  
-  #create statements that check conditionion to accept move
-  MH_condition_sigma_squared= min(log_r,0)>=log(runif(1))
-  if(MH_condition_sigma_squared){
-    acc.count_sigma_squared = acc.count_sigma_squared+1
-    sigma_squared <- sigma_squared_prime
-  }
-  
-  
-  return(list(acc.moves = acc.count_sigma_squared,
-              sigma_squared=sigma_squared))
-  
-} 
 
 log_lik_f_binom = function(N,Y,z,P, directed=T){
   z_P<- vec2mat_0_P(z,P)

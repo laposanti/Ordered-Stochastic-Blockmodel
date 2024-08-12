@@ -44,8 +44,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     }
     
   }
-  
-  
+
+
   
   n_chains = length(K_est)
   if(detectCores() < n_chains){
@@ -82,7 +82,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              
-                                                             set.seed(seed + chain)
+                                                             seeds = seed + 1:n_chains
+                                                             
+                                                             set.seed(seeds[[chain]])
                                                              
                                                              save_dir = where_to_save[[chain]]
                                                              #setting hyperparams
@@ -105,65 +107,47 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }else{
                                                                  z_current=  matrix(ground_truth$z, n, 1)
                                                                }
-                                                               #-------------------------------------------------------------------------
-                                                               #Initializing sigma_squared boundaries 
-                                                               #-------------------------------------------------------------------------
-                                                               # if model WST is selected: initialise sigma_squared
-                                                               if(model == 'WST'){
-                                                                 if(estimation_control$sigma_squared==1){
-                                                                   sigma_squared_current <- runif(1,0.01,0.4)
-                                                                 }else{
-                                                                   sigma_squared_current <- as.numeric(ground_truth$sigma_squared)
-                                                                 }
-                                                               }else{
-                                                                 sigma_squared_current <-  NA
-                                                               }
+                                                      
                                                                #-------------------------------------------------------------------------
                                                                #Initializing mu parameter for different models
                                                                #-------------------------------------------------------------------------
                                                                
                                                                # if model WST ore SST is selected: initialise the means of the level sets mu_vec
-                                                               if(model == 'WST' || model == 'SST'){
+                                                               if(model == 'SST'){
                                                                  if(estimation_control$mu_vec==1){
                                                                    
-                                                                   mu_vec_current<- sort(rtruncnorm(K,a = 0, b = 20, mean = 0,sd = 1.5))
-                                                                  
+                                                                   mu_vec_current<- sort(rtruncnorm(K-1,a = 0, b = 10, mean = 0,sd = 1.5))
+                                                                   mu_vec_current = c(0,mu_vec_current)
+                                                                   theta_current = matrix(NA,K,K)
+                                                                   if(model =='SST'){
+                                                                     for(d in 0:(K-1)){
+                                                                       theta_current[col(theta_current)-row(theta_current)==d]<- mu_vec_current[d+1]
+                                                                     }
+                                                                   }
+                                                                   theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]
                                                                  }else{
                                                                    mu_vec_current=  as.numeric(ground_truth$mu_vec)
                                                                  }
-                                                               }else if(model == 'Simple'){
+                                                               }else if(model != 'SST'){
                                                                  mu_vec_current =NA
                                                                }
                                                                #-------------------------------------------------------------------------
                                                                #Initializing theta matrix for different models
                                                                #-------------------------------------------------------------------------
-                                                               if(estimation_control$theta==1){
+                                                               if(estimation_control$theta==1 & model != 'SST'){
                                                                  theta_current = matrix(NA,K,K)
-                                                                 if(model =='SST'){
-                                                                   diag(theta_current) <- runif(K, min  = -5 , max = +10)
+                                                                 diag(theta_current) =0
+                                                               if(model =='WST'){
                                                                    for(d in 1:(K-1)){
-                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, 
-                                                                                                                                     min  = mu_vec_current[d] , 
-                                                                                                                                     max = mu_vec_current[d+1])
-                                                                   }
-                                                                 }else if(model =='WST'){
-                                                                   diag(theta_current) <- runif(K, min  = -5 , max = +10)
-                                                                   for(d in 1:(K-1)){
-                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, 
-                                                                                                                                     min  = mu_vec_current[d]-
-                                                                                                                                       sigma_squared_current , 
-                                                                                                                                     max = mu_vec_current[d+1]+
-                                                                                                                                       sigma_squared_current)
+                                                                     theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d,0, 10)
                                                                    }
                                                                  }else if( model =='Simple'){
-                                                                   for(d in 0:(K-1)){
+                                                                   for(d in 1:(K-1)){
                                                                      theta_current[col(theta_current)-row(theta_current)==d]<- runif(K-d, min  = -5 , 
                                                                                                                                      max = +10)
                                                                    }
                                                                  }
                                                                  theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]
-                                                               }else{
-                                                                 theta_current=  as.matrix(ground_truth$theta)
                                                                }
                                                                
                                                              }else{ #the custom initialisation, if provided
@@ -245,18 +229,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                
                                                                
-                                                               A_current =  ll_naive(z = z_current, theta = theta_current, Y_ij = Y_ij, N_ij= N_ij)*t
+                                                               A_current =  ll_naive(z = z_current, theta = theta_current, 
+                                                                                     Y_ij = Y_ij, N_ij= N_ij)*t
                                                                
                                                                check = lprop_posterior(z = z_current, 
                                                                                        Y_ij = Y_ij,
                                                                                        N_ij = N_ij,
                                                                                        theta =theta_current,
                                                                                        alpha_vec = alpha_vec,
-                                                                                       n_k = n_k,
-                                                                                       sigma_squared = sigma_squared_current,
                                                                                        mu_vec = mu_vec_current,
+                                                                                       n_k = n_k,
                                                                                        K = K, 
-                                                                                       model = model,  t=t)
+                                                                                       model = model,  
+                                                                                       t=t)
                                                                if(is.numeric(check)==T){
                                                                  print("Check completed")
                                                                }else{
@@ -273,27 +258,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #initialising the chain
                                                                z_container <- matrix(0, nrow = n, ncol = N_iter-burnin)
                                                                z_container[,1] <- z_current
-                                                               if(model == 'WST'){
-                                                                 #initialising the chain
-                                                                 sigma_squared_container =  matrix(0, nrow = 1, ncol = N_iter-burnin)
-                                                                 sigma_squared_container[1] <- sigma_squared_current
-                                                                 #initialising the adaptive variance
-                                                                 tau_sigma_squared <- 0.2
-                                                                 tau_sigma_squared_container = matrix(0,1, N_iter)
-                                                                 tau_sigma_squared_container[1] <- tau_sigma_squared
-                                                               }else{
-                                                                 tau_sigma_squared <- NA
-                                                                 sigma_squared_container <- NA
-                                                                 tau_sigma_squared_container <- NA
-                                                               }
+                                                              
                                                                if(model == 'WST'||model == 'SST'){
                                                                  #initialising the chain
                                                                  mu_vec_container = matrix(0, nrow = K, ncol = N_iter-burnin)
                                                                  mu_vec_container[,1] <- mu_vec_current
                                                                  #initialising the adaptive variance
-                                                                 tau_mu_vec <- 0.3
-                                                                 tau_mu_vec_container = matrix(0,1, N_iter)
-                                                                 tau_mu_vec_container[1] <- tau_mu_vec
+                                                                 tau_mu_vec <- rep(0.3, K)
+                                                                 tau_mu_vec_container = matrix(0,K, N_iter)
+                                                                 tau_mu_vec_container[,1] <- tau_mu_vec
                                                                }else{
                                                                  mu_vec_container <- NA
                                                                  tau_mu_vec <- NA
@@ -351,8 +324,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    theta_update = theta_update_f(z = z_current, N_ij = N_ij, 
                                                                                                  Y_ij = Y_ij,
                                                                                                  theta = theta_current,alpha_vec = alpha_vec,
-                                                                                                 n_k = n_k,sigma_squared = sigma_squared_current,
-                                                                                                 mu_vec = mu_vec_current,K = K,tau_theta =tau_theta,
+                                                                                                 n_k = n_k,
+                                                                                                 mu_vec = mu_vec_current,
+                                                                                                 K = K,tau_theta =tau_theta,
                                                                                                  acc.count_theta =acc.count_theta,model=model,t=t)
                                                                    llik = theta_update$llik
                                                                    theta_current = theta_update$theta
@@ -375,42 +349,20 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    # }
                                                                  }
                                                                  
-                                                                 if (estimation_control$sigma_squared == 1) {
-                                                                   #sigma_squared UPDATE----------------------------------------------------------------
-                                                                   
-                                                                   sigma_squared_update <- sigma_squared_update_f(z = z_current, N_ij = N_ij, llik = llik,
-                                                                                                                  Y_ij = Y_ij, theta =theta_current,
-                                                                                                                  alpha_vec = alpha_vec, n_k = n_k,
-                                                                                                                  sigma_squared = sigma_squared_current, 
-                                                                                                                  mu_vec = mu_vec_current,
-                                                                                                                  K = K, tau_sigma_squared = tau_sigma_squared,
-                                                                                                                  acc.count_sigma_squared = acc.count_sigma_squared,model,t=t)
-                                                                   #updating quantities
-                                                                   
-                                                                   acc.count_sigma_squared = sigma_squared_update$acc.moves
-                                                                   sigma_squared_current = sigma_squared_update$sigma_squared
-                                                                   
-                                                                   # if(j %% 50 == 0 ){
-                                                                   #   tau_sigma_squared <- tuning_proposal(iteration=j,
-                                                                   #                                        acceptance_count = acc.count_sigma_squared,
-                                                                   #                                        sigma = tau_sigma_squared,
-                                                                   #                                        acceptanceTarget = optimal_acceptance_rate_theta,
-                                                                   #                                        min_sigma = 0.02)
-                                                                   # }
-                                                                 }
-                                                                 if (estimation_control$mu== 1) {
+                                                                 if(estimation_control$mu== 1) {
                                                                    #mu UPDATE----------------------------------------------------------------
                                                                   
                                                                    mu_update=  mu_update_f(z = z_current, N_ij = N_ij, llik=llik,
                                                                                            Y_ij = Y_ij,  theta =theta_current,
                                                                                            alpha_vec =  alpha_vec, n_k = n_k,
-                                                                                           sigma_squared = sigma_squared_current, 
-                                                                                           mu_vec = mu_vec_current,K = K, tau_mu_vec = tau_mu_vec,
+                                                                                           mu_vec = mu_vec_current,K = K, 
+                                                                                           tau_mu_vec = tau_mu_vec,
                                                                                            acc.count_mu_vec,model,t=t)
                                                                    
                                                                    #updating quantities
                                                                    mu_vec_current = mu_update$mu_vec
                                                                    acc.count_mu_vec = mu_update$acc.moves
+                                                                   theta_current = mu_update$theta
                                                                    
                                                                    
                                                                    # 
@@ -437,9 +389,6 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    j_burned = j - burnin
                                                                    z_container[,j_burned] <- z_current
                                                                    theta_container[,,j_burned] <- theta_current
-                                                                   if(model == 'WST'){
-                                                                     sigma_squared_container[1,j_burned] = sigma_squared_current
-                                                                   }
                                                                    if(model == 'WST'|| model=='SST'){
                                                                      mu_vec_container[,j_burned] <- mu_vec_current
                                                                    }
@@ -468,12 +417,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    p(sprintf("Chain %d: mean acc.rate z %.3f%%,
                     mean acc.rate theta %.3f%%,
-                    mean acc.rate sigma_squared %.3f%%,
                     mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
                     chain,
                     100 * mean(acc.count_z/j),
                     100 * mean(acc.count_theta/j),
-                    100 * mean(acc.count_sigma_squared/j),
                     100 * mean(acc.count_mu_vec/j),
                     4, avg_iteration, formatted_expected_finishing_time), class = "sticky")
                                                                    
@@ -486,18 +433,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                if(power_posterior_apprach ==T){
                                                                  acceptance_rates <- list(acc.count_theta = acc.count_theta, 
                                                                                           acc.count_z = acc.count_z,
-                                                                                          acc.count_sigma_squared=acc.count_sigma_squared, 
                                                                                           acc.count_mu_vec= acc.count_mu_vec)
                                                                  
                                                                  
                                                                  
                                                                  est_containers = list(z = z_container,theta = theta_container,
-                                                                                       sigma_squared= sigma_squared_container,
                                                                                        mu_vec = mu_vec_container)
                                                                  
                                                                  control_containers = list(A = A_container)
                                                                  
-                                                                 st.deviations<- list(tau_theta =tau_theta_container,tau_sigma_squared = tau_sigma_squared_container, 
+                                                                 st.deviations<- list(tau_theta =tau_theta_container,
                                                                                       tau_mu_vec= tau_mu_vec_container)
                                                                  
                                                                  chains = list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers,
@@ -515,14 +460,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              }
                                                              
                                                              
-                                                             acceptance_rates <- list(acc.count_theta =acc.count_theta, acc.count_z = acc.count_z,
-                                                                                      acc.count_sigma_squared=acc.count_sigma_squared, acc.count_mu_vec= acc.count_mu_vec)
+                                                             acceptance_rates <- list(acc.count_theta =acc.count_theta, acc.count_z = acc.count_z, 
+                                                                                      acc.count_mu_vec= acc.count_mu_vec)
                                                              
-                                                             st.deviations<- list(tau_theta =tau_theta_container,tau_sigma_squared = tau_sigma_squared_container, 
+                                                             st.deviations<- list(tau_theta =tau_theta_container,
                                                                                   tau_mu_vec= tau_mu_vec_container)
                                                              
-                                                             est_containers = list(z = z_container,theta = theta_container,
-                                                                                   sigma_squared= sigma_squared_container, mu_vec = mu_vec_container)
+                                                             est_containers = list(z = z_container,theta = theta_container, mu_vec = mu_vec_container)
                                                              
                                                              control_containers = list(A = A_container, alpha_vec = alpha_vec)
                                                              

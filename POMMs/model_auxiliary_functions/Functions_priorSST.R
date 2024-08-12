@@ -1,5 +1,81 @@
 
 
+
+generate_theta_from_theta_prior = function(K, model){
+  
+  print(paste0('You are simulating theta according to the ', model, ' model prior'))
+  if(model == 'SST'){
+    
+    mu_vec_01_sort = seq(from = 0.5,to = 0.9, length.out = K)
+    mu_vec_sort = log(mu_vec_01_sort/(1-mu_vec_01_sort))
+    
+    ut <- upper.tri(matrix(0,K,K),diag = T) # get the logical matrix for upper triangular elements
+    Pcombn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
+    
+    uo<- data.frame(Pcombn[sample(nrow(Pcombn)), ])# permuting the order of the rows
+    n_P_entries<- nrow(uo)
+    
+    theta_prime<-matrix(0,K,K)
+    for(i_th in 1:n_P_entries){
+      
+      i_star<- uo$row[i_th]
+      j_star<- uo$col[i_th]
+      
+      theta_prime[i_star,j_star]<- mu_vec_sort[j_star - i_star + 1]
+      
+    }
+    
+    theta_prime[lower.tri(theta_prime)] = - t(theta_prime)[lower.tri(theta_prime)]
+    
+    P_prime = inverse_logit_f(theta_prime)
+    
+  }else if(model == 'WST'){
+    
+    
+    P_prime = matrix(NA, K, K)
+    P_prime[col(P_prime)-row(P_prime)==0] <-runif(K, 0,1)
+    for(diag_i in 1:(K-1)){
+      P_prime[col(P_prime)-row(P_prime)==diag_i] <- runif( K-diag_i,min = 0.5,max = 1)
+    }
+    
+    diag(P_prime) = 0.5
+    P_prime[lower.tri(P_prime)] = 1-t(P_prime)[lower.tri(P_prime)]
+    
+    
+  }else if(model == 'Simple'){
+    #upper triangular entries should not be greater than 0.5 (WST axiom) 
+    #nor increasing in the columns and decreasing in the rows (SST axiom)
+    
+    P_prime = matrix(NA, K, K)
+    P_prime[col(P_prime)-row(P_prime)==0] <-runif(K, 0,1)
+    for(diag_i in 1:(K-1)){
+      P_prime[col(P_prime)-row(P_prime)==diag_i] <- runif( K-diag_i,min = 0,max = 1)
+    }
+    diag(P_prime) = 0.5
+    P_prime[lower.tri(P_prime)] = 1-t(P_prime)[lower.tri(P_prime)]
+    #check for P
+    violating_WST_percent = 1- sum(P_prime >=0.5 & upper.tri(P_prime,diag = T))/sum(upper.tri(P_prime,diag = T))
+    
+    while(violating_WST_percent < .4){
+      P_prime = matrix(NA, K, K)
+      P_prime[col(P_prime)-row(P_prime)==0] <-runif(K, 0,1)
+      for(diag_i in 1:(K-1)){
+        P_prime[col(P_prime)-row(P_prime)==diag_i] <- runif( K-diag_i,min = 0,max = 1)
+      }
+      violating_WST_percent = 1- sum(P_prime >=0.5 & upper.tri(P_prime,diag = T))/sum(upper.tri(P_prime,diag = T))
+    }
+    
+  }
+  
+  if(model == 'SST'){
+    to_be_returned = list(P = P_prime, mu= mu_vec_sort)
+  }else{
+    to_be_returned = list(P = P_prime)
+  }
+  
+  
+  return(to_be_returned)
+}
 ########
 ##DIRICHLET-MULTINOMIAL
 #########

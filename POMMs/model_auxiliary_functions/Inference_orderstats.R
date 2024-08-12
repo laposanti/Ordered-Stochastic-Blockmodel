@@ -301,7 +301,6 @@ z_summary_table<- function(chains , true_value, z_list_relab = z_list_relab, P_l
 }
 
 z_diagnostic_table<- function(chains, true_value, diag0.5,K,burnin,N_iter,label_switch){
-  stopifnot(length(chains)==4)
   
   
   N<- nrow(chains$chain1$Y_ij)
