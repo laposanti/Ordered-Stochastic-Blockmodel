@@ -64,7 +64,7 @@ theta_prior_probability = function(theta,K, mu_vec, model){
     
     P_upper.tri = P[upper.tri(P,diag = F)]
     
-    p_prod = dunif(P_upper.tri,0.5,0.999)*
+    p_prod = dunif(P_upper.tri,0.5,0.9999)*
       (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
     
     log_p_sum = sum(log(p_prod))
@@ -73,7 +73,7 @@ theta_prior_probability = function(theta,K, mu_vec, model){
     P = inverse_logit_f(theta)
     P_upper.tri = P[upper.tri(P,diag = F)]
     
-    p_prod = dunif(P_upper.tri,0.0001,0.999)*
+    p_prod = dunif(P_upper.tri,0.0001,0.9999)*
       (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
     
     log_p_sum = sum(log(p_prod))
@@ -185,10 +185,10 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
     
     if(model == 'WST'){
       lower.bound = 0
-      upper.bound = +10
+      upper.bound = 9.21024
     }else{
-      lower.bound = -10
-      upper.bound = +10
+      lower.bound = -9.21024
+      upper.bound = 9.21024
     }
     #saving for convenience, to avoid multiple computations
     theta_ij_prime<- theta_prime[i_star,j_star]
