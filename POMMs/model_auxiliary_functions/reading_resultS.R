@@ -232,17 +232,16 @@ if(is.simulation==F){
   
 }
 
-
-for(est_model in c('SST','Simple')){
+filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
+print(filenames)
+for(est_model in c('SST','Simple','WST')){
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   
-  filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
-  print(filenames)
   
   est_model_files = grep(pattern = paste0('est_model',est_model), 
                          x = filenames,value = T,ignore.case = F)
   
-  #
+  print(est_model_files)
   for(file in 1:length(est_model_files)){
     
     uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
@@ -289,7 +288,6 @@ for(est_model in c('SST','Simple')){
     
     
     point_est_z<- as.vector(my_z_est$point_est)
-    
     
     
     
@@ -384,7 +382,6 @@ for(est_model in c('SST','Simple')){
         theme_bw()
     }
     
-    traceplot_P
     # if(est_model == 'SST'){
     #   mu_vec_df <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
     #     data.frame(iteration = j+burnin,
@@ -465,7 +462,7 @@ for(est_model in c('SST','Simple')){
     # relabeling the chains to correct for label switching
     #-------------------------------------------------------------------------------
     # Relabel remaining chains
-    
+    z_burned_1 = uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
     z_burned_2 = uploaded_results$chain2$est_containers$z[,-c(1:burnin)]
     z_burned_3 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
     z_burned_4 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
@@ -475,7 +472,17 @@ for(est_model in c('SST','Simple')){
     theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
     theta_burned_4 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
     
+    num_samples = ncol(z_burned_1)
+    thinning = 25
+    z_thin1 = z_burned_1[,seq(1,num_samples,thinning)]
+    z_thin2 = z_burned_2[,seq(1,num_samples,thinning)]
+    z_thin3 = z_burned_3[,seq(1,num_samples,thinning)]
+    z_thin4 = z_burned_4[,seq(1,num_samples,thinning)]
     
+    theta_thin1 = theta_burned_1[,,seq(1,num_samples,thinning)]
+    theta_thin2 = theta_burned_2[,,seq(1,num_samples,thinning)]
+    theta_thin3 = theta_burned_3[,,seq(1,num_samples,thinning)]
+    theta_thin4 = theta_burned_4[,,seq(1,num_samples,thinning)]
     # chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, 
     #                                   ncol_iter = N_iter - burnin,n=n)
     # chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, 
@@ -489,40 +496,53 @@ for(est_model in c('SST','Simple')){
     # theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
     # theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
     # 
-    z_list_relab = list(z1 = z_burned,z2=z_burned_2,z3=z_burned_3,z4=z_burned_4)
-    theta_list_relab = list(P1 = theta_burned_1,P2=theta_burned_2,P3=theta_burned_3,P4=theta_burned_4)
+    z_burned_list = list(z1 = z_thin1,
+                         z2=z_thin2,
+                         z3=z_thin3,
+                         z4=z_thin4)
+    
+    theta_burned_list = list(P1 = theta_thin1,
+                             P2 = theta_thin2,
+                             P3 = theta_thin3,
+                             P4 = theta_thin4)
     
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
     
     
-    num_samples = N_iter - burnin
+    num_samples = dim(theta_thin1)[[3]]
+    filtering_obs = which(upper.tri(N_ij) & N_ij!= 0,arr.ind = T)
+    upper.tri.Y_ij = Y_ij[filtering_obs]
+    upper.tri.N_ij = N_ij[filtering_obs]
     
-    upper.tri.Y_ij = Y_ij[upper.tri(Y_ij)]
-    upper.tri.N_ij = N_ij[upper.tri(N_ij)]
+    Y_pred = matrix(NA, nrow = num_samples,ncol = length(upper.tri.Y_ij))
     
     LL_list <- foreach(i=1:4, .packages='foreach')%do%{
       
-      z_chain <- z_list_relab[[i]]
-      theta_chain <- theta_list_relab[[i]]
+      z_chain <- z_burned_list[[i]]
+      theta_chain <- theta_burned_list[[i]]
       
       llik = matrix(NA,  nrow = num_samples, ncol = length(upper.tri.Y_ij))
+      
       for(t in 1:num_samples){
         
         z_chain_mat = vec2mat_0_P(z_chain[,t], theta_burned[,,1])
+        
         P_entry = inverse_logit_f(theta_chain[,,t])
         
         P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
-        llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[upper.tri(P_ij)],log = T)
+        
+        llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[filtering_obs],log = T)
+        llik[t,33]
+        Y_pred[t,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
+                             P_ij[filtering_obs])
       }
       print(i)
       return(llik)
     }
     
     
-    
-    # 
     LLik_sum <- lapply(LL_list,FUN = rowSums)
     # 
     # saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
@@ -583,21 +603,84 @@ for(est_model in c('SST','Simple')){
     print(my_sexy_traceplot)
     dev.off()
     
-    loo_model_fit = loo(LL_list[[1]])
+    
+    
+    
+    
+    library(bayesplot)
+    
+    r_effs = loo::relative_eff(LL_list[[1]],rep(1,num_samples))
+    
+    loo_model_fit = loo(LL_list[[1]],cores = 3,save_psis = T,r_eff = r_effs)
+    saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
     plot(loo_model_fit)
     waic_model_fit = waic(LL_list[[1]])
     
+    pareto_k_ids(loo_model_fit)
+    pareto_k_values(loo_model_fit)
+    
+    
+    
+    bad_values = loo::pareto_k_ids(loo_model_fit)
+    bad_values_df = data.frame(item = 0, value=0, bad=T,iteration=0)
+    good_values = setdiff(1:ncol(LL_list[[1]]), bad_values)
+    for(t in 1:25){
+      bad_df = data.frame(item= bad_values, value = LL_list[[1]][t,bad_values], bad=T, iteration=t)
+      good_df= data.frame(item= good_values, value = LL_list[[1]][t,good_values], bad=F, iteration=t) 
+      bad_values_df = rbind(bad_values_df, bad_df, good_df)
+    }
+    bad_values_df%>%
+      ggplot(aes(x=item, y=value, color=bad))+
+      geom_point(alpha=0.4)
+    
+    
+    
+    upper.tri.Y_ij[which(bad_values == Inf)] > upper.tri.N_ij[which(bad_values == Inf)]
+    upper.tri.Y_ij[is.na(bad_values)] > upper.tri.N_ij[is.na(bad_values)]
+    
+    # dbinom(upper.tri.Y_ij[which(bad_values == Inf)] , upper.tri.N_ij[which(bad_values == Inf)], P_ij[which(bad_values == Inf)], log = T)
+    # dbinom(upper.tri.Y_ij[is.na(bad_values)] , upper.tri.N_ij[is.na(bad_values)], P_ij[is.na(bad_values)], log = T)
+    # 
+    # dbinom(upper.tri.Y_ij[961] , upper.tri.N_ij[961], P_ij[961], log = T)
+    # 
+    diagnostic1<- ppc_loo_pit_qq(
+      y = upper.tri.Y_ij,
+      yrep = Y_pred,
+      lw = weights(loo_model_fit$psis_object)
+    )+
+      labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+           subtitle = paste0('Model =',est_model,", K=",K),
+           caption = paste0("data source:",true_model))
+    ggsave(plot=diagnostic1,filename = paste0(processed_wd,'diagnostic1',est_model,K,".png"))
+    
+    
+    diagnostic2 = ppc_loo_pit_overlay( y = upper.tri.Y_ij,
+                                       yrep = Y_pred,
+                                       lw = weights(loo_model_fit$psis_object))+
+      labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+           subtitle = paste0('Model =',est_model,", K=",K),
+           caption = paste0("data source:",true_model))
+    ggsave(plot=diagnostic2,filename = paste0(processed_wd,'diagnostic2',est_model,K,".png"))
+    
+    # 
+    diagnostic3 = ppc_bars(y = upper.tri.Y_ij,
+                           yrep = Y_pred)+
+      labs(x = 'Y_ij values',title = paste0('Posterior Predictive Check'),
+           subtitle = paste0('Model =',est_model,", K=",K),
+           caption = paste0("data source:",true_model))
+    ggsave(plot=diagnostic3,filename = paste0(processed_wd,'diagnostic3',est_model,K,".png"))
+    
     
     if(is.simulation==F){
-      z_s_table = data.frame(lone_out = loo_model_fit$estimates[3],lone_out_se = loo_model_fit$estimates[6],
-                             waic = waic_model_fit$estimates[3], waic_se = waic_model_fit$estimates[6],
+      z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
+                             waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
                              percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100,
                              K0_hat =     K0_hat,
                              perc_label_switch = my_z_est$label_switch_count/N*100,
                              K0_hat_switched = K0_hat_switched)
     }else if(is.simulation==T){
-      z_s_table = data.frame(lone_out = loo_model_fit$estimates[3],lone_out_se = loo_model_fit$estimates[6],
-                             waic = waic_model_fit$estimates[3], waic_se = waic_model_fit$estimates[6],
+      z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
+                             waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
                              percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100,
                              vi_dist = vi.dist(uploaded_results$chain1$ground_truth$z, point_est_z),   
                              K0_hat_nolabel_sw=    K0_hat,
@@ -613,7 +696,19 @@ for(est_model in c('SST','Simple')){
       z_container =  rbind(z_container,z_s_table)
     }
     
-    
+    if(!exists('long_df')){
+    # Convert to long format
+    long_df <- data.frame(loo_model_fit$estimates) %>%
+      tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
+      mutate(model = est_model) %>%
+      mutate(num_clust = K)
+    }else{
+      long_1 = data.frame(loo_model_fit$estimates) %>%
+        tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
+        mutate(model = est_model) %>%
+        mutate(num_clust = K)
+      long_df = rbind(long_df, long_1)
+    }
     
     
     # 
@@ -726,19 +821,47 @@ for(est_model in c('SST','Simple')){
     mixing_labels <- apply(uploaded_results$chain1$est_containers$z, 1, count_labels, labels = 1:K)
     
     
-    label_df = data.frame(item = 1:n, t(mixing_labels)) %>%
+    label_df = data.frame(item = rownames(Y_ij), t(mixing_labels)) %>%
       pivot_longer(-item)
+    
     order_df = label_df%>%
       filter(name=='X1')%>%
       arrange(value)%>%
       mutate(order = 1:n)%>%
       select(item, order)
     
-    labels_plot = label_df%>% left_join(order_df , by =c("item")) %>%
+    labels_plot = label_df %>% left_join(order_df , by =c("item")) %>%
       ggplot(aes(x = reorder(item,order), y = value, fill= name))+
       geom_col(alpha=0.7)+
       theme_bw()+
-      labs(x = 'Items', y = 'Number of allocations for each label')
+      labs(x = 'Items', y = 'Number of allocations for each label')+
+      theme(axis.text.x = element_text(angle=90))
+    
+    # label_df <- label_df %>%
+    #   group_by(item) %>%
+    #   mutate(proportion = value / sum(value))
+    # library(scatterpie)
+    # 
+    # label_df = data.frame(item = rownames(Y_ij), t(mixing_labels), win_prop = rowSums(Y_ij)/colSums(N_ij))%>%
+    #   mutate(item = factor(item[order(win_prop,decreasing = T)]))
+    # 
+    # label_df =label_df%>%
+    #   mutate(lab = order(label_df$win_prop,decreasing = T))%>%
+    #   mutate_at(vars(starts_with("X")), ~ . / rowSums(label_df[,paste0('X',1:K)]))
+    # 
+
+    
+    # label_df %>% 
+    #   left_join(order_df , by =c("item")) %>%
+    #   ggplot(aes(x = item, y = proportion, fill = name, group=name)) +
+    #   geom_scatterpie(data = label_df,aes(x=item, y=lat, group=region, r=radius))+
+    #   theme_void() +
+    #   theme(legend.position = "right") +
+    #   labs(fill = "Item")
+    
+    
+    
+    
     
     plot_name_auto <- paste0(processed_wd,"//labels_plot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     png(plot_name_auto,width = 800, height = 800)
@@ -902,13 +1025,13 @@ for(est_model in c('SST','Simple')){
         mutate(unique_identifier = unique_identifier+est_cl)%>%
         mutate(relative_victories = marginal_victories/(marginal_losses+marginal_victories))
       
-
+      
       if(est_model =='Simple'){
         new_order = est_df %>%
           group_by(est_cl)%>%
           summarise(mean_win = mean(relative_victories))%>%
           arrange(-mean_win)
-
+        
         # Example new order (a permutation of 1:K)
         new_z = vector()
         for(item in 1:n){
@@ -916,6 +1039,9 @@ for(est_model in c('SST','Simple')){
         }
         
         est_df$est_cl = new_z
+        
+        
+        write.csv(new_z, paste0(processed_wd,"/z_est_K_",K,"model",est_model,".csv"))
       }
       
       combined_df = players_df %>% inner_join(est_df, by = 'Id')%>% dplyr::arrange(unique_identifier)
@@ -1279,6 +1405,7 @@ Pcontainer %>% write.csv(file = paste0(processed_wd,"/Pcontainer.csv"))
 # sigma_squared_container%>% write.csv(file = paste0(processed_wd,"/sigma_squared_container.csv"))
 # 
 
+write.csv(long_df,paste0(processed_wd,"/long_df_model_choice.csv"))
 
 mu_vec_container <- mu_vec_container %>% arrange(n_clust) %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
   relocate(where(is.character)) %>% rename(K = n_clust) 
