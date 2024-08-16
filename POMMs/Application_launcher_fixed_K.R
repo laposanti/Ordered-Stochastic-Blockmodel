@@ -67,7 +67,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c("Simple",'WST')
+  choose_model_to_estimate = c("SST")
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
