@@ -22,7 +22,7 @@
 adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control,
                                                     ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
-                                                    custom_init=NA,power_posterior_apprach = T){
+                                                    custom_init=NA,power_posterior_apprach = T, thin=1){
   #setting for each chain a different seed
   #if the given seed is 20, the chains' seeds will be 21 for chain 1, 22 for chain 2 and so on...
   
@@ -90,7 +90,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #setting hyperparams
                                                              K <- as.numeric(K_est[[chain]])
                                                              
-                                                          
+                                                             N_iter_eff = length(seq(1,N_iter-burnin, thin))
                                                              
                                                              
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
@@ -252,16 +252,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #--------------------------------------------------------------------------
                                                                
                                                                #initialising the chain
-                                                               A_container <- matrix(0, nrow = 1, ncol = N_iter-burnin)
+                                                               A_container <- matrix(0, nrow = 1, ncol = N_iter_eff)
                                                                
                                                                A_container[1] <- A_current
                                                                #initialising the chain
-                                                               z_container <- matrix(0, nrow = n, ncol = N_iter-burnin)
+                                                               z_container <- matrix(0, nrow = n, ncol = N_iter_eff)
                                                                z_container[,1] <- z_current
                                                               
                                                                if(model == 'WST'||model == 'SST'){
                                                                  #initialising the chain
-                                                                 mu_vec_container = matrix(0, nrow = K, ncol = N_iter-burnin)
+                                                                 mu_vec_container = matrix(0, nrow = K, ncol = N_iter_eff)
                                                                  mu_vec_container[,1] <- mu_vec_current
                                                                  #initialising the adaptive variance
                                                                  tau_mu_vec <- rep(0.3, K)
@@ -273,10 +273,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  tau_mu_vec_container <- NA
                                                                }
                                                                #initialing theta and its adaptive variance container
-                                                               theta_container = array(0, dim = c(K,K,N_iter-burnin))
+                                                               theta_container = array(0, dim = c(K,K,N_iter_eff))
                                                                theta_container[,,1] <- theta_current
                                                                
-                                                               tau_theta_container = array(0,dim=c(K,K,N_iter))
+                                                               tau_theta_container = array(0,dim=c(K,K,N_iter_eff))
                                                                tau_theta =matrix(0.25,K,K)
                                                                tau_theta_container[,,1] = tau_theta
                                                                
@@ -290,7 +290,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                #READY TO BOMB!
                                                                iteration_time= vector()
-                                                           
+                                                               save_count = 1
                                                                for(j in 2:N_iter){
                                                                  
                                                                  start_time <- Sys.time()
@@ -385,14 +385,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  # 
                                                                  #storing results for inference
                                                                  
-                                                                 if(j > burnin){
-                                                                   j_burned = j - burnin
-                                                                   z_container[,j_burned] <- z_current
-                                                                   theta_container[,,j_burned] <- theta_current
-                                                                   if(model == 'WST'|| model=='SST'){
-                                                                     mu_vec_container[,j_burned] <- mu_vec_current
-                                                                   }
+                                                                 if(j > burnin & N_iter%%thin==0){
                                                                    
+                                                                   z_container[,save_count] <- z_current
+                                                                   theta_container[,,save_count] <- theta_current
+                                                                   if(model=='SST'){
+                                                                     mu_vec_container[,save_count] <- mu_vec_current
+                                                                   }
+                                                                   save_count = save_count +1 
                                                                  }
                                                                  
                                                                  # #storing scales
@@ -440,7 +440,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  est_containers = list(z = z_container,theta = theta_container,
                                                                                        mu_vec = mu_vec_container)
                                                                  
-                                                                 control_containers = list(A = A_container)
+                                                                 control_containers = list(A = A_container,
+                                                                                           N_iter = N_iter,
+                                                                                           thin = thin,
+                                                                                           N_iter_eff = N_iter_eff)
                                                                  
                                                                  st.deviations<- list(tau_theta =tau_theta_container,
                                                                                       tau_mu_vec= tau_mu_vec_container)

@@ -240,10 +240,10 @@ for(est_model in c('SST','Simple','WST')){
   
   est_model_files = grep(pattern = paste0('est_model',est_model), 
                          x = filenames,value = T,ignore.case = F)
-  
+  est_model= 'SST'
   print(est_model_files)
   for(file in 1:length(est_model_files)){
-    
+    file=8
     uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
     
     print(paste0('Now estimating ', est_model_files[file]))
@@ -289,6 +289,9 @@ for(est_model in c('SST','Simple','WST')){
     
     point_est_z<- as.vector(my_z_est$point_est)
     
+    if(est_model == 'SST'&K==6){
+      write.csv(point_est_z,paste0(processed_wd,"z_est_K_6modelSST.csv"))
+    }
     
     
     table(point_est_z)
@@ -1415,6 +1418,7 @@ mu_vec_container%>% write.csv(file = paste0(processed_wd,"/mu_vec_container.csv"
 z_container$lone_out_se
 
 model_selection_plot = z_container %>%
+  mutate(K = as.factor(K))%>%
   ggplot(aes(x = K, y = lone_out, color = model))+
   geom_point(shape = 18, size=3)+
   labs(title = paste0('Leave-one-out for different K and models'), y = 'Leave-one-out')

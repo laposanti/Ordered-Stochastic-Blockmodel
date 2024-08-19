@@ -12,7 +12,7 @@ library(dplyr)
 library(RColorBrewer)
 library(truncnorm)
 library(doRNG)
-
+library(googledrive)
 
 
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
@@ -21,9 +21,14 @@ source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
 
+# Define the path to your service account key file
+service_account_key <- "./google_drive_API.json"
+drive_auth_configure(api_key = service_account_key)
 
-
-
+# Specify the Google Drive folder URL or ID
+# Get the folder (if you already have it) or specify the path where you want to upload
+folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+folder <- drive_get(as_id(folder_url))
 
 ################################################################################
 #                         Set up parameters for the simulation study
@@ -63,7 +68,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  K_values <- c(8,9,10,11,12,13)  # Range of K values to explore
+  K_values <- c(3:8)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
@@ -86,8 +91,8 @@ for(data_description in c("Tennis_data","Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 80000 #number of iterations
-    burnin <- 20000 #number of discarded iterations
+    N_iter <- 800 #number of iterations
+    burnin <- 200 #number of discarded iterations
     
     
     K_est = rep(k_th, n_chains) #number of clusters to fit
@@ -127,14 +132,15 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach)
+                                                            power_posterior_apprach = power_posterior_apprach,thin=15)
       
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
       
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
-      beep("coin")
+
+      drive_put(media = my_filename, path = folder)
       
       
       
@@ -176,7 +182,7 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach)
+                                                            power_posterior_apprach = power_posterior_apprach,thin=15)
       
       
       
@@ -186,7 +192,11 @@ for(data_description in c("Tennis_data","Citation_data")){
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
       
-      beep("coin")
+      
+      drive_put(media = my_filename, path = folder)
+      
+      
+      
       
     }
     
@@ -224,13 +234,15 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                               seed = seed, 
                                                               model = est_model, 
                                                               custom_init = custom_init,
-                                                              power_posterior_apprach = power_posterior_apprach)
+                                                              power_posterior_apprach = power_posterior_apprach,thin=15)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
-      beep("coin")
+      drive_put(media = my_filename, path = folder)
+      
+      
     }
   
   
