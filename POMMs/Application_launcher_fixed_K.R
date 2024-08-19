@@ -1,6 +1,6 @@
 
 
-service_account_key <- "client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json"
+service_account_key <- "./client_secret_xxx.apps.googleusercontent.com.json"
 subject = "lapo.santi@ucdconnect.ie"
 
 
