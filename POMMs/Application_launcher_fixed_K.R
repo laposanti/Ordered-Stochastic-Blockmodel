@@ -25,7 +25,6 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 
 
 service_account_key <- "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json"
-drive_auth_configure(api_key = service_account_key)
 t <- gargle::credentials_service_account(
   path = service_account_key,
   subject = "lapo.santi@ucdconnect.ie"
