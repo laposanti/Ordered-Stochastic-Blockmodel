@@ -22,14 +22,20 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 source("./model_auxiliary_functions/MCMC_functions.R")
 
 # Define the path to your service account key file
-service_account_key <- "./google_drive_API.json"
-drive_auth_configure(api_key = service_account_key)
 
+
+service_account_key <- "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json"
+drive_auth_configure(api_key = service_account_key)
+t <- gargle::credentials_service_account(
+  path = service_account_key,
+  subject = "lapo.santi@ucdconnect.ie"
+)
+googledrive::drive_auth(token = t)
 # Specify the Google Drive folder URL or ID
+2
 # Get the folder (if you already have it) or specify the path where you want to upload
 folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
 folder <- drive_get(as_id(folder_url))
-
 ################################################################################
 #                         Set up parameters for the simulation study
 ################################################################################
