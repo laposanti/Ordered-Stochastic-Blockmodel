@@ -242,7 +242,7 @@ for(est_model in c('SST','Simple','WST')){
   for(file in 1:length(est_model_files)){
     
     uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
-    uploaded_results = chains_SST
+    uploaded_results = chains_Simple
     print(paste0('Now estimating ', est_model_files[file]))
     print(paste0(length(est_model_files)-file+1,' within the same class left '))
     

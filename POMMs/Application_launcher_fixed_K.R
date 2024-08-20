@@ -144,12 +144,12 @@ for(data_description in c("Tennis_data","Citation_data")){
       
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
-
-      drive_put(media = my_filename, path = folder)
-      
-      
-      
-      
+# 
+#       drive_put(media = my_filename, path = folder)
+#       
+#       
+#       
+#       
     }
     
     #-----------------------------------------------------------------------------
@@ -197,9 +197,9 @@ for(data_description in c("Tennis_data","Citation_data")){
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
       
-      
-      drive_put(media = my_filename, path = folder)
-      
+      # 
+      # drive_put(media = my_filename, path = folder)
+      # 
       
       
       
@@ -245,8 +245,8 @@ for(data_description in c("Tennis_data","Citation_data")){
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
-      drive_put(media = my_filename, path = folder)
-      
+      # drive_put(media = my_filename, path = folder)
+      # 
       
     }
   
