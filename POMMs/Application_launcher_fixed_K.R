@@ -96,8 +96,8 @@ for(data_description in c("Tennis_data","Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 800 #number of iterations
-    burnin <- 200 #number of discarded iterations
+    N_iter <- 80000 #number of iterations
+    burnin <- 50000 #number of discarded iterations
     
     
     K_est = rep(k_th, n_chains) #number of clusters to fit

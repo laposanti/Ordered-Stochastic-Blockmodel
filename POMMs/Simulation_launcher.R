@@ -78,8 +78,8 @@ for(true_model in  c('SST','WST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 4000 #number of iterations
-    burnin <- 2000 #number of discarded iterations
+    N_iter <- 50000 #number of iterations
+    burnin <- 30000 #number of discarded iterations
     thin=20
     K_est = rep(K, n_chains) #number of clusters to fit
     
