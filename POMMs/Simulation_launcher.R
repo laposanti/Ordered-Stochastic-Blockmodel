@@ -78,9 +78,9 @@ for(true_model in  c('SST','WST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 40000 #number of iterations
-    burnin <- 20000 #number of discarded iterations
-    
+    N_iter <- 4000 #number of iterations
+    burnin <- 2000 #number of discarded iterations
+    thin=20
     K_est = rep(K, n_chains) #number of clusters to fit
     
     is.simulation=T
@@ -123,12 +123,13 @@ for(true_model in  c('SST','WST','Simple')){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach)
+                                                            power_posterior_apprach = power_posterior_apprach,
+                                                            thin=thin)
       
       
       
 
-      
+
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
       chains_SST[['recovery_level']] = recovery_capability
@@ -178,7 +179,7 @@ for(true_model in  c('SST','WST','Simple')){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach)
+                                                            power_posterior_apprach = power_posterior_apprach,thin = thin)
       
       
       
@@ -230,7 +231,8 @@ for(true_model in  c('SST','WST','Simple')){
                                                               seed = seed, 
                                                               model = est_model, 
                                                               custom_init = custom_init,
-                                                              power_posterior_apprach = power_posterior_apprach)
+                                                              power_posterior_apprach = power_posterior_apprach,
+                                                              thin=thin)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
       chains_Simple[['recovery_level']] = recovery_capability

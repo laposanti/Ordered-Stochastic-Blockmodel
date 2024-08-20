@@ -80,9 +80,9 @@ theta_prior_probability = function(theta,K, mu_vec, model){
     
   }else if(model =='SST'){
     
-    fac <- lfactorial(K-1)
-    joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 2.5)) - 
-                          log(1- pnorm(0,mean = 0,sd = 2.5)))  
+    fac <- lfactorial(K)
+    joint_density<- sum(log(dtruncnorm(mu_vec[1:(K)],a = -0.4,mean = 0,sd = 2.5)) - 
+                          log(1- pnorm(0,mean = -0.4,sd = 2.5)))  
     check_ord = all(sort(mu_vec) == mu_vec)
     log_p_sum = joint_density + fac + log(check_ord)
     
@@ -92,13 +92,6 @@ theta_prior_probability = function(theta,K, mu_vec, model){
   return(log_p_sum)
 }
 
-#mu prior distribution
-d_sA_mu = function(K,mu_vec){
-  fac <- lfactorial(K)
-  joint_density<- sum(log(dtruncnorm(mu_vec[1:(K)],a = 0,mean = 0,sd = 2.5)) - 
-                        log(1- pnorm(0,mean = 0,sd = 2.5)))
-  return(joint_density+fac)
-}
 
 
 # Proportional posterior
@@ -170,7 +163,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
   
   #Updating each entry of P, one at the time
   
-  ut <- upper.tri(theta)
+  ut <- upper.tri(theta, diag=T)
   
   theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
   uo<- data.frame(theta_combn[sample(nrow(theta_combn)), ])# permuting the order of the rows
@@ -312,17 +305,22 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
   
   theta_prime = theta
   mu_vec_prime = mu_vec
-  for(mu in 2:length(mu_vec)){
+  for(mu in 1:length(mu_vec)){
     
     ub = ifelse(test = mu != length(mu_vec), 
                 yes = mu_vec_prime[mu+1],
                 no = 10)
-    mu_k_scanning <- rtruncnorm(1,a = mu_vec_prime[mu-1],b = ub,
+    
+    lb= ifelse(test = mu == 1, 
+               yes = -0.4,
+               no = mu_vec_prime[mu-1])
+   
+     mu_k_scanning <- rtruncnorm(1,a = lb,b = ub,
                                 mean = mu_vec_prime[mu],sd = tau_mu_vec[mu])
     
     theta_scanning = theta_prime
     theta_scanning[which(col(theta_prime) - row(theta_prime) == (mu-1))] <- mu_k_scanning
-    
+    theta_scanning[lower.tri(theta_scanning)] = -t(theta_scanning)[lower.tri(theta_scanning)]
     
     #computing the proportional posterior in mu'
     prop_posterior_scanning <- lprop_posterior(Y_ij = Y_ij, N_ij = N_ij, z= z, 
@@ -342,13 +340,13 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
     
     #evaluating the proposal density g(mu'| mu^(t)) 
     p_proposal_scanning = dtruncnorm(mu_k_scanning, 
-                                     a = mu_vec_prime[mu-1],
+                                     a =lb,
                                      b =ub,
                                      mean = mu_vec_prime[mu],
                                      sd = tau_mu_vec[mu])
     
     p_proposal_current = dtruncnorm(mu_vec_prime[mu],
-                                    a = mu_vec_prime[mu-1],
+                                    a = lb,
                                     b = ub, 
                                     mean = mu_k_scanning,
                                     sd = tau_mu_vec[mu])

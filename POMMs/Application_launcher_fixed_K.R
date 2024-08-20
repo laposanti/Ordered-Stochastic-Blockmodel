@@ -1,15 +1,3 @@
-
-
-service_account_key <- "./client_secret_xxx.apps.googleusercontent.com.json"
-subject = "lapo.santi@ucdconnect.ie"
-
-
-
-googledrive::drive_deauth()
-googledrive::drive_auth_configure(path = service_account_key)
-googledrive::drive_auth(email = subject)
-
-
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -35,9 +23,18 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 
 # Define the path to your service account key file
 
-# Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
-folder <- drive_get(as_id(folder_url))
+# subject = "lapo.santi@ucdconnect.ie"
+# service_account_key = "./sonic-426715-75af23aca274.json"
+# j = jsonlite::read_json(service_account_key)
+# googledrive::drive_deauth()
+# googledrive::drive_auth_configure(path = "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json")
+# drive_auth(token = service_account_key)
+# 
+# 
+# 2
+# # Get the folder (if you already have it) or specify the path where you want to upload
+# folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+# folder <- drive_get(as_id(folder_url))
 ################################################################################
 #                         Set up parameters for the simulation study
 ################################################################################

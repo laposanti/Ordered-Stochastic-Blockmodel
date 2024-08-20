@@ -25,7 +25,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
   
@@ -225,11 +225,8 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/simulation_new_results/from_SST/"
-  
-  
-  
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/Simulation_NEW/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/Simulation_NEW/processed/"
 }
 
 filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
@@ -240,12 +237,12 @@ for(est_model in c('SST','Simple','WST')){
   
   est_model_files = grep(pattern = paste0('est_model',est_model), 
                          x = filenames,value = T,ignore.case = F)
-  est_model= 'SST'
+  
   print(est_model_files)
   for(file in 1:length(est_model_files)){
-    file=8
-    uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
     
+    uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
+    uploaded_results = chains_SST
     print(paste0('Now estimating ', est_model_files[file]))
     print(paste0(length(est_model_files)-file+1,' within the same class left '))
     
@@ -365,7 +362,7 @@ for(est_model in c('SST','Simple','WST')){
         mutate(P = inverse_logit_f(theta))%>%
         mutate(P_true = inverse_logit_f(theta_true))
       
-      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
+      traceplot_P = ggplot(theta_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
         geom_line(aes(y=P), alpha=.3)+
         geom_line(aes(y=P_true), linetype=2, color='red')+
         facet_wrap(~entry)+
@@ -468,24 +465,22 @@ for(est_model in c('SST','Simple','WST')){
     z_burned_1 = uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
     z_burned_2 = uploaded_results$chain2$est_containers$z[,-c(1:burnin)]
     z_burned_3 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
-    z_burned_4 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
+    z_burned_4 = uploaded_results$chain4$est_containers$z[,-c(1:burnin)]
     
     theta_burned_1 = uploaded_results$chain1$est_containers$theta[,,-c(1:burnin)]
     theta_burned_2 = uploaded_results$chain2$est_containers$theta[,,-c(1:burnin)]
     theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
-    theta_burned_4 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
+    theta_burned_4 = uploaded_results$chain4$est_containers$theta[,,-c(1:burnin)]
     
-    num_samples = ncol(z_burned_1)
-    thinning = 25
-    z_thin1 = z_burned_1[,seq(1,num_samples,thinning)]
-    z_thin2 = z_burned_2[,seq(1,num_samples,thinning)]
-    z_thin3 = z_burned_3[,seq(1,num_samples,thinning)]
-    z_thin4 = z_burned_4[,seq(1,num_samples,thinning)]
+    z_burned_list = list(z_burned_1,
+                         z_burned_2,
+                         z_burned_3,
+                         z_burned_4)
     
-    theta_thin1 = theta_burned_1[,,seq(1,num_samples,thinning)]
-    theta_thin2 = theta_burned_2[,,seq(1,num_samples,thinning)]
-    theta_thin3 = theta_burned_3[,,seq(1,num_samples,thinning)]
-    theta_thin4 = theta_burned_4[,,seq(1,num_samples,thinning)]
+    theta_burned_list = list(theta_burned_1,
+                             theta_burned_2,
+                             theta_burned_3,
+                             theta_burned_4)
     # chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, 
     #                                   ncol_iter = N_iter - burnin,n=n)
     # chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, 
@@ -499,22 +494,13 @@ for(est_model in c('SST','Simple','WST')){
     # theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
     # theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
     # 
-    z_burned_list = list(z1 = z_thin1,
-                         z2=z_thin2,
-                         z3=z_thin3,
-                         z4=z_thin4)
-    
-    theta_burned_list = list(P1 = theta_thin1,
-                             P2 = theta_thin2,
-                             P3 = theta_thin3,
-                             P4 = theta_thin4)
-    
+
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
     
     
-    num_samples = dim(theta_thin1)[[3]]
+    num_samples = dim(theta_burned_list[[1]])[[3]]
     filtering_obs = which(upper.tri(N_ij) & N_ij!= 0,arr.ind = T)
     upper.tri.Y_ij = Y_ij[filtering_obs]
     upper.tri.N_ij = N_ij[filtering_obs]
@@ -537,7 +523,7 @@ for(est_model in c('SST','Simple','WST')){
         P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
         
         llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[filtering_obs],log = T)
-        llik[t,33]
+
         Y_pred[t,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
                              P_ij[filtering_obs])
       }
@@ -555,7 +541,7 @@ for(est_model in c('SST','Simple','WST')){
     #-------------------------------------------------------------------------------
     df_traceplot = data.frame(chain = c(rep(1,num_samples), rep(2,num_samples), rep(3,num_samples),rep(4,num_samples)),
                               log_likelihood = c(LLik_sum[[1]],LLik_sum[[2]],LLik_sum[[3]],LLik_sum[[4]]),
-                              iterations = rep(((burnin+1):N_iter),4))
+                              iterations = rep(1:num_samples,4))
     
     df_traceplot = df_traceplot %>% mutate(chain = factor(chain, 
                                                           levels = 1:4))
@@ -618,8 +604,13 @@ for(est_model in c('SST','Simple','WST')){
     saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
     plot(loo_model_fit)
     waic_model_fit = waic(LL_list[[1]])
+    problematic_values = pareto_k_ids(loo_model_fit)
+    unique(LL_list[[1]][,problematic_values[1]])
     
-    pareto_k_ids(loo_model_fit)
+    
+    
+    
+    
     pareto_k_values(loo_model_fit)
     
     
@@ -700,11 +691,11 @@ for(est_model in c('SST','Simple','WST')){
     }
     
     if(!exists('long_df')){
-    # Convert to long format
-    long_df <- data.frame(loo_model_fit$estimates) %>%
-      tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
-      mutate(model = est_model) %>%
-      mutate(num_clust = K)
+      # Convert to long format
+      long_df <- data.frame(loo_model_fit$estimates) %>%
+        tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
+        mutate(model = est_model) %>%
+        mutate(num_clust = K)
     }else{
       long_1 = data.frame(loo_model_fit$estimates) %>%
         tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
@@ -747,16 +738,24 @@ for(est_model in c('SST','Simple','WST')){
                                  n_iter = 1:ncol(mu_chain), 
                                  level_set = i))
       }
-      
-      
-      mu_plot = mu_df[-1,] %>%ggplot(aes(n_iter, mu_chain, 
-                                         group = level_set,color= as.factor(level_set)))+
-        geom_line() 
-      ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
-      
-      
-      
-      
+      mu_df = mu_df[-1,]
+      if(is.simulation ==F){
+        mu_df %>%ggplot(aes(n_iter, mu_chain, 
+                                group = level_set,color= as.factor(level_set)))+
+          geom_line() %>%
+        ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
+      }else if(is.simulation == T){
+        
+        mu_df$ground_truth = rep(uploaded_results$chain1$ground_truth$mu_vec_star,nrow(mu_df)/K)
+        
+        
+        mu_df %>%ggplot(aes(n_iter, mu_chain, 
+                                group = level_set,color= as.factor(level_set)))+
+          geom_line()+
+          geom_hline(aes(yintercept=ground_truth))
+        ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
+        
+      }
       mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
                                             diag0.5 = TRUE, K = K, burnin = burnin)
       
@@ -823,10 +822,13 @@ for(est_model in c('SST','Simple','WST')){
     # Assuming chains_SST$chain1$est_containers$z is a matrix or data frame
     mixing_labels <- apply(uploaded_results$chain1$est_containers$z, 1, count_labels, labels = 1:K)
     
-    
-    label_df = data.frame(item = rownames(Y_ij), t(mixing_labels)) %>%
-      pivot_longer(-item)
-    
+    if(is.simulation == F){
+      label_df = data.frame(item = rownames(Y_ij), t(mixing_labels)) %>%
+        pivot_longer(-item)
+    }else{
+      label_df = data.frame(item = 1:n, t(mixing_labels)) %>%
+        pivot_longer(-item)
+    }
     order_df = label_df%>%
       filter(name=='X1')%>%
       arrange(value)%>%
@@ -852,7 +854,7 @@ for(est_model in c('SST','Simple','WST')){
     #   mutate(lab = order(label_df$win_prop,decreasing = T))%>%
     #   mutate_at(vars(starts_with("X")), ~ . / rowSums(label_df[,paste0('X',1:K)]))
     # 
-
+    
     
     # label_df %>% 
     #   left_join(order_df , by =c("item")) %>%

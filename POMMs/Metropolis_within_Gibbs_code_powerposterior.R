@@ -82,7 +82,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              
-                                                             seeds = seed + 1:n_chains
+                                                             seeds = seed + (1:n_chains)*10
                                                              
                                                              set.seed(seeds[[chain]])
                                                              
@@ -383,9 +383,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  # tau_mu_vec_container[j]<- tau_mu_vec
                                                                  # tau_theta_container[,,j]<- tau_theta
                                                                  # 
+                                                                 
                                                                  #storing results for inference
                                                                  
-                                                                 if(j > burnin & N_iter%%thin==0){
+                                                                 if(j > burnin & j%%thin==0){
                                                                    
                                                                    z_container[,save_count] <- z_current
                                                                    theta_container[,,save_count] <- theta_current
@@ -450,7 +451,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  
                                                                  chains = list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers,
                                                                                control_containers=control_containers, acceptance_rates= acceptance_rates,
-                                                                               st.deviations=st.deviations, t=t, seed= seed + chain)
+                                                                               st.deviations=st.deviations, t=t, seed= seed)
                                                                  
                                                                  #storing the results of each chain
                                                                  my_names <- paste0("chain")
