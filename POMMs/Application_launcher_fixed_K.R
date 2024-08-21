@@ -23,18 +23,17 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 
 # Define the path to your service account key file
 
-# subject = "lapo.santi@ucdconnect.ie"
-# service_account_key = "./sonic-426715-75af23aca274.json"
-# j = jsonlite::read_json(service_account_key)
-# googledrive::drive_deauth()
-# googledrive::drive_auth_configure(path = "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json")
-# drive_auth(token = service_account_key)
+subject = "lapo.santi@ucdconnect.ie"
+service_account_key = "./sonic-426715-75af23aca274.json"
+googledrive::drive_deauth()
+googledrive::drive_auth_configure(path = "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json")
+googledrive::drive_auth(email = subject)
 # 
 # 
 # 2
 # # Get the folder (if you already have it) or specify the path where you want to upload
-# folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
-# folder <- drive_get(as_id(folder_url))
+folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+folder <- drive_get(as_id(folder_url))
 ################################################################################
 #                         Set up parameters for the simulation study
 ################################################################################
@@ -47,7 +46,7 @@ source("./model_auxiliary_functions/MCMC_functions.R")
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 
-for(data_description in c("Tennis_data","Citation_data")){
+for(data_description in c("Tennis_data")){
 
   
   ###############################################################################
@@ -73,11 +72,11 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  K_values <- c(3:13)  # Range of K values to explore
+  K_values <- c(9:13)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c("SST","WST","Simple")
+  choose_model_to_estimate = c("SST","Simple")
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -96,7 +95,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 80000 #number of iterations
+    N_iter <- 70000 #number of iterations
     burnin <- 50000 #number of discarded iterations
     
     
@@ -145,7 +144,7 @@ for(data_description in c("Tennis_data","Citation_data")){
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
 # 
-#       drive_put(media = my_filename, path = folder)
+      drive_put(media = my_filename, path = folder)
 #       
 #       
 #       
@@ -198,7 +197,7 @@ for(data_description in c("Tennis_data","Citation_data")){
       saveRDS(object = chains_WST, file = my_filename) 
       
       # 
-      # drive_put(media = my_filename, path = folder)
+      drive_put(media = my_filename, path = folder)
       # 
       
       
@@ -245,7 +244,7 @@ for(data_description in c("Tennis_data","Citation_data")){
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
-      # drive_put(media = my_filename, path = folder)
+      drive_put(media = my_filename, path = folder)
       # 
       
     }
