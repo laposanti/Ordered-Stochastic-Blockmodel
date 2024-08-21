@@ -73,11 +73,11 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  K_values <- c(3:8)  # Range of K values to explore
+  K_values <- c(3:13)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c("SST")
+  choose_model_to_estimate = c("SST","WST","Simple")
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------

@@ -25,7 +25,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   
@@ -41,7 +41,7 @@ if(is.simulation==F){
     
     data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/"
     #where the data are saved
-    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/processed/Tennis_new/"
+    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/processed/"
     
     players_df = data.frame(Id = rownames(Y_ij)) 
     #now, for each game I want to filter just those players in the top one-hundred
@@ -242,7 +242,7 @@ for(est_model in c('SST','Simple','WST')){
   for(file in 1:length(est_model_files)){
     
     uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
-    uploaded_results = chains_Simple
+    
     print(paste0('Now estimating ', est_model_files[file]))
     print(paste0(length(est_model_files)-file+1,' within the same class left '))
     
@@ -494,7 +494,7 @@ for(est_model in c('SST','Simple','WST')){
     # theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
     # theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
     # 
-
+    
     #-------------------------------------------------------------------------------
     # computing the estimated loglikelihood for each chain
     #-------------------------------------------------------------------------------
@@ -523,7 +523,7 @@ for(est_model in c('SST','Simple','WST')){
         P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
         
         llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[filtering_obs],log = T)
-
+        
         Y_pred[t,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
                              P_ij[filtering_obs])
       }
@@ -740,20 +740,20 @@ for(est_model in c('SST','Simple','WST')){
       }
       mu_df = mu_df[-1,]
       if(is.simulation ==F){
-        mu_df %>%ggplot(aes(n_iter, mu_chain, 
-                                group = level_set,color= as.factor(level_set)))+
-          geom_line() %>%
-        ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
+        mu_plot =  mu_df %>%ggplot(aes(n_iter, mu_chain, 
+                                       group = level_set,color= as.factor(level_set)))+
+          geom_line() 
+        ggsave(mu_plot, filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
       }else if(is.simulation == T){
         
-        mu_df$ground_truth = rep(uploaded_results$chain1$ground_truth$mu_vec_star,nrow(mu_df)/K)
+        mu_plot = mu_df$ground_truth = rep(uploaded_results$chain1$ground_truth$mu_vec_star,nrow(mu_df)/K)
         
         
         mu_df %>%ggplot(aes(n_iter, mu_chain, 
-                                group = level_set,color= as.factor(level_set)))+
+                            group = level_set,color= as.factor(level_set)))+
           geom_line()+
           geom_hline(aes(yintercept=ground_truth))
-        ggsave(filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
+        ggsave(mu_plot, filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
         
       }
       mu_vec_s_table<- mu_vec_summary_table(chains = uploaded_results, true_value = is.simulation*(true_model!='Simple'),
