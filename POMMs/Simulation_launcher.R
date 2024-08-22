@@ -16,7 +16,7 @@ library(ggside)
 library(parallel)
 library(truncnorm)
 library(doRNG)
-
+library(googledrive)
 
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
@@ -56,7 +56,7 @@ is.simulation=T
 
 data_directory = "./Data/Sim1_data/"
 
-for(true_model in  c('SST','WST','Simple')){
+for(true_model in  c('SST','Simple')){
   
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
