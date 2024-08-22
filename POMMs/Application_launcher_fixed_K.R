@@ -72,11 +72,11 @@ for(data_description in c("Tennis_data")){
   
   #chosing where to save the files depending on which model you are estimating
   
-  K_values <- c(9:13)  # Range of K values to explore
+  K_values <- c(6)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
-  choose_model_to_estimate = c("SST","Simple")
+  choose_model_to_estimate = c("Simple")
   #-----------------------------------------------------------------------------
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
@@ -94,7 +94,7 @@ for(data_description in c("Tennis_data")){
     n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
-    seed=20
+    seed = 20
     N_iter <- 70000 #number of iterations
     burnin <- 50000 #number of discarded iterations
     

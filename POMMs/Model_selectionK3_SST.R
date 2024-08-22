@@ -33,9 +33,10 @@ source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
 
 #where the data are stored
-data_wd<- "./Data/power_posterior_data/"
+data_wd<- "./Data/Sim1_data/"
 data_description = 'SST3'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
+print(filenames)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
@@ -58,7 +59,7 @@ est_model = 'SST'
 N_iter <- 50000 #number of iterations
 burnin <- 20000  #number of discarded iterations
 
-K_est = list(2,3,4,5,6,7,8) #number of clusters to fit
+K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 
 
 #where to save the data
@@ -75,7 +76,7 @@ print(paste0("Begin cycle at:", date(), "\n"))
 
 seed=23
 
-estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 1)
+estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 0)
 
 chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   saving_directory = saving_directory,
@@ -87,7 +88,8 @@ chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                   seed = seed, 
                                                   model = est_model, 
                                                   custom_init = custom_init,
-                                                  power_posterior_apprach = T)
+                                                  power_posterior_apprach = F,
+                                                  thin = 15)
 names(chains) = paste0('chain',unlist(K_est))
 
 

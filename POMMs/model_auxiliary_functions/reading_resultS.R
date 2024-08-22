@@ -25,11 +25,12 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
   
   true_model = "Tennis_data"
+  
   if(true_model == "Tennis_data"){
     #where the data are stored
     setwd('/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/')
@@ -225,13 +226,14 @@ if(is.simulation==F){
   
 }else if(is.simulation == T){
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/Simulation_NEW/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/Simulation_NEW/processed/"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/processed/"
 }
 
 filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
 print(filenames)
-for(est_model in c('SST','Simple','WST')){
+
+for(est_model in c('SST','WST', 'Simple')){
   # filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
   
   
@@ -240,7 +242,7 @@ for(est_model in c('SST','Simple','WST')){
   
   print(est_model_files)
   for(file in 1:length(est_model_files)){
-    
+
     uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
     
     print(paste0('Now estimating ', est_model_files[file]))
@@ -275,7 +277,8 @@ for(est_model in c('SST','Simple','WST')){
     
     theta = apply(theta_burned, c(1,2), mean)
     P_est = inverse_logit_f(theta)
-    
+    z_burned = z_burned[,-(N_iter-1)]
+    N_iter = ncol(z_burned)
     my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[-c(1:burnin)],
                       Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
                       est_model = est_model, true_value =is.simulation, 
@@ -500,7 +503,7 @@ for(est_model in c('SST','Simple','WST')){
     #-------------------------------------------------------------------------------
     
     
-    num_samples = dim(theta_burned_list[[1]])[[3]]
+    num_samples = N_iter
     filtering_obs = which(upper.tri(N_ij) & N_ij!= 0,arr.ind = T)
     upper.tri.Y_ij = Y_ij[filtering_obs]
     upper.tri.N_ij = N_ij[filtering_obs]
@@ -533,6 +536,7 @@ for(est_model in c('SST','Simple','WST')){
     
     
     LLik_sum <- lapply(LL_list,FUN = rowSums)
+
     # 
     # saveRDS(LLik_sum,file = paste0(processed_wd,"//loglik",true_model,est_model,K,".RDS"))
     
@@ -604,34 +608,51 @@ for(est_model in c('SST','Simple','WST')){
     saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
     plot(loo_model_fit)
     waic_model_fit = waic(LL_list[[1]])
+    
+    
+    
     problematic_values = pareto_k_ids(loo_model_fit)
-    unique(LL_list[[1]][,problematic_values[1]])
     
+
+  
     
+    prob_df = data.frame(row = rownames(Y_ij)[row(Y_ij)[problematic_values]], 
+               col = colnames(Y_ij)[col(Y_ij)[problematic_values]]) 
     
+    for(i in 1:length(prob_df)){
+      prob_df$z_row[i] =  point_est_z[which(rownames(Y_ij)==prob_df$row[i])]
+      prob_df$z_col[i] =  point_est_z[which(rownames(Y_ij)==prob_df$col[i])]
+    }
+    
+    for(i in 1:length(prob_df)){
+      prob_df$P_MCMC[i] =  P_est[prob_df$z_row[i],prob_df$z_col[i]]
+      prob_df$P_hat[i] =  Y_ij[prob_df$row[i],prob_df$col[i]]/N_ij[prob_df$row[i],prob_df$col[i]]
+      
+    }
     
     
     pareto_k_values(loo_model_fit)
     
-    
-    
-    bad_values = loo::pareto_k_ids(loo_model_fit)
-    bad_values_df = data.frame(item = 0, value=0, bad=T,iteration=0)
-    good_values = setdiff(1:ncol(LL_list[[1]]), bad_values)
-    for(t in 1:25){
-      bad_df = data.frame(item= bad_values, value = LL_list[[1]][t,bad_values], bad=T, iteration=t)
-      good_df= data.frame(item= good_values, value = LL_list[[1]][t,good_values], bad=F, iteration=t) 
-      bad_values_df = rbind(bad_values_df, bad_df, good_df)
-    }
-    bad_values_df%>%
-      ggplot(aes(x=item, y=value, color=bad))+
-      geom_point(alpha=0.4)
-    
-    
-    
-    upper.tri.Y_ij[which(bad_values == Inf)] > upper.tri.N_ij[which(bad_values == Inf)]
-    upper.tri.Y_ij[is.na(bad_values)] > upper.tri.N_ij[is.na(bad_values)]
-    
+    # 
+    # 
+    # bad_values = loo::pareto_k_ids(loo_model_fit)
+    # bad_values_df = data.frame(item = 0, value=0, bad=T,iteration=0)
+    # 
+    # good_values = setdiff(1:ncol(LL_list[[1]]), bad_values)
+    # for(t in 1:25){
+    #   bad_df = data.frame(item= bad_values, value = LL_list[[1]][t,bad_values], bad=T, iteration=t)
+    #   good_df= data.frame(item= good_values, value = LL_list[[1]][t,good_values], bad=F, iteration=t) 
+    #   bad_values_df = rbind(bad_values_df, bad_df, good_df)
+    # }
+    # bad_values_df%>%
+    #   ggplot(aes(x=item, y=value, color=bad))+
+    #   geom_point(alpha=0.4)
+    # 
+    # 
+    # 
+    # upper.tri.Y_ij[which(bad_values == Inf)] > upper.tri.N_ij[which(bad_values == Inf)]
+    # upper.tri.Y_ij[is.na(bad_values)] > upper.tri.N_ij[is.na(bad_values)]
+    # 
     # dbinom(upper.tri.Y_ij[which(bad_values == Inf)] , upper.tri.N_ij[which(bad_values == Inf)], P_ij[which(bad_values == Inf)], log = T)
     # dbinom(upper.tri.Y_ij[is.na(bad_values)] , upper.tri.N_ij[is.na(bad_values)], P_ij[is.na(bad_values)], log = T)
     # 
@@ -696,12 +717,21 @@ for(est_model in c('SST','Simple','WST')){
         tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
         mutate(model = est_model) %>%
         mutate(num_clust = K)
+      long_df1 <- data.frame(Metric = names(WAIC(LL_list[[1]])),Estimate = as.numeric(WAIC(LL_list[[1]])))%>%
+        mutate(SE = NA)%>%
+        mutate(model = est_model) %>%
+        mutate(num_clust = K)
+      long_df = rbind(long_df,long_df1)
     }else{
       long_1 = data.frame(loo_model_fit$estimates) %>%
         tibble::rownames_to_column(var = "Metric") %>%  # Convert row names to a column
         mutate(model = est_model) %>%
         mutate(num_clust = K)
-      long_df = rbind(long_df, long_1)
+      long_2 <- data.frame(Metric = names(WAIC(LL_list[[1]])),Estimate = as.numeric(WAIC(LL_list[[1]])))%>%
+        mutate(SE = NA)%>%
+        mutate(model = est_model) %>%
+        mutate(num_clust = K)
+      long_df = rbind(long_df,long_1,long_2)
     }
     
     
@@ -749,10 +779,11 @@ for(est_model in c('SST','Simple','WST')){
         mu_plot = mu_df$ground_truth = rep(uploaded_results$chain1$ground_truth$mu_vec_star,nrow(mu_df)/K)
         
         
-        mu_df %>%ggplot(aes(n_iter, mu_chain, 
+        mu_plot = mu_df %>%ggplot(aes(n_iter, mu_chain, 
                             group = level_set,color= as.factor(level_set)))+
           geom_line()+
           geom_hline(aes(yintercept=ground_truth))
+        
         ggsave(mu_plot, filename = paste0(processed_wd,"mu_trace",true_model, est_model,K,".png"))
         
       }
@@ -1417,13 +1448,14 @@ mu_vec_container <- mu_vec_container %>% arrange(n_clust) %>% arrange(n_clust ) 
 
 mu_vec_container%>% write.csv(file = paste0(processed_wd,"/mu_vec_container.csv"))
 
-z_container$lone_out_se
 
-model_selection_plot = z_container %>%
-  mutate(K = as.factor(K))%>%
-  ggplot(aes(x = K, y = lone_out, color = model))+
+model_selection_plot = long_df %>%
+  filter(Metric == 'looic')%>%
+  mutate(K = as.factor(num_clust))%>%
+  ggplot(aes(x = K, y = Estimate, color = model))+
   geom_point(shape = 18, size=3)+
-  labs(title = paste0('Leave-one-out for different K and models'), y = 'Leave-one-out')
+  labs(title = paste0('Leave-one-out for different K and models'), y = 'Looic',
+       subtitle = 'Lower values are better')
 
 
 plot_name2<- paste0(processed_wd,"//Model_choice",true_model,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
