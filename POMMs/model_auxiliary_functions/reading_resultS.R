@@ -15,6 +15,7 @@ library(mcclust)
 library(LaplacesDemon)
 library(cowplot)
 library(tidyr)
+library(googledrive)
 source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
 
@@ -230,15 +231,15 @@ if(is.simulation==F){
   processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/processed/"
 }
 
-
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 subject = "lapo.santi@ucdconnect.ie"
 service_account_key = "./sonic-426715-75af23aca274.json"
 googledrive::drive_deauth()
 googledrive::drive_auth_configure(path = "./client_secret_573831164304-jqqj3i5mhvubbkkuifvtgkfsut8lse3g.apps.googleusercontent.com.json")
 googledrive::drive_auth(email = subject)
 # 
-filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
-print(filenames)
+# filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
+# print(filenames)
 folder_url <- "https://drive.google.com/drive/u/1/folders/1p3AUy241bkANcZskowWgc14QqqVmderu"
 
 
@@ -269,16 +270,21 @@ pattern <- "Data_fromSST3"  # Example: "report" to match all files with "report"
 
 # Filter files based on the pattern
 matching_files <- files_in_folder[grep(pattern, files_in_folder$name), ]
+
+
+files_10 <- grep("Kest10", matching_files$name)
+total_files = 1:length(matching_files$name)
+file_to_analyse = setdiff(total_files,files_10)
 check_P_posterior <- data.frame(model = character(), K= numeric(), t = numeric(), is.SST=logical(), is.WST=logical(),N_iter_eff = numeric())
 
-for(file in 1:length(matching_files$name)){
+for(file in file_to_analyse){
   
   #uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
 
 
   
   save_path = './results/MCMC_output/processed_simulation/model_choice/temp.RDS'
-  drive_download(file = matching_files$id[file], path = save_path,overwrite = T)
+  drive_download(file = matching_files $id[file], path = save_path,overwrite = T)
   uploaded_results = readRDS(save_path)
   
 
@@ -297,7 +303,7 @@ for(file in 1:length(matching_files$name)){
   
   N= nrow(uploaded_results$chain1$Y_ij)
   n=N
-  N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
+  N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]-2
   K = dim(uploaded_results$chain1$est_containers$theta)[[1]]
   burnin = max(N_iter - 40000,1)
   Y_ij <- uploaded_results$chain1$Y_ij
@@ -308,13 +314,13 @@ for(file in 1:length(matching_files$name)){
   #-------------------------------------------------------------------------------
   # P temporary estimate
   #-------------------------------------------------------------------------------
-  theta_burned = uploaded_results$chain1$est_containers$theta
-  z_burned =  uploaded_results$chain1$est_containers$z
+  theta_burned = uploaded_results$chain1$est_containers$theta[,,1:N_iter]
+  z_burned =  uploaded_results$chain1$est_containers$z[,1:N_iter]
   if(est_model != 'Simple'){
-    m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,-c(1:burnin)]
+    m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,1:N_iter]
   }
   if(est_model == 'WST'){
-    sigma_squared_burned = uploaded_results$chain1$est_containers$sigma_squared[-c(1:burnin)]
+    sigma_squared_burned = uploaded_results$chain1$est_containers$sigma_squared[1:N_iter]
   }
   
   K0 <- apply(X = z_burned, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
@@ -325,11 +331,11 @@ for(file in 1:length(matching_files$name)){
   
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
-  z_burned = z_burned[,-c(N_iter,N_iter-1)]
+  
 
   N_iter = 1333
   
-  my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[-c(1:burnin)],
+  my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[1:N_iter],
                     Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
                     est_model = est_model, true_value =is.simulation, 
                     diag0.5 =diag0.5 , K=  max(z_burned), N=nrow(uploaded_results$chain1$Y_ij),
@@ -420,7 +426,7 @@ for(file in 1:length(matching_files$name)){
   }
  
   
-  
+  is.simulation=F
   
   
   P_s_table <- P_summary_table(P_burned = theta_burned,
@@ -552,15 +558,15 @@ for(file in 1:length(matching_files$name)){
   # relabeling the chains to correct for label switching
   #-------------------------------------------------------------------------------
   # Relabel remaining chains
-  z_burned_1 = uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
-  z_burned_2 = uploaded_results$chain2$est_containers$z[,-c(1:burnin)]
-  z_burned_3 = uploaded_results$chain3$est_containers$z[,-c(1:burnin)]
-  z_burned_4 = uploaded_results$chain4$est_containers$z[,-c(1:burnin)]
+  z_burned_1 = uploaded_results$chain1$est_containers$z[,1:N_iter]
+  z_burned_2 = uploaded_results$chain2$est_containers$z[,1:N_iter]
+  z_burned_3 = uploaded_results$chain3$est_containers$z[,1:N_iter]
+  z_burned_4 = uploaded_results$chain4$est_containers$z[,1:N_iter]
   
-  theta_burned_1 = uploaded_results$chain1$est_containers$theta[,,-c(1:burnin)]
-  theta_burned_2 = uploaded_results$chain2$est_containers$theta[,,-c(1:burnin)]
-  theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,-c(1:burnin)]
-  theta_burned_4 = uploaded_results$chain4$est_containers$theta[,,-c(1:burnin)]
+  theta_burned_1 = uploaded_results$chain1$est_containers$theta[,,1:N_iter]
+  theta_burned_2 = uploaded_results$chain2$est_containers$theta[,,1:N_iter]
+  theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,1:N_iter]
+  theta_burned_4 = uploaded_results$chain4$est_containers$theta[,,1:N_iter]
   
   z_burned_list = list(z_burned_1,
                        z_burned_2,
@@ -1005,7 +1011,7 @@ for(file in 1:length(matching_files$name)){
   #   #-------------------------------------------------------------------------------
   # 
   #   sigma_df = data.frame(iterations = 1:num_samples, 
-  #                       sigma = uploaded_results$chain1$est_containers$sigma_squared[-c(1:burnin)]) %>%
+  #                       sigma = uploaded_results$chain1$est_containers$sigma_squared[1:N_iter]) %>%
   #   ggplot(aes(x = iterations, y = sigma))+
   #   geom_line()
   #   
@@ -1531,8 +1537,13 @@ Pcontainer %>% write.csv(file = paste0(processed_wd,"/Pcontainer.csv"))
 
 write.csv(long_df,paste0(processed_wd,"/long_df_model_choice.csv"))
 
+check_P_posterior_sum = check_P_posterior%>%
+  group_by(model,K)%>%
+  summarise(obs = n(),
+            is.SST_sum = sum(is.SST),
+            is.WST_sum = sum(is.WST))
 
-write.csv(check_P_posterior,paste0(processed_wd,"/check_P_transitivity.csv"))
+write.csv(check_P_posterior_sum,paste0(processed_wd,"/check_P_transitivity.csv"))
 
 mu_vec_container <- mu_vec_container %>% arrange(n_clust) %>% arrange(n_clust ) %>% relocate (n_clust) %>% 
   relocate(where(is.character)) %>% rename(K = n_clust) 
@@ -1590,12 +1601,12 @@ if(is.simulation==F){
   
   uploaded_results<- readRDS(paste0(data_wd, 'Data_from', true_model,'_est_model',chosen_model$model[1],'_Kest',chosen_model$K[1],'.RDS'))
   K<- chosen_model$K[1]
-  theta_est <- apply(uploaded_results$chain1$est_containers$theta[,,-c(1:burnin)], MARGIN = c(1,2), mean)
+  theta_est <- apply(uploaded_results$chain1$est_containers$theta[,,1:N_iter], MARGIN = c(1,2), mean)
   P_est <- inverse_logit_f(theta_est)
-  z_burned <- uploaded_results$chain1$est_containers$z[,-c(1:burnin)]
+  z_burned <- uploaded_results$chain1$est_containers$z[,1:N_iter]
   
   my_z_est<- z_plot(z_burned = z_burned ,
-                    A =uploaded_results$chain1$control_containers$A[,-c(1:burnin)], 
+                    A =uploaded_results$chain1$control_containers$A[,1:N_iter], 
                     Y_ij = Y_ij, N_ij = N_ij, 
                     true_model= true_model,P_est = P_est,est_model = chosen_model$model[1]
                     , true_value =is.simulation, 

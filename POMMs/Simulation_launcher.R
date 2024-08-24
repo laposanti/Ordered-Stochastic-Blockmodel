@@ -33,7 +33,7 @@ googledrive::drive_auth(email = subject)
 # 
 # 2
 # # Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1p3AUy241bkANcZskowWgc14QqqVmderu"
+folder_url <- "https://drive.google.com/drive/u/1/folders/1kDXj6cq9u2fEH1Py9YBx8zoFPI9V57fR"
 folder <- drive_get(as_id(folder_url))
 
 
@@ -69,7 +69,6 @@ for(true_model in  c('SST','Simple')){
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
     
     stopifnot(data_to_be_estimated$model == true_model)
@@ -92,8 +91,8 @@ for(true_model in  c('SST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 500 #number of iterations
-    burnin <- 300 #number of discarded iterations
+    N_iter <- 60000 #number of iterations
+    burnin <- 30000 #number of discarded iterations
     thin=15
     # for(K in 3:10){
     K = data_to_be_estimated$ground_truth$K
