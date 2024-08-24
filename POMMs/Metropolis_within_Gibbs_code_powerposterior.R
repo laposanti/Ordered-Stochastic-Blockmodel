@@ -323,7 +323,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                          acc.count_z = acc.count_z,
                                                                                          common_indices = common_indices,
                                                                                          labels_available = labels_available,
-                                                                                         model, t=t)
+                                                                                         model = model, t=t)
                                                                    
                                                                    
                                                                    llik = z_update$A_prime
