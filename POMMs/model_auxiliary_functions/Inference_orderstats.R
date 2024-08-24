@@ -1,3 +1,44 @@
+check_SST <- function(mat) {
+  n <- nrow(mat)
+  if (n != ncol(mat)) {
+    stop("The matrix is not square.")
+  }
+  
+  # Extract upper triangular part (excluding diagonal)
+  # Extract upper triangular part (excluding diagonal)
+  upper_tri <- mat
+  upper_tri[lower.tri(upper_tri, diag = TRUE)] <- NA
+  
+  
+  diff(as.numeric(mat[1,]))>0
+  
+  # Check if entries in each column are decreasing
+  is.SST = T
+  for(i in 1:n){
+    check_col <- all(diff(as.numeric(mat[i,]))>0)
+    check_row <- all(diff(as.numeric(mat[,i]))<0)
+    check_0.5 <- all(mat[upper.tri(mat,diag = F)] >= 0.5)
+    if(check_col==F | check_row==F | check_0.5==F ){
+      is.SST = F
+    }
+  }
+  
+  return(is.SST)
+}
+
+check_WST <- function(mat) {
+  n <- nrow(mat)
+  if (n != ncol(mat)) {
+    stop("The matrix is not square.")
+  }
+  
+  # Check if entries in each column are increasing
+  greater_than_0.5 = all(mat[upper.tri(mat,diag = F)] >= 0.5)
+  
+  # Combine the results
+  return(greater_than_0.5)
+}
+
 rank_vs_cluster<- function(data_with_statistics, clustering, est_model){
   
   

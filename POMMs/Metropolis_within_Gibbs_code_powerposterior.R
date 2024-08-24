@@ -81,7 +81,6 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              source("./model_auxiliary_functions/MCMC_functions.R")
                                                              
                                                              
-                                                             
                                                              seeds = seed + (1:n_chains)*10
                                                              
                                                              set.seed(seeds[[chain]])
@@ -90,9 +89,22 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #setting hyperparams
                                                              K <- as.numeric(K_est[[chain]])
                                                              
-                                                             N_iter_eff = length(seq(1,N_iter-burnin, thin))
+                                                             to_be_saved = (burnin+1):N_iter
+                                                             N_iter_eff = sum(to_be_saved %% thin == 0) 
                                                              
                                                              
+                                                             # Get the indices of the upper triangular part of the matrix
+                                                             upper_tri_indices <- upper.tri(N_ij)
+                                                             
+                                                             # Get the indices where the matrix elements are greater than 0
+                                                             non_zero_indices <- N_ij > 0
+                                                             
+                                                             # Find the common indices
+                                                             common_indices <- upper_tri_indices*non_zero_indices
+                                                             
+                                                             # Convert back to a matrix if needed
+                                                             common_indices <- as.logical(common_indices)
+                                                           
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
                                                              if(all(is.na(custom_init))){
                                                                #-------------------------------------------------------------------------
@@ -229,7 +241,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                
                                                                
-                                                               A_current =  ll_naive(z = z_current, theta = theta_current, 
+                                                               A_current =  ll_naive(z = z_current, 
+                                                                                     theta = theta_current, 
+                                                                                     common_indices = common_indices,
                                                                                      Y_ij = Y_ij, N_ij= N_ij)*t
                                                                
                                                                check = lprop_posterior(z = z_current, 
@@ -238,6 +252,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                        theta =theta_current,
                                                                                        alpha_vec = alpha_vec,
                                                                                        mu_vec = mu_vec_current,
+                                                                                       common_indices = common_indices,
                                                                                        n_k = n_k,
                                                                                        K = K, 
                                                                                        model = model,  
@@ -254,15 +269,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #initialising the chain
                                                                A_container <- matrix(0, nrow = 1, ncol = N_iter_eff)
                                                                
-                                                               A_container[1] <- A_current
+                                                               
                                                                #initialising the chain
                                                                z_container <- matrix(0, nrow = n, ncol = N_iter_eff)
-                                                               z_container[,1] <- z_current
+                                                               
                                                               
                                                                if(model == 'WST'||model == 'SST'){
                                                                  #initialising the chain
                                                                  mu_vec_container = matrix(0, nrow = K, ncol = N_iter_eff)
-                                                                 mu_vec_container[,1] <- mu_vec_current
+                                                                 
                                                                  #initialising the adaptive variance
                                                                  tau_mu_vec <- rep(0.3, K)
                                                                  tau_mu_vec_container = matrix(0,K, N_iter)
@@ -274,7 +289,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                                #initialing theta and its adaptive variance container
                                                                theta_container = array(0, dim = c(K,K,N_iter_eff))
-                                                               theta_container[,,1] <- theta_current
+                                                               
                                                                
                                                                tau_theta_container = array(0,dim=c(K,K,N_iter_eff))
                                                                tau_theta =matrix(0.25,K,K)
@@ -306,6 +321,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                          mbar=mbar,alpha_vec = alpha_vec,
                                                                                          n_k = n_k,K = K,
                                                                                          acc.count_z = acc.count_z,
+                                                                                         common_indices = common_indices,
                                                                                          labels_available = labels_available,
                                                                                          model, t=t)
                                                                    
@@ -327,6 +343,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                  n_k = n_k,
                                                                                                  mu_vec = mu_vec_current,
                                                                                                  K = K,tau_theta =tau_theta,
+                                                                                                 common_indices = common_indices,
                                                                                                  acc.count_theta =acc.count_theta,model=model,t=t)
                                                                    llik = theta_update$llik
                                                                    theta_current = theta_update$theta
@@ -356,6 +373,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                            Y_ij = Y_ij,  theta =theta_current,
                                                                                            alpha_vec =  alpha_vec, n_k = n_k,
                                                                                            mu_vec = mu_vec_current,K = K, 
+                                                                                           common_indices = common_indices,
                                                                                            tau_mu_vec = tau_mu_vec,
                                                                                            acc.count_mu_vec,model,t=t)
                                                                    

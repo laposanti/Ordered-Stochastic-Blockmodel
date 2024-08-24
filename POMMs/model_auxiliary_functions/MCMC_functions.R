@@ -98,10 +98,10 @@ theta_prior_probability = function(theta,K, mu_vec, model){
 
 
 lprop_posterior <- function(Y_ij, N_ij, z,theta,
-                            alpha_vec,mu_vec, n_k,K, model,t,llik=NULL){
+                            alpha_vec,mu_vec, n_k,K, model,t,common_indices,llik=NULL){
   if (is.null(llik)) {
     # Compute log likelihood only if llik is not provided
-    log_lik <- ll_naive(z = z, theta = theta, Y_ij = Y_ij, N_ij = N_ij) * t
+    log_lik <- ll_naive(z = z, theta = theta, Y_ij = Y_ij, N_ij = N_ij,common_indices) * t
   } else {
     # Use provided llik
     log_lik <- llik
@@ -150,14 +150,15 @@ lprop_posterior <- function(Y_ij, N_ij, z,theta,
 #-------------------------- MCMC steps -----------------------------------------
 
 theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_theta,
-                          acc.count_theta, model,t){
+                          acc.count_theta,common_indices, model,t){
   
   theta_prime <- theta
   n<- nrow(N_ij)
   P_prime<- inverse_logit_f(theta_prime)
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z,P_prime),P_prime)
   
-  A_prime<-   sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
+  A_prime<-   sum(dbinom(Y_ij[common_indices],size = N_ij[common_indices], 
+                         P_NbyN_prime[common_indices],log = T))
   C_prime<- theta_prior_probability(theta = theta_prime, K=K,
                                     mu_vec = mu_vec,  model = model)
   
@@ -207,10 +208,10 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
     logical_matrix2[Z_j_star,]<-TRUE
     logical_matrix2[,Z_i_star]<-TRUE
     # Get the upper triangular indices for the relevant clusters
-    upper_tri_indices <- upper.tri(Y_ij)
+   
     
     # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
-    filtering_matrix = (logical_matrix1|logical_matrix2)*upper_tri_indices == T
+    filtering_matrix = (logical_matrix1|logical_matrix2)*common_indices == T
     # Filter the relevant entries
     Y_ij_upper <- Y_ij[filtering_matrix]
     
@@ -295,7 +296,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
 
 
 mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
-                       acc.count_mu_vec,model,t, llik = NULL){
+                       acc.count_mu_vec,model,t, common_indices, llik = NULL){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
   #mu_1_K_prime <- truncnorm::rtruncnorm(K+1,a = 0,b = 10, mean = mu_vec[1:(K+1)],sd = .05)
@@ -328,6 +329,7 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
                                                alpha_vec = alpha_vec, 
                                                mu_vec = mu_vec,
                                                n_k = n_k,K = K,model=model,
+                                               common_indices=common_indices,
                                                t = t, llik=NULL)
     
     #evaluating the proportional posterior in mu^(t)
@@ -336,6 +338,7 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
                                               alpha_vec = alpha_vec,
                                               mu_vec = mu_vec,
                                               n_k = n_k,K = K,model = model,
+                                              common_indices=common_indices,
                                               t = t,llik=NULL)
     
     #evaluating the proposal density g(mu'| mu^(t)) 
@@ -391,18 +394,18 @@ log_lik_f_binom = function(N,Y,z,P, directed=T){
   return(log_lik)
 }
 
-ll_naive = function(z,theta,Y_ij, N_ij){
+ll_naive = function(z,theta,Y_ij, N_ij,common_indices){
   P = inverse_logit_f(theta)
   z_mat = vec2mat_0_P(z,  P)
   P_ij = calculate_victory_probabilities(z_mat,  P)
-  A_cur = dbinom(  Y_ij[upper.tri(Y_ij)], N_ij[upper.tri(N_ij)], P_ij[upper.tri(P_ij)],log = T)
+  A_cur = dbinom(  Y_ij[common_indices], N_ij[common_indices], P_ij[common_indices],log = T)
   return(sum(A_cur))
 }
 
 
 
-z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
-                      K, 
+z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
+                      common_indices, alpha_vec, n_k, K, 
                       acc.count_z,labels_available,model,t){
   P<- inverse_logit_f(theta)
   n<- nrow(N_ij)
@@ -410,7 +413,9 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
   
   
-  A_prime<-  sum(dbinom(Y_ij[upper.tri(Y_ij)],size = N_ij[upper.tri(N_ij)], P_NbyN_prime[upper.tri(N_ij)],log = T))
+  A_prime<-  sum(dbinom(Y_ij[common_indices],
+                        size = N_ij[common_indices], 
+                        P_NbyN_prime[common_indices],log = T))
   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
   
   
@@ -442,20 +447,16 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
     z_scanning[i_th_turn] <- k_scanning
     
     #the items in cluster i_star
-    
-    
-    
-    
     logical_matrix1 = matrix(FALSE, n,n)
     logical_matrix1[i_th_turn,]<-TRUE
     logical_matrix1[,i_th_turn]<-TRUE
     
     
     # Get the upper triangular indices for the relevant clusters
-    upper_tri_indices <- upper.tri(Y_ij)
+    
     
     # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
-    filtering_matrix = (logical_matrix1)*upper_tri_indices == T
+    filtering_matrix = (logical_matrix1)*common_indices == T
     # Filter the relevant entries
     Y_ij_upper <- Y_ij[filtering_matrix]
     

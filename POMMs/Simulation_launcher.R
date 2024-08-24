@@ -92,43 +92,149 @@ for(true_model in  c('SST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 70000 #number of iterations
-    burnin <- 30000 #number of discarded iterations
+    N_iter <- 500 #number of iterations
+    burnin <- 300 #number of discarded iterations
     thin=15
-    for(K in 3:10){
-      K_est = rep(K, n_chains) #number of clusters to fit
+    # for(K in 3:10){
+    K = data_to_be_estimated$ground_truth$K
+    K_est = rep(K, n_chains) #number of clusters to fit
+    
+    is.simulation=T
+    
+    print(paste0("True data--->", filenames[file], "\n"))
+    #-----------------------------------------------------------------------------
+    # SST MODEL
+    #-----------------------------------------------------------------------------
+    if('SST' %in% choose_model_to_estimate){
+      print(paste0("Estimation of the SST model, K=",K))
+      print(paste0("Begin cycle at:", date()))
       
-      is.simulation=T
       
-      print(paste0("True data--->", filenames[file], "\n"))
-      #-----------------------------------------------------------------------------
-      # SST MODEL
-      #-----------------------------------------------------------------------------
-      if('SST' %in% choose_model_to_estimate){
-        print(paste0("Estimation of the SST model, K=",K))
-        print(paste0("Begin cycle at:", date()))
-        
-        
-        
-        est_model = 'SST'
-        
-        #setting up the chain hyperparameter
-        
-        #where to save the data
-        saving_directory = "./Results/"
-        
-        
-        #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-        power_posterior_apprach = F
-        custom_init <- NA
-        
-        print(paste0("Estimation of the SST model, K=", K_est))
-        print(paste0("Begin cycle at:", date(), "\n"))
-        
-        
-        estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 0)
-        
-        chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
+      
+      est_model = 'SST'
+      
+      #setting up the chain hyperparameter
+      
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
+      
+      print(paste0("Estimation of the SST model, K=", K_est))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      
+      
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 0)
+      
+      chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
+                                                            saving_directory = saving_directory,
+                                                            estimation_control = estimation_control,
+                                                            burnin = burnin,
+                                                            ground_truth = ground_truth,
+                                                            n = n, N_iter = N_iter, 
+                                                            K_est = K_est,data_description = data_description,
+                                                            seed = seed, 
+                                                            model = est_model, 
+                                                            custom_init = custom_init,
+                                                            power_posterior_apprach = power_posterior_apprach,
+                                                            thin=thin)
+      
+      
+      
+      
+      
+      my_names <- paste0("chain", 1:n_chains)
+      names(chains_SST)<- my_names 
+      chains_SST[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
+      saveRDS(object = chains_SST, file = my_filename) 
+      drive_put(media = my_filename, path = folder)
+      
+    }
+    
+    #-----------------------------------------------------------------------------
+    # WST MODEL
+    #-----------------------------------------------------------------------------
+    
+    if('WST' %in% choose_model_to_estimate){
+      print(paste0("Estimation of the WST model, K=",K))
+      print(paste0("Begin cycle at:",date()))
+      #initializing each chain
+      
+      
+      est_model = 'WST'
+      
+      #setting up the chain hyperparameter
+      
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
+      print(paste0("Estimation of the WST model, K=", K_est))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
+      
+      chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                            saving_directory = saving_directory,
+                                                            estimation_control = estimation_control,
+                                                            burnin = burnin,
+                                                            ground_truth = ground_truth,
+                                                            n = n, N_iter = N_iter, 
+                                                            K_est = K_est,data_description = data_description,
+                                                            seed = seed, 
+                                                            model = est_model, 
+                                                            custom_init = custom_init,
+                                                            power_posterior_apprach = power_posterior_apprach,thin = thin)
+      
+      
+      
+      
+      my_names <- paste0("chain", 1:n_chains)
+      names(chains_WST)<-my_names 
+      chains_WST[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
+                           data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
+      saveRDS(object = chains_WST, file = my_filename) 
+      
+      drive_put(media = my_filename, path = folder)
+      
+    }
+    
+    #-----------------------------------------------------------------------------
+    # Simple model
+    #-----------------------------------------------------------------------------
+    
+    
+    if('Simple' %in% choose_model_to_estimate){
+      
+      print(paste0("Estimation of Simple model, K=",K))
+      print(paste0("Begin cycle at:",date()))
+      
+      
+      est_model = 'Simple'
+      
+      #setting up the chain hyperparameter
+      
+      #where to save the data
+      saving_directory = "./Results/"
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      power_posterior_apprach = F
+      custom_init <- NA
+      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
+      
+      chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                               saving_directory = saving_directory,
                                                               estimation_control = estimation_control,
                                                               burnin = burnin,
@@ -140,129 +246,19 @@ for(true_model in  c('SST','Simple')){
                                                               custom_init = custom_init,
                                                               power_posterior_apprach = power_posterior_apprach,
                                                               thin=thin)
-        
-        
-        
-        
-        
-        my_names <- paste0("chain", 1:n_chains)
-        names(chains_SST)<- my_names 
-        chains_SST[['recovery_level']] = recovery_capability
-        my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",
-                             est_model,"_Kest",K_est[[1]],
-                             'recovery_level',recovery_capability,'.rds')
-        saveRDS(object = chains_SST, file = my_filename) 
-        drive_put(media = my_filename, path = folder)
-        
-        #       
-        #       
-        
-        
-      }
+      my_names <- paste0("chain", 1:n_chains)
+      names(chains_Simple)<- my_names 
+      chains_Simple[['recovery_level']] = recovery_capability
+      my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
+                           data_description, "_est_model",
+                           est_model,"_Kest",K_est[[1]],
+                           'recovery_level',recovery_capability,'.rds')
+      saveRDS(object = chains_Simple, file = my_filename) 
       
-      #-----------------------------------------------------------------------------
-      # WST MODEL
-      #-----------------------------------------------------------------------------
-      
-      if('WST' %in% choose_model_to_estimate){
-        print(paste0("Estimation of the WST model, K=",K))
-        print(paste0("Begin cycle at:",date()))
-        #initializing each chain
-        
-        
-        est_model = 'WST'
-        
-        #setting up the chain hyperparameter
-        
-        #where to save the data
-        saving_directory = "./Results/"
-        
-        
-        #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-        power_posterior_apprach = F
-        custom_init <- NA
-        print(paste0("Estimation of the WST model, K=", K_est))
-        print(paste0("Begin cycle at:", date(), "\n"))
-        estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
-        
-        chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
-                                                              saving_directory = saving_directory,
-                                                              estimation_control = estimation_control,
-                                                              burnin = burnin,
-                                                              ground_truth = ground_truth,
-                                                              n = n, N_iter = N_iter, 
-                                                              K_est = K_est,data_description = data_description,
-                                                              seed = seed, 
-                                                              model = est_model, 
-                                                              custom_init = custom_init,
-                                                              power_posterior_apprach = power_posterior_apprach,thin = thin)
-        
-        
-        
-        
-        my_names <- paste0("chain", 1:n_chains)
-        names(chains_WST)<-my_names 
-        chains_WST[['recovery_level']] = recovery_capability
-        my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
-                             data_description, "_est_model",
-                             est_model,"_Kest",K_est[[1]],
-                             'recovery_level',recovery_capability,'.rds')
-        saveRDS(object = chains_WST, file = my_filename) 
-        
-        drive_put(media = my_filename, path = folder)
-        
-      }
-      
-      #-----------------------------------------------------------------------------
-      # Simple model
-      #-----------------------------------------------------------------------------
-      
-      
-      if('Simple' %in% choose_model_to_estimate){
-        
-        print(paste0("Estimation of Simple model, K=",K))
-        print(paste0("Begin cycle at:",date()))
-        
-        
-        est_model = 'Simple'
-        
-        #setting up the chain hyperparameter
-        
-        #where to save the data
-        saving_directory = "./Results/"
-        
-        
-        #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-        power_posterior_apprach = F
-        custom_init <- NA
-        estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
-        
-        chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
-                                                                saving_directory = saving_directory,
-                                                                estimation_control = estimation_control,
-                                                                burnin = burnin,
-                                                                ground_truth = ground_truth,
-                                                                n = n, N_iter = N_iter, 
-                                                                K_est = K_est,data_description = data_description,
-                                                                seed = seed, 
-                                                                model = est_model, 
-                                                                custom_init = custom_init,
-                                                                power_posterior_apprach = power_posterior_apprach,
-                                                                thin=thin)
-        my_names <- paste0("chain", 1:n_chains)
-        names(chains_Simple)<- my_names 
-        chains_Simple[['recovery_level']] = recovery_capability
-        my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
-                             data_description, "_est_model",
-                             est_model,"_Kest",K_est[[1]],
-                             'recovery_level',recovery_capability,'.rds')
-        saveRDS(object = chains_Simple, file = my_filename) 
-        
-        drive_put(media = my_filename, path = folder)
-      }
+      drive_put(media = my_filename, path = folder)
     }
   }
-  
+
 }
 
 
