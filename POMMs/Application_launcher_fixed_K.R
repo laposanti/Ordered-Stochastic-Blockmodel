@@ -46,7 +46,7 @@ folder <- drive_get(as_id(folder_url))
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 
-for(data_description in c("Tennis_data")){
+for(data_description in c("Citation_data")){
 
   
   ###############################################################################

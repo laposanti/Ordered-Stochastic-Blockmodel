@@ -26,7 +26,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   
@@ -43,7 +43,7 @@ if(is.simulation==F){
     
     data_wd<- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/"
     #where the data are saved
-    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/processed/"
+    processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Application/Tennis_processed//"
     
     players_df = data.frame(Id = rownames(Y_ij)) 
     #now, for each game I want to filter just those players in the top one-hundred
@@ -240,7 +240,7 @@ googledrive::drive_auth(email = subject)
 # 
 # filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
 # print(filenames)
-folder_url <- "https://drive.google.com/drive/u/1/folders/1p3AUy241bkANcZskowWgc14QqqVmderu"
+folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
 
 
 
@@ -262,11 +262,9 @@ files_in_folder <- drive_ls(path = folder)
 # 
 # print(est_model_files)
 # Define the expression or pattern to match file names
-data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/processed_simulation/model_choice/"
-processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/processed_simulation/model_choice/"
 
-true_model = 'SST'
-pattern <- "Data_fromSST3"  # Example: "report" to match all files with "report" in the name
+true_model = 'Tennis_data'
+pattern <- "Tennis_data"  # Example: "report" to match all files with "report" in the name
 
 # Filter files based on the pattern
 matching_files <- files_in_folder[grep(pattern, files_in_folder$name), ]
@@ -275,6 +273,7 @@ matching_files <- files_in_folder[grep(pattern, files_in_folder$name), ]
 files_10 <- grep("Kest10", matching_files$name)
 total_files = 1:length(matching_files$name)
 file_to_analyse = setdiff(total_files,files_10)
+
 check_P_posterior <- data.frame(model = character(), K= numeric(), t = numeric(), is.SST=logical(), is.WST=logical(),N_iter_eff = numeric())
 
 for(file in file_to_analyse){
@@ -283,12 +282,12 @@ for(file in file_to_analyse){
 
 
   
-  save_path = './results/MCMC_output/processed_simulation/model_choice/temp.RDS'
+  save_path = paste0(data_wd,matching_files$name[file])
   drive_download(file = matching_files $id[file], path = save_path,overwrite = T)
   uploaded_results = readRDS(save_path)
   
 
-  
+  burnin=0
   print(paste0('Now estimating ', matching_files$name[file]))
   # The file name
   filename <-  matching_files$name[file]
@@ -303,9 +302,8 @@ for(file in file_to_analyse){
   
   N= nrow(uploaded_results$chain1$Y_ij)
   n=N
-  N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]-2
+  N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
   K = dim(uploaded_results$chain1$est_containers$theta)[[1]]
-  burnin = max(N_iter - 40000,1)
   Y_ij <- uploaded_results$chain1$Y_ij
   N_ij <- uploaded_results$chain1$N_ij
   
@@ -327,13 +325,13 @@ for(file in file_to_analyse){
   
   K0_hat <- mean(K0)
   
-  is.simulation=T
+  
   
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
   
 
-  N_iter = 1333
+  
   
   my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[1:N_iter],
                     Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
@@ -393,7 +391,7 @@ for(file in file_to_analyse){
   # P parameter estimate
   #-------------------------------------------------------------------------------
   
-  if(est_model == 'Simple'&&K<6){
+  if(est_model == 'Simple'&&true_model=='SST'){
 
     permutation_matrix <- permutations(n = K, r = K, v = 1:K)
     N_iter_eff = ncol(z_burned)
@@ -426,7 +424,7 @@ for(file in file_to_analyse){
   }
  
   
-  is.simulation=F
+  
   
   
   P_s_table <- P_summary_table(P_burned = theta_burned,
@@ -1140,7 +1138,7 @@ for(file in file_to_analyse){
   #---------------------------------------------------------------------------
   # COMPARISON WITH THE EXTERNAL RANKING
   #---------------------------------------------------------------------------
-  is.simulation=T
+  
   if(is.simulation==F){
     
     
