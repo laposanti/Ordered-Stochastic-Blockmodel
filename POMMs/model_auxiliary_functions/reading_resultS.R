@@ -240,8 +240,11 @@ googledrive::drive_auth(email = subject)
 # 
 # filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
 # print(filenames)
-folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
-
+if(is.simulation==F){
+  folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+}else if(is.simulation==T){
+  folder_url<- "https://drive.google.com/drive/u/1/folders/1kDXj6cq9u2fEH1Py9YBx8zoFPI9V57fR"
+}
 
 
 

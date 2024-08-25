@@ -31,9 +31,8 @@ googledrive::drive_auth(email = subject)
 # 
 # 
 # 2
-# # Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
-folder <- drive_get(as_id(folder_url))
+#folder for application_fixed_K
+
 ################################################################################
 #                         Set up parameters for the simulation study
 ################################################################################
@@ -47,8 +46,8 @@ folder <- drive_get(as_id(folder_url))
 #tennis data::: tennis data = 'Tennis_data'
 
 for(data_description in c("Citation_data")){
-
   
+
   ###############################################################################
   # uploading data
   ###############################################################################
@@ -60,6 +59,9 @@ for(data_description in c("Citation_data")){
     Y_ij = as.matrix(Y_ij)
     N_ij = as.matrix(N_ij)
     
+    #where to upload the results
+    folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+    
   }else if(data_description == 'Citation_data'){
     Y_ij <- read.csv("./Data/Citations_application/cross-citation-matrix.csv",header = T,row.names = 1)
     diag(Y_ij) = 0
@@ -67,8 +69,11 @@ for(data_description in c("Citation_data")){
     
     Y_ij = as.matrix(Y_ij)
     N_ij = as.matrix(N_ij)
+    
+    #where to upload the results
+    folder_url <- "https://drive.google.com/drive/u/1/folders/1_7lx5phdeHn7WE5IK6-Y3w4uA7efHBsL"
   }
-  
+  folder <- drive_get(as_id(folder_url))
   
   #chosing where to save the files depending on which model you are estimating
   
@@ -82,14 +87,14 @@ for(data_description in c("Citation_data")){
   #-----------------------------------------------------------------------------
   
   for(k_th in K_values){
-
+    
     
     ##############################################################################
     # Estimation: set the parameters of the estimation
     ##############################################################################
     ground_truth = NA
     n = nrow(N_ij)
-
+    
     power_posterior_apprach=F
     n_chains = 4
     optimal_acceptance_rate_theta =.44
@@ -143,12 +148,12 @@ for(data_description in c("Citation_data")){
       
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Application/Data_from',data_description, "_est_model",est_model,"_Kest",K_est[[1]],'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
-# 
+      # 
       drive_put(media = my_filename, path = folder)
-#       
-#       
-#       
-#       
+      #       
+      #       
+      #       
+      #       
     }
     
     #-----------------------------------------------------------------------------
@@ -248,8 +253,8 @@ for(data_description in c("Citation_data")){
       # 
       
     }
-  
-  
+    
+    
   }
   
   
