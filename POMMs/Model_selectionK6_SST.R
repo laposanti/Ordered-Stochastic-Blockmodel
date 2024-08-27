@@ -77,8 +77,17 @@ K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 
 
 #where to save the data
-saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K6_true/"
+saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K7_true/"
 
+
+# Check if the directory exists
+if (!dir.exists(saving_directory)) {
+  # If the directory doesn't exist, create it
+  dir.create(saving_directory, recursive = TRUE)
+  message("Directory created.")
+} else {
+  message("Directory already exists.")
+}
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
 power_posterior_apprach = F

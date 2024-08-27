@@ -85,7 +85,14 @@ custom_init <- NA
 #where to save the data
 saving_directory = './Results/MCMC_output/model_choice/WAIC_method/K5_true/'
 
-
+# Check if the directory exists
+if (!dir.exists(saving_directory)) {
+  # If the directory doesn't exist, create it
+  dir.create(saving_directory, recursive = TRUE)
+  message("Directory created.")
+} else {
+  message("Directory already exists.")
+}
 
 if('SST' %in% choose_model_to_estimate){
 
