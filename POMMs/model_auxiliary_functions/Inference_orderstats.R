@@ -7,7 +7,7 @@ check_SST <- function(mat) {
   # Extract upper triangular part (excluding diagonal)
   # Extract upper triangular part (excluding diagonal)
   upper_tri <- mat
-  upper_tri[lower.tri(upper_tri, diag = TRUE)] <- NA
+  upper_tri[lower.tri(upper_tri, diag = T)] <- NA
   
   
   diff(as.numeric(mat[1,]))>0

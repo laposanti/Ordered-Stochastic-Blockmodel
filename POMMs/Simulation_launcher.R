@@ -148,6 +148,8 @@ for(true_model in  c('SST','Simple')){
       my_names <- paste0("chain", 1:n_chains)
       names(chains_SST)<- my_names 
       chains_SST[['recovery_level']] = recovery_capability
+      
+      
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",
                            est_model,"_Kest",K_est[[1]],
                            'recovery_level',recovery_capability,'.rds')

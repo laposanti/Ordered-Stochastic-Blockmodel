@@ -267,7 +267,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                #--------------------------------------------------------------------------
                                                                
                                                                #initialising the chain
-                                                               A_container <- matrix(0, nrow = 1, ncol = N_iter_eff)
+                                                               A_container <- matrix(0, ncol = sum(common_indices) , nrow = N_iter_eff)
                                                                
                                                                
                                                                #initialising the chain
@@ -305,7 +305,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                #READY TO BOMB!
                                                                iteration_time= vector()
-                                                               save_count = 1
+                                                               save_count = 0
                                                                for(j in 2:N_iter){
                                                                  
                                                                  start_time <- Sys.time()
@@ -395,6 +395,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                  }
                                                                  
+                                                                
+                                                                 
                                                                  
                                                                  #storing scales
                                                                  # tau_sigma_squared_container[j]<- tau_sigma_squared
@@ -406,12 +408,23 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  
                                                                  if(j > burnin & j%%thin==0){
                                                                    
+                                                                   save_count = save_count +1 
+                                                                   
                                                                    z_container[,save_count] <- z_current
                                                                    theta_container[,,save_count] <- theta_current
                                                                    if(model=='SST'){
                                                                      mu_vec_container[,save_count] <- mu_vec_current
                                                                    }
-                                                                   save_count = save_count +1 
+                                                                   
+                                                                   P_current = inverse_logit_f(theta_current)
+                                                                   z_mat_current = vec2mat_0_P(z_current,  P_current)
+                                                                   P_ij_current = calculate_victory_probabilities(z_mat_current,  P_current)
+                                                                   A_container[save_count,] = dbinom(Y_ij[common_indices], 
+                                                                                                     N_ij[common_indices], 
+                                                                                                     P_ij_current[common_indices],log = T)
+                                                                   
+                                                                   
+                                                                  
                                                                  }
                                                                  
                                                                  # #storing scales
@@ -426,6 +439,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  end_time <- Sys.time()
                                                                  
                                                                  iteration_time<-append(iteration_time,as.numeric(difftime(end_time, start_time, units = "secs")))
+                                                                 
                                                                  if(j%%5000==0){
                                                                    avg_iteration<- mean(iteration_time)
                                                                    current_time <- Sys.time() # Get the current time
@@ -490,11 +504,20 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              est_containers = list(z = z_container,theta = theta_container, mu_vec = mu_vec_container)
                                                              
-                                                             control_containers = list(A = A_container, alpha_vec = alpha_vec)
+                                                             control_containers = list(est_model = model,
+                                                                                       N_iter = N_iter,
+                                                                                       thin = thin,
+                                                                                       N_iter_eff = N_iter_eff)
                                                              
-                                                             return(list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers, 
-                                                                         control_containers=control_containers, acceptance_rates= acceptance_rates, 
-                                                                         st.deviations=st.deviations, t=t, seed = seed + chain))
+                                                            
+                                                             
+                                                             return(list(Y_ij= Y_ij, N_ij = N_ij, 
+                                                                         ground_truth=ground_truth,
+                                                                         est_containers=est_containers, 
+                                                                         control_containers=control_containers, 
+                                                                         acceptance_rates= acceptance_rates, 
+                                                                         st.deviations=st.deviations, 
+                                                                         t=t, seed = seed + chain))
                                                              
                                                              
                                                            }
