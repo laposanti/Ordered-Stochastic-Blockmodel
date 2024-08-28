@@ -118,7 +118,6 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, theta, K, t=1){
 
 
 
-
 if(model =='SST'){
   
   if(diag0.5==T){

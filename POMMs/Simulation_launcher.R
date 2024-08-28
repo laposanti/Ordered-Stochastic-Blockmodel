@@ -22,7 +22,7 @@ library(googledrive)
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
-source("./model_auxiliary_functions/MCMC_functions.R")
+
 
 subject = "lapo.santi@ucdconnect.ie"
 service_account_key = "./sonic-426715-75af23aca274.json"

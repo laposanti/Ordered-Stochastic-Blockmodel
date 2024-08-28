@@ -61,6 +61,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     cat('Warning: Number of cores exceeds the ')
   }
   
+
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
                        'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K_est','thin', 'burnin', 'seed','model','data_description',
@@ -88,11 +89,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                           
                                                              
-                                                             #--------------------------------------------------------------
-                                                             # Specifying different priors for each model
-                                                             #--------------------------------------------------------------
+                                            
                                                              
-                                                        
+                                                             
                                                              
                                                              #--------------------------------------------------------------
                                                              source("./model_auxiliary_functions/Functions_priorSST.R")

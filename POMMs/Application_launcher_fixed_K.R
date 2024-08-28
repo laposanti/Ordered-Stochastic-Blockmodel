@@ -19,7 +19,7 @@ library(googledrive)
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
-source("./model_auxiliary_functions/MCMC_functions.R")
+
 
 # Define the path to your service account key file
 
@@ -47,7 +47,7 @@ googledrive::drive_auth(email = subject)
 
 for(data_description in c("Tennis_data","Citation_data")){
   
-  for(diag0.5 in (TRUE,FALSE)){
+  for(diag0.5 in c(TRUE,FALSE)){
     ###############################################################################
     # uploading data
     ###############################################################################
@@ -103,6 +103,7 @@ for(data_description in c("Tennis_data","Citation_data")){
       n = nrow(N_ij)
       diag0.5=T
       power_posterior_apprach=F
+      thin = 15
       n_chains = 4
       optimal_acceptance_rate_theta =.44
       optimal_acceptance_rate_mu = .234
