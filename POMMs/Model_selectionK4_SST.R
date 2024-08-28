@@ -1,5 +1,4 @@
 
-library(mcclust)
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -15,9 +14,9 @@ library(RColorBrewer)
 library(ggside)
 library(parallel)
 library(truncnorm)
-library(label.switching)
 library(doRNG)
 library(googledrive)
+
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")

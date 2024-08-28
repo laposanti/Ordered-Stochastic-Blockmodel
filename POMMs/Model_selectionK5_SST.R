@@ -1,5 +1,4 @@
 
-library(mcclust)
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -15,7 +14,6 @@ library(RColorBrewer)
 library(ggside)
 library(parallel)
 library(truncnorm)
-library(label.switching)
 library(doRNG)
 library(googledrive)
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
