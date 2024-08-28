@@ -512,25 +512,28 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              }
                                                              
                                                              
-                                                             acceptance_rates <- list(acc.count_theta =acc.count_theta, acc.count_z = acc.count_z, 
+                                                             acceptance_rates <- list(acc.count_theta =acc.count_theta, 
+                                                                                      acc.count_z = acc.count_z, 
                                                                                       acc.count_mu_vec= acc.count_mu_vec)
                                                              
                                                              st.deviations<- list(tau_theta =tau_theta_container,
                                                                                   tau_mu_vec= tau_mu_vec_container)
                                                              
-                                                             est_containers = list(z = z_container,theta = theta_container, mu_vec = mu_vec_container)
+                                                             est_containers = list(z = z_container,theta = theta_container, 
+                                                                                   mu_vec = mu_vec_container)
                                                              
                                                              control_containers = list(est_model = model,
                                                                                        N_iter = N_iter,
                                                                                        thin = thin,
                                                                                        N_iter_eff = N_iter_eff)
                                                              
-                                                            
+                                                            likelihood = A_container 
                                                              
                                                              return(list(Y_ij= Y_ij, N_ij = N_ij, 
                                                                          ground_truth=ground_truth,
                                                                          est_containers=est_containers, 
                                                                          control_containers=control_containers, 
+                                                                         likelihood = likelihood,
                                                                          acceptance_rates= acceptance_rates, 
                                                                          st.deviations=st.deviations, 
                                                                          t=t, seed = seed + chain))

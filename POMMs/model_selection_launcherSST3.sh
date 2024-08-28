@@ -19,6 +19,6 @@ module load R/4.4.0
 
 # command to use
 git pull
-Rscript Model_selectionK5_SST.R &
+Rscript Model_selectionK3_SST.R &
 wait;
  
