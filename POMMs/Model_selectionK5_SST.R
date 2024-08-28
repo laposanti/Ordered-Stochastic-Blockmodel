@@ -120,7 +120,7 @@ if('SST' %in% choose_model_to_estimate){
   chains[['recovery_level']] = recovery_capability
   
   my_filename = paste0(saving_directory, 'Data_from',data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
                        recovery_capability,'.rds')
   saveRDS(object = chains, file = my_filename) 
@@ -163,7 +163,7 @@ if('WST' %in% choose_model_to_estimate){
   
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
                        recovery_capability,'.rds')
   saveRDS(object = chains_WST, file = my_filename) 
@@ -207,7 +207,7 @@ if('Simple' %in% choose_model_to_estimate){
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')
   saveRDS(object = chains_Simple, file = my_filename) 
   

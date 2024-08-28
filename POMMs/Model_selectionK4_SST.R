@@ -71,7 +71,7 @@ burnin <- 30000 #number of discarded iterations
 thin = 15
 
 
-K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
+K_est = list(2:10) #number of clusters to fit
 
 
 #where to save the data
@@ -95,7 +95,7 @@ if('SST' %in% choose_model_to_estimate){
   print(paste0("Estimation of the SST model, K=", K_est))
   print(paste0("Begin cycle at:", date(), "\n"))
   
-  
+  est_model = 'SST'
   seed=23
   
   estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 0)
@@ -121,7 +121,7 @@ if('SST' %in% choose_model_to_estimate){
   
   my_filename = paste0(saving_directory,'Data_from',
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
                        recovery_capability,'.rds')
   saveRDS(object = chains, file = my_filename) 
@@ -163,7 +163,7 @@ if('WST' %in% choose_model_to_estimate){
   
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
                        recovery_capability,'.rds')
   saveRDS(object = chains_WST, file = my_filename) 
@@ -207,7 +207,7 @@ if('Simple' %in% choose_model_to_estimate){
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')
   saveRDS(object = chains_Simple, file = my_filename) 
   
