@@ -38,6 +38,7 @@ data_description = 'SST3'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 print(filenames)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
+recovery_capability = data_to_be_estimated$recovery_capability
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
 Y_ij <- data_to_be_estimated$Y_ij
@@ -69,8 +70,8 @@ is.simulation=T
 choose_model_to_estimate = c('SST',"WST","Simple")
 
 #setting up the chain hyperparameter
-N_iter <- 600  #number of iterations
-burnin <- 200 #number of discarded iterations
+N_iter <- 60000  #number of iterations
+burnin <- 30000 #number of discarded iterations
 
 K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 #where to save the data

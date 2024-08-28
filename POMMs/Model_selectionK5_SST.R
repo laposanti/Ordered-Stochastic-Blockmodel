@@ -50,6 +50,7 @@ data_wd<- "./Data/Sim1_data/"
 data_description = 'SST5'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
+recovery_capability = data_to_be_estimated$recovery_capability
 N_ij <- data_to_be_estimated$N_ij
 n <- nrow(N_ij)
 Y_ij <- data_to_be_estimated$Y_ij
@@ -71,8 +72,8 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 600 #number of iterations
-burnin <- 300 #number of discarded iterations
+N_iter <- 60000 #number of iterations
+burnin <- 30000 #number of discarded iterations
 thin = 15
 
 

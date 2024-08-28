@@ -792,6 +792,7 @@ for(file in file_to_analyse){
                            waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
                            percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100,
                            K0_hat =     K0_hat,
+                           montecarloSE= loo_model_fit
                            perc_label_switch = my_z_est$label_switch_count/N*100,
                            K0_hat_switched = K0_hat_switched)
   }else if(is.simulation==T){
