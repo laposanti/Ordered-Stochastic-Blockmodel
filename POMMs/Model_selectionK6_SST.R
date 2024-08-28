@@ -17,10 +17,10 @@ library(truncnorm)
 library(doRNG)
 library(googledrive)
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code.R")
-source("./model_auxiliary_functions/MCMC_functions.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
 
@@ -68,18 +68,14 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 60000 #number of iterations
-burnin <- 30000 #number of discarded iterations
+N_iter <- 600 #number of iterations
+burnin <- 300 #number of discarded iterations
 thin = 15
 
 
-K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
+K_est = list(2,3,4,5,6) #number of clusters to fit
 
-
-#where to save the data
-saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K7_true/"
-
-
+saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K6_true//"
 # Check if the directory exists
 if (!dir.exists(saving_directory)) {
   # If the directory doesn't exist, create it
@@ -122,7 +118,7 @@ chains[['recovery_level']] = recovery_capability
 
 my_filename = paste0(saving_directory,'Data_from',
                       data_description, "_est_model",
-                     est_model,"_Kest",K_est[[1]],
+                     est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                      'recovery_level',
                      recovery_capability,'.rds')
 saveRDS(object = chains, file = my_filename) 
@@ -131,9 +127,7 @@ drive_put(media = my_filename, path = folder)
 }
 
 if('WST' %in% choose_model_to_estimate){
-  print(paste0("Estimation of the WST model, K=",K))
-  print(paste0("Begin cycle at:",date()))
-  #initializing each chain
+
   
   
   est_model = 'WST'
@@ -155,7 +149,8 @@ if('WST' %in% choose_model_to_estimate){
                                                         seed = seed, 
                                                         model = est_model, 
                                                         custom_init = custom_init,
-                                                        power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                        power_posterior_apprach = power_posterior_apprach,
+                                                        thin = thin,diag0.5 = T)
   
   
   
@@ -165,7 +160,7 @@ if('WST' %in% choose_model_to_estimate){
   
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
                        recovery_capability,'.rds')
   saveRDS(object = chains_WST, file = my_filename) 
@@ -209,7 +204,7 @@ if('Simple' %in% choose_model_to_estimate){
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,
                        data_description, "_est_model",
-                       est_model,"_Kest",K_est[[1]],
+                       est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')
   saveRDS(object = chains_Simple, file = my_filename) 
   

@@ -22,9 +22,18 @@
 adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_control,
                                                     ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
-                                                    custom_init=NA,power_posterior_apprach = T, thin=1){
+                                                    custom_init=NA,power_posterior_apprach = T, thin=1,
+                                                    diag0.5 = T){
   #setting for each chain a different seed
   #if the given seed is 20, the chains' seeds will be 21 for chain 1, 22 for chain 2 and so on...
+  
+  
+  
+  
+  
+  
+  
+  
   
 
   
@@ -55,7 +64,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
                        'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K_est','thin', 'burnin', 'seed','model','data_description',
-                       'power_posterior_apprach' ,'true_model', 'custom_init','p','n_temperatures','where_to_save')
+                       'power_posterior_apprach' ,'true_model', 'custom_init','p','n_temperatures','where_to_save','diag0.5')
   
   registerDoFuture()
   reprex <- local({
@@ -77,9 +86,17 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              library(truncnorm,quietly = T)
                                                              library(doRNG,quietly = T)
                                                              
+                                                          
+                                                             
+                                                             #--------------------------------------------------------------
+                                                             # Specifying different priors for each model
+                                                             #--------------------------------------------------------------
+                                                             
+                                                        
+                                                             
+                                                             #--------------------------------------------------------------
                                                              source("./model_auxiliary_functions/Functions_priorSST.R")
                                                              source("./model_auxiliary_functions/MCMC_functions.R")
-                                                             
                                                              
                                                              seeds = seed + (1:n_chains)*10
                                                              
@@ -173,13 +190,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                              }
                                                              
-                                                             e_0 <- length(theta_current[upper.tri(theta_current,diag = T)])
-                                                             if(model != 'Simple'){
-                                                               e_0 = e_0 + length(mu_vec_current)
-                                                             }
-                                                             e_0 = e_0/2+1
+                                                             # e_0 <- length(theta_current[upper.tri(theta_current,diag = T)])
+                                                             # if(model != 'Simple'){
+                                                             #   e_0 = e_0 + length(mu_vec_current)
+                                                             # }
+                                                             # e_0 = e_0/2+1
                                                              # e_0 = 1
-                                                             alpha_vec = as.vector(rep(e_0,K))
+                                                             alpha_vec = as.vector(rep(1,K))
                                                              
                                                              if(power_posterior_apprach==T){
                                                                i <- 0:n_temperatures
@@ -344,7 +361,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                  mu_vec = mu_vec_current,
                                                                                                  K = K,tau_theta =tau_theta,
                                                                                                  common_indices = common_indices,
-                                                                                                 acc.count_theta =acc.count_theta,model=model,t=t)
+                                                                                                 acc.count_theta =acc.count_theta,model=model,t=t,
+                                                                                                 diag0.5 = diag0.5)
                                                                    llik = theta_update$llik
                                                                    theta_current = theta_update$theta
                                                                    acc.count_theta =theta_update$acc.moves
@@ -370,12 +388,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    #mu UPDATE----------------------------------------------------------------
                                                                   
                                                                    mu_update=  mu_update_f(z = z_current, N_ij = N_ij, llik=llik,
-                                                                                           Y_ij = Y_ij,  theta =theta_current,
+                                                                                           Y_ij = Y_ij,  theta = theta_current,
                                                                                            alpha_vec =  alpha_vec, n_k = n_k,
                                                                                            mu_vec = mu_vec_current,K = K, 
                                                                                            common_indices = common_indices,
                                                                                            tau_mu_vec = tau_mu_vec,
-                                                                                           acc.count_mu_vec,model,t=t)
+                                                                                           acc.count_mu_vec,model,t=t,diag0.5 = diag0.5)
                                                                    
                                                                    #updating quantities
                                                                    mu_vec_current = mu_update$mu_vec

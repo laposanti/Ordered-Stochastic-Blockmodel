@@ -55,21 +55,142 @@ llik_over_blocks_f_binomial = function(lamdabar, ybar, mbar, theta, K, t=1){
 
 
 # Density for P
+# 
+# theta_prior_probability = function(theta,K, mu_vec, model,diag0.5=F){
+#   
+#   if(model == "WST"){
+#     
+#     
+#     if(diag0.5 == F){
+#       P = inverse_logit_f(theta)
+#       P_upper.tri = P[upper.tri(P,diag = F)]
+#       
+#       p_prod = dunif(P_upper.tri,0.5,0.9999)*
+#         (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+#       
+#       f_diag = dunif(diag(P),0.0001,0.9999)*
+#         (exp(diag(P))/((1+exp(diag(P)))**2))
+#       
+#       log_p_sum = sum(log(p_prod) + log(f_diag))
+#     }else if(diag0.5 == T){
+#       P = inverse_logit_f(theta)
+#       P_upper.tri = P[upper.tri(P,diag = F)]
+#       
+#       p_prod = dunif(P_upper.tri,0.5,0.9999)*
+#         (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+#       
+#       log_p_sum = sum(log(p_prod))
+#       
+#     }
+#   }else if (model == "Simple"){
+#     P = inverse_logit_f(theta)
+#     P_upper.tri = P[upper.tri(P,diag = F)]
+#     
+#     p_prod = dunif(P_upper.tri,0.0001,0.9999)*
+#       (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+#     
+#     log_p_sum = sum(log(p_prod))
+#     
+#   }else if(model =='SST'){
+#     if(diag0.5==T){
+#       fac <- lfactorial(K-1)
+#       joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 1)) - 
+#                             log(1- pnorm(0,mean = 0,sd = 1)))  
+#       log_p_sum = joint_density + fac 
+#     }else if(diag0.5==F){
+#       fac <- lfactorial(K-1)
+#       joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 1)) - 
+#                             log(1- pnorm(0,mean = 0,sd = 1)))  
+#       P = inverse_logit_f(theta)
+#       f_diag = dunif(diag(P),0.0001,0.9999)*
+#         (exp(diag(P))/((1+exp(diag(P)))**2))
+#       log_p_sum = joint_density + fac + sum(log(f_diag))
+#     }
+#     
+#     
+#   }
+#   
+#   
+#   return(log_p_sum)
+# }
 
-theta_prior_probability = function(theta,K, mu_vec, model){
-  p_theta = matrix(0,K,K)
-  if(model == "WST"){
+
+
+
+
+
+if(model =='SST'){
+  
+  if(diag0.5==T){
     
-    P = inverse_logit_f(theta)
+    theta_prior_probability = function(theta,K, mu_vec){
+      fac <- lfactorial(K-1)
+      joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 1)) - 
+                            log(1- pnorm(0,mean = 0,sd = 1)))  
+      log_p_sum = joint_density + fac 
+      return(log_p_sum)
+    }
+  }else if(diag0.5==F){
+    theta_prior_probability = function(theta,K, mu_vec){
+      
+      fac <- lfactorial(K-1)
+      
+      joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 1)) - 
+                            log(1- pnorm(0,mean = 0,sd = 1)))  
+      P_diag = inverse_logit_f(diag(theta))
+      
+      f_diag = dunif(P_diag,0.0001,0.9999)*
+        (exp(P_diag)/((1+exp(P_diag))**2))
+      
+      log_p_sum = joint_density + fac + sum(log(f_diag))
+    }
     
-    P_upper.tri = P[upper.tri(P,diag = F)]
-    
-    p_prod = dunif(P_upper.tri,0.5,0.9999)*
-      (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
-    
-    log_p_sum = sum(log(p_prod))
-    
-  }else if (model == "Simple"){
+  }
+}
+
+
+
+
+
+if(model =='WST'){
+  
+  if(diag0.5==T){
+    return(function(theta, K, mu_vec) {
+      theta_prior_probability = function(theta,K, mu_vec){
+        P = inverse_logit_f(theta)
+        P_upper.tri = P[upper.tri(P,diag = F)]
+        
+        p_prod = dunif(P_upper.tri,0.5,0.9999)*
+          (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+        
+        
+        log_p_sum = sum(log(p_prod))
+        return(log_p_sum)
+      }
+    })
+  }else if(diag0.5==F){
+    return(function(theta, K, mu_vec) {
+      theta_prior_probability = function(theta,K, mu_vec){
+        
+        P = inverse_logit_f(theta)
+        P_upper.tri = P[upper.tri(P,diag = F)]
+        
+        p_prod = dunif(P_upper.tri,0.5,0.9999)*
+          (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+        
+        f_diag = dunif(diag(P),0.0001,0.9999)*
+          (exp(diag(P))/((1+exp(diag(P)))**2))
+        
+        log_p_sum = sum(log(p_prod)) + sum(log(f_diag))
+      }
+      
+    })}
+}
+
+
+if(model =='Simple'){
+  
+  theta_prior_probability = function(theta,K, mu_vec){
     P = inverse_logit_f(theta)
     P_upper.tri = P[upper.tri(P,diag = F)]
     
@@ -78,27 +199,16 @@ theta_prior_probability = function(theta,K, mu_vec, model){
     
     log_p_sum = sum(log(p_prod))
     
-  }else if(model =='SST'){
-    
-    fac <- lfactorial(K)
-    joint_density<- sum(log(dtruncnorm(mu_vec[1:(K)],a = -0.4,mean = 0,sd = 2.5)) - 
-                          log(1- pnorm(0,mean = -0.4,sd = 2.5)))  
-    check_ord = all(sort(mu_vec) == mu_vec)
-    log_p_sum = joint_density + fac + log(check_ord)
-    
+    return(log_p_sum)
   }
   
-  
-  return(log_p_sum)
 }
 
 
 
-# Proportional posterior
-
 
 lprop_posterior <- function(Y_ij, N_ij, z,theta,
-                            alpha_vec,mu_vec, n_k,K, model,t,common_indices,llik=NULL){
+                            alpha_vec,mu_vec, n_k,K, model,t,common_indices, llik=NULL){
   if (is.null(llik)) {
     # Compute log likelihood only if llik is not provided
     log_lik <- ll_naive(z = z, theta = theta, Y_ij = Y_ij, N_ij = N_ij,common_indices) * t
@@ -107,69 +217,46 @@ lprop_posterior <- function(Y_ij, N_ij, z,theta,
     log_lik <- llik
     
   }
-  if(model=='Simple'){
-    
-    #log prior on z
-    prior_z <- ddirichlet_multinomial(N = sum(n_k),K = K,n_k = n_k,my_alpha =  alpha_vec)
-    #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta,K=K,
-                                          mu_vec = mu_vec, model=model)
-    #computing the whole log proportional posterior
-    results<- log_lik+ prior_z + prior_theta 
-    
-  }else if (model=='WST'){
-    #log prior on z
-    prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
-    #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta, K=K
-                                          ,mu_vec = mu_vec,
-                                          model = model)
-    #log prior on mu
-    #hyperprior_mu <- d_sA_mu(K = K, mu_vec = mu_vec)
-    #log prior on sigma^2
-    #hyperprior_sigmasquared <- LaplacesDemon::dinvgamma(x = sigma_squared,shape = 0.001,scale = 0.001,log = T)
-    #computing the whole log proportional posterior
-    results<- log_lik+ prior_z + prior_theta  
-    
-  }else if(model =='SST'){
-    #log prior on P
-    prior_theta<- theta_prior_probability(theta = theta, K = K,
-                                          mu_vec = mu_vec,
-                                          model = model)
-    #log prior on z
-    prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
-    #log prior on mu
-    #hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
-    #computing the whole log proportional posterior
-    results <- log_lik + prior_z  + prior_theta
-    
-  }
+  #log prior on P
+  prior_theta<- theta_prior_probability(theta = theta, K = K, mu_vec = mu_vec)
+  #log prior on z
+  prior_z <- ddirichlet_multinomial(N = sum(n_k), K = K,n_k = n_k, my_alpha = alpha_vec)
+  #log prior on mu
+  #hyperprior_mu <- d_sA_mu(K = K,mu_vec =  mu_vec)
+  #computing the whole log proportional posterior
+  results <- log_lik + prior_z  + prior_theta
+  
   return(results)
 }
 
-#-------------------------- MCMC steps -----------------------------------------
+
+#-------------------------- MCMC wrappers --------------------------------------
+########################### MCMC-wrappers ######################################
+#-------------------------- MCMC wrappers --------------------------------------
 
 theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_theta,
-                          acc.count_theta,common_indices, model,t){
+                          acc.count_theta,common_indices, model,t,diag0.5){
   
   theta_prime <- theta
   n<- nrow(N_ij)
   P_prime<- inverse_logit_f(theta_prime)
+  
   P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z,P_prime),P_prime)
   
   A_prime<-   sum(dbinom(Y_ij[common_indices],size = N_ij[common_indices], 
                          P_NbyN_prime[common_indices],log = T))
   C_prime<- theta_prior_probability(theta = theta_prime, K=K,
-                                    mu_vec = mu_vec,  model = model)
+                                    mu_vec = mu_vec)
   
   #Updating each entry of P, one at the time
   
-  ut <- upper.tri(theta, diag=T)
-  
+  ut <- upper.tri(theta, diag=T*!diag0.5)
   theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
-  uo<- data.frame(theta_combn[sample(nrow(theta_combn)), ])# permuting the order of the rows
+  n_entries = nrow(theta_combn)
+  uo<- data.frame(row = theta_combn[,1], col = theta_combn[,2] )# permuting the order of the rows
   
   for(i_th in 1:nrow(uo)){
+
     theta_scanning <- theta_prime
     P_NbyN_scanning = P_NbyN_prime
     
@@ -177,7 +264,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
     j_star<- uo$col[i_th]
     # print(paste0('theta_prime = ', theta_prime[i_star, j_star]))
     
-    if(model == 'WST'){
+    if(model == 'WST'& i_star != j_star){
       lower.bound = 0
       upper.bound = 9.21023
     }else{
@@ -208,7 +295,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
     logical_matrix2[Z_j_star,]<-TRUE
     logical_matrix2[,Z_i_star]<-TRUE
     # Get the upper triangular indices for the relevant clusters
-   
+    
     
     # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
     filtering_matrix = (logical_matrix1|logical_matrix2)*common_indices == T
@@ -296,7 +383,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
 
 
 mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
-                       acc.count_mu_vec,model,t, common_indices, llik = NULL){
+                       acc.count_mu_vec,model,t, common_indices, llik = NULL, diag0.5){
   
   #computing the proportional posterior in mu' ~ g(mu^(t), tau_mu_vec)
   #mu_1_K_prime <- truncnorm::rtruncnorm(K+1,a = 0,b = 10, mean = mu_vec[1:(K+1)],sd = .05)
@@ -306,17 +393,22 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
   
   theta_prime = theta
   mu_vec_prime = mu_vec
-  for(mu in 1:length(mu_vec)){
+  
+  #if diag0.5 ==T, then we do not need to update the main diagonal mu, set equal to 0.5 indeed
+  for(mu in (1+diag0.5):length(mu_vec) ){
     
+    #if it's the last diagonal, we have no boundary above it. We fix arbitrarily 9.21
     ub = ifelse(test = mu != length(mu_vec), 
                 yes = mu_vec_prime[mu+1],
-                no = 10)
-    
+                no = 9.21)
+    if(mu == 1){
+      ub = 9.21
+    }
     lb= ifelse(test = mu == 1, 
-               yes = -0.4,
+               yes = -9.21,
                no = mu_vec_prime[mu-1])
-   
-     mu_k_scanning <- rtruncnorm(1,a = lb,b = ub,
+    
+    mu_k_scanning <- rtruncnorm(1,a = lb,b = ub,
                                 mean = mu_vec_prime[mu],sd = tau_mu_vec[mu])
     
     theta_scanning = theta_prime

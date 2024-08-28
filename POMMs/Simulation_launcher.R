@@ -33,7 +33,9 @@ googledrive::drive_auth(email = subject)
 # 
 # 2
 # # Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1kDXj6cq9u2fEH1Py9YBx8zoFPI9V57fR"
+
+
+folder_url <- "https://drive.google.com/drive/u/1/folders/14WD-QRXQbCvbPjqpHHBenrQuxwDXTzHd"
 folder <- drive_get(as_id(folder_url))
 
 
@@ -87,13 +89,14 @@ for(true_model in  c('SST','Simple')){
     # Estimation: set the parameters of the estimation
     ##############################################################################
     
-    n_chains = 4
+    n_chains = 1
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 60000 #number of iterations
-    burnin <- 30000 #number of discarded iterations
+    N_iter <- 60000#number of iterations
+    burnin <- 30000#number of discarded iterations
     thin=15
+    diag0.5=T
     # for(K in 3:10){
     K = data_to_be_estimated$ground_truth$K
     K_est = rep(K, n_chains) #number of clusters to fit
@@ -139,7 +142,7 @@ for(true_model in  c('SST','Simple')){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,
-                                                            thin=thin)
+                                                            thin=thin,diag0.5 = diag0.5)
       
       
       
@@ -151,7 +154,7 @@ for(true_model in  c('SST','Simple')){
       
       
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',data_description, "_est_model",
-                           est_model,"_Kest",K_est[[1]],
+                           est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_SST, file = my_filename) 
       drive_put(media = my_filename, path = folder)
@@ -193,7 +196,7 @@ for(true_model in  c('SST','Simple')){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                            power_posterior_apprach = power_posterior_apprach,thin = thin,diag0.5 = diag0.5)
       
       
       
@@ -203,7 +206,7 @@ for(true_model in  c('SST','Simple')){
       chains_WST[['recovery_level']] = recovery_capability
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
                            data_description, "_est_model",
-                           est_model,"_Kest",K_est[[1]],
+                           est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_WST, file = my_filename) 
       
@@ -246,13 +249,13 @@ for(true_model in  c('SST','Simple')){
                                                               model = est_model, 
                                                               custom_init = custom_init,
                                                               power_posterior_apprach = power_posterior_apprach,
-                                                              thin=thin)
+                                                              thin=thin,diag0.5=diag0.5)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
       chains_Simple[['recovery_level']] = recovery_capability
       my_filename = paste0('./Results/MCMC_output/Fixed_K/Simulation/Data_from',
                            data_description, "_est_model",
-                           est_model,"_Kest",K_est[[1]],
+                           est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',recovery_capability,'.rds')
       saveRDS(object = chains_Simple, file = my_filename) 
       
