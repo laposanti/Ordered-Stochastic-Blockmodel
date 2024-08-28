@@ -89,7 +89,7 @@ for(true_model in  c('SST','Simple')){
     # Estimation: set the parameters of the estimation
     ##############################################################################
     
-    n_chains = 1
+    n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
@@ -196,7 +196,8 @@ for(true_model in  c('SST','Simple')){
                                                             seed = seed, 
                                                             model = est_model, 
                                                             custom_init = custom_init,
-                                                            power_posterior_apprach = power_posterior_apprach,thin = thin,diag0.5 = diag0.5)
+                                                            power_posterior_apprach = power_posterior_apprach,
+                                                            thin = thin,diag0.5 = diag0.5)
       
       
       

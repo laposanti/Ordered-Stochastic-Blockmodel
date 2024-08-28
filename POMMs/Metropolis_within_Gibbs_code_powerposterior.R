@@ -91,8 +91,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                             
                                                              
-                                                             
-                                                             
+                             
                                                              #--------------------------------------------------------------
                                                              source("./model_auxiliary_functions/Functions_priorSST.R")
                                                              source("./model_auxiliary_functions/MCMC_functions.R")
