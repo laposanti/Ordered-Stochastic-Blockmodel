@@ -93,8 +93,8 @@ for(true_model in  c('SST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed=20
-    N_iter <- 60000#number of iterations
-    burnin <- 30000#number of discarded iterations
+    N_iter <- 60000 + 10000*(k_th-2) #number of iterations
+    burnin <- 30000 + 10000*(k_th-2) #number of discarded iterations
     thin=15
     diag0.5=T
     # for(K in 3:10){

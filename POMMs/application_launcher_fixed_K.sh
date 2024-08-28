@@ -1,5 +1,5 @@
 #! /bin/bash -l
-#SBATCH --job-name="DED"
+#SBATCH --job-name="Application_launcher_fixedK"
 # speficity number of nodes 
 #SBATCH -N 1
 

@@ -122,7 +122,7 @@ if(model =='SST'){
   
   if(diag0.5==T){
     
-    theta_prior_probability = function(theta,K, mu_vec){
+    theta_prior_probability<<-function(theta,K, mu_vec){
       fac <- lfactorial(K-1)
       joint_density<- sum(log(dtruncnorm(mu_vec[2:(K)],a = 0,mean = 0,sd = 1)) - 
                             log(1- pnorm(0,mean = 0,sd = 1)))  
@@ -130,7 +130,7 @@ if(model =='SST'){
       return(log_p_sum)
     }
   }else if(diag0.5==F){
-    theta_prior_probability = function(theta,K, mu_vec){
+    theta_prior_probability<<-function(theta,K, mu_vec){
       
       fac <- lfactorial(K-1)
       
@@ -154,8 +154,7 @@ if(model =='SST'){
 if(model =='WST'){
   
   if(diag0.5==T){
-    return(function(theta, K, mu_vec) {
-      theta_prior_probability = function(theta,K, mu_vec){
+      theta_prior_probability<<-function(theta,K, mu_vec){
         P = inverse_logit_f(theta)
         P_upper.tri = P[upper.tri(P,diag = F)]
         
@@ -166,10 +165,8 @@ if(model =='WST'){
         log_p_sum = sum(log(p_prod))
         return(log_p_sum)
       }
-    })
   }else if(diag0.5==F){
-    return(function(theta, K, mu_vec) {
-      theta_prior_probability = function(theta,K, mu_vec){
+      theta_prior_probability<<-function(theta,K, mu_vec){
         
         P = inverse_logit_f(theta)
         P_upper.tri = P[upper.tri(P,diag = F)]
@@ -183,13 +180,13 @@ if(model =='WST'){
         log_p_sum = sum(log(p_prod)) + sum(log(f_diag))
       }
       
-    })}
+    }
 }
 
 
 if(model =='Simple'){
   
-  theta_prior_probability = function(theta,K, mu_vec){
+  theta_prior_probability <<- function(theta,K, mu_vec){
     P = inverse_logit_f(theta)
     P_upper.tri = P[upper.tri(P,diag = F)]
     

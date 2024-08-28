@@ -1,5 +1,5 @@
 #! /bin/bash -l
-#SBATCH --job-name="DED"
+#SBATCH --job-name="simulation_launcher_fixed_K"
 # speficity number of nodes 
 #SBATCH -N 1
 
