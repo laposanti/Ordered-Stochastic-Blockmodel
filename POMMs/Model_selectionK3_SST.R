@@ -70,7 +70,7 @@ choose_model_to_estimate = c('SST',"WST","Simple")
 N_iter <- 60000  #number of iterations
 burnin <- 30000 #number of discarded iterations
 
-K_est = list(2:10) #number of clusters to fit
+K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 #where to save the data
 saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K3_true//"
 

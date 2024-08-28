@@ -73,7 +73,7 @@ burnin <- 30000 #number of discarded iterations
 thin = 15
 
 
-K_est = list(2:10) #number of clusters to fit
+K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 
 saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K6_true//"
 # Check if the directory exists
