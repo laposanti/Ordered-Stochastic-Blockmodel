@@ -609,13 +609,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                        thin = thin,
                                                                                        N_iter_eff = N_iter_eff)
                                                              
-                                                            likelihood = A_container 
+                                                            
                                                              
                                                              return(list(Y_ij= Y_ij, N_ij = N_ij, 
                                                                          ground_truth=ground_truth,
                                                                          est_containers=est_containers, 
                                                                          control_containers=control_containers, 
-                                                                         likelihood = likelihood,
                                                                          acceptance_rates= acceptance_rates, 
                                                                          st.deviations=st.deviations, 
                                                                          t=t, seed = seed + chain))
