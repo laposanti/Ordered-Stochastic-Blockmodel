@@ -85,7 +85,7 @@ if (!dir.exists(saving_directory)) {
 } else {
   message("Directory already exists.")
 }
-
+choose_model_to_estimate = c('SST',"WST","Simple")
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
 power_posterior_apprach = F
