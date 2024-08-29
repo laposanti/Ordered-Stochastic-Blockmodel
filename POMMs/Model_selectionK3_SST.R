@@ -45,7 +45,7 @@ folder <- drive_get(as_id(folder_url))
 
 #where the data are stored
 data_wd<- "./Data/Sim1_data/"
-data_description = 'SST4'
+data_description = 'SST3'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 recovery_capability = data_to_be_estimated$recovery_capability
@@ -162,7 +162,7 @@ if('WST' %in% choose_model_to_estimate){
   names(chains_WST) = paste0('chain',unlist(K_est))
   chains_WST[['recovery_level']] = recovery_capability
   
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
@@ -206,7 +206,7 @@ if('Simple' %in% choose_model_to_estimate){
                                                           thin=thin)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')

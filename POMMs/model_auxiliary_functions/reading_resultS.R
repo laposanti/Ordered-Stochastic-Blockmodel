@@ -620,7 +620,7 @@ for(file in file_to_analyse){
     
     for(t in 1:num_samples){
       
-      z_chain_mat = vec2mat_0_P(z_chain[,t], theta_burned[,,1])
+      z_chain_mat = vec2mat_0_P(z_chain[,t], theta_burned[,,t])
       
       P_entry = inverse_logit_f(theta_chain[,,t])
       

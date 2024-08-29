@@ -18,7 +18,6 @@ library(doRNG)
 library(googledrive)
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 source("./model_auxiliary_functions/Functions_priorSST.R")
-source("./Metropolis_within_Gibbs_code.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
 
 
@@ -91,7 +90,7 @@ if (!dir.exists(saving_directory)) {
 } else {
   message("Directory already exists.")
 }
-
+diag0.5 = T
 if('SST' %in% choose_model_to_estimate){
 
 
@@ -115,7 +114,9 @@ if('SST' %in% choose_model_to_estimate){
                                                     seed = seed, 
                                                     model = est_model, 
                                                     custom_init = custom_init,
-                                                    power_posterior_apprach = F)
+                                                    power_posterior_apprach = F,
+                                                    thin =thin,
+                                                    diag0.5 = diag0.5)
   names(chains) = paste0('chain',unlist(K_est))
   chains[['recovery_level']] = recovery_capability
   
@@ -153,7 +154,9 @@ if('WST' %in% choose_model_to_estimate){
                                                         seed = seed, 
                                                         model = est_model, 
                                                         custom_init = custom_init,
-                                                        power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                        power_posterior_apprach = power_posterior_apprach,
+                                                        thin = thin,
+                                                        diag0.5 = diag0.5)
   
   
   
@@ -161,7 +164,7 @@ if('WST' %in% choose_model_to_estimate){
   names(chains_WST) = paste0('chain',unlist(K_est))
   chains_WST[['recovery_level']] = recovery_capability
   
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
@@ -202,10 +205,10 @@ if('Simple' %in% choose_model_to_estimate){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin)
+                                                          thin=thin,diag0.5 = F)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')
