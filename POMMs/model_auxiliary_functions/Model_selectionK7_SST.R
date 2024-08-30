@@ -16,7 +16,6 @@ library(parallel)
 library(truncnorm)
 library(doRNG)
 library(googledrive)
-
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -32,8 +31,11 @@ googledrive::drive_auth(email = subject)
 # 
 # 2
 # # Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1DGDTPwyDrrMWyjBC0NbZ4nnYlY_c2pRp"
+folder_url <- "https://drive.google.com/drive/u/1/folders/1zFH46_l_4BUmqE_2G0-ac6GtQLJ3B8lV"
 folder <- drive_get(as_id(folder_url))
+
+
+
 
 
 ################################################################################
@@ -43,7 +45,7 @@ folder <- drive_get(as_id(folder_url))
 
 #where the data are stored
 data_wd<- "./Data/Sim1_data/"
-data_description = 'SST4'
+data_description = 'SST7'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[1]))
 recovery_capability = data_to_be_estimated$recovery_capability
@@ -65,8 +67,8 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 60000 #number of iterations
-burnin <- 30000 #number of discarded iterations
+N_iter <- 80000 #number of iterations
+burnin <- 40000 #number of discarded iterations
 thin = 15
 
 
@@ -74,7 +76,7 @@ K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 
 
 #where to save the data
-saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K4_true"
+saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K7_true"
 
 # Check if the directory exists
 if (!dir.exists(saving_directory)) {
@@ -84,6 +86,7 @@ if (!dir.exists(saving_directory)) {
 } else {
   message("Directory already exists.")
 }
+
 choose_model_to_estimate = c('SST',"WST","Simple")
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
@@ -160,7 +163,7 @@ if('WST' %in% choose_model_to_estimate){
   names(chains_WST) = paste0('chain',unlist(K_est))
   chains_WST[['recovery_level']] = recovery_capability
   
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',
@@ -204,7 +207,7 @@ if('Simple' %in% choose_model_to_estimate){
                                                           thin=thin)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
-  my_filename = paste0(saving_directory,
+  my_filename = paste0(saving_directory,"Data_from",
                        data_description, "_est_model",
                        est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                        'recovery_level',recovery_capability,'.rds')
