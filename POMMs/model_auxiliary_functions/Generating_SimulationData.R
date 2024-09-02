@@ -95,6 +95,7 @@ generate_theta_from_theta_prior = function(K, model){
   
   return(to_be_returned)
 }
+
 ###############################################################################
 # Generating data from the SST
 ###############################################################################
@@ -104,7 +105,7 @@ saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_d
 #from 1, 'very difficult' to 5, 'very easy'
 recovery_capability_levels = 1:5
 
-for(k in 3:6){
+for(k in 7){
   
   for(recovery_capability in 1:length(recovery_capability_levels)){
     recovery_capability=5
@@ -112,6 +113,7 @@ for(k in 3:6){
     K=k
     seed =2021
     set.seed(seed)
+    
     if(true_model =='SST'){
       prior_SST = generate_theta_from_theta_prior(K, 
                                                   model = 'SST')
