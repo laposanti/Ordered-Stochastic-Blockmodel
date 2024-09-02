@@ -144,7 +144,7 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                           power_posterior_apprach = power_posterior_apprach,thin=thin,
                                                           diag0.5 = diag0.5)
     
-    names(chains_WST) = paste0('chain',unlist(K_values))
+    names(chains_SST) = paste0('chain',unlist(K_values))
     
     my_filename = paste0(saving_directory, '/Data_from',data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_values),collapse = "_"),'.rds')
