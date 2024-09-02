@@ -99,7 +99,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   thin = 15
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
-  seed = 20
+  seed = 23
   N_iter <- 100000 
   burnin <- 70000 
   #number of clusters to fit
@@ -109,7 +109,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   # SST MODEL
   #-----------------------------------------------------------------------------
   if('SST' %in% choose_model_to_estimate){
-    print(paste0("Estimation of the SST model, K=",k_th))
+    print(paste0("Estimation of the SST model, K=",K_values))
     print(paste0("Begin cycle at:", date()))
     
     
@@ -162,7 +162,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   #-----------------------------------------------------------------------------
   
   if('WST' %in% choose_model_to_estimate){
-    print(paste0("Estimation of the WST model, K=",k_th))
+    print(paste0("Estimation of the WST model, K=",K_values))
     print(paste0("Begin cycle at:",date()))
     #initializing each chain
     
@@ -215,7 +215,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   
   if('Simple' %in% choose_model_to_estimate){
     
-    print(paste0("Estimation of Simple model, K=",k_th))
+    print(paste0("Estimation of Simple model, K=",K_values))
     print(paste0("Begin cycle at:",date()))
     
     
