@@ -68,9 +68,9 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 80000 #number of iterations
+N_iter <- 100000 #number of iterations
 burnin <- 50000 #number of discarded iterations
-thin = 10
+thin = 5
 
 
 K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit

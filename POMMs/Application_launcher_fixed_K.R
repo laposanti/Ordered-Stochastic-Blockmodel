@@ -96,12 +96,12 @@ for(data_description in c("Tennis_data","Citation_data")){
   n = nrow(N_ij)
   diag0.5=T
   power_posterior_apprach=F
-  thin = 5
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 23
-  N_iter <- 100000 
-  burnin <- 70000
+  N_iter <- 100000 #number of iterations
+  burnin <- 50000 #number of discarded iterations
+  thin = 5
   #number of clusters to fit
   #where to save the data
   saving_directory = "./Results/MCMC_output/Fixed_K/Application"
