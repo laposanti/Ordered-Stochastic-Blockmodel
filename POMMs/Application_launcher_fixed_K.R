@@ -101,7 +101,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   optimal_acceptance_rate_mu = .234
   seed = 23
   N_iter <- 100000 
-  burnin <- 70000 
+  burnin <- 70000
   #number of clusters to fit
   #where to save the data
   saving_directory = "./Results/MCMC_output/Fixed_K/Application"
