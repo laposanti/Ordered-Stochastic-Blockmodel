@@ -26,7 +26,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = F
+is.simulation = T
 
 if(is.simulation==F){
   
@@ -230,8 +230,8 @@ if(is.simulation==F){
 }else if(is.simulation == T){
   pattern <- "Data_fromSST" 
   true_model = "SST"
-  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/True_Model_SST/"
-  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/True_Model_SST/processed//"
+  data_wd = "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/new_experiment//"
+  processed_wd <- "/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/results/MCMC_output/Fixed_K/Simulation/new_experiment/processed/"
 }
 
 setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
@@ -250,7 +250,7 @@ if(is.simulation==F){
     folder_url <- "https://drive.google.com/drive/u/1/folders/1_7lx5phdeHn7WE5IK6-Y3w4uA7efHBsL"
   }
 }else if(is.simulation==T){
-  folder_url <- "https://drive.google.com/drive/u/1/folders/1_7lx5phdeHn7WE5IK6-Y3w4uA7efHBsL"
+  folder_url <- "https://drive.google.com/drive/u/1/folders/14WD-QRXQbCvbPjqpHHBenrQuxwDXTzHd"
 }
 
 
@@ -340,232 +340,7 @@ for(file in file_to_analyse){
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
   
-  
-  
-  
-  my_z_est<- z_plot(z_burned = z_burned,  A = uploaded_results$chain1$control_containers$A[1:N_iter],
-                    Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
-                    est_model = est_model, true_value =is.simulation, 
-                    diag0.5 =diag0.5 , K=  max(z_burned), N=nrow(uploaded_results$chain1$Y_ij),
-                    z_true = uploaded_results$chain1$ground_truth$z ,
-                    burnin =  burnin ,label_switch = T,tap= processed_wd)
-  
-  
-  point_est_z<- as.vector(my_z_est$point_est)
-  
-  if(est_model == 'SST'&K==6){
-    write.csv(point_est_z,paste0(processed_wd,"z_est_K_6modelSST.csv"))
-  }
-  
-  
-  table(point_est_z)
-  
-  
-  
-  
-  K_est<- length(unique(point_est_z))
-  permutations_z<- my_z_est$permutations
-  z_chain_permuted<- my_z_est$relabeled_chain
-  
-  K0 <- apply(X = z_chain_permuted, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
-  
-  K0_hat_switched <- mean(K0)
-  
-  
-  # 
-  # if(is.simulation==F){
-  #   #conmputing the a-posteriori probability for each number of clusters
-  #   p_clusters <- apply(z_burned, 1, function(row) {
-  #     table(factor(row, levels = 1:K))
-  #   })
-  #   #matrix NxK where the entry n,k contains the number of times the individual n was assigned to cluster k
-  #   p_clusters = t(p_clusters)
-  #   
-  #   z_prob = p_clusters/rowSums(p_clusters,na.rm = T)
-  #   
-  #   top_block_df = data.frame(items = rownames(Y_ij), p_top_block = z_prob[,1], z = point_est_z)%>%
-  #     mutate(model = est_model)%>%
-  #     mutate(n_clust = K)
-  #   
-  #   
-  #   
-  #   
-  #   if(!exists('top_block_df_container')){
-  #     top_block_df_container = top_block_df
-  #   }else{
-  #     top_block_df_container = rbind(top_block_df_container,top_block_df)
-  #   }
-  # }
-  # 
-  #---------------------------------------------------------------------------
-  # P parameter estimate
-  #-------------------------------------------------------------------------------
-  
-  if(est_model == 'Simple'&&true_model=='SST'){
-    
-    permutation_matrix <- permutations(n = K, r = K, v = 1:K)
-    N_iter_eff = ncol(z_burned)
-    for(t in 1:N_iter_eff){
-      
-      is.SST <- FALSE
-      is.WST <- FALSE
-      
-      for(j in 1:nrow(permutation_matrix)){
-        
-        mat_permuted <- theta_burned[permutation_matrix[j,], permutation_matrix[j,], t]
-        mat_permuted <- inverse_logit_f(mat_permuted)
-        if(check_SST(mat_permuted)){
-          is.SST <- TRUE
-        }
-        if(check_WST(mat_permuted)){
-          is.WST <- TRUE
-        }
-      }
-      
-      # Add the results to the dataframe
-      check_P_posterior <- rbind(check_P_posterior, 
-                                 data.frame(model = 'Simple', 
-                                            K = K, 
-                                            t = t, 
-                                            is.SST = is.SST, 
-                                            is.WST = is.WST,
-                                            N_iter_eff = N_iter_eff))
-    }
-  }
-  
-  
-  if(max(z_burned)==K){
-    
-    
-    P_s_table <- P_summary_table(P_burned = theta_burned,
-                                 true_value = is.simulation,
-                                 permutations_z = permutations_z,
-                                 diag0.5 = TRUE,
-                                 K = K, P_true = uploaded_results$chain1$ground_truth$theta,
-                                 burnin = burnin,
-                                 label_switch = T)
-    
-    
-    P_s_table_save <-P_s_table$table
-    theta_chain_permuted <- P_s_table$P_permuted
-    P_est_relabeled<- inverse_logit_f(P_s_table$P_hat)
-    
-    
-    
-    #some traceplots
-    upper_tri_indices= which(upper.tri(P_est_relabeled, diag=T),arr.ind = T)
-    
-    if(is.simulation ==T){
-      theta_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
-        data.frame(iteration = j,
-                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
-                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$theta), 
-                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-      }))
-      theta_trace_df_post_switch= theta_trace_df_post_switch%>% 
-        mutate(P = inverse_logit_f(theta))%>%
-        mutate(P_true = inverse_logit_f(theta_true))
-      
-      traceplot_P = ggplot(theta_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
-        geom_line(aes(y=P), alpha=.3)+
-        geom_line(aes(y=P_true), linetype=2, color='red')+
-        facet_wrap(~entry)+
-        theme_bw()
-      
-    }else if(is.simulation ==F){
-      P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
-        data.frame(iteration = j+burnin,
-                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
-                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-      }))
-      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(theta))
-      
-      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
-        geom_line(aes(y=P), alpha=.3)+
-        facet_wrap(~entry)+
-        theme_bw()
-    }
-    
-    # if(est_model == 'SST'){
-    #   mu_vec_df <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
-    #     data.frame(iteration = j+burnin,
-    #                mu = uploaded_results$chain1$est_containers$mu_vec[,j], 
-    #                entry = factor(1:(K)))
-    #   }
-    #   ))
-    
-    # ggplot(mu_vec_df, aes(x = iteration, color = entry, group=entry))+
-    #   geom_line(aes(y=mu), alpha=.3)+
-    #   theme_bw()
-    
-    
-    # mu_vec_df %>% group_by(entry) %>%
-    #   summarise(mean = mean(mu),
-    #             quantile5 = quantile(probs = 0.05, x = mu),
-    #             quantile95 = quantile(probs = 0.95, x = mu))
-    # 
-    # 
-    # }
-    
-    
-    
-    
-    
-    
-    
-    
-    plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-    png(plot_name_traceplot_P,width = 800, height = 800)
-    par(mar = c(1.5, 1.5,1.5,1.5))
-    print(traceplot_P)
-    
-    dev.off()
-    # 
-    # P_variance_df <- do.call(rbind, lapply(1:(N_iter), function(j) {
-    #   data.frame(iteration = j,
-    #              P = upper.tri.extractor(uploaded_results$chain1$st.deviations$tau_theta[,,j]),
-    #              P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
-    # }))
-    # 
-    # 
-    # traceplot_proposal_P = ggplot(P_variance_df, aes(x = iteration, color = P_ij, group=P_ij))+
-    #   geom_line(aes(y=P), alpha=.3)+
-    #   facet_wrap(~P_ij)+
-    #   theme_bw()+
-    #   labs(title = "Adaptive variances proposals for P", x = 'Iterations')
-    # 
-    # plot_name_traceplot_proposal_P <- paste0(processed_wd,"//P_traceplot_proposal",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
-    # png(plot_name_traceplot_proposal_P,width = 800, height = 800)
-    # par(mar = c(1.5, 1.5,1.5,1.5))
-    # print(traceplot_proposal_P)
-    # dev.off()
-    
-    
-    if(is.simulation==T){
-      P_s_table_sum <- P_s_table_save%>%
-        summarise(
-          average_credible_length = mean(abs(quantile95 - quantile05)),
-          MAE = mean(MAE)
-        ) %>% round(3) 
-    }else{
-      P_s_table_sum <- P_s_table_save%>%
-        summarise(
-          average_credible_length = mean(abs(quantile95 - quantile05))
-        ) %>% round(3) 
-    }
-    P_s_table_sum = P_s_table_sum %>% mutate(model = est_model)%>% mutate(n_clust = K)
-    #adjusting colnames for the current number of clusters K
-    if(!exists('Pcontainer')){
-      Pcontainer = P_s_table_sum
-    }else{
-      Pcontainer =  rbind(Pcontainer,P_s_table_sum)
-    }
-    
-  }
-  #-------------------------------------------------------------------------------
-  # relabeling the chains to correct for label switching
-  #-------------------------------------------------------------------------------
-  # Relabel remaining chains
+
   z_burned_1 = uploaded_results$chain1$est_containers$z[,1:N_iter]
   z_burned_2 = uploaded_results$chain2$est_containers$z[,1:N_iter]
   z_burned_3 = uploaded_results$chain3$est_containers$z[,1:N_iter]
@@ -702,11 +477,19 @@ for(file in file_to_analyse){
   
   
   library(bayesplot)
+  c_log_lik = rbind(LL_list[[1]],
+                    LL_list[[2]],
+                    LL_list[[3]],
+                    LL_list[[4]])
+  r_effs = loo::relative_eff(c_log_lik
+                                   ,c(rep(1,num_samples),
+                                      rep(2,num_samples),
+                                      rep(3,num_samples),
+                                      rep(4,num_samples)))
   
-  r_effs = loo::relative_eff(LL_list[[1]],rep(1,num_samples))
-  
-  loo_model_fit = loo(LL_list[[1]],cores = 3,save_psis = T,r_eff = r_effs)
+  loo_model_fit = loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs)
   saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
+  
   plot(loo_model_fit)
   waic_model_fit = waic(LL_list[[1]])
   
@@ -734,6 +517,233 @@ for(file in file_to_analyse){
   
   pareto_k_values(loo_model_fit)
   
+  
+  
+  
+  my_z_est<- z_plot(z_burned = z_burned_1,  A = LLik_sum[[1]],
+                    Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
+                    est_model = est_model, true_value =is.simulation, 
+                    diag0.5 =diag0.5 , K=  max(z_burned), N=nrow(uploaded_results$chain1$Y_ij),
+                    z_true = uploaded_results$chain1$ground_truth$z ,
+                    burnin =  burnin ,label_switch = T,tap= processed_wd)
+  
+  
+  point_est_z<- as.vector(my_z_est$point_est)
+  
+  if(est_model == 'SST'&K==6){
+    write.csv(point_est_z,paste0(processed_wd,"z_est_K_6modelSST.csv"))
+  }
+  
+  
+  table(point_est_z)
+  
+  
+  
+  
+  K_est<- length(unique(point_est_z))
+  permutations_z<- my_z_est$permutations
+  z_chain_permuted<- my_z_est$relabeled_chain
+  
+  K0 <- apply(X = z_chain_permuted, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
+  
+  K0_hat_switched <- mean(K0)
+  
+  
+  # 
+  # if(is.simulation==F){
+  #   #conmputing the a-posteriori probability for each number of clusters
+  #   p_clusters <- apply(z_burned, 1, function(row) {
+  #     table(factor(row, levels = 1:K))
+  #   })
+  #   #matrix NxK where the entry n,k contains the number of times the individual n was assigned to cluster k
+  #   p_clusters = t(p_clusters)
+  #   
+  #   z_prob = p_clusters/rowSums(p_clusters,na.rm = T)
+  #   
+  #   top_block_df = data.frame(items = rownames(Y_ij), p_top_block = z_prob[,1], z = point_est_z)%>%
+  #     mutate(model = est_model)%>%
+  #     mutate(n_clust = K)
+  #   
+  #   
+  #   
+  #   
+  #   if(!exists('top_block_df_container')){
+  #     top_block_df_container = top_block_df
+  #   }else{
+  #     top_block_df_container = rbind(top_block_df_container,top_block_df)
+  #   }
+  # }
+  # 
+  #---------------------------------------------------------------------------
+  # P parameter estimate
+  #-------------------------------------------------------------------------------
+  # 
+  # if(est_model == 'Simple'&&true_model=='SST'){
+  #   
+  #   permutation_matrix <- permutations(n = K, r = K, v = 1:K)
+  #   N_iter_eff = ncol(z_burned)
+  #   for(t in 1:N_iter_eff){
+  #     
+  #     is.SST <- FALSE
+  #     is.WST <- FALSE
+  #     
+  #     for(j in 1:nrow(permutation_matrix)){
+  #       
+  #       mat_permuted <- theta_burned[permutation_matrix[j,], permutation_matrix[j,], t]
+  #       mat_permuted <- inverse_logit_f(mat_permuted)
+  #       if(check_SST(mat_permuted)){
+  #         is.SST <- TRUE
+  #       }
+  #       if(check_WST(mat_permuted)){
+  #         is.WST <- TRUE
+  #       }
+  #     }
+  #     
+  #     # Add the results to the dataframe
+  #     check_P_posterior <- rbind(check_P_posterior, 
+  #                                data.frame(model = 'Simple', 
+  #                                           K = K, 
+  #                                           t = t, 
+  #                                           is.SST = is.SST, 
+  #                                           is.WST = is.WST,
+  #                                           N_iter_eff = N_iter_eff))
+  #   }
+  # }
+  # 
+  # 
+  if(max(z_burned)==K){
+    
+    
+    P_s_table <- P_summary_table(P_burned = theta_burned,
+                                 true_value = is.simulation,
+                                 permutations_z = permutations_z,
+                                 diag0.5 = TRUE,
+                                 K = K, P_true = uploaded_results$chain1$ground_truth$theta,
+                                 burnin = burnin,
+                                 label_switch = T)
+    
+    
+    P_s_table_save <-P_s_table$table
+    theta_chain_permuted <- P_s_table$P_permuted
+    P_est_relabeled<- inverse_logit_f(P_s_table$P_hat)
+    
+    
+    
+    #some traceplots
+    upper_tri_indices= which(upper.tri(P_est_relabeled, diag=T),arr.ind = T)
+    
+    if(is.simulation ==T){
+      theta_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+        data.frame(iteration = j,
+                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
+                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$theta), 
+                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+      }))
+      theta_trace_df_post_switch= theta_trace_df_post_switch%>% 
+        mutate(P = inverse_logit_f(theta))%>%
+        mutate(P_true = inverse_logit_f(theta_true))
+      
+      traceplot_P = ggplot(theta_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
+        geom_line(aes(y=P), alpha=.3)+
+        geom_line(aes(y=P_true), linetype=2, color='red')+
+        facet_wrap(~entry)+
+        theme_bw()
+      
+    }else if(is.simulation ==F){
+      P_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+        data.frame(iteration = j+burnin,
+                   theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
+                   entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+      }))
+      P_trace_df_post_switch=P_trace_df_post_switch%>% mutate(P = inverse_logit_f(theta))
+      
+      traceplot_P = ggplot(P_trace_df_post_switch, aes(x = iteration, color = entry, group=entry))+
+        geom_line(aes(y=P), alpha=.3)+
+        facet_wrap(~entry)+
+        theme_bw()
+    }
+    
+    # if(est_model == 'SST'){
+    #   mu_vec_df <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
+    #     data.frame(iteration = j+burnin,
+    #                mu = uploaded_results$chain1$est_containers$mu_vec[,j], 
+    #                entry = factor(1:(K)))
+    #   }
+    #   ))
+    
+    # ggplot(mu_vec_df, aes(x = iteration, color = entry, group=entry))+
+    #   geom_line(aes(y=mu), alpha=.3)+
+    #   theme_bw()
+    
+    
+    # mu_vec_df %>% group_by(entry) %>%
+    #   summarise(mean = mean(mu),
+    #             quantile5 = quantile(probs = 0.05, x = mu),
+    #             quantile95 = quantile(probs = 0.95, x = mu))
+    # 
+    # 
+    # }
+    
+    
+    
+    
+    
+    
+    
+    
+    plot_name_traceplot_P <- paste0(processed_wd,"//P_traceplot",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    png(plot_name_traceplot_P,width = 800, height = 800)
+    par(mar = c(1.5, 1.5,1.5,1.5))
+    print(traceplot_P)
+    
+    dev.off()
+    # 
+    # P_variance_df <- do.call(rbind, lapply(1:(N_iter), function(j) {
+    #   data.frame(iteration = j,
+    #              P = upper.tri.extractor(uploaded_results$chain1$st.deviations$tau_theta[,,j]),
+    #              P_ij = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
+    # }))
+    # 
+    # 
+    # traceplot_proposal_P = ggplot(P_variance_df, aes(x = iteration, color = P_ij, group=P_ij))+
+    #   geom_line(aes(y=P), alpha=.3)+
+    #   facet_wrap(~P_ij)+
+    #   theme_bw()+
+    #   labs(title = "Adaptive variances proposals for P", x = 'Iterations')
+    # 
+    # plot_name_traceplot_proposal_P <- paste0(processed_wd,"//P_traceplot_proposal",true_model,est_model,"K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
+    # png(plot_name_traceplot_proposal_P,width = 800, height = 800)
+    # par(mar = c(1.5, 1.5,1.5,1.5))
+    # print(traceplot_proposal_P)
+    # dev.off()
+    
+    
+    if(is.simulation==T){
+      P_s_table_sum <- P_s_table_save%>%
+        summarise(
+          average_credible_length = mean(abs(quantile95 - quantile05)),
+          MAE = mean(MAE)
+        ) %>% round(3) 
+    }else{
+      P_s_table_sum <- P_s_table_save%>%
+        summarise(
+          average_credible_length = mean(abs(quantile95 - quantile05))
+        ) %>% round(3) 
+    }
+    P_s_table_sum = P_s_table_sum %>% mutate(model = est_model)%>% mutate(n_clust = K)
+    #adjusting colnames for the current number of clusters K
+    if(!exists('Pcontainer')){
+      Pcontainer = P_s_table_sum
+    }else{
+      Pcontainer =  rbind(Pcontainer,P_s_table_sum)
+    }
+    
+  }
+  #-------------------------------------------------------------------------------
+  # relabeling the chains to correct for label switching
+  #-------------------------------------------------------------------------------
+  # Relabel remaining chains
+  
   # 
   # 
   # bad_values = loo::pareto_k_ids(loo_model_fit)
@@ -759,40 +769,40 @@ for(file in file_to_analyse){
   # 
   # dbinom(upper.tri.Y_ij[961] , upper.tri.N_ij[961], P_ij[961], log = T)
   # 
-  diagnostic1<- ppc_loo_pit_qq(
-    y = upper.tri.Y_ij,
-    yrep = Y_pred,
-    lw = weights(loo_model_fit$psis_object)
-  )+
-    labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
-         subtitle = paste0('Model =',est_model,", K=",K),
-         caption = paste0("data source:",true_model))
-  ggsave(plot=diagnostic1,filename = paste0(processed_wd,'diagnostic1',est_model,K,".png"))
-  
-  
-  diagnostic2 = ppc_loo_pit_overlay( y = upper.tri.Y_ij,
-                                     yrep = Y_pred,
-                                     lw = weights(loo_model_fit$psis_object))+
-    labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
-         subtitle = paste0('Model =',est_model,", K=",K),
-         caption = paste0("data source:",true_model))
-  ggsave(plot=diagnostic2,filename = paste0(processed_wd,'diagnostic2',est_model,K,".png"))
-  
+  # diagnostic1<- ppc_loo_pit_qq(
+  #   y = upper.tri.Y_ij,
+  #   yrep = Y_pred,
+  #   lw = weights(loo_model_fit$psis_object)
+  # )+
+  #   labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+  #        subtitle = paste0('Model =',est_model,", K=",K),
+  #        caption = paste0("data source:",true_model))
+  # ggsave(plot=diagnostic1,filename = paste0(processed_wd,'diagnostic1',est_model,K,".png"))
   # 
-  diagnostic3 = ppc_bars(y = upper.tri.Y_ij,
-                         yrep = Y_pred)+
-    labs(x = 'Y_ij values',title = paste0('Posterior Predictive Check'),
-         subtitle = paste0('Model =',est_model,", K=",K),
-         caption = paste0("data source:",true_model))
-  ggsave(plot=diagnostic3,filename = paste0(processed_wd,'diagnostic3',est_model,K,".png"))
-  
+  # 
+  # diagnostic2 = ppc_loo_pit_overlay( y = upper.tri.Y_ij,
+  #                                    yrep = Y_pred,
+  #                                    lw = weights(loo_model_fit$psis_object))+
+  #   labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+  #        subtitle = paste0('Model =',est_model,", K=",K),
+  #        caption = paste0("data source:",true_model))
+  # ggsave(plot=diagnostic2,filename = paste0(processed_wd,'diagnostic2',est_model,K,".png"))
+  # 
+  # # 
+  # diagnostic3 = ppc_bars(y = upper.tri.Y_ij,
+  #                        yrep = Y_pred)+
+  #   labs(x = 'Y_ij values',title = paste0('Posterior Predictive Check'),
+  #        subtitle = paste0('Model =',est_model,", K=",K),
+  #        caption = paste0("data source:",true_model))
+  # ggsave(plot=diagnostic3,filename = paste0(processed_wd,'diagnostic3',est_model,K,".png"))
+  # 
   
   if(is.simulation==F){
     z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
                            waic = waic_model_fit$estimates[1], waic_se = waic_model_fit$estimates[4],
                            percent_bad_values=    round(pareto_k_table(loo_model_fit)[8],4)*100,
                            K0_hat =     K0_hat,
-                           montecarloSE= loo_model_fit
+                           montecarloSE= loo_model_fit,
                            perc_label_switch = my_z_est$label_switch_count/N*100,
                            K0_hat_switched = K0_hat_switched)
   }else if(is.simulation==T){

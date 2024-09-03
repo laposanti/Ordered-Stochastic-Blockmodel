@@ -95,7 +95,7 @@ for(true_model in  c('SST','Simple')){
     seed=20
     N_iter <- 80000  #number of iterations
     burnin <- 50000  #number of discarded iterations
-    thin=15
+    thin=10
     diag0.5=T
     # for(K in 3:10){
     K = data_to_be_estimated$ground_truth$K
@@ -118,7 +118,7 @@ for(true_model in  c('SST','Simple')){
       #setting up the chain hyperparameter
       
       #where to save the data
-      saving_directory = "./Results/"
+      saving_directory = paste0("./Results/MCMC_output/Fixed_K/Simulation/True_Model",true_model,"/")
       
       
       #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
@@ -142,7 +142,7 @@ for(true_model in  c('SST','Simple')){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,
-                                                            thin=thin,diag0.5 = diag0.5)
+                                                            thin=thin,diag0.5 = T)
       
       
       
@@ -197,7 +197,7 @@ for(true_model in  c('SST','Simple')){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,
-                                                            thin = thin,diag0.5 = diag0.5)
+                                                            thin = thin,diag0.5 = T)
       
       
       
@@ -250,7 +250,7 @@ for(true_model in  c('SST','Simple')){
                                                               model = est_model, 
                                                               custom_init = custom_init,
                                                               power_posterior_apprach = power_posterior_apprach,
-                                                              thin=thin,diag0.5=diag0.5)
+                                                              thin=thin,diag0.5= F)
       my_names <- paste0("chain", 1:n_chains)
       names(chains_Simple)<- my_names 
       chains_Simple[['recovery_level']] = recovery_capability

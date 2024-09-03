@@ -113,7 +113,8 @@ if('SST' %in% choose_model_to_estimate){
                                                     model = est_model, 
                                                     custom_init = custom_init,
                                                     power_posterior_apprach = power_posterior_apprach,
-                                                    thin = thin)
+                                                    thin = thin,
+                                                    diag0.5 = T)
   names(chains) = paste0('chain',unlist(K_est))
   
   
@@ -154,7 +155,9 @@ if('WST' %in% choose_model_to_estimate){
                                                         seed = seed, 
                                                         model = est_model, 
                                                         custom_init = custom_init,
-                                                        power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                        power_posterior_apprach = power_posterior_apprach,
+                                                        thin = thin,
+                                                        diag0.5 = T)
   
   
   
@@ -203,7 +206,8 @@ if('Simple' %in% choose_model_to_estimate){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin)
+                                                          thin=thin,
+                                                          diag0.5 = F)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,"Data_from",

@@ -68,9 +68,9 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 60000 #number of iterations
-burnin <- 30000 #number of discarded iterations
-thin = 15
+N_iter <- 80000 #number of iterations
+burnin <- 50000 #number of discarded iterations
+thin = 10
 
 
 K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
@@ -114,7 +114,8 @@ if('SST' %in% choose_model_to_estimate){
                                                     model = est_model, 
                                                     custom_init = custom_init,
                                                     power_posterior_apprach = power_posterior_apprach,
-                                                    thin = thin)
+                                                    thin = thin,
+                                                    diag0.5 = T)
   names(chains) = paste0('chain',unlist(K_est))
   
   
@@ -155,7 +156,9 @@ if('WST' %in% choose_model_to_estimate){
                                                         seed = seed, 
                                                         model = est_model, 
                                                         custom_init = custom_init,
-                                                        power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                        power_posterior_apprach = power_posterior_apprach,
+                                                        thin = thin,
+                                                        diag0.5 = T)
   
   
   
@@ -204,7 +207,8 @@ if('Simple' %in% choose_model_to_estimate){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin)
+                                                          thin=thin,
+                                                          diag0.5 = F)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,

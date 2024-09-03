@@ -96,7 +96,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   n = nrow(N_ij)
   diag0.5=T
   power_posterior_apprach=F
-  thin = 15
+  thin = 5
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 23
@@ -142,7 +142,7 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,thin=thin,
-                                                          diag0.5 = diag0.5)
+                                                          diag0.5 = T)
     
     names(chains_SST) = paste0('chain',unlist(K_values))
     
@@ -189,7 +189,7 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,thin=thin,
-                                                          diag0.5 = diag0.5)
+                                                          diag0.5 = T)
     
     
     
@@ -242,7 +242,7 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,thin=thin,
-                                                            diag0.5 =diag0.5)
+                                                            diag0.5 = F)
 
     names(chains_Simple) = paste0('chain',unlist(K_values))
     

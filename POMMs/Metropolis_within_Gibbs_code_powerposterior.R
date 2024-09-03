@@ -189,6 +189,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              to_be_saved = (burnin+1):N_iter
                                                              N_iter_eff = sum(to_be_saved %% thin == 0) 
                                                              
+                                                             if(model == 'Simple'){
+                                                               diag0.5 = F
+                                                             }
                                                              
                                                              # Get the indices of the upper triangular part of the matrix
                                                              upper_tri_indices <- upper.tri(N_ij)
