@@ -310,7 +310,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  }
                                                                }
                                                                
-                                                            
+                                                               z_P = vec2mat(z_current)
+                                                               
                                                                labels_available<- 1:K
                                                                #checking that we have exactly K labels
                                                                label_counts <- table(factor(z_current, levels = labels_available))
@@ -517,7 +518,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    }
                                                                    
                                                                    P_current = inverse_logit_f(theta_current)
-                                                                   z_mat_current = vec2mat(z_current)
+                                                                   z_mat_current = vec2mat_0_P(z_current,  P_current)
                                                                    P_ij_current = calculate_victory_probabilities(z_mat_current,  P_current)
                                                                    A_container[save_count,] = dbinom(Y_ij[common_indices], 
                                                                                                      N_ij[common_indices], 

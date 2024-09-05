@@ -155,7 +155,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
   n<- nrow(N_ij)
   P_prime<- inverse_logit_f(theta_prime)
   
-  P_NbyN_prime<- calculate_victory_probabilities(vec2mat(z),P_prime)
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z,P_prime),P_prime)
   
   A_prime<-   sum(dbinom(Y_ij[common_indices],size = N_ij[common_indices], 
                          P_NbyN_prime[common_indices],log = T))
@@ -170,7 +170,7 @@ theta_update_f = function(Y_ij, N_ij,z, theta, alpha_vec, n_k, mu_vec,K, tau_the
   uo<- data.frame(row = theta_combn[,1], col = theta_combn[,2] )# permuting the order of the rows
   
   for(i_th in 1:nrow(uo)){
-    
+
     theta_scanning <- theta_prime
     P_NbyN_scanning = P_NbyN_prime
     
@@ -385,7 +385,7 @@ mu_update_f = function(Y_ij, N_ij,z,theta, alpha_vec, n_k, mu_vec,tau_mu_vec, K,
 
 
 log_lik_f_binom = function(N,Y,z,P, directed=T){
-  z_P<- vec2mat(z)
+  z_P<- vec2mat_0_P(z,P)
   P_nbyn<- calculate_victory_probabilities(z_P, P)
   if(directed==T){
     #computing the pairwise log-probabilitiees
@@ -402,7 +402,7 @@ log_lik_f_binom = function(N,Y,z,P, directed=T){
 
 ll_naive = function(z,theta,Y_ij, N_ij,common_indices){
   P = inverse_logit_f(theta)
-  z_mat = vec2mat(z)
+  z_mat = vec2mat_0_P(z,  P)
   P_ij = calculate_victory_probabilities(z_mat,  P)
   A_cur = dbinom(  Y_ij[common_indices], N_ij[common_indices], P_ij[common_indices],log = T)
   return(sum(A_cur))
@@ -416,8 +416,7 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
   P<- inverse_logit_f(theta)
   n<- nrow(N_ij)
   z_prime= z
-  
-  P_NbyN_prime<- calculate_victory_probabilities(vec2mat(z_prime),P)
+  P_NbyN_prime<- calculate_victory_probabilities(vec2mat_0_P(z_prime,P),P)
   
   
   A_prime<-  sum(dbinom(Y_ij[common_indices],
@@ -426,7 +425,7 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
   
   
-  n_prime = matrix(0,K,1)
+  n_prime = matrix(0,nrow(P),1)
   for(h in 1:K){
     n_prime[h] = sum(length(which(z_prime==h)))
   }
@@ -441,19 +440,17 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
     k_prime <- z_prime[i_th_turn]
     
     # Sample a new label using the adjusted probabilities
-    
-    
-    k_scanning <- sample(x = setdiff(labels_available, k_prime), size = 1, replace = F)
+    if(model != 'Simple'){
+      labels_to_sample = labels_available
+      
+      
+      
+    }else{
+      labels_to_sample = labels_available
+    }
+    k_scanning <- sample(x = setdiff(labels_to_sample, k_prime), size = 1, replace = F)
     
     z_scanning[i_th_turn] <- k_scanning
-    
-    n_scanning<- n_prime
-    n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
-    
-    # Check if any entry of n_scanning is zero, if so, skip to the next iteration
-    if(any(n_scanning==0)){
-      next
-    }
     
     #the items in cluster i_star
     logical_matrix1 = matrix(FALSE, n,n)
@@ -488,7 +485,9 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
     #Updating the likelihood
     A_scanning = A_prime - A_minus + A_plus
     
-
+    n_scanning<- n_prime
+    n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
+    
     B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
     
     log_r= t*A_scanning - t*A_prime + B_scanning - B_prime
@@ -507,7 +506,7 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
     #else, z_prime[ii] stays equal to z_current[ii]
   }
   z<- z_prime
-  z_P<- vec2mat(z)
+  z_P<- vec2mat_0_P(z,P)
   # number of victories between block p and block q
   # ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
   # # number of missed victories between block p and block q
@@ -521,174 +520,174 @@ z_update_f = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta,
   return(list(acc.moves = acc.count_z, z_current= z, A_prime = A_prime))
 } 
 
-# 
-# z_update_f1 = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
-#                        K, 
-#                        acc.count_z,labels_available,model,t){
-#   
-#   P = inverse_logit_f(theta)
-#   #redefining prior quantities
-#   n_prime = n_k
-#   
-#   B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
-#   
-#   
-#   upper.tri.Y_ij = Y_ij*upper.tri(Y_ij)
-#   upper.tri.N_ij = N_ij*upper.tri(N_ij)
-#   coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-#   n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-#   
-#   z_prime = z
-#   z_mat_prime = vec2mat_0_P(z_prime, theta)
-#   
-#   A_prime = llik_over_blocks_f_binomial(lamdabar = lamdabar,
-#                                         ybar = ybar,
-#                                         mbar = mbar,
-#                                         theta = theta,
-#                                         K = K,
-#                                         t = t)
-#   
-#   scanning_order = sample(1:n,n, replace=F)
-#   # full sweep
-#   for(i_th_turn in scanning_order){
-#     #save current label of z_ii
-#     k_prime <- z_prime[i_th_turn]
-#     
-#     # Sample a new label using the adjusted probabilities
-#     if(model != 'Simple'){
-#       labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
-#       
-#       #checking which adjacent labels are available, and if k_prime is among those, exclude it
-#       avail_options_k_prime = setdiff(labels_to_sample, k_prime)
-#       
-#       #sample one from those available
-#       k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
-#       #the probability of extracting k_scanning is 1/number of labels available (either 1 or two)
-#       probability_k_prime_given_k_current = 1/length(avail_options_k_prime)
-#       #given k_scanning, what is the porbability of getting k_current?
-#       #1) get the adjacent labels to k_scanning
-#       labels_to_sample_current = c(min(k_scanning+1, K), max(k_scanning-1, 1))
-#       #2) compute how many they are
-#       avail_options_k_current = setdiff(labels_to_sample_current, k_scanning)
-#       #3) let's compute the conditional probability to go from k_scanning to k_current
-#       probability_k_current_given_k_prime = 1/length(avail_options_k_current)
-#     }else{
-#       #checking which adjacent labels are available, and if k_prime is among those, exclude it
-#       avail_options_k_prime = setdiff(labels_available, k_prime)
-#       
-#       #sample one from those available
-#       k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
-#       
-#       probability_k_prime_given_k_current = 1/(K-1)
-#       probability_k_current_given_k_prime = 1/(K-1)
-#     }
-#     
-#     
-#     #assign the new label
-#     z_mat_scanning = z_mat_prime
-#     z_mat_scanning[i_th_turn,] <- rep(0,K) + (labels_available == k_scanning)
-#     
-#     
-#     
-#     
-#     #----------
-#     # Subtracting the contribution of the current i-th item from ybar, mbar and lambdabar
-#     
-#     #-------ybar
-#     i_th_victoriesvs_all_clusters = t(z_mat_prime)%*%(upper.tri.Y_ij)[i_th_turn,]
-#     all_clusters_victories_vs_ith = (upper.tri.Y_ij)[,i_th_turn]%*%z_mat_prime
-#     
-#     subtract_matrix = matrix(0,K,K)
-#     subtract_matrix[k_prime,]= i_th_victoriesvs_all_clusters
-#     subtract_matrix[,k_prime]= subtract_matrix[,k_prime] + all_clusters_victories_vs_ith
-#     
-#     #-------mbar
-#     i_th_games_vs_all_clusters = t(z_mat_prime)%*%(n_minus_y1)[i_th_turn,]
-#     all_clusters_games_vs_ith = (n_minus_y1)[,i_th_turn]%*%z_mat_prime
-#     
-#     
-#     subtract_matrix_N_ij = matrix(0,K,K)
-#     subtract_matrix_N_ij[k_prime,]= i_th_games_vs_all_clusters
-#     subtract_matrix_N_ij[,k_prime] = subtract_matrix_N_ij[,k_prime] + all_clusters_games_vs_ith
-#     
-#     #-------lamdabar
-#     i_th_possibilities_vs_all_clusters = t(z_mat_prime)%*%(coef1)[i_th_turn,]
-#     all_clusters_possibilities_vs_ith = (coef1)[,i_th_turn]%*%z_mat_prime
-#     
-#     subtract_matrix_lamda_ij = matrix(0,K,K)
-#     subtract_matrix_lamda_ij[k_prime,]= i_th_possibilities_vs_all_clusters
-#     subtract_matrix_lamda_ij[,k_prime] = subtract_matrix_lamda_ij[,k_prime] + all_clusters_possibilities_vs_ith
-#     
-#     #subtracting contribution to the likelihood
-#     A_minus = sum(subtract_matrix_lamda_ij+ subtract_matrix * log(P)+(subtract_matrix_N_ij)*log(1 - P))
-#     
-#     #----------
-#     # Adding the contribution of the new i-th item from ybar, mbar and lambdabar
-#     
-#     #-------ybar
-#     i_th_victoriesvs_all_clusters_scanning = t(z_mat_scanning)%*%(upper.tri.Y_ij)[i_th_turn,]
-#     all_clusters_victories_vs_ith_scanning = (upper.tri.Y_ij)[,i_th_turn]%*%z_mat_scanning
-#     
-#     
-#     to_add_matrix = matrix(0,K,K)
-#     to_add_matrix[k_scanning,] = i_th_victoriesvs_all_clusters_scanning
-#     to_add_matrix[,k_scanning] = to_add_matrix[,k_scanning] + all_clusters_victories_vs_ith_scanning
-#     
-#     
-#     #-------mbar
-#     i_th_gamesvs_all_clusters_scanning = t(z_mat_scanning)%*%(n_minus_y1*upper.tri(n_minus_y1))[i_th_turn,]
-#     all_clusters_games_vs_ith_scanning = (n_minus_y1*upper.tri(n_minus_y1))[,i_th_turn]%*%z_mat_scanning
-#     
-#     to_add_matrix_N_ij = matrix(0,K,K)
-#     to_add_matrix_N_ij[k_scanning,] = i_th_gamesvs_all_clusters_scanning
-#     to_add_matrix_N_ij[,k_scanning] = to_add_matrix_N_ij[,k_scanning] + all_clusters_games_vs_ith_scanning
-#     
-#     #-------lambdabar
-#     i_th_possibilities_all_clusters_scanning = t(z_mat_scanning)%*%coef1[i_th_turn,]
-#     all_clusters_possibilities_vs_ith_scanning = coef1[,i_th_turn]%*%z_mat_scanning
-#     
-#     to_add_matrix_lamda_ij = matrix(0,K,K)
-#     to_add_matrix_lamda_ij[k_scanning,] = i_th_possibilities_all_clusters_scanning
-#     to_add_matrix_lamda_ij[,k_scanning] = to_add_matrix_lamda_ij[,k_scanning] + all_clusters_possibilities_vs_ith_scanning
-#     
-#     #adding contribution to the likelihood
-#     A_plus = sum(to_add_matrix_lamda_ij+ to_add_matrix * log(P)+(to_add_matrix_N_ij)*log(1 - P))
-#     
-#     A_scanning = A_prime - A_minus +A_plus
-#     
-#     
-#     n_scanning<- n_prime
-#     n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
-#     
-#     B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
-#     
-#     log_r= t*A_scanning - t*A_prime + B_scanning - B_prime + 
-#       log(probability_k_current_given_k_prime) - log(probability_k_prime_given_k_current)
-#     
-#     #create statements that check conditiond to accept move
-#     GS_condition= min(log_r,0)>=log(runif(1))
-#     if(GS_condition){
-#       acc.count_z[i_th_turn]= acc.count_z[i_th_turn]+1
-#       z_mat_prime <- z_mat_scanning
-#       A_prime<- A_scanning
-#       B_prime<- B_scanning
-#       n_prime <- n_scanning
-#     }
-#   }
-#   
-#   z = z_mat_prime %*% matrix(labels_available,K,1)
-#   
-#   # number of victories between block p and block q
-#   ybar = t(z_mat_prime)%*%(Y_ij*upper.tri(Y_ij))%*%z_mat_prime
-#   # number of missed victories between block p and block q
-#   mbar<- t(z_mat_prime)%*%n_minus_y1%*%z_mat_prime
-#   
-#   lamdabar <- t(z_mat_prime)%*%(coef1)%*%z_mat_prime
-#   
-#   return(list(acc.moves = acc.count_z, z_current= z, ybar =ybar, mbar=mbar, lamdabar= lamdabar))
-# } 
-# 
-# 
+
+z_update_f1 = function(N_ij, Y_ij, z,lamdabar,ybar,mbar, theta, alpha_vec, n_k,
+                       K, 
+                       acc.count_z,labels_available,model,t){
+  
+  P = inverse_logit_f(theta)
+  #redefining prior quantities
+  n_prime = n_k
+  
+  B_prime<- ddirichlet_multinomial(N = n,K = K,n_k = n_k, my_alpha =  alpha_vec)
+  
+  
+  upper.tri.Y_ij = Y_ij*upper.tri(Y_ij)
+  upper.tri.N_ij = N_ij*upper.tri(N_ij)
+  coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
+  n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
+  
+  z_prime = z
+  z_mat_prime = vec2mat_0_P(z_prime, theta)
+  
+  A_prime = llik_over_blocks_f_binomial(lamdabar = lamdabar,
+                                        ybar = ybar,
+                                        mbar = mbar,
+                                        theta = theta,
+                                        K = K,
+                                        t = t)
+  
+  scanning_order = sample(1:n,n, replace=F)
+  # full sweep
+  for(i_th_turn in scanning_order){
+    #save current label of z_ii
+    k_prime <- z_prime[i_th_turn]
+    
+    # Sample a new label using the adjusted probabilities
+    if(model != 'Simple'){
+      labels_to_sample = c(min(k_prime+1, K), max(k_prime-1, 1))
+      
+      #checking which adjacent labels are available, and if k_prime is among those, exclude it
+      avail_options_k_prime = setdiff(labels_to_sample, k_prime)
+      
+      #sample one from those available
+      k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
+      #the probability of extracting k_scanning is 1/number of labels available (either 1 or two)
+      probability_k_prime_given_k_current = 1/length(avail_options_k_prime)
+      #given k_scanning, what is the porbability of getting k_current?
+      #1) get the adjacent labels to k_scanning
+      labels_to_sample_current = c(min(k_scanning+1, K), max(k_scanning-1, 1))
+      #2) compute how many they are
+      avail_options_k_current = setdiff(labels_to_sample_current, k_scanning)
+      #3) let's compute the conditional probability to go from k_scanning to k_current
+      probability_k_current_given_k_prime = 1/length(avail_options_k_current)
+    }else{
+      #checking which adjacent labels are available, and if k_prime is among those, exclude it
+      avail_options_k_prime = setdiff(labels_available, k_prime)
+      
+      #sample one from those available
+      k_scanning <- sample(x = avail_options_k_prime, size = 1, replace = F)
+      
+      probability_k_prime_given_k_current = 1/(K-1)
+      probability_k_current_given_k_prime = 1/(K-1)
+    }
+    
+    
+    #assign the new label
+    z_mat_scanning = z_mat_prime
+    z_mat_scanning[i_th_turn,] <- rep(0,K) + (labels_available == k_scanning)
+    
+    
+    
+    
+    #----------
+    # Subtracting the contribution of the current i-th item from ybar, mbar and lambdabar
+    
+    #-------ybar
+    i_th_victoriesvs_all_clusters = t(z_mat_prime)%*%(upper.tri.Y_ij)[i_th_turn,]
+    all_clusters_victories_vs_ith = (upper.tri.Y_ij)[,i_th_turn]%*%z_mat_prime
+    
+    subtract_matrix = matrix(0,K,K)
+    subtract_matrix[k_prime,]= i_th_victoriesvs_all_clusters
+    subtract_matrix[,k_prime]= subtract_matrix[,k_prime] + all_clusters_victories_vs_ith
+    
+    #-------mbar
+    i_th_games_vs_all_clusters = t(z_mat_prime)%*%(n_minus_y1)[i_th_turn,]
+    all_clusters_games_vs_ith = (n_minus_y1)[,i_th_turn]%*%z_mat_prime
+    
+    
+    subtract_matrix_N_ij = matrix(0,K,K)
+    subtract_matrix_N_ij[k_prime,]= i_th_games_vs_all_clusters
+    subtract_matrix_N_ij[,k_prime] = subtract_matrix_N_ij[,k_prime] + all_clusters_games_vs_ith
+    
+    #-------lamdabar
+    i_th_possibilities_vs_all_clusters = t(z_mat_prime)%*%(coef1)[i_th_turn,]
+    all_clusters_possibilities_vs_ith = (coef1)[,i_th_turn]%*%z_mat_prime
+    
+    subtract_matrix_lamda_ij = matrix(0,K,K)
+    subtract_matrix_lamda_ij[k_prime,]= i_th_possibilities_vs_all_clusters
+    subtract_matrix_lamda_ij[,k_prime] = subtract_matrix_lamda_ij[,k_prime] + all_clusters_possibilities_vs_ith
+    
+    #subtracting contribution to the likelihood
+    A_minus = sum(subtract_matrix_lamda_ij+ subtract_matrix * log(P)+(subtract_matrix_N_ij)*log(1 - P))
+    
+    #----------
+    # Adding the contribution of the new i-th item from ybar, mbar and lambdabar
+    
+    #-------ybar
+    i_th_victoriesvs_all_clusters_scanning = t(z_mat_scanning)%*%(upper.tri.Y_ij)[i_th_turn,]
+    all_clusters_victories_vs_ith_scanning = (upper.tri.Y_ij)[,i_th_turn]%*%z_mat_scanning
+    
+    
+    to_add_matrix = matrix(0,K,K)
+    to_add_matrix[k_scanning,] = i_th_victoriesvs_all_clusters_scanning
+    to_add_matrix[,k_scanning] = to_add_matrix[,k_scanning] + all_clusters_victories_vs_ith_scanning
+    
+    
+    #-------mbar
+    i_th_gamesvs_all_clusters_scanning = t(z_mat_scanning)%*%(n_minus_y1*upper.tri(n_minus_y1))[i_th_turn,]
+    all_clusters_games_vs_ith_scanning = (n_minus_y1*upper.tri(n_minus_y1))[,i_th_turn]%*%z_mat_scanning
+    
+    to_add_matrix_N_ij = matrix(0,K,K)
+    to_add_matrix_N_ij[k_scanning,] = i_th_gamesvs_all_clusters_scanning
+    to_add_matrix_N_ij[,k_scanning] = to_add_matrix_N_ij[,k_scanning] + all_clusters_games_vs_ith_scanning
+    
+    #-------lambdabar
+    i_th_possibilities_all_clusters_scanning = t(z_mat_scanning)%*%coef1[i_th_turn,]
+    all_clusters_possibilities_vs_ith_scanning = coef1[,i_th_turn]%*%z_mat_scanning
+    
+    to_add_matrix_lamda_ij = matrix(0,K,K)
+    to_add_matrix_lamda_ij[k_scanning,] = i_th_possibilities_all_clusters_scanning
+    to_add_matrix_lamda_ij[,k_scanning] = to_add_matrix_lamda_ij[,k_scanning] + all_clusters_possibilities_vs_ith_scanning
+    
+    #adding contribution to the likelihood
+    A_plus = sum(to_add_matrix_lamda_ij+ to_add_matrix * log(P)+(to_add_matrix_N_ij)*log(1 - P))
+    
+    A_scanning = A_prime - A_minus +A_plus
+    
+    
+    n_scanning<- n_prime
+    n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
+    
+    B_scanning<- ddirichlet_multinomial(N = n,K = K,n_k = n_scanning,my_alpha = alpha_vec)
+    
+    log_r= t*A_scanning - t*A_prime + B_scanning - B_prime + 
+      log(probability_k_current_given_k_prime) - log(probability_k_prime_given_k_current)
+    
+    #create statements that check conditiond to accept move
+    GS_condition= min(log_r,0)>=log(runif(1))
+    if(GS_condition){
+      acc.count_z[i_th_turn]= acc.count_z[i_th_turn]+1
+      z_mat_prime <- z_mat_scanning
+      A_prime<- A_scanning
+      B_prime<- B_scanning
+      n_prime <- n_scanning
+    }
+  }
+  
+  z = z_mat_prime %*% matrix(labels_available,K,1)
+  
+  # number of victories between block p and block q
+  ybar = t(z_mat_prime)%*%(Y_ij*upper.tri(Y_ij))%*%z_mat_prime
+  # number of missed victories between block p and block q
+  mbar<- t(z_mat_prime)%*%n_minus_y1%*%z_mat_prime
+  
+  lamdabar <- t(z_mat_prime)%*%(coef1)%*%z_mat_prime
+  
+  return(list(acc.moves = acc.count_z, z_current= z, ybar =ybar, mbar=mbar, lamdabar= lamdabar))
+} 
+
+
 
 
 

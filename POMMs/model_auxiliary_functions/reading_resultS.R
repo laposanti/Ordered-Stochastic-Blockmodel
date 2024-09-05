@@ -26,7 +26,7 @@ source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_funct
 
 
 #FLAG is.simulation=T IF YOU ARE READING THE RESULTS FOR A SIMULATION STUDY
-is.simulation = T
+is.simulation = F
 
 if(is.simulation==F){
   
@@ -245,7 +245,7 @@ googledrive::drive_auth(email = subject)
 # print(filenames)
 if(is.simulation==F){
   if( true_model == 'Tennis_data'){
-    folder_url <- "https://drive.google.com/drive/u/1/folders/1V-lQDh0DCWSx57YJ1hHf7ebwd6UinY6Z"
+    folder_url <- "https://drive.google.com/drive/u/1/folders/1gLXPTSBCpVOZXmg9J8JxouUDHIJC1eDf"
   }else{
     folder_url <- "https://drive.google.com/drive/u/1/folders/1_7lx5phdeHn7WE5IK6-Y3w4uA7efHBsL"
   }
@@ -292,7 +292,7 @@ for(file in file_to_analyse){
   
   
   
-  save_path = paste0(data_wd,"temp_file_citation.rds")
+  save_path = paste0(data_wd,"temp_file_tennis.rds")
   drive_download(file = matching_files $id[file], path = save_path,overwrite = T)
   uploaded_results = readRDS(save_path)
   
