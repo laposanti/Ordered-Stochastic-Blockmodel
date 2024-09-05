@@ -99,14 +99,11 @@ for(data_description in c("Tennis_data","Citation_data")){
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 23
-<<<<<<< HEAD
-  N_iter <- 100000 #number of iterations
+  N_iter <- 250000 #number of iterations
   burnin <- 50000 #number of discarded iterations
-  thin = 5
-=======
-  N_iter <- 100000 
-  burnin <- 70000 
->>>>>>> parent of e242475 (vec2mat)
+  thin = 20
+
+
   #number of clusters to fit
   #where to save the data
   saving_directory = "./Results/MCMC_output/Fixed_K/Application"
