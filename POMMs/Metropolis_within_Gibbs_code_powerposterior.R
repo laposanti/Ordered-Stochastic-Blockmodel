@@ -327,7 +327,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                                
                                                                z_P = vec2mat(z_current)
-                                    
+                                                               
                                                                
                                                                
                                                                A_current =  ll_naive(z = z_current, 
@@ -361,7 +361,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                mu_vec_container <- matrix(0, nrow = K, ncol = N_iter_eff)
                                                                theta_container <- array(0, dim = c(K,K,N_iter_eff))
                                                                
-                                                    
+                                                               
                                                                
                                                                #defining the containers to store acceptance counts
                                                                acc.count_z <- rep(1,n)
@@ -423,7 +423,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    acc.count_theta =theta_update$acc.moves
                                                                    
                                                                    
-                                     
+                                                                   
                                                                  }
                                                                  
                                                                  if(estimation_control$mu== 1) {
@@ -443,14 +443,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    theta_current = mu_update$theta
                                                                    
                                                                    
-                                              
+                                                                   
                                                                    
                                                                  }
                                                                  
                                                                  
                                                                  
                                                                  
-                                                    
+                                                                 
                                                                  #storing results for inference
                                                                  
                                                                  if(j > burnin & j%%thin==0){
@@ -474,7 +474,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                  }
                                                                  
-                                                     
+                                                                 
                                                                  
                                                                  
                                                                  end_time <- Sys.time()
@@ -523,7 +523,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  
                                                                  chains = list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers,
                                                                                control_containers=control_containers, acceptance_rates= acceptance_rates,
-                                                                       t=t, seed= seed)
+                                                                               t=t, seed= seed)
                                                                  
                                                                  #storing the results of each chain
                                                                  my_names <- paste0("chain")
@@ -540,9 +540,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                       acc.count_z = acc.count_z, 
                                                                                       acc.count_mu_vec= acc.count_mu_vec)
                                                              
-                                                       est_containers = list(z = z_container,
-                                                                             theta = theta_container, 
-                                                                             mu_vec = mu_vec_container)
+                                                             est_containers = list(z = z_container,
+                                                                                   theta = theta_container, 
+                                                                                   mu_vec = mu_vec_container)
                                                              
                                                              control_containers = list(est_model = model,
                                                                                        N_iter = N_iter,
@@ -556,7 +556,6 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                          est_containers=est_containers, 
                                                                          control_containers=control_containers, 
                                                                          acceptance_rates= acceptance_rates, 
-                                                                         st.deviations=st.deviations, 
                                                                          t=t, seed = seed + chain))
                                                              
                                                              
