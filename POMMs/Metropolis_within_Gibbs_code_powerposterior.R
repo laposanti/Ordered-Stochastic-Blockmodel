@@ -327,18 +327,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                                
                                                                z_P = vec2mat(z_current)
-                                                               # number of victories between block p and block q
-                                                               # number of victories between block p and block q
-                                                               # ybar = t(z_P)%*%(Y_ij*upper.tri(Y_ij))%*%z_P
-                                                               # # number of missed victories between block p and block q
-                                                               # n_minus_y1 <- (N_ij-Y_ij)*upper.tri(N_ij)
-                                                               # # number of missed victories between block p and block q
-                                                               # mbar<- t(z_P)%*%n_minus_y1%*%z_P
-                                                               # 
-                                                               # coef1 = lchoose(N_ij, Y_ij)*upper.tri(N_ij)
-                                                               # lamdabar <- t(z_P)%*%(coef1)%*%z_P
-                                                               # 
-                                                               
+                                    
                                                                
                                                                
                                                                A_current =  ll_naive(z = z_current, 
@@ -363,38 +352,28 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  break
                                                                }
                                                                #--------------------------------------------------------------------------
-                                                               #setting and initialising containers
+                                                               # PREPARATORY STEPS FOR THE MCMC
                                                                #--------------------------------------------------------------------------
                                                                
-                                                               #initialising the chain
+                                                               #defining the containers to store results
                                                                A_container <- matrix(0, ncol = sum(common_indices) , nrow = N_iter_eff)
-                                                               
-                                                               
-                                                               #initialising the chain
                                                                z_container <- matrix(0, nrow = n, ncol = N_iter_eff)
-                                                               #initialising the chain
-                                                               mu_vec_container = matrix(0, nrow = K, ncol = N_iter_eff)
+                                                               mu_vec_container <- matrix(0, nrow = K, ncol = N_iter_eff)
+                                                               theta_container <- array(0, dim = c(K,K,N_iter_eff))
                                                                
-                                                               #initialising the adaptive variance
-                                                               # tau_mu_vec <- rep(0.3, K)
-                                                               # tau_mu_vec_container = matrix(0,K, N_iter)
-                                                               # tau_mu_vec_container[,1] <- tau_mu_vec
+                                                    
                                                                
-                                                               #initialing theta and its adaptive variance container
-                                                               theta_container = array(0, dim = c(K,K,N_iter_eff))
-                                                               
-                                                               
-                                                               # tau_theta_container = array(0,dim=c(K,K,N_iter_eff))
-                                                               # tau_theta =matrix(0.25,K,K)
-                                                               # tau_theta_container[,,1] = tau_theta
-                                                               # 
-                                                               
-                                                               
-                                                               #containers for the counts of accepted proposals
-                                                               acc.count_z = rep(1,n)
-                                                               acc.count_sigma_squared=1
-                                                               acc.count_mu_vec = rep(1, K)
+                                                               #defining the containers to store acceptance counts
+                                                               acc.count_z <- rep(1,n)
+                                                               acc.count_mu_vec <- rep(1, K)
                                                                acc.count_theta<- matrix(1,K,K)
+                                                               
+                                                               
+                                                               
+                                                               #defining the proposals' variances
+                                                               tau_mu_vec= rep(0.3,K)
+                                                               tau_theta = matrix(0.25,K,K)
+                                                               
                                                                
                                                                #READY TO BOMB!
                                                                iteration_time= vector()
@@ -444,20 +423,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    acc.count_theta =theta_update$acc.moves
                                                                    
                                                                    
-                                                                   # if(j %% 50 == 0){
-                                                                   #   
-                                                                   #   for(my_p in 1:K){
-                                                                   #     for(my_q in my_p:K){
-                                                                   #       
-                                                                   #       tau_theta[my_p,my_q] = tuning_proposal(iteration = j,
-                                                                   #                                              acceptance_count = acc.count_theta[my_p,my_q],
-                                                                   #                                              sigma = tau_theta[my_p,my_q],
-                                                                   #                                              acceptanceTarget = optimal_acceptance_rate_theta,
-                                                                   #                                              min_sigma = 0.00002)
-                                                                   #       
-                                                                   #     }
-                                                                   #   }
-                                                                   # }
+                                     
                                                                  }
                                                                  
                                                                  if(estimation_control$mu== 1) {
@@ -477,27 +443,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    theta_current = mu_update$theta
                                                                    
                                                                    
-                                                                   # 
-                                                                   # if(j %% 50 == 0){
-                                                                   #   tau_mu_vec <- tuning_proposal(iteration=j,acceptance_count = acc.count_mu_vec,
-                                                                   #                                 sigma = tau_mu_vec,
-                                                                   #                                 acceptanceTarget = optimal_acceptance_rate_mu,
-                                                                   #                                 min_sigma = 0.002)
-                                                                   # }
-                                                                   # 
-                                                                   
+                                              
                                                                    
                                                                  }
                                                                  
                                                                  
                                                                  
                                                                  
-                                                                 #storing scales
-                                                                 # tau_sigma_squared_container[j]<- tau_sigma_squared
-                                                                 # tau_mu_vec_container[j]<- tau_mu_vec
-                                                                 # tau_theta_container[,,j]<- tau_theta
-                                                                 # 
-                                                                 
+                                                    
                                                                  #storing results for inference
                                                                  
                                                                  if(j > burnin & j%%thin==0){
@@ -521,13 +474,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                  }
                                                                  
-                                                                 # #storing scales
-                                                                 # tau_sigma_squared_container[j]<- tau_sigma_squared
-                                                                 # tau_mu_vec_container[j]<- tau_mu_vec
-                                                                 # tau_theta_container[,,j]<- tau_theta
-                                                                 # 
-                                                                 # 
-                                                                 
+                                                     
                                                                  
                                                                  
                                                                  end_time <- Sys.time()
@@ -572,7 +519,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                            thin = thin,
                                                                                            N_iter_eff = N_iter_eff)
                                                                  
-                                                            
+                                                                 
                                                                  
                                                                  chains = list(Y_ij= Y_ij, N_ij = N_ij, ground_truth=ground_truth,est_containers=est_containers,
                                                                                control_containers=control_containers, acceptance_rates= acceptance_rates,
@@ -595,7 +542,6 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                        est_containers = list(z = z_container,
                                                                              theta = theta_container, 
-                                                                            
                                                                              mu_vec = mu_vec_container)
                                                              
                                                              control_containers = list(est_model = model,
