@@ -203,7 +203,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              common_indices <- upper_tri_indices*non_zero_indices
                                                              
                                                              # Convert back to a matrix if needed
-                                                             common_indices <- as.logical(common_indices)
+                                                             common_indices <- matrix(as.logical(common_indices), nrow = nrow(N_ij),ncol = nrow(N_ij),byrow = T)
                                                              
                                                              #if you do not provide custom initial values, the MH auto initialises starting from the seed
                                                              if(all(is.na(custom_init))){
