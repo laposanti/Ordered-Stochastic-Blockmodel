@@ -45,7 +45,7 @@ googledrive::drive_auth(email = subject)
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 
-for(data_description in c("Tennis_data","Citation_data")){
+for(data_description in c("Tennis_data")){
   
   ###############################################################################
   # uploading data
@@ -99,7 +99,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 23
-  N_iter <- 250000 #number of iterations
+  N_iter <- 200000 #number of iterations
   burnin <- 50000 #number of discarded iterations
   thin = 20
 
