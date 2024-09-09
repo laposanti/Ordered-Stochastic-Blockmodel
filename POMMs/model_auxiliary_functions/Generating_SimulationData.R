@@ -110,7 +110,9 @@ for(k in 7){
   for(recovery_capability in 1:length(recovery_capability_levels)){
     recovery_capability=5
     n = 80
+    k=5
     K=k
+ 
     seed =2021
     set.seed(seed)
     

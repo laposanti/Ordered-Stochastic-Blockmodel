@@ -18,7 +18,7 @@ library(truncnorm)
 library(doRNG)
 library(googledrive)
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -59,11 +59,11 @@ is.simulation=T
 data_directory = "./Data/Sim1_data/"
 
 for(true_model in  c('SST','Simple')){
-  
+  true_model = 'SST'
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
   
-  
+  file=3
   
   choose_model_to_estimate = c('SST', 'WST', 'Simple')
   #-----------------------------------------------------------------------------
@@ -71,8 +71,9 @@ for(true_model in  c('SST','Simple')){
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
+    file=3
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
-    
+    data_to_be_estimated$data_plot
     stopifnot(data_to_be_estimated$model == true_model)
     recovery_capability = data_to_be_estimated$recovery_capability
     N_ij = data_to_be_estimated$N_ij
@@ -92,17 +93,12 @@ for(true_model in  c('SST','Simple')){
     n_chains = 4
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
-    seed=20
-<<<<<<< HEAD
-    N_iter <- 80000  #number of iterations
-    burnin <- 50000  #number of discarded iterations
-    thin=10
-=======
-    N_iter <- 60000 + 10000*(k_th-2) #number of iterations
-    burnin <- 30000 + 10000*(k_th-2) #number of discarded iterations
-    thin=15
->>>>>>> parent of e242475 (vec2mat)
+
+    N_iter <- 20000  #number of iterations
+    burnin <- 10000  #number of discarded iterations
+    thin=5
     diag0.5=T
+    seed=23
     # for(K in 3:10){
     K = data_to_be_estimated$ground_truth$K
     K_est = rep(K, n_chains) #number of clusters to fit
@@ -133,7 +129,8 @@ for(true_model in  c('SST','Simple')){
       
       print(paste0("Estimation of the SST model, K=", K_est))
       print(paste0("Begin cycle at:", date(), "\n"))
-      
+      source("./model_auxiliary_functions/Functions_priorSST.R")
+      source("./Metropolis_within_Gibbs_code_powerposterior.R")
       
       estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 0)
       

@@ -295,8 +295,8 @@ for(file in file_to_analyse){
   save_path = paste0(data_wd,"temp_file_tennis.rds")
   drive_download(file = matching_files $id[file], path = save_path,overwrite = T)
   uploaded_results = readRDS(save_path)
-  
-  
+  uploaded_results = chains_SST
+  chains_SST$recovery_level
   burnin=0
   print(paste0('Now estimating ', matching_files$name[file]))
   # The file name
@@ -307,12 +307,12 @@ for(file in file_to_analyse){
   
   # Print the result
   est_model =  match
-  
+  est_model = uploaded_results$chain1$control_containers$est_model
   print(paste0(length(matching_files$name)-file+1,' within the same class left '))
   
   N= nrow(uploaded_results$chain1$Y_ij)
   n=N
-  N_iter = dim(uploaded_results$chain1$est_containers$z)[[2]]
+  N_iter = uploaded_results$chain1$control_containers$N_iter_eff
   K = dim(uploaded_results$chain1$est_containers$theta)[[1]]
   Y_ij <- uploaded_results$chain1$Y_ij
   N_ij <- uploaded_results$chain1$N_ij
@@ -331,16 +331,16 @@ for(file in file_to_analyse){
     sigma_squared_burned = uploaded_results$chain1$est_containers$sigma_squared[1:N_iter]
   }
   
-  K0 <- apply(X = z_burned, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
-  
-  K0_hat <- mean(K0)
+  # K0 <- apply(X = z_burned, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
+  # 
+  # K0_hat <- mean(K0)
   
   
   
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
   
-
+  
   z_burned_1 = uploaded_results$chain1$est_containers$z[,1:N_iter]
   z_burned_2 = uploaded_results$chain2$est_containers$z[,1:N_iter]
   z_burned_3 = uploaded_results$chain3$est_containers$z[,1:N_iter]
@@ -373,18 +373,27 @@ for(file in file_to_analyse){
   # theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
   # theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
   # 
-  
+  uploaded_results$chain1$est_containers$theta
   #-------------------------------------------------------------------------------
   # computing the estimated loglikelihood for each chain
   #-------------------------------------------------------------------------------
   
   num_samples = ncol(z_burned_1)
   
-  filtering_obs = which(upper.tri(N_ij) & N_ij!= 0,arr.ind = T)
+  upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
+  
+  # Get the indices where the matrix elements are greater than zero
+  non_zero_indices <- matrix(N_ij > 0,n,n)
+  
+  # Find the common indices (both upper.tri and strictly positive)
+  common_indices <- upper_tri_indices*non_zero_indices
+  
+  # Convert back to a logical matrix
+  filtering_obs <- matrix(as.logical(common_indices), nrow = n,ncol = n)
   upper.tri.Y_ij = Y_ij[filtering_obs]
   upper.tri.N_ij = N_ij[filtering_obs]
   
-  Y_pred = matrix(NA, nrow = num_samples,ncol = length(upper.tri.Y_ij))
+  Y_pred = matrix(NA, nrow = num_samples*4,ncol = length(upper.tri.Y_ij))
   
   LL_list <- foreach(i=1:4, .packages='foreach')%do%{
     
@@ -403,8 +412,8 @@ for(file in file_to_analyse){
       
       llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[filtering_obs],log = T)
       
-      Y_pred[t,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
-                           P_ij[filtering_obs])
+      Y_pred[t+(i-1)*2000,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
+                                      P_ij[filtering_obs])
     }
     print(i)
     return(llik)
@@ -477,58 +486,124 @@ for(file in file_to_analyse){
   
   
   library(bayesplot)
-  c_log_lik = rbind(LL_list[[1]],
-                    LL_list[[2]],
-                    LL_list[[3]],
-                    LL_list[[4]])
-  r_effs = loo::relative_eff(c_log_lik
-                                   ,c(rep(1,num_samples),
-                                      rep(2,num_samples),
-                                      rep(3,num_samples),
-                                      rep(4,num_samples)))
+  library(loo)
+  c_log_lik = rbind(LL_list[[1]])
   
-  loo_model_fit = loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs)
+  r_effs = loo::relative_eff(c_log_lik,c(rep(1,num_samples)))
+  
+  loo_model_fit = loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
   saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
   
   plot(loo_model_fit)
   waic_model_fit = waic(LL_list[[1]])
-  
-  
-  
   problematic_values = pareto_k_ids(loo_model_fit)
+  loo::pareto_k_values(loo_model_fit)
+  pareto_k_table(loo_model_fit)
   
+
   
+  prob_values_position = which(filtering_obs==T,arr.ind = T)[problematic_values,] 
+  count_true_better_than_est = vector()
+  count_true_equal_to_est = vector()
   
+  data.frame_sum_general = data.frame(mean_true_like = numeric(),
+                              mean_est_like = numeric(),
+                              z_mode1 = numeric(),
+                              z_mode2 = numeric())
   
-  prob_df = data.frame(row = rownames(Y_ij)[row(Y_ij)[problematic_values]], 
-                       col = colnames(Y_ij)[col(Y_ij)[problematic_values]]) 
-  
-  for(i in 1:length(prob_df)){
-    prob_df$z_row[i] =  point_est_z[which(rownames(Y_ij)==prob_df$row[i])]
-    prob_df$z_col[i] =  point_est_z[which(rownames(Y_ij)==prob_df$col[i])]
+  for(prob_value in 1:nrow(prob_values_position)){
+    prob_value=1
+    problematic_position_1 = prob_values_position[prob_value,1]
+    problematic_position_2 = prob_values_position[prob_value,2]
+    
+    
+    
+    data.frame1 = data.frame(problematic_position_1 = rep(problematic_position_1, num_samples),
+                             problematic_position_2 = rep(problematic_position_2, num_samples),
+                             z_1_true = rep(uploaded_results$chain1$ground_truth$z[problematic_position_1], num_samples),
+                             z_2_true = rep(uploaded_results$chain1$ground_truth$z[problematic_position_2], num_samples))
+    
+    
+    for(t in 1:num_samples){
+      data.frame1$Y_ij[t] = Y_ij[problematic_position_1,problematic_position_2]
+      data.frame1$N_ij[t] = N_ij[problematic_position_1,problematic_position_2]
+      data.frame1$true_P[t] = inverse_logit_f(uploaded_results$chain1$ground_truth$theta[data.frame1$z_1_true[t],data.frame1$z_2_true[t]])
+      data.frame1$cl_est1[t] = z_burned_1[problematic_position_1,t]
+      data.frame1$cl_est2[t] = z_burned_1[problematic_position_2,t]
+      data.frame1$P_entry[t] = inverse_logit_f(theta_burned_1[data.frame1$cl_est1[t],data.frame1$cl_est2[t],t])
+      data.frame1$Y_hat[t] = rbinom(1, data.frame1$N_ij[t],data.frame1$P_entry[t])
+    }
+    
+    data.frame1 = data.frame1 %>% 
+      mutate(true_lik = dbinom(Y_ij,N_ij,true_P),
+             est_lik = dbinom(Y_ij,N_ij,P_entry))
+    
+    data.frame_sum = data.frame1%>%
+      group_by(problematic_position_1,problematic_position_2)%>%
+      summarise(mean_true_like = mean(true_lik),
+                mean_est_like = mean(est_lik),
+                z_mode1 = Mode(cl_est1),
+                z_mode2 = Mode(cl_est2),
+                z_true1 = first(z_1_true),
+                z_true2 = first(z_2_true),
+                Y_ij = first(Y_ij),
+                Y_hat_0.05 = quantile(Y_hat, 0.05),
+                Y_hat_mean = mean(Y_hat),
+                Y_hat_0.95 = quantile(Y_hat, 0.95)
+                )
+    
+    data.frame_sum_general= rbind(data.frame_sum_general, data.frame_sum)
+    
+    counter_g = data.frame1[1000,'true_lik'] > data.frame1[1000,'est_lik']
+    counter_e = data.frame1[1000,'true_lik'] == data.frame1[1000,'est_lik']
+    count_true_better_than_est = append(count_true_better_than_est, counter_g)
+    count_true_equal_to_est = append(count_true_equal_to_est, counter_e)
   }
   
-  for(i in 1:length(prob_df)){
-    prob_df$P_MCMC[i] =  P_est[prob_df$z_row[i],prob_df$z_col[i]]
-    prob_df$P_hat[i] =  Y_ij[prob_df$row[i],prob_df$col[i]]/N_ij[prob_df$row[i],prob_df$col[i]]
+  nrow(prob_values_position)-
+    sum(count_true_equal_to_est)-
+    sum(count_true_better_than_est)
+  
+  mean_error = matrix(NA, N_iter, 3155)
+  for(t in 1:N_iter){
+    mean_error[t,] = upper.tri.Y_ij - Y_pred[t,]
+  }
+  hist(colMeans(abs(mean_error)))
+  
+  point_est_z[8]
+  z_burned_1[8,]
+  dbinom(Y_ij[8,], N_ij[8,])
+  
+  
+  
+  
+  
+  if(is.simulation==F){
+    prob_df = data.frame(row = rownames(Y_ij)[row(Y_ij)[problematic_values]], 
+                         col = colnames(Y_ij)[col(Y_ij)[problematic_values]]) 
+  }else{
+    
+    prob_df = data.frame(row = prob_values_position[,1], 
+                         col = prob_values_position[,2]) 
     
   }
+  
   
   
   pareto_k_values(loo_model_fit)
   
   
   
-  
   my_z_est<- z_plot(z_burned = z_burned_1,  A = LLik_sum[[1]],
                     Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
                     est_model = est_model, true_value =is.simulation, 
-                    diag0.5 =diag0.5 , K=  max(z_burned), N=nrow(uploaded_results$chain1$Y_ij),
+                    diag0.5 =diag0.5 , K=  max(z_burned), N= nrow(uploaded_results$chain1$Y_ij),
                     z_true = uploaded_results$chain1$ground_truth$z ,
                     burnin =  burnin ,label_switch = T,tap= processed_wd)
   
   
   point_est_z<- as.vector(my_z_est$point_est)
+  vi.dist(point_est_z,uploaded_results$chain1$ground_truth$z)
   
   if(est_model == 'SST'&K==6){
     write.csv(point_est_z,paste0(processed_wd,"z_est_K_6modelSST.csv"))
@@ -536,6 +611,12 @@ for(file in file_to_analyse){
   
   
   table(point_est_z)
+  
+  for(i in 1:length(prob_df)){
+    prob_df$z_row[i] =  point_est_z[prob_df$row[i]]
+    prob_df$z_col[i] =  point_est_z[prob_df$col[i]]
+    
+  }
   
   
   
@@ -746,56 +827,67 @@ for(file in file_to_analyse){
   
   # 
   # 
-  # bad_values = loo::pareto_k_ids(loo_model_fit)
-  # bad_values_df = data.frame(item = 0, value=0, bad=T,iteration=0)
-  # 
-  # good_values = setdiff(1:ncol(LL_list[[1]]), bad_values)
-  # for(t in 1:25){
-  #   bad_df = data.frame(item= bad_values, value = LL_list[[1]][t,bad_values], bad=T, iteration=t)
-  #   good_df= data.frame(item= good_values, value = LL_list[[1]][t,good_values], bad=F, iteration=t) 
-  #   bad_values_df = rbind(bad_values_df, bad_df, good_df)
-  # }
-  # bad_values_df%>%
-  #   ggplot(aes(x=item, y=value, color=bad))+
-  #   geom_point(alpha=0.4)
-  # 
-  # 
-  # 
-  # upper.tri.Y_ij[which(bad_values == Inf)] > upper.tri.N_ij[which(bad_values == Inf)]
-  # upper.tri.Y_ij[is.na(bad_values)] > upper.tri.N_ij[is.na(bad_values)]
-  # 
-  # dbinom(upper.tri.Y_ij[which(bad_values == Inf)] , upper.tri.N_ij[which(bad_values == Inf)], P_ij[which(bad_values == Inf)], log = T)
-  # dbinom(upper.tri.Y_ij[is.na(bad_values)] , upper.tri.N_ij[is.na(bad_values)], P_ij[is.na(bad_values)], log = T)
-  # 
-  # dbinom(upper.tri.Y_ij[961] , upper.tri.N_ij[961], P_ij[961], log = T)
-  # 
-  # diagnostic1<- ppc_loo_pit_qq(
-  #   y = upper.tri.Y_ij,
-  #   yrep = Y_pred,
-  #   lw = weights(loo_model_fit$psis_object)
-  # )+
-  #   labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
-  #        subtitle = paste0('Model =',est_model,", K=",K),
-  #        caption = paste0("data source:",true_model))
-  # ggsave(plot=diagnostic1,filename = paste0(processed_wd,'diagnostic1',est_model,K,".png"))
-  # 
-  # 
-  # diagnostic2 = ppc_loo_pit_overlay( y = upper.tri.Y_ij,
-  #                                    yrep = Y_pred,
-  #                                    lw = weights(loo_model_fit$psis_object))+
-  #   labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
-  #        subtitle = paste0('Model =',est_model,", K=",K),
-  #        caption = paste0("data source:",true_model))
-  # ggsave(plot=diagnostic2,filename = paste0(processed_wd,'diagnostic2',est_model,K,".png"))
-  # 
-  # # 
-  # diagnostic3 = ppc_bars(y = upper.tri.Y_ij,
-  #                        yrep = Y_pred)+
-  #   labs(x = 'Y_ij values',title = paste0('Posterior Predictive Check'),
-  #        subtitle = paste0('Model =',est_model,", K=",K),
-  #        caption = paste0("data source:",true_model))
-  # ggsave(plot=diagnostic3,filename = paste0(processed_wd,'diagnostic3',est_model,K,".png"))
-  # 
+  bad_values = loo::pareto_k_ids(loo_model_fit)
+  bad_values_df = data.frame(item = 0, value=0, bad=T,iteration=0)
+  
+  good_values = setdiff(1:ncol(LL_list[[1]]), bad_values)
+  for(t in 1:25){
+    bad_df = data.frame(item= bad_values, value = LL_list[[1]][t,bad_values], bad=T, iteration=t)
+    good_df= data.frame(item= good_values, value = LL_list[[1]][t,good_values], bad=F, iteration=t)
+    bad_values_df = rbind(bad_values_df, bad_df, good_df)
+  }
+  bad_values_df%>%
+    ggplot(aes(x=item, y=value, color=bad))+
+    geom_point(alpha=0.4)
+  
+  
+  
+  upper.tri.Y_ij[which(bad_values == Inf)] > upper.tri.N_ij[which(bad_values == Inf)]
+  upper.tri.Y_ij[is.na(bad_values)] > upper.tri.N_ij[is.na(bad_values)]
+  
+  dbinom(upper.tri.Y_ij[which(bad_values == Inf)] , upper.tri.N_ij[which(bad_values == Inf)], P_ij[which(bad_values == Inf)], log = T)
+  dbinom(upper.tri.Y_ij[is.na(bad_values)] , upper.tri.N_ij[is.na(bad_values)], P_ij[is.na(bad_values)], log = T)
+  
+  dbinom(upper.tri.Y_ij[961] , upper.tri.N_ij[961], P_ij[961], log = T)
+  
+  diagnostic1<- ppc_loo_pit_qq(
+    y = upper.tri.Y_ij,
+    yrep = Y_pred,
+    lw = weights(loo_model_fit$psis_object)
+  )+
+    labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+         subtitle = paste0('Model =',est_model,", K=",K),
+         caption = paste0("data source:",true_model))
+  ggsave(plot=diagnostic1,filename = paste0(processed_wd,'diagnostic1',est_model,K,".png"))
+  
+  ppc_dens_overlay(y = upper.tri.Y_ij[problematic_values],
+                   yrep = Y_pred[,problematic_values])
+  
+  ppc_intervals(
+    y = upper.tri.Y_ij[problematic_values],
+    yrep = Y_pred[,problematic_values])
+  
+  
+  
+  diagnostic2 = ppc_loo_pit_overlay( y = upper.tri.Y_ij,
+                                     yrep = Y_pred,
+                                     lw = weights(loo_model_fit$psis_object))+
+    labs(x = 'uniform',title = paste0('Posterior Predictive LOO-PIT'),
+         subtitle = paste0('Model =',est_model,", K=",K),
+         caption = paste0("data source:",true_model))
+  ggsave(plot=diagnostic2,filename = paste0(processed_wd,'diagnostic2',est_model,K,".png"))
+  
+  #
+  bayesplot::ppc_error_binned(upper.tri.Y_ij,Y_pred )
+  
+  diagnostic3 = ppc_bars(y = upper.tri.Y_ij,
+                         yrep = Y_pred)+
+    labs(x = 'Y_ij values',title = paste0('Posterior Predictive Check'),
+         subtitle = paste0('Model =',est_model,", K=",K),
+         caption = paste0("data source:",true_model))
+  
+  ggsave(plot=diagnostic3,filename = paste0(processed_wd,'diagnostic3',est_model,K,".png"))
+  
   
   if(is.simulation==F){
     z_s_table = data.frame(lone_out = loo_model_fit$estimates[1],lone_out_se = loo_model_fit$estimates[4],
@@ -976,7 +1068,8 @@ for(file in file_to_analyse){
     filter(name=='X1')%>%
     arrange(value)%>%
     mutate(order = 1:n)%>%
-    select(item, order)
+    select(item, order)%>%
+    left_join(est_df, by = 'item')
   
   labels_plot = label_df %>% left_join(order_df , by =c("item")) %>%
     ggplot(aes(x = reorder(item,order), y = value, fill= name))+
