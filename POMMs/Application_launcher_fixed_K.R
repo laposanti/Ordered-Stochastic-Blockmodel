@@ -149,8 +149,8 @@ for(data_description in c("Tennis_data")){
     estimation_control <- list(z = 1, theta = 1)
     source("./Metropolis_within_Gibbs_code_powerposterior.R")
     
-      
-    chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
+    
+    chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij_ordered, 
                                                           saving_directory = saving_directory,
                                                           estimation_control = estimation_control,
                                                           burnin = burnin,

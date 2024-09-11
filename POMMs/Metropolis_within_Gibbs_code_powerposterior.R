@@ -69,7 +69,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
     handlers(global = TRUE)
     p <- progressor(steps = n_chains * N_iter/5000)
     plan(multisession, workers= n_chains, gc = TRUE)
-    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(T, 
+    y <- foreach(chain = 1:n_chains,.options.future = list(globals = structure(F, 
                                                                                add=variables_to_add),options(future.globals.onReference = "error"),
                                                            seed=TRUE)) %dofuture%{ 
                                                              
@@ -84,27 +84,29 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              library(truncnorm,quietly = T)
                                                              library(doRNG,quietly = T)
                                                              
-                                                             #------------------------------------------
-                                                             #Define the prior model of choice for theta
-                                                             #------------------------------------------
+                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
+                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
                                                              
+                                                             ############################################
+                                                             #Define the prior model of choice for theta
+                                                             ############################################
+                                                             
+                                                             # Prior and proposal on theta for the SST model
+                                                             #--------------------------------
                                                              if(model =='SST'){
-                                                               
-                                                               if(diag0.5==T){
-                                                                 #Prior distribution for the SST model with the main diag = 0.5
-                                                                 theta_prior_probability<<-function(theta,K){
-                                                                   fac <- sum(lfactorial((K-1):1))
-                                                                   
-                                                                   joint_density<- log(dtruncnorm(theta_current[1,2:K],a = 0,mean = 0,sd = 1)) - 
-                                                                     log(0.5)*((K-1):1)
-                                                                   log_p_sum = joint_density + fac 
-                                                                   return(log_p_sum)
-                                                                 }
+                                                               #double check that the diagonal is fixed to 0.5
+                                                               diag0.5 = T
+                                                               #Prior distribution on theta
+                                                               theta_prior_probability <-function(theta,K){
+                                                                 fac <- sum(lfactorial((K-1):1))
                                                                  
-                                                                 
-                                                                 
+                                                                 joint_density<- log(dtruncnorm(theta_current[1,2:K],a = 0,mean = 0,sd = 1)) - 
+                                                                   log(0.5)*((K-1):1)
+                                                                 log_p_sum = joint_density + fac 
+                                                                 return(log_p_sum)
                                                                }
                                                                
+                                                               #Proposal distribution on theta
                                                                r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
                                                                  mu <- j_star - i_star
                                                                  
@@ -143,108 +145,121 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }
                                                                
                                                                
-                                                               
-                                                               
-                                                               if(model =='WST'){
-                                                                 
-                                                                 #Prior distribution for the WST model with the main diagonal = 0.5
-                                                                 if(diag0.5==T){
-                                                                   theta_prior_probability <- function(theta,K){
-                                                                     P = inverse_logit_f(theta)
-                                                                     P_upper.tri = P[upper.tri(P,diag = F)]
-                                                                     
-                                                                     p_prod = dunif(P_upper.tri,0.5,0.9999)*
-                                                                       (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
-                                                                     
-                                                                     
-                                                                     log_p_sum = sum(log(p_prod))
-                                                                     return(log_p_sum)
-                                                                   }
-                                                                 }
-                                                                 
-                                                                 r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
-                                                                   lb = 0 
-                                                                   ub = 9.21
-                                                                   
-                                                                   theta_scanning = rtruncnorm(n = 1, 
-                                                                                               a = lb, b = ub, 
-                                                                                               mean = theta_prime[i_star,j_star],
-                                                                                               sd =sd_proposal[i_star,j_star])
-                                                                   p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
-                                                                                                       mean = theta_scanning_ij,
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
-                                                                                                       mean = theta_prime[i_star,j_star],
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   return(list(theta_scanning_ij= theta_scanning_ij,
-                                                                               p_prime_given_scanning = log(p_prime_given_scanning),
-                                                                               p_scanning_given_prime = log(p_scanning_given_prime)))
-                                                                   
-                                                                 }
-                                                                 
-                                                              
-                                                                 
-                                                                 
-                                                               }
-                                                               
-                                                               
-                                                               if(model =='Simple'){
-                                                                 #Prior distribution for the Simple model (never fix the diagonal)
-                                                                 theta_prior_probability <- function(theta,K){
-                                                                   P = inverse_logit_f(theta)
-                                                                   P_upper.tri = P[upper.tri(P,diag = F)]
-                                                                   
-                                                                   p_prod = dunif(P_upper.tri,0.0001,0.9999)*
-                                                                     (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
-                                                                   
-                                                                   log_p_sum = sum(log(p_prod))
-                                                                   
-                                                                   return(log_p_sum)
-                                                                 }
-                                                                 
-                                                                 r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
-                                                                   lb = -9.21
-                                                                   ub = 9.21
-                                                                   theta_scanning = rtruncnorm(n = 1, a = lb, b = ub, 
-                                                                                               mean = theta_prime[i_star,j_star],
-                                                                                               sd = sd_proposal[i_star,j_star])
-                                                                   p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
-                                                                                                       mean = theta_scanning_ij[i_star,j_star],
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij[i_star,j_star], 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
-                                                                                                       mean = theta_prime[i_star,j_star],
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   return(list(theta_scanning_ij= theta_scanning_ij,
-                                                                               p_prime_given_scanning = log(p_prime_given_scanning),
-                                                                               p_scanning_given_prime = log(p_scanning_given_prime)))
-                                                                 }
-                                                                 
-                                                               }
                                                              }
                                                              
-                                                             ll_computation <- function(Y_ij, N_ij, P_nbyn, common_indices){
-                                                               log_likelihood = dbinom(x = Y_ij[common_indices], 
-                                                                                       size = N_ij[common_indices], 
-                                                                                       prob = P_nbyn[common_indices],
+                                                             #Prior on theta for the WST model
+                                                             #--------------------------------
+                                                             if(model =='WST'){
+                                                               #double check that the diagonal is fixed to 0.5
+                                                               diag0.5 = T
+                                                               #Prior distribution for the WST model
+                                                               
+                                                               theta_prior_probability <- function(theta,K){
+                                                                 P = inverse_logit_f(theta)
+                                                                 P_upper.tri = P[upper.tri(P,diag = F)]
+                                                                 
+                                                                 p_prod = dunif(P_upper.tri,0.5,0.9999)*
+                                                                   (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+                                                                 
+                                                                 
+                                                                 log_p_sum = sum(log(p_prod))
+                                                                 return(log_p_sum)
+                                                                 
+                                                               }
+                                                               #Proposal distribution on theta
+                                                               r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
+                                                                 lb = 0 
+                                                                 ub = 9.21
+                                                                 
+                                                                 theta_scanning_ij = rtruncnorm(n = 1, 
+                                                                                             a = lb, b = ub, 
+                                                                                             mean = theta_prime[i_star,j_star],
+                                                                                             sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
+                                                                                                     a = lb, 
+                                                                                                     b = ub, 
+                                                                                                     mean = theta_scanning_ij,
+                                                                                                     sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
+                                                                                                     a = lb, 
+                                                                                                     b = ub, 
+                                                                                                     mean = theta_prime[i_star,j_star],
+                                                                                                     sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 return(list(theta_scanning_ij= theta_scanning_ij,
+                                                                             p_prime_given_scanning = p_prime_given_scanning,
+                                                                             p_scanning_given_prime = p_scanning_given_prime))
+                                                                 
+                                                               }
+                                                               
+                                                               
+                                                             }
+                                                             
+                                                             #Prior on theta for the Simple model
+                                                             #--------------------------------
+                                                             if(model =='Simple'){
+                                                               
+                                                               #double check that the diagonal is not fixed to 0.5
+                                                               diag0.5 = F
+                                                               
+                                                               #Prior distribution for the Simple model 
+                                                               theta_prior_probability <- function(theta,K){
+                                                                 P = inverse_logit_f(theta)
+                                                                 P_upper.tri = P[upper.tri(P,diag = F)]
+                                                                 
+                                                                 p_prod = dunif(P_upper.tri,0.0001,0.9999)*
+                                                                   (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+                                                                 
+                                                                 log_p_sum = sum(log(p_prod))
+                                                                 
+                                                                 return(log_p_sum)
+                                                               }
+                                                               #Proposal distribution for the Simple model 
+                                                               r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
+                                                                 lb = -9.21
+                                                                 ub = 9.21
+                                                                 
+                                                                 theta_scanning_ij = rtruncnorm(n = 1, a = lb, b = ub, 
+                                                                                             mean = theta_prime[i_star,j_star],
+                                                                                             sd = sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
+                                                                                                     a = lb, 
+                                                                                                     b = ub, 
+                                                                                                     mean = theta_scanning_ij,
+                                                                                                     sd = sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
+                                                                                                     a = lb, 
+                                                                                                     b = ub, 
+                                                                                                     mean = theta_prime[i_star,j_star],
+                                                                                                     sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 return(list(theta_scanning_ij= theta_scanning_ij,
+                                                                             p_prime_given_scanning = p_prime_given_scanning,
+                                                                             p_scanning_given_prime = p_scanning_given_prime))
+                                                               }
+                                                               
+                                                             }
+                                                             
+                                                             #Binomial Log-likelihood function
+                                                             #relevant_indices is a logical nxn matrix that makes the code faster:
+                                                              #the likelihood is computed just for the entries that
+                                                               #1) are in the upper triangular adjacency matrix
+                                                               #2) have N_ij > 0 
+                                                             
+                                                             ll_computation <- function(Y_ij, N_ij, P_nbyn, relevant_indices){
+                                                               log_likelihood = dbinom(x = Y_ij[relevant_indices], 
+                                                                                       size = N_ij[relevant_indices], 
+                                                                                       prob = P_nbyn[relevant_indices],
                                                                                        log = T)
                                                                return(sum(log_likelihood))
                                                              }
-                                                             
-                                                             
+                                                             #---------------------------
+                                                             # Preparatory Steps for the MCMC to run
                                                              #--------------------------------------------------------------
-                                                             
                                                              #setting the seed for reproducibility
                                                              
                                                              seeds = seed + (1:n_chains)*10
@@ -255,13 +270,17 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              #fixing the number of clusters
                                                              K <- as.numeric(K_est[[chain]])
+                                                             #number of samples considering burnin and thinning
+                                                             num_samples = (burnin+1):N_iter
+                                                             N_iter_eff = sum(num_samples %% thin == 0) 
                                                              
-                                                             to_be_saved = (burnin+1):N_iter
-                                                             N_iter_eff = sum(to_be_saved %% thin == 0) 
                                                              
-                                                             if(model == 'Simple'){
-                                                               diag0.5 = F
-                                                             }
+                                                             #----------------------------------
+                                                             #Computation of the relevant indices
+                                                             #---------------------------------
+                                                             #Relevant indices are
+                                                              # 1) i,j : i<j (upper triangular entries)
+                                                              # 2) i,j : N_ij > 0 (non-zero number of interactions)
                                                              
                                                              # Get the indices of the upper triangular part of the matrix
                                                              upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
@@ -270,92 +289,75 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              non_zero_indices <- matrix(N_ij > 0,n,n)
                                                              
                                                              # Find the common indices (both upper.tri and strictly positive)
-                                                             common_indices <- upper_tri_indices*non_zero_indices
+                                                             relevant_indices <- upper_tri_indices*non_zero_indices
                                                              
                                                              # Convert back to a logical matrix
-                                                             common_indices <- matrix(as.logical(common_indices), nrow = n,ncol = n)
+                                                             relevant_indices <- matrix(as.logical(relevant_indices), nrow = n,ncol = n)
                                                              
-                                                             #if you do not provide custom initial values, the MH auto initialises starting from the seed
+                                                             #--------------------------
+                                                             # Self -initilization if custom init is not provided
+                                                             # --> if you do not provide custom initial values, the MH self-initializes
                                                              if(all(is.na(custom_init))){
-                                                               #-------------------------------------------------------------------------
-                                                               #Initializing z allocation vector 
-                                                               #-------------------------------------------------------------------------
-                                                               
-                                                               #if the parameters is not to be estimated, setting it to the true value
+                                                              
+                                                               # Self-initializing z parameter
+                                                              #-------------------------------------------------------------------------
+                                                              
                                                                if(estimation_control$z==1){
                                                                  
                                                                  z_current=  sample(x = c(1:K), size = n,replace = T)
-                                                                 
-                                                               }else{
+                                                                 }else{
+                                                                #if the parameters is not to be estimated, initialize it to the "true" value
                                                                  z_current=  matrix(ground_truth$z, n, 1)
                                                                }
                                                                
-                                                               #-------------------------------------------------------------------------
-                                                               # IF ESTIMATING SST: Initializing mu and theta parameter
+                                                               
+                                                               # Self-initializing theta parameter
                                                                #-------------------------------------------------------------------------
                                                                
-                                                               # if SST model is selected: initialise mu and theta
-                                                               if(model == 'SST'){
-                                                                 if(estimation_control$theta==1){
+                                                               if(estimation_control$theta==1){
+                                                                 
+                                                                 mu_vec_current <- NA
+                                                                 theta_current = matrix(0,K,K)
+                                                                 
+                                                                 if(model == 'SST'){
                                                                    #initialise mu hyperparameter
-                                                                   mu_vec_current<- sort(rtruncnorm(K-1,a = 0, b = 10, 
-                                                                                                    mean = 0,sd = 1.5))
+                                                                   mu_vec_current<- sort(rtruncnorm(K-1,a = 0, b = 9.20, 
+                                                                                                    mean = 0,sd = 1))
                                                                    mu_vec_current = c(0,mu_vec_current)
                                                                    
                                                                    
-                                                                   #initialise theta
-                                                                   theta_current = matrix(NA,K,K)
-                                                                   
+                                                                   #initialize theta current
                                                                    for(d in 0:(K-1)){
                                                                      theta_current[col(theta_current)-row(theta_current)==d]<- mu_vec_current[d+1]
                                                                    }
                                                                    
-                                                                   theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]
+                                                                 }else if(model =='WST'){
+                                                                   #-------------------------------------------------------------------------
+                                                                   # IF ESTIMATING WST OR SIMPLE: Initializing the theta parameter
+                                                                   #-------------------------------------------------------------------------
                                                                    
-                                                                 }else{
-                                                                   #otherwise fix it to the true value
-                                                                   mu_vec_current=  as.numeric(ground_truth$mu_vec)
-                                                                   theta_current=  as.matrix(ground_truth$theta)
-                                                                 }
-                                                               }
-                                                               #-------------------------------------------------------------------------
-                                                               # IF ESTIMATING WST OR SIMPLE: Initializing mu and theta parameter
-                                                               #-------------------------------------------------------------------------
-                                                               if(model != 'SST'){
-                                                                 if(estimation_control$theta==1){
-                                                                   #if the model is != 'SST', the mu parameter is not present. Fixing it to NA value
-                                                                   mu_vec_current <- NA
-                                                                   theta_current <- matrix(NA,K,K)
-                                                                   diag(theta_current) <- 0
+                                                                   theta_current[upper.tri(theta_current)] <- runif(n = K*(K-1)/2,
+                                                                                                                    min = 0, 
+                                                                                                                    max = 9.20)
                                                                    
-                                                                   if(model =='WST'){
-                                                                     for(d in 1:(K-1)){
-                                                                       theta_current[col(theta_current)-row(theta_current)==d] <- runif(n = K-d,
-                                                                                                                                        min = 0, 
-                                                                                                                                        max = 9.21023)
-                                                                     }
-                                                                   }else if(model =='Simple'){
-                                                                     for(d in 1:(K-1)){
-                                                                       theta_current[col(theta_current)-row(theta_current)==d] <- runif(n = K-d, 
-                                                                                                                                        min  = -9.21023, 
-                                                                                                                                        max = 9.21023)
-                                                                     }
-                                                                   }
-                                                                   theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]
-                                                                 }else{
-                                                                   theta_current = matrix(ground_truth$theta, K, K)
+                                                                 }else if(model =='Simple'){
+                                                                   theta_current[upper.tri(theta_current,diag = T)] <- runif(n = K*(K-1)/2+K,
+                                                                                                                             min = -9.20, 
+                                                                                                                             max = 9.20)
+                                                                   
                                                                  }
+                                                                 
+                                                                 theta_current[lower.tri(theta_current)] = - t(theta_current)[lower.tri(theta_current)]
+                                                               }else{
+                                                                 theta_current = matrix(ground_truth$theta, K, K)
+                                                                 mu_vec_current = theta_current[1,]
                                                                }
-                                                               
-                                                             }else{ #the custom initialisation, if provided
+                                                             }else{ 
+                                                               #-------------------------------------
+                                                               # If custom initialization is chosen
+                                                               #-------------------------------------
                                                                z_current = custom_init$z
                                                                theta_current = custom_init$theta
-                                                               if(model == 'SST'|| model =='WST'){
-                                                                 mu_vec_current = custom_init$mu_vec
-                                                               }
-                                                               if(model == 'WST'){
-                                                                 sigma_current = custom_init$sigma
-                                                               }
                                                              }
                                                              
                                                              # e_0 <- length(theta_current[upper.tri(theta_current,diag = T)])
@@ -364,11 +366,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              # }
                                                              # e_0 = e_0/2+1
                                                              # e_0 = 1
-                                                             alpha_vec = as.vector(rep(1,K))
+                                                             
                                                              
                                                              if(power_posterior_apprach==T){
                                                                i <- 0:n_temperatures
-                                                               t_list <- (i / n_temperatures) ^ 5
+                                                               t_list <- (i / n_temperatures)^ 5
                                                              }else{
                                                                #estimating just one chain
                                                                t_list = 1
@@ -377,14 +379,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              for(t in t_list){
                                                                
-                                                               
-                                                               #initializing quantities
+                                                               #---------------------------------
+                                                               #initializing auxiliary quantities
                                                                
                                                                labels_available<- 1:K
-                                                               #checking that we have exactly K labels
                                                                label_counts <- table(factor(z_current, levels = labels_available))
-                                                               n_k = as.numeric(label_counts)
+                                                               n_k = as.numeric(label_counts) #number of nodes in each cluster
+                                                               alpha_vec = as.vector(rep(1,K)) #Dirichlet Multinomial weights
                                                                
+                                                               #checking that we have exactly K labels
+                                                               #if not, sample again z_current until all clusters are non-empty
                                                                while(any(n_k==0)){
                                                                  k_missing = which(n_k == 0)
                                                                  for(i in 1:length(k_missing)){
@@ -394,14 +398,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    n_k = as.numeric(label_counts)
                                                                  }
                                                                }
-                                                               
-                                                               
+                                                               #---------------------------------
+                                                               #initialising priors and likelihood
+                                                               #---------------------------------
                                                                z_mat_current = vec2mat(z_current)
                                                                P_current = inverse_logit_f(theta_current)
                                                                P_nbyn_current = calculate_victory_probabilities(z_mat_current, P_current)
                                                                ll_current =  ll_computation(Y_ij = Y_ij, N_ij= N_ij, 
                                                                                             P_nbyn = P_nbyn_current,
-                                                                                            common_indices = common_indices)*t
+                                                                                            relevant_indices = relevant_indices)*t
                                                                
                                                                #log prior on P
                                                                prior_theta<- theta_prior_probability(theta = theta_current, K = K)
@@ -416,53 +421,64 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                }else{
                                                                  break
                                                                }
+                                                               #-------------------------------
                                                                
                                                                #--------------------------------------------------------------------------
                                                                # PREPARATORY STEPS FOR THE MCMC
                                                                #--------------------------------------------------------------------------
                                                                
                                                                #defining the containers to store results
-                                                               ll_container <- matrix(0, ncol = sum(common_indices) , nrow = N_iter_eff)
+                                                               ll_container <- matrix(0, ncol = sum(relevant_indices) , nrow = N_iter_eff)
                                                                z_container <- matrix(0, nrow = n, ncol = N_iter_eff)
                                                                mu_vec_container <- matrix(0, nrow = K, ncol = N_iter_eff)
                                                                theta_container <- array(0, dim = c(K,K,N_iter_eff))
-                                                               
-                                                               
                                                                
                                                                #defining the containers to store acceptance counts
                                                                acc.count_z <- rep(1,n)
                                                                acc.count_mu_vec <- rep(1, K)
                                                                acc.count_theta<- matrix(1,K,K)
                                                                
-                                                               
-                                                               
                                                                #defining the proposals' variances
                                                                tau_mu_vec= rep(0.3,K)
                                                                tau_theta = matrix(0.25,K,K)
                                                                
+                                                               #-----------------------------------------
+                                                               # dataframe of the theta entries that needs to be updated
+                                                               #-----------------------------------------
+                                                               #Updating each entry of P, one at the time
+                                                               ut <- upper.tri(theta_current, diag= !diag0.5)
+                                                               theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
                                                                
-                                                               #READY TO BOMB!
+                                                               uo<- data.frame(row = theta_combn[,1], col = theta_combn[,2] ) %>%
+                                                                 mutate(diff = col-row) # computing the level sets
+                                                               if(model =='SST'){
+                                                                 uo = uo%>% 
+                                                                   group_by(diff) %>%   # Group by diff to ensure each group has unique diff values
+                                                                   slice(1)  # just one scan for each level set
+                                                               }
+                                                               #-----------------------------------------
+                                                               #READY TO GO!
                                                                iteration_time= vector()
                                                                save_count = 0
                                                                for(j in 2:N_iter){
                                                                  
                                                                  start_time <- Sys.time()
                                                                  
-                                                                 
+                                                                 #z UPDATE-------------------------------------------------------------
                                                                  if (estimation_control$z == 1) {
-                                                                   #z UPDATE-------------------------------------------------------------
-                                                                   
-                                                                   
-                                                                   P<- inverse_logit_f(theta_current)
+                                                                   # ------------------------------------------
+                                                                   #storing current values
+                                                                   # ------------------------------------------
+                                                                   P_prime<- inverse_logit_f(theta_current)
                                                                    z_prime= z_current
                                                                    z_mat_prime = vec2mat_0_P(clust_lab = z_prime,K = K)
-                                                                   P_nbyn_prime<- calculate_victory_probabilities(z_mat_prime,P)
+                                                                   P_nbyn_prime<- calculate_victory_probabilities(z_mat_prime,P_prime)
                                                                    
                                                                    
                                                                    ll_prime<- ll_computation(Y_ij = Y_ij,
                                                                                              N_ij = N_ij,
                                                                                              P_nbyn = P_nbyn_prime,
-                                                                                             common_indices = common_indices)*t
+                                                                                             relevant_indices = relevant_indices)*t
                                                                    
                                                                    B_prime<- ddirichlet_multinomial(N = n,
                                                                                                     K = K,
@@ -471,8 +487,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    
                                                                    n_prime = table(factor(z_prime, levels = labels_available))
+                                                                   # ------------------------------------------
                                                                    
-                                                                   # full sweep
+                                                                   # ------------------------------------------
+                                                                   # full sweep of z entries
+                                                                   # ------------------------------------------
                                                                    for(i_th_turn in 1:n){
                                                                      
                                                                      z_scanning = z_prime
@@ -484,38 +503,43 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                       y = k_prime), 
                                                                                           size = 1, replace = F)
                                                                      
+                                                                     #new proposed partition
                                                                      z_scanning[i_th_turn] <- k_scanning
                                                                      
-                                                                     #the items in cluster i_star
+                                                                     #getting the nodes that interact with node i_th
                                                                      logical_matrix1 = matrix(FALSE, n,n)
-                                                                     logical_matrix1[i_th_turn,]<-TRUE
-                                                                     logical_matrix1[,i_th_turn]<-TRUE
+                                                                     logical_matrix1[i_th_turn,]<-TRUE #outgoing edges
+                                                                     logical_matrix1[,i_th_turn]<-TRUE #incoming edges
                                                                      
-                                                                     # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
-                                                                     filtering_matrix = (logical_matrix1)*common_indices == T
+                                                                     # Create a matrix that is TRUE only at the positions that:
+                                                                     # 1) are in the upper triangle matrix
+                                                                     # 2) have N_ij > 0 
+                                                                     # 3) Interacted with the i_th node 
+                                                                     filtering_matrix = (logical_matrix1)*relevant_indices == T
                                                                      
                                                                      #compute the likelihood of the data with the current assignment just for i_th_turn
                                                                      ll_minus = ll_computation(Y_ij = Y_ij,
                                                                                                N_ij = N_ij,
                                                                                                P_nbyn = P_nbyn_prime,
-                                                                                               common_indices = filtering_matrix)
+                                                                                               relevant_indices = filtering_matrix)
                                                                      
-                                                                     #update P_nbyn
+                                                                     #update P_nbyn with the new partition
                                                                      P_nbyn_scanning = P_nbyn_prime
                                                                      for(nodes in 1:n){
-                                                                       P_nbyn_scanning[i_th_turn,nodes]<- P[k_scanning,z_scanning[nodes]]
-                                                                       P_nbyn_scanning[nodes,i_th_turn]<- P[z_scanning[nodes],k_scanning]
+                                                                       P_nbyn_scanning[i_th_turn,nodes]<- P_prime[k_scanning,z_scanning[nodes]]
+                                                                       P_nbyn_scanning[nodes,i_th_turn]<- P_prime[z_scanning[nodes],k_scanning]
                                                                      }
                                                                      
-                                                                     #compute the likelihood of the same points with the new assignment
+                                                                     #compute the likelihood of the same positions with the new assignment
                                                                      ll_plus = ll_computation(Y_ij = Y_ij,
                                                                                               N_ij = N_ij,
                                                                                               P_nbyn = P_nbyn_scanning,
-                                                                                              common_indices = filtering_matrix)
+                                                                                              relevant_indices = filtering_matrix)
                                                                      
                                                                      #Updating the likelihood
                                                                      ll_scanning = (ll_prime - ll_minus + ll_plus)*t
                                                                      
+                                                                     #updating the prior on z
                                                                      n_scanning<- n_prime
                                                                      n_scanning[c(k_prime, k_scanning)] <- n_prime[c(k_prime, k_scanning)] + c(-1, 1)
                                                                      
@@ -523,12 +547,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                                          K = K,
                                                                                                          n_k = n_scanning,
                                                                                                          my_alpha = alpha_vec)
+                                                                     # the prior on theta cancels out, therefore is omitted
+                                                                     # the proposal is symmetric and proportional to 1/(K-1): it cancels out too
                                                                      
+                                                                     # log ratio
                                                                      log_r= ll_scanning - ll_prime + B_scanning - B_prime
                                                                      
-                                                                     #create statements that check conditiond to accept move
-                                                                     GS_condition= min(log_r,0)>=log(runif(1))
-                                                                     if(GS_condition){
+                                                                     #ACCEPT/REJECT CONDITION
+                                                                     MH_condition_Z= min(log_r,0)>=log(runif(1))
+                                                                     
+                                                                     if(MH_condition_Z){
                                                                        acc.count_z[i_th_turn]=acc.count_z[i_th_turn]+1
                                                                        z_prime<-z_scanning
                                                                        ll_prime<- ll_scanning
@@ -536,8 +564,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                        P_nbyn_prime <- P_nbyn_scanning
                                                                        n_prime <- n_scanning
                                                                      }
-                                                                     #labels_available are the same
-                                                                     #else, z_prime[ii] stays equal to z_current[ii]
+                                                                     
                                                                    }
                                                                    
                                                                    ll_current <- ll_prime
@@ -548,8 +575,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                  }
                                                                  if (estimation_control$theta == 1) {
-                                                                   #theta UPDATE-------------------------------------------------------------
-                                                                   
+                                                                   #----------------------------
+                                                                   #theta UPDATE----------------
+                                                                   #----------------------------
                                                                    
                                                                    #storing current values
                                                                    theta_prime <- theta_current
@@ -557,34 +585,27 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    z_mat_prime = vec2mat_0_P(clust_lab = z_current,K = K)
                                                                    P_nbyn_prime<- P_nbyn_current
                                                                    ll_prime<- ll_current
-                                                                   
                                                                    theta_prior_prime <- theta_prior_probability(theta = theta_prime, K=K)
                                                                    
-                                                                   #Updating each entry of P, one at the time
-                                                                   ut <- upper.tri(theta_current, diag= !diag0.5)
-                                                                   
-                                                                   theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
-                                                                   
-                                                                   uo<- data.frame(row = theta_combn[,1], col = theta_combn[,2] ) %>%
-                                                                     mutate(diff = col-row)# permuting the order of the rows
-                                                                   
+                                                                   #update of each upper.triangular entry of theta
                                                                    for(i_th in 1:nrow(uo)){
                                                                      
                                                                      theta_scanning <- theta_prime
                                                                      P_nbyn_scanning = P_nbyn_prime
-                                                                     
+                                                                     #indices of the entry
                                                                      i_star<- uo$row[i_th]
                                                                      j_star<- uo$col[i_th]
-                                                                     
+                                                                     #level set
                                                                      mu = uo$diff[i_th]
                                                                      
                                                                      
                                                                      #proposing a new value for theta p_q
                                                                      theta_ij_proposal <- r_d_theta_proposal(theta_prime = theta_prime,
-                                                                                                                      sd_proposal = tau_theta,
-                                                                                                                      i_star = i_star, j_star = j_star)
+                                                                                                             sd_proposal = tau_theta,
+                                                                                                             i_star = i_star, j_star = j_star)
+                                                                     #storing new proposed value
                                                                      theta_ij_scanning = theta_ij_proposal$theta_scanning_ij
-                                                                     
+                                                                     #theta_scanning is the newly proposed theta matrix
                                                                      if(model =='SST'){
                                                                        theta_scanning[col(theta_prime)- row(theta_prime) == mu] <- theta_ij_scanning
                                                                        theta_scanning[col(theta_prime)- row(theta_prime) == -mu] <- -theta_ij_scanning
@@ -593,10 +614,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                        theta_scanning[j_star,i_star] <- -theta_ij_scanning
                                                                      }
                                                                      
-                                                                     #the items in cluster i_star
-                                                                     Z_i_star = which(z_current %in% i_star)
-                                                                     #the items in cluster j_star
-                                                                     Z_j_star = which(z_current %in% j_star)
+                                                                     #wi
+                                                                     if(model == 'SST'){
+                                                                       Z_i_star = which(z_current %in% (1:(K-mu)))
+                                                                       Z_j_star = which(z_current %in% ((mu+1):K))
+                                                                     }else{
+                                                                       Z_i_star = which(z_current %in% i_star)
+                                                                       Z_j_star =  which(z_current %in% j_star)
+                                                                     }
                                                                      
                                                                      
                                                                      logical_matrix1 = matrix(FALSE, n,n)
@@ -606,16 +631,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      logical_matrix2 = matrix(FALSE, n,n)
                                                                      logical_matrix2[Z_j_star,]<-TRUE
                                                                      logical_matrix2[,Z_i_star]<-TRUE
-                                                          
+                                                                     
                                                                      # Create a matrix that is TRUE only at the positions that are both in the upper triangle and in the selected clusters
-                                                                     filtering_matrix = (logical_matrix1|logical_matrix2)*common_indices == T
+                                                                     filtering_matrix = (logical_matrix1|logical_matrix2)*relevant_indices == T
                                                                      # Filter the relevant entries
                                                                      
                                                                      #First, subtract the contribution to the likelihood of those items
                                                                      ll_minus = ll_computation(Y_ij = Y_ij, 
                                                                                                N_ij = N_ij, 
                                                                                                P_nbyn = P_nbyn_prime,
-                                                                                               common_indices = filtering_matrix)
+                                                                                               relevant_indices = filtering_matrix)
                                                                      
                                                                      #Second, subtract also the contribution of the theta[i_star,j_star] entry to the prior
                                                                      theta_prior_prime = theta_prior_probability(theta_prime, K = K)
@@ -624,13 +649,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      
                                                                      
                                                                      P_scanning = inverse_logit_f(theta_scanning)
-                                                                     P_nbyn_scanning = calculate_victory_probabilities(z_mat, P_scanning) 
+                                                                     P_nbyn_scanning = calculate_victory_probabilities(z_mat_prime, P_scanning) 
                                                                      
                                                                      #Third,add the contribution to the likelihood of those items with new interaction probabilities
                                                                      ll_plus = ll_computation(Y_ij = Y_ij, 
                                                                                               N_ij = N_ij, 
                                                                                               P_nbyn = P_nbyn_scanning, 
-                                                                                              common_indices = filtering_matrix)
+                                                                                              relevant_indices = filtering_matrix)
                                                                      
                                                                      #Fourth,add the contribution to the prior
                                                                      theta_prior_scanning = theta_prior_probability(theta_scanning, K = K)
@@ -638,7 +663,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      #Updating the likelihood
                                                                      ll_scanning = (ll_prime - ll_minus + ll_plus)*t
                                                                      
-                                                              
+                                                                     
                                                                      
                                                                      log_r= ll_scanning - ll_prime + 
                                                                        theta_prior_scanning - theta_prior_prime + 
@@ -647,9 +672,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      
                                                                      
                                                                      #create statements that check conditiond to accept move
-                                                                     MH_condition_P_update= min(log_r,0)>=log(runif(1))
+                                                                     MH_update_theta = min(log_r,0)>=log(runif(1))
                                                                      
-                                                                     if(MH_condition_P_update){
+                                                                     if(MH_update_theta){
                                                                        acc.count_theta[i_star,j_star] = acc.count_theta[i_star,j_star] +1
                                                                        if(model =='SST'){
                                                                          acc.count_theta[col(theta_prime)- row(theta_prime) == mu] <- acc.count_theta[col(theta_prime)- row(theta_prime) == mu] +1
@@ -667,19 +692,19 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    P_nbyn_current = P_nbyn_prime
                                                                  }
                                                                  
-                                                                 #storing results for inference
-                                                                 
+                                                                 #---------------------------
+                                                                 #storing results
+                                                                 #---------------------------
                                                                  if(j > burnin & j%%thin==0){
                                                                    
                                                                    save_count = save_count +1 
-                                                                   
                                                                    z_container[,save_count] <- z_current
                                                                    theta_container[,,save_count] <- theta_current
                                                                    if(model=='SST'){
-                                                                     mu_vec_container[,save_count] <- theta_container[1,]
+                                                                     mu_vec_container[,save_count] <- theta_current[1,]
                                                                    }
                                                                    
-                                                                   ll_container[save_count,] = llike_current
+                                                                   ll_container[save_count,] = ll_current
                                                                    
                                                                  }
                                                                  
@@ -786,4 +811,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   
   return(reprex)
 } 
+
+
+
 
