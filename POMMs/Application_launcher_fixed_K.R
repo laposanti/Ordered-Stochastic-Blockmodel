@@ -15,7 +15,7 @@ library(doRNG)
 library(googledrive)
 
 
-setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -45,7 +45,7 @@ googledrive::drive_auth(email = subject)
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 
-for(data_description in c("Tennis_data")){
+for(data_description in c("Tennis_data","Citation_data")){
   
   ###############################################################################
   # uploading data
@@ -114,9 +114,9 @@ for(data_description in c("Tennis_data")){
   power_posterior_apprach=F
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
-  seed = 23
-  N_iter <- 200000 #number of iterations
-  burnin <- 50000 #number of discarded iterations
+  seed = 58
+  N_iter <- 150000 #number of iterations
+  burnin <- 20000 #number of discarded iterations
   thin = 20
 
 
@@ -147,8 +147,7 @@ for(data_description in c("Tennis_data")){
     
     
     estimation_control <- list(z = 1, theta = 1)
-    source("./Metropolis_within_Gibbs_code_powerposterior.R")
-    
+
     
     chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij_ordered, 
                                                           saving_directory = saving_directory,
@@ -156,10 +155,11 @@ for(data_description in c("Tennis_data")){
                                                           burnin = burnin,
                                                           ground_truth = ground_truth,
                                                           n = n, N_iter = N_iter, 
-                                                          K_est = K_values,data_description = "tennis_experiment",
+                                                          K_est = K_values,
+                                                          data_description = data_description,
                                                           seed = seed, 
                                                           model = est_model, 
-                                                          custom_init = NA,
+                                                          custom_init = custom_init,
                                                           power_posterior_apprach = F,thin=thin,
                                                           diag0.5 = T)
     
@@ -195,7 +195,7 @@ for(data_description in c("Tennis_data")){
     custom_init <- NA
     print(paste0("Estimation of the WST model, K=", K_values))
     print(paste0("Begin cycle at:", date(), "\n"))
-    estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
+    estimation_control <- list(z = 1,  theta = 1)
     
     chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                           saving_directory = saving_directory,
@@ -248,7 +248,7 @@ for(data_description in c("Tennis_data")){
     #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
     power_posterior_apprach = F
     custom_init <- NA
-    estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
+    estimation_control = list(z = 1,theta=1)
     
     chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                             saving_directory = saving_directory,

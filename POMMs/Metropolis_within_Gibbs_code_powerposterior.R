@@ -84,8 +84,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              library(truncnorm,quietly = T)
                                                              library(doRNG,quietly = T)
                                                              
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
-                                                             source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
+                                                             source("./model_auxiliary_functions/Functions_priorSST.R")
+                                                             source("./model_auxiliary_functions/MCMC_functions.R")
                                                              
                                                              ############################################
                                                              #Define the prior model of choice for theta
