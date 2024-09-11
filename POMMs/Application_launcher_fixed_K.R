@@ -15,7 +15,7 @@ library(doRNG)
 library(googledrive)
 
 
-#setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
+setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
 
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
@@ -58,7 +58,23 @@ for(data_description in c("Tennis_data")){
     Y_ij = as.matrix(Y_ij)
     N_ij = as.matrix(N_ij)
     
-    #where to upload the results
+    mean(N_ij)
+    
+    mean(Y_ij)
+    
+    
+    pl_df = data.frame(x = colnames(N_ij), y = rowSums(N_ij))
+    pl_df%>%
+      ggplot(aes(x = x, y=y))+
+      geom_col()+
+      theme(axis.text.x = element_text(angle=90))
+    
+    
+    
+    
+    
+
+    #where to uplY_ijoad the results
     folder_url <- "https://drive.google.com/drive/u/1/folders/1gLXPTSBCpVOZXmg9J8JxouUDHIJC1eDf"
     
   }else if(data_description == 'Citation_data'){
@@ -130,20 +146,21 @@ for(data_description in c("Tennis_data")){
     print(paste0("Begin cycle at:", date(), "\n"))
     
     
-    estimation_control <- list(z = 1, mu_vec = 1 ,K = 0, theta = 0)
+    estimation_control <- list(z = 1, theta = 1)
+    source("./Metropolis_within_Gibbs_code_powerposterior.R")
     
-    
+      
     chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                           saving_directory = saving_directory,
                                                           estimation_control = estimation_control,
                                                           burnin = burnin,
                                                           ground_truth = ground_truth,
                                                           n = n, N_iter = N_iter, 
-                                                          K_est = K_values,data_description = data_description,
+                                                          K_est = K_values,data_description = "tennis_experiment",
                                                           seed = seed, 
                                                           model = est_model, 
-                                                          custom_init = custom_init,
-                                                          power_posterior_apprach = power_posterior_apprach,thin=thin,
+                                                          custom_init = NA,
+                                                          power_posterior_apprach = F,thin=thin,
                                                           diag0.5 = T)
     
     names(chains_SST) = paste0('chain',unlist(K_values))

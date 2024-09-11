@@ -153,7 +153,8 @@ for(k in 7){
     #Here we compute a KxK matrix cotaining the average number of comparisons between pairs of blocks
     num_comparisons = recovery_capability:(recovery_capability+2)
     N_blocks = matrix(sample(x = num_comparisons,
-                             size = K**2,replace = T), 
+                             size = K**2,
+                             replace = T), 
                       nrow = K,ncol = K)
     N_blocks = make_symmetric(N_blocks)
     

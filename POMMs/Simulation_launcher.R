@@ -63,7 +63,7 @@ for(true_model in  c('SST','Simple')){
   filenames <- list.files(pattern = true_model,path =data_directory)
   print(filenames) #data to be estimated
   
-  file=3
+
   
   choose_model_to_estimate = c('SST', 'WST', 'Simple')
   #-----------------------------------------------------------------------------
@@ -74,6 +74,7 @@ for(true_model in  c('SST','Simple')){
     file=3
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
     data_to_be_estimated$data_plot
+    data_to_be_estimated$recovery_capability
     stopifnot(data_to_be_estimated$model == true_model)
     recovery_capability = data_to_be_estimated$recovery_capability
     N_ij = data_to_be_estimated$N_ij
@@ -94,7 +95,7 @@ for(true_model in  c('SST','Simple')){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
 
-    N_iter <- 20000  #number of iterations
+    N_iter <- 40000  #number of iterations
     burnin <- 10000  #number of discarded iterations
     thin=5
     diag0.5=T
@@ -241,7 +242,7 @@ for(true_model in  c('SST','Simple')){
       power_posterior_apprach = F
       custom_init <- NA
       estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
-      
+
       chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                               saving_directory = saving_directory,
                                                               estimation_control = estimation_control,

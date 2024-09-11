@@ -137,31 +137,6 @@ log_lik_dtruncbeta = function(y,alpha,beta,a,b, my_log=T){
 }
 
 
-log_lik_dtruncbeta_prime = function(y,alpha,beta,a,b, my_log=T){
-  y = as.matrix(y)
-  y = y[upper.tri(y)]
-  p = pdf_beta_trunc(y,alpha,beta,a,b)
-  if(my_log==T)
-  {return(sum(log(p)))}
-  else{return(prod(p))}
-}
-
-
-sampling_SST_matrix_beta = function(k,alpha,beta){
-  Y = matrix(NA, k, k)
-  diag(Y) = 0.5
-  
-  for(i in 2:k) {
-    Y[1, i] = sample_beta_trunc(N=1,  alpha, beta, a = Y[1, i-1], b = Inf)
-  }
-  
-  for(i in 2:(k-1)) {
-    for(j in (i+1):k) {
-      Y[i, j] = sample_beta_trunc(N=1, alpha, beta, a = Y[i, j-1], b = Y[i-1, j])
-    }
-  }
-  return(Y)
-}
 
 ########
 ##EXP
@@ -205,11 +180,6 @@ pdf_norm_trunc = function(y,mu,sigma,a,b){
   return(pdf)}
 
 
-#working with eta
-log_lik_dtruncnorm = function(y, my_eta, lb = 0, ub = Inf){
-  p = log(dtruncnorm(y, eta = c(0, my_eta), lb , ub ))
-  return(sum(p))
-}
 
 sampling_SST_matrix_norm = function(k,sigma){
   Y = matrix(NA, k, k)
@@ -633,17 +603,7 @@ simulating_tournament<- function(N,alpha,beta, min_clust,max_clust,n_ij_max){
 #   matches = data.frame(player1, player2, n_ij, y_ij)
 #   
 #   return(list(z_true = z_players, matches_results = matches, p_true = p))}
-vec2mat_0_P <- function(clust_lab,P){
-  # in: vector clust_lab of length V s.t. clust_lab[v]=h if node v is in cluster h
-  # out: binary VxH matrix M s.t. M[v,h]=1{node v is in cluster h}
-  V <- length(clust_lab)
-  H <- nrow(P)
-  M <- matrix(0,V,H)
-  for (v in 1:V){
-    M[v,clust_lab[v]] <- 1
-  }
-  return(M)
-}
+
 
 vec2mat <- function(clust_lab){
   # in: vector clust_lab of length V s.t. clust_lab[v]=h if node v is in cluster h

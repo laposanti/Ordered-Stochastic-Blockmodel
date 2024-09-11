@@ -67,8 +67,12 @@ if(is.simulation==F){
       z_df_complete$Y[i] <- Y_ij[z_df_complete$row[i], z_df_complete$col[i]]
     }
     for (i in seq_len(nrow(z_df_complete))) {
-      z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$row[i],],na.rm = T)/sum(Y_ij[,z_df_complete$row[i]],na.rm = T)
+      z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$row[i],],na.rm = T)/sum(N_ij[,z_df_complete$row[i]],na.rm = T)
     }
+    for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$degree_pl_col[i] <- sum(Y_ij[z_df_complete$col[i],],na.rm = T)/sum(N_ij[,z_df_complete$col[i]],na.rm = T)
+    }
+    
     for (i in seq_len(nrow(z_df_complete))) {
       z_df_complete$N[i] <- N_ij[z_df_complete$row[i], z_df_complete$col[i]]
     }
@@ -195,11 +199,22 @@ if(is.simulation==F){
       z_df_complete$Y[i] <- Y_ij[z_df_complete$row[i], z_df_complete$col[i]]
     }
     for (i in seq_len(nrow(z_df_complete))) {
+      z_df_complete$N[i] <- N_ij[z_df_complete$row[i], z_df_complete$col[i]]
+    }
+    
+    for (i in seq_len(nrow(z_df_complete))) {
       z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$row[i],])/sum(Y_ij[,z_df_complete$row[i]])
     }
     for (i in seq_len(nrow(z_df_complete))) {
-      z_df_complete$N[i] <- N_ij[z_df_complete$row[i], z_df_complete$col[i]]
+      z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$col[i],])/sum(Y_ij[,z_df_complete$col[i]])
     }
+    
+
+    
+    
+    
+    
+    
     
     
     z_df_complete$L = (z_df_complete$N -  z_df_complete$Y)
@@ -327,19 +342,13 @@ for(file in file_to_analyse){
   if(est_model != 'Simple'){
     m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,1:N_iter]
   }
-  if(est_model == 'WST'){
-    sigma_squared_burned = uploaded_results$chain1$est_containers$sigma_squared[1:N_iter]
-  }
-  
-  # K0 <- apply(X = z_burned, MARGIN = 2, FUN = function(col) count_nonempty_clusters(col, K))
-  # 
-  # K0_hat <- mean(K0)
-  
-  
+
   
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
   
+  
+
   
   z_burned_1 = uploaded_results$chain1$est_containers$z[,1:N_iter]
   z_burned_2 = uploaded_results$chain2$est_containers$z[,1:N_iter]
@@ -351,15 +360,7 @@ for(file in file_to_analyse){
   theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,1:N_iter]
   theta_burned_4 = uploaded_results$chain4$est_containers$theta[,,1:N_iter]
   
-  z_burned_list = list(z_burned_1,
-                       z_burned_2,
-                       z_burned_3,
-                       z_burned_4)
-  
-  theta_burned_list = list(theta_burned_1,
-                           theta_burned_2,
-                           theta_burned_3,
-                           theta_burned_4)
+
   # chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, 
   #                                   ncol_iter = N_iter - burnin,n=n)
   # chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, 
@@ -390,18 +391,19 @@ for(file in file_to_analyse){
   
   # Convert back to a logical matrix
   filtering_obs <- matrix(as.logical(common_indices), nrow = n,ncol = n)
+
+
   upper.tri.Y_ij = Y_ij[filtering_obs]
   upper.tri.N_ij = N_ij[filtering_obs]
   
   Y_pred = matrix(NA, nrow = num_samples*4,ncol = length(upper.tri.Y_ij))
   
   LL_list <- foreach(i=1:4, .packages='foreach')%do%{
-    
     z_chain <- z_burned_list[[i]]
     theta_chain <- theta_burned_list[[i]]
     
     llik = matrix(NA,  nrow = num_samples, ncol = length(upper.tri.Y_ij))
-    
+
     for(t in 1:num_samples){
       
       z_chain_mat = vec2mat_0_P(z_chain[,t], theta_burned[,,t])
@@ -410,10 +412,9 @@ for(file in file_to_analyse){
       
       P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
       
-      llik[t,] =  dbinom(upper.tri.Y_ij, upper.tri.N_ij, P_ij[filtering_obs],log = T)
+      llik[t,] =  dbinom(x = upper.tri.Y_ij, size = upper.tri.N_ij,prob =  P_ij[filtering_obs],log = T)
       
-      Y_pred[t+(i-1)*2000,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij,
-                                      P_ij[filtering_obs])
+      Y_pred[t+(i-1)*num_samples,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij, P_ij[filtering_obs])
     }
     print(i)
     return(llik)
@@ -487,9 +488,12 @@ for(file in file_to_analyse){
   
   library(bayesplot)
   library(loo)
-  c_log_lik = rbind(LL_list[[1]])
+  c_log_lik = rbind(LL_list[[1]],LL_list[[2]],LL_list[[3]],LL_list[[4]])
   
-  r_effs = loo::relative_eff(c_log_lik,c(rep(1,num_samples)))
+  r_effs = loo::relative_eff(c_log_lik,c(rep(1,num_samples),
+                                         rep(2,num_samples),
+                                         rep(3,num_samples),
+                                         rep(4,num_samples)))
   
   loo_model_fit = loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
   saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
@@ -497,12 +501,28 @@ for(file in file_to_analyse){
   plot(loo_model_fit)
   waic_model_fit = waic(LL_list[[1]])
   problematic_values = pareto_k_ids(loo_model_fit)
+  
+  
   loo::pareto_k_values(loo_model_fit)
   pareto_k_table(loo_model_fit)
   
 
+  upper_tri_indices <- upper.tri(N_ij)
+  
+  # Get the indices where the matrix elements are greater than 0
+  non_zero_indices <- N_ij > 0
+  
+  # Find the common indices
+  common_indices <- upper_tri_indices*non_zero_indices
+  
+  # Convert back to a matrix if needed
+  common_indices <- as.logical(common_indices)
+  
   
   prob_values_position = which(filtering_obs==T,arr.ind = T)[problematic_values,] 
+
+  
+  
   count_true_better_than_est = vector()
   count_true_equal_to_est = vector()
   
@@ -512,7 +532,7 @@ for(file in file_to_analyse){
                               z_mode2 = numeric())
   
   for(prob_value in 1:nrow(prob_values_position)){
-    prob_value=1
+
     problematic_position_1 = prob_values_position[prob_value,1]
     problematic_position_2 = prob_values_position[prob_value,2]
     
@@ -527,7 +547,7 @@ for(file in file_to_analyse){
     for(t in 1:num_samples){
       data.frame1$Y_ij[t] = Y_ij[problematic_position_1,problematic_position_2]
       data.frame1$N_ij[t] = N_ij[problematic_position_1,problematic_position_2]
-      data.frame1$true_P[t] = inverse_logit_f(uploaded_results$chain1$ground_truth$theta[data.frame1$z_1_true[t],data.frame1$z_2_true[t]])
+      data.frame1$true_P[t] = inverse_logit_f(uploaded_results$chain1$ground_truth$P_matrix[data.frame1$z_1_true[t],data.frame1$z_2_true[t]])
       data.frame1$cl_est1[t] = z_burned_1[problematic_position_1,t]
       data.frame1$cl_est2[t] = z_burned_1[problematic_position_2,t]
       data.frame1$P_entry[t] = inverse_logit_f(theta_burned_1[data.frame1$cl_est1[t],data.frame1$cl_est2[t],t])
@@ -564,17 +584,36 @@ for(file in file_to_analyse){
     sum(count_true_equal_to_est)-
     sum(count_true_better_than_est)
   
-  mean_error = matrix(NA, N_iter, 3155)
+  mean_error = matrix(NA, N_iter, length(upper.tri.Y_ij[problematic_values]))
   for(t in 1:N_iter){
-    mean_error[t,] = upper.tri.Y_ij - Y_pred[t,]
+    mean_error[t,] = upper.tri.Y_ij[problematic_values] - Y_pred[t,problematic_values]
   }
-  hist(colMeans(abs(mean_error)))
-  
-  point_est_z[8]
-  z_burned_1[8,]
-  dbinom(Y_ij[8,], N_ij[8,])
+  print(hist(colMeans(abs(mean_error))))
+  summary(colMeans(abs(mean_error)))
   
   
+mean(var(LL_list[[1]][,problematic_values[1]]))
+
+
+var(LL_list[[1]][,1])
+
+
+problematic = as.vector(LL_list[[1]][1:4000,problematic_values])
+non_problematic = as.vector(LL_list[[1]][1:4000,-problematic_values])
+df_plot = data.frame(value= c(problematic,non_problematic), 
+                     ok_not_ok = c(rep('problematic', length(problematic)),
+                                   rep('non_problematic', length(non_problematic))))
+
+df_plot%>%
+  ggplot(aes(x = value, fill=ok_not_ok))+
+  geom_density(alpha=0.5)
+
+is.NA.Y_pred = which(is.na(Y_pred),arr.ind = T)
+bayesplot::ppc_bars(
+  y = upper.tri.Y_ij[-problematic_values],
+  yrep = Y_pred[,-problematic_values],
+  lw = weights(loo_model_fit$psis_object)[,-problematic_values]
+)
   
   
   
@@ -717,7 +756,7 @@ for(file in file_to_analyse){
       theta_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
         data.frame(iteration = j,
                    theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
-                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$theta), 
+                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
                    entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
       }))
       theta_trace_df_post_switch= theta_trace_df_post_switch%>% 
@@ -765,7 +804,7 @@ for(file in file_to_analyse){
     # 
     # }
     
-    
+
     
     
     
@@ -1255,18 +1294,24 @@ for(file in file_to_analyse){
   # COMPARISON WITH THE EXTERNAL RANKING
   #---------------------------------------------------------------------------
   
+  
+  
+  
+  
+  
+  
   if(is.simulation==F){
     
     
     plot_name <- paste0(processed_wd,"//RankvsClust_Est_model",est_model, "_K",K,"_N",nrow(uploaded_results$chain1$Y_ij),".png")
     # Save the plot with the constructed file name
-    
+    N=95
     est_df<- data.frame(Id = rownames(Y_ij), 
                         marginal_victories = rowSums(Y_ij),
-                        marginal_losses = colSums(Y_ij),
-                        est_cl = point_est_z, 
-                        unique_identifier = runif(N, -0.001,0.001))%>%
-      mutate(unique_identifier = unique_identifier+est_cl)%>%
+                        marginal_losses = colSums(Y_ij))
+                        # est_cl = point_est_z, 
+      #                   unique_identifier = runif(N, -0.001,0.001))%>%
+      # mutate(unique_identifier = unique_identifier+est_cl)%>%
       mutate(relative_victories = marginal_victories/(marginal_losses+marginal_victories))
     
     
@@ -1362,13 +1407,7 @@ for(file in file_to_analyse){
     colnames(Y_ij) <- rownames(Y_ij)
     
     
-    for(i in seq_len(nrow(z_df_complete))){
-      z_df_complete$marginal_victories_row[i] <- sum(Y_ij[z_df_complete$row[i],]/est_df$unique_identifier,na.rm = T)/sum(Y_ij[,z_df_complete$row[i]]*est_df$unique_identifier,na.rm = T)
-    }
-    for(i in seq_len(nrow(z_df_complete))){
-      z_df_complete$marginal_victories_col[i] <- sum(Y_ij[z_df_complete$col[i],]/est_df$unique_identifier,na.rm = T)/sum(Y_ij[,z_df_complete$col[i]]*est_df$unique_identifier,na.rm = T)
-    }
-    
+
     
     
     
@@ -1376,11 +1415,23 @@ for(file in file_to_analyse){
       inner_join(est_df, by = c("row" = "Id")) %>%
       dplyr::rename(row_z = est_cl) %>%
       inner_join(est_df, by = c("col" = "Id")) %>%
-      dplyr::rename(col_z = est_cl) %>%
-      mutate(row = factor(row, levels = unique(row[order(row_z, -marginal_victories_row, decreasing = TRUE)])),
-             col = factor(col, levels = unique(col[order(col_z, -marginal_victories_col, decreasing = F)]))) %>%
-      mutate(perc_success = Y/N)
+      dplyr::rename(col_z = est_cl)
     
+    z_df_complete
+    
+    
+    
+    
+    z_df_complete=  z_df_complete %>%
+      mutate(row = factor(row, levels = unique(row[order(-degree_pl_row, decreasing = F)])),
+             col = factor(col, levels = unique(col[order(degree_pl_col, decreasing = F)]))) 
+    
+    
+    z_df_complete%>%
+    ggplot(aes(x = row, y=col, fill= factor(N)))+
+      geom_tile()+
+      theme(axis.text.x = element_text(angle=90))
+
     
     
     v_lines_list = list()
@@ -1391,6 +1442,7 @@ for(file in file_to_analyse){
     
     
     est_df_disordered = est_df %>% mutate(est_cl =order(Id))
+    
     plot_df_disordered = z_df_complete%>%
       inner_join(est_df_disordered, by = c("col" = "Id")) %>%
       inner_join(est_df_disordered, by = c("row" = "Id")) %>%
@@ -1399,9 +1451,22 @@ for(file in file_to_analyse){
              row = factor(row, levels = unique(row[order(est_cl.y , row, decreasing = TRUE)])))
     
     
+    library(ggside)
+    
+    
+    
+    
     
     rowSums(Y_ij)
     if(true_model == 'Tennis_data'){
+      
+      library(tidyr)
+      library(tidyverse)
+      
+      
+      
+      
+      
       adjacency_m   <- ggplot(plot_df, aes(x = col, y = row)) +
         geom_tile(aes(fill = perc_success), color = "gray", show.legend = T) +
         scale_fill_gradient(low = "white", high = "red") +
@@ -1459,6 +1524,9 @@ for(file in file_to_analyse){
       
       
     }else if(true_model == 'Citation_data'){
+      
+      
+      
       adjacency_m   <- ggplot(plot_df, aes(x = col, y = row)) +
         geom_tile(aes(fill = perc_success), color = "gray", show.legend = T) +
         scale_fill_gradient(low = "white", high = "red") +
