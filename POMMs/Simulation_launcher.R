@@ -71,7 +71,7 @@ for(true_model in  c('SST','Simple')){
   #-----------------------------------------------------------------------------
   
   for(file in 1:length(filenames)){
-    file=3
+    file=1
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
     data_to_be_estimated$data_plot
     data_to_be_estimated$recovery_capability
@@ -133,7 +133,7 @@ for(true_model in  c('SST','Simple')){
       source("./model_auxiliary_functions/Functions_priorSST.R")
       source("./Metropolis_within_Gibbs_code_powerposterior.R")
       
-      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1 ,K = 0, theta = 0)
+      estimation_control <- list(z = 1,  theta = 0)
       
       chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                             saving_directory = saving_directory,

@@ -102,6 +102,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  
                                                                  joint_density<- log(dtruncnorm(theta_current[1,2:K],a = 0,mean = 0,sd = 1)) - 
                                                                    log(0.5)*((K-1):1)
+                                                                 
                                                                  log_p_sum = joint_density + fac 
                                                                  return(log_p_sum)
                                                                }
@@ -257,6 +258,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                        log = T)
                                                                return(sum(log_likelihood))
                                                              }
+                                                             
                                                              #---------------------------
                                                              # Preparatory Steps for the MCMC to run
                                                              #--------------------------------------------------------------
