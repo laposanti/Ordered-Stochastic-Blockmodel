@@ -149,7 +149,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     estimation_control <- list(z = 1, theta = 1)
 
     
-    chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij_ordered, 
+    chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                           saving_directory = saving_directory,
                                                           estimation_control = estimation_control,
                                                           burnin = burnin,
