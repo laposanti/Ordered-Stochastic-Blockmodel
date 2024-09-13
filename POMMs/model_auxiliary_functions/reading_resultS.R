@@ -337,6 +337,7 @@ for(file in file_to_analyse){
   #-------------------------------------------------------------------------------
   # P temporary estimate
   #-------------------------------------------------------------------------------
+  
   theta_burned = uploaded_results$chain1$est_containers$theta[,,1:N_iter]
   z_burned =  uploaded_results$chain1$est_containers$z[,1:N_iter]
   if(est_model != 'Simple'){

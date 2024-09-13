@@ -23,7 +23,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                     ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
                                                     custom_init=NA,power_posterior_apprach = T, thin=1,
-                                                    diag0.5 = T){
+                                                    diag0.5){
   #setting for each chain a different seed
   #if the given seed is 20, the chains' seeds will be 21 for chain 1, 22 for chain 2 and so on...
   
@@ -99,7 +99,6 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  #Prior distribution on theta
                                                                  theta_prior_probability <-function(theta,K){
                                                                    fac <- sum(lfactorial((K-1):1))
-                                                                   
                                                                    joint_density<- log(dtruncnorm(theta[1,2:K],a = 0,mean = 0,sd = 1)) - 
                                                                      log(0.5)*((K-1):1)
                                                                    
@@ -123,7 +122,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    log_p_sum = joint_density + fac + sum(log(P_diag_density))
                                                                    return(log_p_sum)
                                                                  }
-                                                                 
+                                                               }
                                                                  #Proposal distribution on theta
                                                                  r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
                                                                    mu <- j_star - i_star
@@ -163,7 +162,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    return(list(theta_scanning_ij= theta_scanning_ij,
                                                                                p_prime_given_scanning = p_prime_given_scanning,
                                                                                p_scanning_given_prime = p_scanning_given_prime))
-                                                                 }
+                                                                 
                                                                  
                                                                  
                                                                  
