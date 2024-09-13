@@ -94,88 +94,139 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              # Prior and proposal on theta for the SST model
                                                              #--------------------------------
                                                              if(model =='SST'){
-                                                               #double check that the diagonal is fixed to 0.5
-                                                               diag0.5 = T
-                                                               #Prior distribution on theta
-                                                               theta_prior_probability <-function(theta,K){
-                                                                 fac <- sum(lfactorial((K-1):1))
+                                                               #if we impose that the main diagonal should be fixed to 0.5
+                                                               if(diag0.5 == T){
+                                                                 #Prior distribution on theta
+                                                                 theta_prior_probability <-function(theta,K){
+                                                                   fac <- sum(lfactorial((K-1):1))
+                                                                   
+                                                                   joint_density<- log(dtruncnorm(theta[1,2:K],a = 0,mean = 0,sd = 1)) - 
+                                                                     log(0.5)*((K-1):1)
+                                                                   
+                                                                   log_p_sum = joint_density + fac 
+                                                                   return(log_p_sum)
+                                                                 }
+                                                               }else if(diag0.5 == F){
                                                                  
-                                                                 joint_density<- log(dtruncnorm(theta_current[1,2:K],a = 0,mean = 0,sd = 1)) - 
-                                                                   log(0.5)*((K-1):1)
                                                                  
-                                                                 log_p_sum = joint_density + fac 
-                                                                 return(log_p_sum)
+                                                                 theta_prior_probability <-function(theta,K){
+                                                                   fac <- sum(lfactorial((K-1):1))
+                                                                   P_diag = inverse_logit_f(diag(theta))
+                                                                   
+                                                                   
+                                                                   P_diag_density = dbeta(P_diag,shape1 = 2,shape2 = 2)*
+                                                                     (exp(P_diag)/((1+exp(P_diag))**2))
+                                                                   
+                                                                   joint_density<- log(dtruncnorm(theta[1,2:K],a = 0,mean = 0,sd = 1)) - 
+                                                                     log(0.5)*((K-1):1)
+                                                                   
+                                                                   log_p_sum = joint_density + fac + sum(log(P_diag_density))
+                                                                   return(log_p_sum)
+                                                                 }
+                                                                 
+                                                                 #Proposal distribution on theta
+                                                                 r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
+                                                                   mu <- j_star - i_star
+                                                                   
+                                                                   #if it's the last diagonal, we have no boundary above it. We fix arbitrarily 9.21
+                                                                   ub = ifelse(test = mu != nrow(theta_prime)-1, 
+                                                                               yes = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu+1)][1],
+                                                                               no = 9.21)
+                                                                   #if it's the main diagonal, we have no boundary below it. We fix arbitrarily -9.21
+                                                                   
+                                                                   
+                                                                   if(mu == 0){
+                                                                     ub = 9.21
+                                                                     lb = -9.21
+                                                                   }else{
+                                                                     lb = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu-1)][1]
+                                                                   }
+                                                                   
+                                                                   theta_scanning_ij = rtruncnorm(n = 1, 
+                                                                                                  a = lb, 
+                                                                                                  b = ub, 
+                                                                                                  mean = theta_prime[i_star,j_star],
+                                                                                                  sd =sd_proposal[i_star,j_star])
+                                                                   
+                                                                   p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
+                                                                                                       a = lb, 
+                                                                                                       b = ub, 
+                                                                                                       mean = theta_scanning_ij,
+                                                                                                       sd =sd_proposal[i_star,j_star])
+                                                                   
+                                                                   p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
+                                                                                                       a = lb, 
+                                                                                                       b = ub, 
+                                                                                                       mean = theta_prime[i_star,j_star],
+                                                                                                       sd =sd_proposal[i_star,j_star])
+                                                                   
+                                                                   return(list(theta_scanning_ij= theta_scanning_ij,
+                                                                               p_prime_given_scanning = p_prime_given_scanning,
+                                                                               p_scanning_given_prime = p_scanning_given_prime))
+                                                                 }
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 
                                                                }
-                                                               
-                                                               #Proposal distribution on theta
-                                                               r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
-                                                                 mu <- j_star - i_star
-                                                                 
-                                                                 #if it's the last diagonal, we have no boundary above it. We fix arbitrarily 9.21
-                                                                 ub = ifelse(test = mu != nrow(theta_prime)-1, 
-                                                                             yes = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu+1)][1],
-                                                                             no = 9.21)
-                                                                 #if it's the main diagonal, we have no boundary below it. We fix arbitrarily -9.21
-                                                                 
-                                                                 lb= ifelse(test = (mu == 0), 
-                                                                            yes = -9.21,
-                                                                            no = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu-1)][1])
-                                                                 
-                                                                 
-                                                                 theta_scanning_ij = rtruncnorm(n = 1, 
-                                                                                                a = lb, 
-                                                                                                b = ub, 
-                                                                                                mean = theta_prime[i_star,j_star],
-                                                                                                sd =sd_proposal[i_star,j_star])
-                                                                 
-                                                                 p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
-                                                                                                     a = lb, 
-                                                                                                     b = ub, 
-                                                                                                     mean = theta_scanning_ij,
-                                                                                                     sd =sd_proposal[i_star,j_star])
-                                                                 
-                                                                 p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
-                                                                                                     a = lb, 
-                                                                                                     b = ub, 
-                                                                                                     mean = theta_prime[i_star,j_star],
-                                                                                                     sd =sd_proposal[i_star,j_star])
-                                                                 
-                                                                 return(list(theta_scanning_ij= theta_scanning_ij,
-                                                                             p_prime_given_scanning = p_prime_given_scanning,
-                                                                             p_scanning_given_prime = p_scanning_given_prime))
-                                                               }
-                                                               
-                                                               
                                                              }
                                                              
                                                              #Prior on theta for the WST model
                                                              #--------------------------------
                                                              if(model =='WST'){
                                                                #double check that the diagonal is fixed to 0.5
-                                                               diag0.5 = T
-                                                               #Prior distribution for the WST model
-                                                               
-                                                               theta_prior_probability <- function(theta,K){
-                                                                 P = inverse_logit_f(theta)
-                                                                 P_upper.tri = P[upper.tri(P,diag = F)]
+                                                               if(diag0.5 == T){
+                                                                 #Prior distribution for the WST model
                                                                  
-                                                                 p_prod = dunif(P_upper.tri,0.5,0.9999)*
-                                                                   (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+                                                                 theta_prior_probability <- function(theta,K){
+                                                                   P = inverse_logit_f(theta)
+                                                                   P_upper.tri = P[upper.tri(P,diag = F)]
+                                                                   
+                                                                   p_prod = dunif(P_upper.tri,0.5,0.9999)*
+                                                                     (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+                                                                   
+                                                                   
+                                                                   log_p_sum = sum(log(p_prod))
+                                                                   return(log_p_sum)
+                                                                   
+                                                                 }
+                                                               }else if(diag0.5 == F){
+                                                                 #Prior distribution for the WST model
                                                                  
-                                                                 
-                                                                 log_p_sum = sum(log(p_prod))
-                                                                 return(log_p_sum)
-                                                                 
+                                                                 theta_prior_probability <- function(theta,K){
+                                                                   P = inverse_logit_f(theta)
+                                                                   
+                                                                   
+                                                                   P_diag = diag(theta)
+                                                                   P_diag_density = dbeta(P_diag,shape1 = 2,shape2 = 2)*
+                                                                     (P_diag/((1+P_diag)**2))
+                                                                   
+                                                                   P_upper.tri = P[upper.tri(P,diag = F)]
+                                                                   
+                                                                   p_prod = dunif(P_upper.tri,0.5,0.9999)*
+                                                                     (exp(P_upper.tri)/((1+exp(P_upper.tri))**2))
+                                                                   
+                                                                   
+                                                                   log_p_sum = sum(log(p_prod))
+                                                                   return(log_p_sum)
+                                                                   
+                                                                 }
                                                                }
                                                                #Proposal distribution on theta
                                                                r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
-                                                                 lb = 0 
-                                                                 ub = 9.21
                                                                  
+                                                                 if(mu == 0){
+                                                                   ub = 9.21
+                                                                   lb = -9.21
+                                                                 }else{
+                                                                   lb = 0 
+                                                                   ub = 9.21
+                                                                 }
                                                                  theta_scanning_ij = rtruncnorm(n = 1, 
-                                                                                             a = lb, b = ub, 
-                                                                                             mean = theta_prime[i_star,j_star],
-                                                                                             sd =sd_proposal[i_star,j_star])
+                                                                                                a = lb, b = ub, 
+                                                                                                mean = theta_prime[i_star,j_star],
+                                                                                                sd =sd_proposal[i_star,j_star])
                                                                  
                                                                  p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
                                                                                                      a = lb, 
@@ -223,8 +274,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  ub = 9.21
                                                                  
                                                                  theta_scanning_ij = rtruncnorm(n = 1, a = lb, b = ub, 
-                                                                                             mean = theta_prime[i_star,j_star],
-                                                                                             sd = sd_proposal[i_star,j_star])
+                                                                                                mean = theta_prime[i_star,j_star],
+                                                                                                sd = sd_proposal[i_star,j_star])
                                                                  
                                                                  p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
                                                                                                      a = lb, 
@@ -247,9 +298,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              #Binomial Log-likelihood function
                                                              #relevant_indices is a logical nxn matrix that makes the code faster:
-                                                              #the likelihood is computed just for the entries that
-                                                               #1) are in the upper triangular adjacency matrix
-                                                               #2) have N_ij > 0 
+                                                             #the likelihood is computed just for the entries that
+                                                             #1) are in the upper triangular adjacency matrix
+                                                             #2) have N_ij > 0 
                                                              
                                                              ll_computation <- function(Y_ij, N_ij, P_nbyn, relevant_indices){
                                                                log_likelihood = dbinom(x = Y_ij[relevant_indices], 
@@ -281,8 +332,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #Computation of the relevant indices
                                                              #---------------------------------
                                                              #Relevant indices are
-                                                              # 1) i,j : i<j (upper triangular entries)
-                                                              # 2) i,j : N_ij > 0 (non-zero number of interactions)
+                                                             # 1) i,j : i<j (upper triangular entries)
+                                                             # 2) i,j : N_ij > 0 (non-zero number of interactions)
                                                              
                                                              # Get the indices of the upper triangular part of the matrix
                                                              upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
@@ -300,15 +351,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              # Self -initilization if custom init is not provided
                                                              # --> if you do not provide custom initial values, the MH self-initializes
                                                              if(all(is.na(custom_init))){
-                                                              
+                                                               
                                                                # Self-initializing z parameter
-                                                              #-------------------------------------------------------------------------
-                                                              
+                                                               #-------------------------------------------------------------------------
+                                                               
                                                                if(estimation_control$z==1){
                                                                  
                                                                  z_current=  sample(x = c(1:K), size = n,replace = T)
-                                                                 }else{
-                                                                #if the parameters is not to be estimated, initialize it to the "true" value
+                                                               }else{
+                                                                 #if the parameters is not to be estimated, initialize it to the "true" value
                                                                  z_current=  matrix(ground_truth$z, n, 1)
                                                                }
                                                                
@@ -448,7 +499,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                # dataframe of the theta entries that needs to be updated
                                                                #-----------------------------------------
                                                                #Updating each entry of P, one at the time
-                                                               ut <- upper.tri(theta_current, diag= !diag0.5)
+                                                               ut <- upper.tri(theta_current, diag= !diag0.5) #if diag0.5 ==F, also the main diagonal is updated
                                                                theta_combn = which(ut, arr.ind = TRUE) # get the indices of the upper triangular elements
                                                                
                                                                uo<- data.frame(row = theta_combn[,1], col = theta_combn[,2] ) %>%
@@ -610,10 +661,14 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      #theta_scanning is the newly proposed theta matrix
                                                                      if(model =='SST'){
                                                                        theta_scanning[col(theta_prime)- row(theta_prime) == mu] <- theta_ij_scanning
-                                                                       theta_scanning[col(theta_prime)- row(theta_prime) == -mu] <- -theta_ij_scanning
+                                                                       if(mu != 0){
+                                                                         theta_scanning[col(theta_prime)- row(theta_prime) == -mu] <- -theta_ij_scanning
+                                                                       }
                                                                      }else{
                                                                        theta_scanning[i_star,j_star] <- theta_ij_scanning
+                                                                       if(mu != 0){
                                                                        theta_scanning[j_star,i_star] <- -theta_ij_scanning
+                                                                       }
                                                                      }
                                                                      
                                                                      #wi
@@ -677,7 +732,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      MH_update_theta = min(log_r,0)>=log(runif(1))
                                                                      
                                                                      if(MH_update_theta){
-                                                                       acc.count_theta[i_star,j_star] = acc.count_theta[i_star,j_star] +1
+                                                                       
                                                                        if(model =='SST'){
                                                                          acc.count_theta[col(theta_prime)- row(theta_prime) == mu] <- acc.count_theta[col(theta_prime)- row(theta_prime) == mu] +1
                                                                        }else{
