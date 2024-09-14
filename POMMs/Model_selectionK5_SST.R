@@ -69,7 +69,7 @@ optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
 N_iter <- 100000 #number of iterations
-burnin <- 50000 #number of discarded iterations
+burnin <- 20000 #number of discarded iterations
 thin = 5
 
 
@@ -90,7 +90,9 @@ if (!dir.exists(saving_directory)) {
 } else {
   message("Directory already exists.")
 }
-diag0.5 = T
+
+power_posterior_apprach = T
+custom_init = NA
 if('SST' %in% choose_model_to_estimate){
 
 
@@ -101,8 +103,8 @@ if('SST' %in% choose_model_to_estimate){
   est_model = 'SST'
   
   seed=23
-  
-  estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 1, K = 0, theta = 0)
+  diag0.5 = F
+  estimation_control <- list(z = 1, theta = 1)
   
   chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                     saving_directory = saving_directory,
@@ -114,9 +116,9 @@ if('SST' %in% choose_model_to_estimate){
                                                     seed = seed, 
                                                     model = est_model, 
                                                     custom_init = custom_init,
-                                                    power_posterior_apprach = F,
+                                                    power_posterior_apprach = power_posterior_apprach,
                                                     thin =thin,
-                                                    diag0.5 = T)
+                                                    diag0.5 = diag0.5)
   names(chains) = paste0('chain',unlist(K_est))
   chains[['recovery_level']] = recovery_capability
   
@@ -138,12 +140,11 @@ if('WST' %in% choose_model_to_estimate){
   est_model = 'WST'
   
   #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-  power_posterior_apprach = F
-  custom_init <- NA
+
   print(paste0("Estimation of the WST model, K=", K_est))
   print(paste0("Begin cycle at:", date(), "\n"))
-  estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
-  
+  estimation_control <- list(z = 1, theta = 1)
+  diag0.5 = F
   chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                         saving_directory = saving_directory,
                                                         estimation_control = estimation_control,
@@ -156,7 +157,7 @@ if('WST' %in% choose_model_to_estimate){
                                                         custom_init = custom_init,
                                                         power_posterior_apprach = power_posterior_apprach,
                                                         thin = thin,
-                                                        diag0.5 = T)
+                                                        diag0.5 = diag0.5)
   
   
   
@@ -190,9 +191,8 @@ if('Simple' %in% choose_model_to_estimate){
   
   
   #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-  power_posterior_apprach = F
-  custom_init <- NA
-  estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
+
+  estimation_control = list(z = 1,theta=1)
   
   chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                           saving_directory = saving_directory,
@@ -205,7 +205,7 @@ if('Simple' %in% choose_model_to_estimate){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin,diag0.5 = F)
+                                                          thin=thin,diag0.5 = diag0.5)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,"Data_from",
