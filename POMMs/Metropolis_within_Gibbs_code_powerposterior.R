@@ -307,9 +307,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              seeds = seed + (1:n_chains)*10
                                                              set.seed(seeds[[chain]])
                                                              
-                                                             #specific location of saving for the directory
-                                                             save_dir = where_to_save[[chain]]
-                                                             
+                                            
                                                              #fixing the number of clusters
                                                              K <- as.numeric(K_est[[chain]])
                                                              #number of samples considering burnin and thinning
