@@ -523,7 +523,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    ll_prime<- ll_computation(Y_ij = Y_ij,
                                                                                              N_ij = N_ij,
                                                                                              P_nbyn = P_nbyn_prime,
-                                                                                             relevant_indices = relevant_indices)*t
+                                                                                             relevant_indices = relevant_indices)
                                                                    
                                                                    B_prime<- ddirichlet_multinomial(N = n,
                                                                                                     K = K,
@@ -582,7 +582,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                               relevant_indices = filtering_matrix)
                                                                      
                                                                      #Updating the likelihood
-                                                                     ll_scanning = (ll_prime - ll_minus + ll_plus)*t
+                                                                     ll_scanning = (ll_prime - ll_minus + ll_plus)
                                                                      
                                                                      #updating the prior on z
                                                                      n_scanning<- n_prime
@@ -596,7 +596,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      # the proposal is symmetric and proportional to 1/(K-1): it cancels out too
                                                                      
                                                                      # log ratio
-                                                                     log_r= ll_scanning - ll_prime + B_scanning - B_prime
+                                                                     log_r= t*(ll_scanning - ll_prime) + B_scanning - B_prime
                                                                      
                                                                      #ACCEPT/REJECT CONDITION
                                                                      MH_condition_Z= min(log_r,0)>=log(runif(1))
@@ -710,11 +710,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      theta_prior_scanning = theta_prior_probability(theta_scanning, K = K)
                                                                      
                                                                      #Updating the likelihood
-                                                                     ll_scanning = (ll_prime - ll_minus + ll_plus)*t
+                                                                     ll_scanning = ll_prime - ll_minus + ll_plus
                                                                      
                                                                      
                                                                      
-                                                                     log_r= ll_scanning - ll_prime + 
+                                                                     log_r= t*(ll_scanning - ll_prime) + 
                                                                        theta_prior_scanning - theta_prior_prime + 
                                                                        log(theta_ij_proposal$p_prime_given_scanning) - log(theta_ij_proposal$p_scanning_given_prime)
                                                                      
