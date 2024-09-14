@@ -34,24 +34,21 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   
   
   
-  if(power_posterior_apprach == T){
-    n_temperatures=50
-  }
   
-  where_to_save =list()
-  for(i in 1:length(K_est)){
-    if(power_posterior_apprach==T){
-      where_to_save[[i]] =  file.path(saving_directory, paste0("/MCMC_output/powerposterior/Data_",data_description,"/Est_",model,"/K", K_est[[i]],"/"))
-      dir.create(where_to_save[[i]], showWarnings = F, recursive = T)
-    }
-    
-    else{
-      where_to_save[[i]] =  NA
-    }
-    
-  }
-  
-  
+  # where_to_save =list()
+  # for(i in 1:length(K_est)){
+  #   if(power_posterior_apprach==T){
+  #     where_to_save[[i]] =  file.path(saving_directory, paste0("/MCMC_output/powerposterior/Data_",data_description,"/Est_",model,"/K", K_est[[i]],"/"))
+  #     dir.create(where_to_save[[i]], showWarnings = F, recursive = T)
+  #   }
+  #   
+  #   else{
+  #     where_to_save[[i]] =  NA
+  #   }
+  #   
+  # }
+  # 
+  # 
   
   n_chains = length(K_est)
   if(detectCores() < n_chains){
@@ -126,36 +123,29 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  #Proposal distribution on theta
                                                                  r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
                                                                    mu <- j_star - i_star
-                                                                   
-                                                                   #if it's the last diagonal, we have no boundary above it. We fix arbitrarily 9.21
-                                                                   ub = ifelse(test = mu != nrow(theta_prime)-1, 
-                                                                               yes = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu+1)][1],
-                                                                               no = 9.21)
+                                                                   K<- nrow(theta_prime)
+                                                                  
                                                                    #if it's the main diagonal, we have no boundary below it. We fix arbitrarily -9.21
                                                                    
-                                                                   
-                                                                   if(mu == 0){
-                                                                     ub = 9.21
-                                                                     lb = -9.21
-                                                                   }else{
-                                                                     lb = theta_prime[(col(theta_prime)- row(theta_prime)) %in% (mu-1)][1]
-                                                                   }
-                                                                   
+                                                                   bounds = data.frame(mu = 0:(K-1), 
+                                                                              lb = c(-9.21,0,theta_prime[1,2:(K-1)]), 
+                                                                              ub = c(9.21, theta_prime[1,3:(K)], 9.21))
+                                                              
                                                                    theta_scanning_ij = rtruncnorm(n = 1, 
-                                                                                                  a = lb, 
-                                                                                                  b = ub, 
+                                                                                                  a = bounds$lb[mu+1], 
+                                                                                                  b = bounds$ub[mu+1], 
                                                                                                   mean = theta_prime[i_star,j_star],
                                                                                                   sd =sd_proposal[i_star,j_star])
                                                                    
                                                                    p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
+                                                                                                       a = bounds$lb[mu+1], 
+                                                                                                       b = bounds$ub[mu+1], 
                                                                                                        mean = theta_scanning_ij,
                                                                                                        sd =sd_proposal[i_star,j_star])
                                                                    
                                                                    p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
-                                                                                                       a = lb, 
-                                                                                                       b = ub, 
+                                                                                                       a = bounds$lb[mu+1], 
+                                                                                                       b = bounds$ub[mu+1],  
                                                                                                        mean = theta_prime[i_star,j_star],
                                                                                                        sd =sd_proposal[i_star,j_star])
                                                                    
@@ -421,8 +411,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              if(power_posterior_apprach==T){
+                                                               n_temperatures <- 50
                                                                i <- 0:n_temperatures
                                                                t_list <- (i / n_temperatures)^ 5
+                                                               
+                                                               evidence_df = data.frame(t = t_list, evidence = rep(NA, n_temperatures+1), K_est = rep(K, n_temperatures+1))
                                                              }else{
                                                                #estimating just one chain
                                                                t_list = 1
@@ -797,37 +790,13 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                
                                                                if(power_posterior_apprach ==T){
-                                                                 acceptance_rates <- list(acc.count_theta = acc.count_theta, 
-                                                                                          acc.count_z = acc.count_z,
-                                                                                          acc.count_mu_vec= acc.count_mu_vec)
+                                                            
+                                                                 #obtaining the likelihood for a given iteration
+                                                                 LL = colSums(ll_container)
                                                                  
-                                                                 
-                                                                 
-                                                                 est_containers = list(z = z_container,theta = theta_container,
-                                                                                       mu_vec = mu_vec_container)
-                                                                 
-                                                                 control_containers = list(llik = ll_container,
-                                                                                           N_iter = N_iter,
-                                                                                           thin = thin,
-                                                                                           N_iter_eff = N_iter_eff)
-                                                                 
-                                                                 
-                                                                 
-                                                                 chains = list(Y_ij= Y_ij, 
-                                                                               N_ij = N_ij, 
-                                                                               ground_truth=ground_truth,
-                                                                               est_containers=est_containers,
-                                                                               control_containers=control_containers, 
-                                                                               acceptance_rates= acceptance_rates,
-                                                                               t=t, seed= seed)
-                                                                 
-                                                                 #storing the results of each chain
-                                                                 my_names <- paste0("chain")
-                                                                 
-                                                                 my_filename <- paste0(save_dir,data_description, "Est_model",model,"_estK_",
-                                                                                       K,"_N", n, "iteration", which(t == t_list),".RDS")
-                                                                 saveRDS(object = chains, file = my_filename) # saving results
-                                                                 
+                                                                 #mean likelihood across iterations (expected deviance) of a given temperature t
+                                                                 evidence = mean(LL)
+                                                                 evidence_df[which(evidence_df$t == t), evidence]
                                                                }         
                                                              }
                                                              
@@ -846,14 +815,33 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                        N_iter_eff = N_iter_eff)
                                                              
                                                              
-                                                             
+                                                             if(power_posterior_apprach==F){
                                                              return(list(Y_ij= Y_ij, N_ij = N_ij, 
                                                                          ground_truth=ground_truth,
                                                                          est_containers=est_containers, 
                                                                          control_containers=control_containers, 
                                                                          acceptance_rates= acceptance_rates, 
                                                                          t=t, seed = seed + chain))
-                                                             
+                                                             }else{
+                                                               evidence_df = evidence_df %>% arrange(t)
+                                                               
+                                                               for(row_i in 1:(nrow(evidence_df)-1)){
+                                                                 ith_sum = (evidence_df$t[row_i+1] - evidence_df$t[row_i])*(evidence_df$evidence[row_i]+complete_df$evidence[row_i+1])/2
+                                                                 evidence_df$riemann[row_i] = ith_sum
+                                                               }
+                                                               
+                                                               
+                                                               marginal_likelihood = sum(complete_df$riemann)
+                                                               
+                                                               return(list(Y_ij= Y_ij, N_ij = N_ij, 
+                                                                           ground_truth=ground_truth,
+                                                                           est_containers=est_containers, 
+                                                                           control_containers=control_containers, 
+                                                                           acceptance_rates= acceptance_rates, 
+                                                                           evidence_df = evidence_df,
+                                                                           marginal_likelihood = marginal_likelihood,
+                                                                           t=t, seed = seed + chain))
+                                                             }
                                                              
                                                            }
     
