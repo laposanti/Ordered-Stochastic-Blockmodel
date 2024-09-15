@@ -109,15 +109,16 @@ for(data_description in c("Tennis_data","Citation_data")){
   ##############################################################################
   ground_truth = NA
   n = nrow(N_ij)
-  diag0.5=F
+  diag0.5 = F
   power_posterior_apprach=F
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 58
-  N_iter <- 100000 #number of itera0tions
-  burnin <- 5000 #number of discarded iterations
+  N_iter <- 200000 #number of itera0tions
+  burnin <- 20000 #number of discarded iterations
   thin = 15
-  
+  power_posterior_apprach = T
+  custom_init <- NA
   
   #number of clusters to fit
   #where to save the data
@@ -138,8 +139,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     
     
     #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-    power_posterior_apprach = F
-    custom_init <- NA
+
     diag0.5<- F
     print(paste0("Estimation of the SST model, K=", K_values))
     print(paste0("Begin cycle at:", date(), "\n"))
@@ -192,8 +192,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     #setting up the chain hyperparameter
     
     #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-    power_posterior_apprach = F
-    custom_init <- NA
+
     diag0.5 <- F
     print(paste0("Estimation of the WST model, K=", K_values))
     print(paste0("Begin cycle at:", date(), "\n"))
@@ -248,8 +247,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     
     
     #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-    power_posterior_apprach = F
-    custom_init <- NA
+
     diag0.5 <- F
     estimation_control = list(z = 1,theta=1)
     
