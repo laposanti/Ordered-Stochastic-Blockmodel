@@ -92,7 +92,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   #chosing where to save the files depending on which model you are estimating
   
   
-  K_values <- list(3,4,5,6,7,8,9,10,11,12,13,14,15)  # Range of K values to explore
+  K_values <- list(3,4,5,6,7,8,9,10,11)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
@@ -114,9 +114,9 @@ for(data_description in c("Tennis_data","Citation_data")){
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 58
-  N_iter <- 200000 #number of itera0tions
-  burnin <- 20000 #number of discarded iterations
-  thin = 15
+  N_iter <- 70000 #number of itera0tions
+  burnin <- 10000 #number of discarded iterations
+  thin = 5
   power_posterior_apprach = T
   custom_init <- NA
   
