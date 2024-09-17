@@ -108,7 +108,6 @@ for(diag0.5 in c(T,F)){
     
     estimation_control <- list(z = 1, theta = 1)
     
-    
     chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                       saving_directory = saving_directory,
                                                       estimation_control = estimation_control,
@@ -146,7 +145,7 @@ for(diag0.5 in c(T,F)){
     
     #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
     
-    custom_init <- NA
+    
     print(paste0("Estimation of the WST model, K=", K_est))
     print(paste0("Begin cycle at:", date(), "\n"))
     estimation_control <- list(z = 1, theta = 1)

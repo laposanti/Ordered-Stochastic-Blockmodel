@@ -70,7 +70,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                                add=variables_to_add),options(future.globals.onReference = "error"),
                                                            seed=TRUE)) %dofuture%{ 
                                                              
-                                                             library(doFuture,quietly = T)
+                                                             library(doFuture,quietly =T)
                                                              library(progressr,quietly = T)
                                                              library(foreach,quietly = T)
                                                              library(doParallel,quietly = T)
@@ -99,7 +99,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    joint_density<- log(dtruncnorm(theta[1,2:K],a = 0,mean = 0,sd = 1)) - 
                                                                      log(0.5)*((K-1):1)
                                                                    
-                                                                   log_p_sum = joint_density + fac 
+                                                                   log_p_sum = sum(joint_density) + fac 
                                                                    return(log_p_sum)
                                                                  }
                                                                }else if(diag0.5 == F){
@@ -116,7 +116,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    joint_density<- log(dtruncnorm(theta[1,2:K],a = 0,mean = 0,sd = 1)) - 
                                                                      log(0.5)*((K-1):1)
                                                                    
-                                                                   log_p_sum = joint_density + fac + sum(log(P_diag_density))
+                                                                   log_p_sum = sum(joint_density) + fac + sum(log(P_diag_density))
                                                                    return(log_p_sum)
                                                                  }
                                                                }

@@ -150,7 +150,7 @@ for(diag0.5 in c(T,F)){
     print(paste0("Estimation of the WST model, K=", K_est))
     print(paste0("Begin cycle at:", date(), "\n"))
     estimation_control <- list(z = 1, theta = 1)
-    diag0.5 = F
+    
     chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                           saving_directory = saving_directory,
                                                           estimation_control = estimation_control,
