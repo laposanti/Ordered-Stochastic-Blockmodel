@@ -108,7 +108,6 @@ for(diag0.5 in c(T,F)){
     estimation_control <- list(z = 1, theta = 1)
     
     
-    
     chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                       saving_directory = saving_directory,
                                                       estimation_control = estimation_control,
@@ -124,7 +123,6 @@ for(diag0.5 in c(T,F)){
                                                       diag0.5 = diag0.5)
     names(chains) = paste0('chain',unlist(K_est))
     
-    names(chains) = paste0('chain',unlist(K_est))
     chains[['recovery_level']] = recovery_capability
     
     my_filename = paste0(saving_directory,'Data_from',
@@ -151,7 +149,7 @@ for(diag0.5 in c(T,F)){
     print(paste0("Estimation of the WST model, K=", K_est))
     print(paste0("Begin cycle at:", date(), "\n"))
     estimation_control <- list(z = 1, theta = 1)
-    diag0.5 = T
+    
     chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                           saving_directory = saving_directory,
                                                           estimation_control = estimation_control,
@@ -164,7 +162,7 @@ for(diag0.5 in c(T,F)){
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
                                                           thin = thin,
-                                                          diag0.5 = T)
+                                                          diag0.5 = diag0.5)
     
     
     
