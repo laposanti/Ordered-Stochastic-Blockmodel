@@ -120,38 +120,43 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    return(log_p_sum)
                                                                  }
                                                                }
-                                                                 #Proposal distribution on theta
-                                                                 r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
-                                                                   mu <- j_star - i_star
-                                                                   K<- nrow(theta_prime)
-                                                                  
-                                                                   #if it's the main diagonal, we have no boundary below it. We fix arbitrarily -9.21
-                                                                   
+                                                               #Proposal distribution on theta
+                                                               r_d_theta_proposal <- function(theta_prime, sd_proposal, i_star, j_star){
+                                                                 mu <- j_star - i_star
+                                                                 K<- nrow(theta_prime)
+                                                                 
+                                                                 #if it's the main diagonal, we have no boundary below it. We fix arbitrarily -9.21
+                                                                 if(K==2){
+                                                                   bounds = data.frame(mu = 0:1, 
+                                                                                       lb = c(-9.21,0), 
+                                                                                       ub = c(9.21, 9.21))
+                                                                 }else{
                                                                    bounds = data.frame(mu = 0:(K-1), 
-                                                                              lb = c(-9.21,0,theta_prime[1,2:(K-1)]), 
-                                                                              ub = c(9.21, theta_prime[1,3:(K)], 9.21))
-                                                              
-                                                                   theta_scanning_ij = rtruncnorm(n = 1, 
-                                                                                                  a = bounds$lb[mu+1], 
-                                                                                                  b = bounds$ub[mu+1], 
-                                                                                                  mean = theta_prime[i_star,j_star],
-                                                                                                  sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
-                                                                                                       a = bounds$lb[mu+1], 
-                                                                                                       b = bounds$ub[mu+1], 
-                                                                                                       mean = theta_scanning_ij,
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
-                                                                                                       a = bounds$lb[mu+1], 
-                                                                                                       b = bounds$ub[mu+1],  
-                                                                                                       mean = theta_prime[i_star,j_star],
-                                                                                                       sd =sd_proposal[i_star,j_star])
-                                                                   
-                                                                   return(list(theta_scanning_ij= theta_scanning_ij,
-                                                                               p_prime_given_scanning = p_prime_given_scanning,
-                                                                               p_scanning_given_prime = p_scanning_given_prime))
+                                                                                       lb = c(-9.21,0, theta_prime[1,2:(K-1)]), 
+                                                                                       ub = c(9.21, theta_prime[1,3:(K)], 9.21))
+                                                                 }
+                                                                 
+                                                                 theta_scanning_ij = rtruncnorm(n = 1, 
+                                                                                                a = bounds$lb[mu+1], 
+                                                                                                b = bounds$ub[mu+1], 
+                                                                                                mean = theta_prime[i_star,j_star],
+                                                                                                sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_prime_given_scanning = dtruncnorm(x = theta_prime[i_star,j_star], 
+                                                                                                     a = bounds$lb[mu+1], 
+                                                                                                     b = bounds$ub[mu+1], 
+                                                                                                     mean = theta_scanning_ij,
+                                                                                                     sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 p_scanning_given_prime = dtruncnorm(x = theta_scanning_ij, 
+                                                                                                     a = bounds$lb[mu+1], 
+                                                                                                     b = bounds$ub[mu+1],  
+                                                                                                     mean = theta_prime[i_star,j_star],
+                                                                                                     sd =sd_proposal[i_star,j_star])
+                                                                 
+                                                                 return(list(theta_scanning_ij= theta_scanning_ij,
+                                                                             p_prime_given_scanning = p_prime_given_scanning,
+                                                                             p_scanning_given_prime = p_scanning_given_prime))
                                                                  
                                                                  
                                                                  
@@ -307,7 +312,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              seeds = seed + (1:n_chains)*10
                                                              set.seed(seeds[[chain]])
                                                              
-                                            
+                                                             
                                                              #fixing the number of clusters
                                                              K <- as.numeric(K_est[[chain]])
                                                              #number of samples considering burnin and thinning
@@ -657,7 +662,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      }else{
                                                                        theta_scanning[i_star,j_star] <- theta_ij_scanning
                                                                        if(mu != 0){
-                                                                       theta_scanning[j_star,i_star] <- -theta_ij_scanning
+                                                                         theta_scanning[j_star,i_star] <- -theta_ij_scanning
                                                                        }
                                                                      }
                                                                      
@@ -788,7 +793,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                
                                                                
                                                                if(power_posterior_apprach ==T){
-                                                            
+                                                                 
                                                                  #obtaining the likelihood for a given iteration
                                                                  LL = colSums(ll_container)
                                                                  
@@ -814,12 +819,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              if(power_posterior_apprach==F){
-                                                             return(list(Y_ij= Y_ij, N_ij = N_ij, 
-                                                                         ground_truth=ground_truth,
-                                                                         est_containers=est_containers, 
-                                                                         control_containers=control_containers, 
-                                                                         acceptance_rates= acceptance_rates, 
-                                                                         t=t, seed = seed + chain))
+                                                               return(list(Y_ij= Y_ij, N_ij = N_ij, 
+                                                                           ground_truth=ground_truth,
+                                                                           est_containers=est_containers, 
+                                                                           control_containers=control_containers, 
+                                                                           acceptance_rates= acceptance_rates, 
+                                                                           t=t, seed = seed + chain))
                                                              }else{
                                                                evidence_df = evidence_df %>% arrange(t)
                                                                
