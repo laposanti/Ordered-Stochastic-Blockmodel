@@ -159,7 +159,8 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                           seed = seed, 
                                                           model = est_model, 
                                                           custom_init = custom_init,
-                                                          power_posterior_apprach = power_posterior_apprach,thin=thin,
+                                                          power_posterior_apprach = power_posterior_apprach,
+                                                          thin=thin,
                                                           diag0.5 = diag0.5)
     
     names(chains_SST) = paste0('chain',1:length(K_values))

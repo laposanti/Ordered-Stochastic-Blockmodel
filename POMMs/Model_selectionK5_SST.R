@@ -68,7 +68,7 @@ is.simulation=T
 optimal_acceptance_rate_theta =.44
 optimal_acceptance_rate_mu = .234
 seed = 23
-N_iter <- 100000 #number of iterations
+N_iter <- 70000 #number of iterations
 burnin <- 20000 #number of discarded iterations
 thin = 5
 
@@ -76,7 +76,7 @@ thin = 5
 K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
 
 #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-power_posterior_apprach = T
+power_posterior_apprach = F
 custom_init <- NA
 
 #where to save the data
@@ -93,6 +93,14 @@ if (!dir.exists(saving_directory)) {
 
 power_posterior_apprach = T
 custom_init = NA
+for(diag0.5 in c(T,F)){
+  if(diag0.5==T){
+    #main diagonal fixed to 0.5
+    folder_url <- "https://drive.google.com/drive/u/1/folders/1cneKgDKZ8ZdxNZ4_9-QACyoYDgl9c_9K"
+  }else{
+    folder_url <- "https://drive.google.com/drive/u/1/folders/1WMb0GZuW1Je4crjh3Fv5TtjwhQF-k24G"
+    
+  }
 if('SST' %in% choose_model_to_estimate){
 
 
@@ -103,7 +111,7 @@ if('SST' %in% choose_model_to_estimate){
   est_model = 'SST'
   
   seed=23
-  diag0.5 = F
+
   estimation_control <- list(z = 1, theta = 1)
   
   chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
@@ -144,7 +152,7 @@ if('WST' %in% choose_model_to_estimate){
   print(paste0("Estimation of the WST model, K=", K_est))
   print(paste0("Begin cycle at:", date(), "\n"))
   estimation_control <- list(z = 1, theta = 1)
-  diag0.5 = F
+
   chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                         saving_directory = saving_directory,
                                                         estimation_control = estimation_control,
@@ -205,7 +213,7 @@ if('Simple' %in% choose_model_to_estimate){
                                                           model = est_model, 
                                                           custom_init = custom_init,
                                                           power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin,diag0.5 = diag0.5)
+                                                          thin=thin,diag0.5 = F)
   names(chains_Simple) = paste0('chain',unlist(K_est))
   chains_Simple[['recovery_level']] = recovery_capability
   my_filename = paste0(saving_directory,"Data_from",
@@ -216,4 +224,4 @@ if('Simple' %in% choose_model_to_estimate){
   
   drive_put(media = my_filename, path = folder)
 }
-
+}
