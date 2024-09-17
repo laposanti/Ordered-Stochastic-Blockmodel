@@ -35,8 +35,8 @@ googledrive::drive_auth(email = subject)
 # 
 # 2
 # # Get the folder (if you already have it) or specify the path where you want to upload
-folder_url <- "https://drive.google.com/drive/u/1/folders/1XKZh_eKciM3XqEc2bQX-e_H9iqOQ5dcZ"
-folder <- drive_get(as_id(folder_url))
+
+
 
 
 ################################################################################
@@ -101,7 +101,7 @@ for(diag0.5 in c(T,F)){
     folder_url <- "https://drive.google.com/drive/u/1/folders/1XKZh_eKciM3XqEc2bQX-e_H9iqOQ5dcZ"
     
   }
-  
+  folder <- drive_get(as_id(folder_url))
   if('SST' %in% choose_model_to_estimate){
     print(paste0("Estimation of the SST model, K=", K_est))
     print(paste0("Begin cycle at:", date(), "\n"))
