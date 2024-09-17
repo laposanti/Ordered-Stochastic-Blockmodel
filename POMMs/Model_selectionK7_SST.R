@@ -122,7 +122,8 @@ for(diag0.5 in c(T,F)){
                                                       model = est_model, 
                                                       custom_init = custom_init,
                                                       power_posterior_apprach = power_posterior_apprach,
-                                                      thin = thin)
+                                                      thin = thin,
+                                                      diag0.5 = diag0.5)
     names(chains) = paste0('chain',unlist(K_est))
     
     
@@ -163,7 +164,9 @@ for(diag0.5 in c(T,F)){
                                                           seed = seed, 
                                                           model = est_model, 
                                                           custom_init = custom_init,
-                                                          power_posterior_apprach = power_posterior_apprach,thin = thin)
+                                                          power_posterior_apprach = power_posterior_apprach,
+                                                          thin = thin,
+                                                          diag0.5 = diag0.5)
     
     
     
@@ -212,7 +215,8 @@ for(diag0.5 in c(T,F)){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,
-                                                            thin=thin)
+                                                            thin=thin,
+                                                            diag0.5 = F)
     names(chains_Simple) = paste0('chain',unlist(K_est))
     chains_Simple[['recovery_level']] = recovery_capability
     my_filename = paste0(saving_directory,"Data_from",
