@@ -114,7 +114,7 @@ for(data_description in c("Tennis_data","Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed = seed
-    N_iter <- 120000 #number of itera0tions
+    N_iter <- 220000 #number of itera0tions
     burnin <- 10000 #number of discarded iterations
     thin = 5
     power_posterior_apprach = F
