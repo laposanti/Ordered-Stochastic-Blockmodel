@@ -92,7 +92,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   #chosing where to save the files depending on which model you are estimating
   
   
-  K_values <- list(3,4,5,6,7,8,9,10,11)  # Range of K values to explore
+  K_values <- list(3,4,5,6,7,8,9,10,11,12,13,14,15)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
@@ -101,158 +101,105 @@ for(data_description in c("Tennis_data","Citation_data")){
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
   
-  
-  
-  
-  ##############################################################################
-  # Estimation: set the parameters of the estimation
-  ##############################################################################
-  ground_truth = NA
-  n = nrow(N_ij)
-  diag0.5 = F
-  power_posterior_apprach=F
-  optimal_acceptance_rate_theta =.44
-  optimal_acceptance_rate_mu = .234
-  seed = 58
-  N_iter <- 70000 #number of itera0tions
-  burnin <- 10000 #number of discarded iterations
-  thin = 5
-  power_posterior_apprach = T
-  custom_init <- NA
-  
-  #number of clusters to fit
-  #where to save the data
-  saving_directory = "./Results/MCMC_output/Fixed_K/Application"
-  #-----------------------------------------------------------------------------
-  # SST MODEL
-  #-----------------------------------------------------------------------------
-  if('SST' %in% choose_model_to_estimate){
-    print(paste0("Estimation of the SST model, K=",K_values))
-    print(paste0("Begin cycle at:", date()))
+  for(seed in c(20,21,22,23,24)){
     
     
+    ##############################################################################
+    # Estimation: set the parameters of the estimation
+    ##############################################################################
+    ground_truth = NA
+    n = nrow(N_ij)
+    diag0.5 = F
+    power_posterior_apprach=F
+    optimal_acceptance_rate_theta =.44
+    optimal_acceptance_rate_mu = .234
+    seed = seed
+    N_iter <- 120000 #number of itera0tions
+    burnin <- 10000 #number of discarded iterations
+    thin = 5
+    power_posterior_apprach = F
+    custom_init <- NA
     
-    est_model = 'SST'
-    
+    #number of clusters to fit
     #where to save the data
+    saving_directory = "./Results/MCMC_output/Fixed_K/Application"
+    #-----------------------------------------------------------------------------
+    # SST MODEL
+    #-----------------------------------------------------------------------------
+    if('SST' %in% choose_model_to_estimate){
+      print(paste0("Estimation of the SST model, K=",K_values))
+      print(paste0("Begin cycle at:", date()))
+      
+      
+      
+      est_model = 'SST'
+      
+      #where to save the data
+      
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      
+      diag0.5<- F
+      print(paste0("Estimation of the SST model, K=", K_values))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      
+      
+      estimation_control <- list(z = 1, theta = 1)
+      
+      
+      chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
+                                                            saving_directory = saving_directory,
+                                                            estimation_control = estimation_control,
+                                                            burnin = burnin,
+                                                            ground_truth = ground_truth,
+                                                            n = n, N_iter = N_iter, 
+                                                            K_est = K_values,
+                                                            data_description = data_description,
+                                                            seed = seed, 
+                                                            model = est_model, 
+                                                            custom_init = custom_init,
+                                                            power_posterior_apprach = power_posterior_apprach,
+                                                            thin=thin,
+                                                            diag0.5 = diag0.5)
+      
+      names(chains_SST) = paste0('chain',1:length(K_values))
+      
+      my_filename = paste0(saving_directory, '/Data_from',data_description, "_est_model",
+                           est_model,"_Kest",paste(unlist(K_values),collapse = "_"),"seed",seed, '.rds')
+      saveRDS(object = chains_SST, file = my_filename) 
+      # 
+      drive_put(media = my_filename, path = folder)
+      #       
+      #       
+      #       
+      #       
+      
+      
+    }
     
+    #-----------------------------------------------------------------------------
+    # WST MODEL
+    #-----------------------------------------------------------------------------
     
-    
-    #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-
-    diag0.5<- F
-    print(paste0("Estimation of the SST model, K=", K_values))
-    print(paste0("Begin cycle at:", date(), "\n"))
-    
-    
-    estimation_control <- list(z = 1, theta = 1)
-    
-    
-    chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
-                                                          saving_directory = saving_directory,
-                                                          estimation_control = estimation_control,
-                                                          burnin = burnin,
-                                                          ground_truth = ground_truth,
-                                                          n = n, N_iter = N_iter, 
-                                                          K_est = K_values,
-                                                          data_description = data_description,
-                                                          seed = seed, 
-                                                          model = est_model, 
-                                                          custom_init = custom_init,
-                                                          power_posterior_apprach = power_posterior_apprach,
-                                                          thin=thin,
-                                                          diag0.5 = diag0.5)
-    
-    names(chains_SST) = paste0('chain',1:length(K_values))
-    
-    my_filename = paste0(saving_directory, '/Data_from',data_description, "_est_model",
-                         est_model,"_Kest",paste(unlist(K_values),collapse = "_"),'.rds')
-    saveRDS(object = chains_SST, file = my_filename) 
-    # 
-    drive_put(media = my_filename, path = folder)
-    #       
-    #       
-    #       
-    #       
-    
-    
-  }
-  
-  #-----------------------------------------------------------------------------
-  # WST MODEL
-  #-----------------------------------------------------------------------------
-  
-  if('WST' %in% choose_model_to_estimate){
-    print(paste0("Estimation of the WST model, K=",K_values))
-    print(paste0("Begin cycle at:",date()))
-    #initializing each chain
-    
-    
-    est_model = 'WST'
-    
-    #setting up the chain hyperparameter
-    
-    #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-
-    diag0.5 <- F
-    print(paste0("Estimation of the WST model, K=", K_values))
-    print(paste0("Begin cycle at:", date(), "\n"))
-    estimation_control <- list(z = 1,  theta = 1)
-    
-    chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
-                                                          saving_directory = saving_directory,
-                                                          estimation_control = estimation_control,
-                                                          burnin = burnin,
-                                                          ground_truth = ground_truth,
-                                                          n = n, N_iter = N_iter, 
-                                                          K_est = K_values,data_description = data_description,
-                                                          seed = seed, 
-                                                          model = est_model, 
-                                                          custom_init = custom_init,
-                                                          power_posterior_apprach = power_posterior_apprach,thin=thin,
-                                                          diag0.5 = diag0.5)
-    
-    
-    
-    
-    
-    names(chains_WST) = paste0('chain',unlist(K_values))
-    my_filename = paste0(saving_directory, 'Data_from',data_description, "_est_model",est_model,"_Kest",
-                         paste(unlist(K_values),collapse = "_"),'.rds')
-    saveRDS(object = chains_WST, file = my_filename) 
-    
-    # 
-    drive_put(media = my_filename, path = folder)
-    # 
-    
-    
-    
-  }
-  
-  #-----------------------------------------------------------------------------
-  # Simple model
-  #-----------------------------------------------------------------------------
-  
-  
-  if('Simple' %in% choose_model_to_estimate){
-    
-    print(paste0("Estimation of Simple model, K=",K_values))
-    print(paste0("Begin cycle at:",date()))
-    
-    
-    est_model = 'Simple'
-    
-    #setting up the chain hyperparameter
-    
-    
-    
-    
-    #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-
-    diag0.5 <- F
-    estimation_control = list(z = 1,theta=1)
-    
-    chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+    if('WST' %in% choose_model_to_estimate){
+      print(paste0("Estimation of the WST model, K=",K_values))
+      print(paste0("Begin cycle at:",date()))
+      #initializing each chain
+      
+      
+      est_model = 'WST'
+      
+      #setting up the chain hyperparameter
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      
+      diag0.5 <- F
+      print(paste0("Estimation of the WST model, K=", K_values))
+      print(paste0("Begin cycle at:", date(), "\n"))
+      estimation_control <- list(z = 1,  theta = 1)
+      
+      chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                             saving_directory = saving_directory,
                                                             estimation_control = estimation_control,
                                                             burnin = burnin,
@@ -264,17 +211,71 @@ for(data_description in c("Tennis_data","Citation_data")){
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,thin=thin,
                                                             diag0.5 = diag0.5)
+      
+      
+      
+      
+      
+      names(chains_WST) = paste0('chain',unlist(K_values))
+      my_filename = paste0(saving_directory, '/Data_from',data_description, "_est_model",
+                           est_model,"_Kest",paste(unlist(K_values),collapse = "_"),"seed",seed, '.rds')
+      saveRDS(object = chains_WST, file = my_filename) 
+      
+      # 
+      drive_put(media = my_filename, path = folder)
+      # 
+      
+      
+      
+    }
     
-    names(chains_Simple) = paste0('chain',1:length(K_values))
+    #-----------------------------------------------------------------------------
+    # Simple model
+    #-----------------------------------------------------------------------------
     
-    my_filename = paste0(saving_directory,'/Data_from',
-                         data_description, "_est_model",est_model,"_Kest",paste(unlist(K_values),collapse = "_"),'.rds')
-    saveRDS(object = chains_Simple, file = my_filename) 
-    drive_put(media = my_filename, path = folder)
-    # 
     
+    if('Simple' %in% choose_model_to_estimate){
+      
+      print(paste0("Estimation of Simple model, K=",K_values))
+      print(paste0("Begin cycle at:",date()))
+      
+      
+      est_model = 'Simple'
+      
+      #setting up the chain hyperparameter
+      
+      
+      
+      
+      #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+      
+      diag0.5 <- F
+      estimation_control = list(z = 1,theta=1)
+      
+      chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
+                                                              saving_directory = saving_directory,
+                                                              estimation_control = estimation_control,
+                                                              burnin = burnin,
+                                                              ground_truth = ground_truth,
+                                                              n = n, N_iter = N_iter, 
+                                                              K_est = K_values,data_description = data_description,
+                                                              seed = seed, 
+                                                              model = est_model, 
+                                                              custom_init = custom_init,
+                                                              power_posterior_apprach = power_posterior_apprach,thin=thin,
+                                                              diag0.5 = diag0.5)
+      
+      names(chains_Simple) = paste0('chain',1:length(K_values))
+      
+      my_filename = paste0(saving_directory, '/Data_from',data_description, "_est_model",
+                           est_model,"_Kest",paste(unlist(K_values),collapse = "_"),"seed",seed, '.rds')
+      saveRDS(object = chains_Simple, file = my_filename) 
+      drive_put(media = my_filename, path = folder)
+      # 
+      
+    }
   }
+  
+  
+  
 }
-
-
-

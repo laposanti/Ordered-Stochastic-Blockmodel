@@ -103,19 +103,17 @@ generate_theta_from_theta_prior = function(K, model){
 true_model = 'SST'
 saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data///"
 #from 1, 'very difficult' to 5, 'very easy'
-recovery_capability_levels = 1:5
+recovery_capability_levels = 3:5
 
-for(k in 7){
+for(k in 3:7){
   
   for(recovery_capability in 1:length(recovery_capability_levels)){
-    recovery_capability=5
-    n = 80
-    k=5
-    K=k
- 
-    seed =2021
-    set.seed(seed)
     
+    
+    n = 80
+    seed =2021+recovery_capability
+    set.seed(seed)
+    recovery_capability=5
     if(true_model =='SST'){
       prior_SST = generate_theta_from_theta_prior(K, 
                                                   model = 'SST')
@@ -146,8 +144,9 @@ for(k in 7){
     
     
     print(P)
+    K = nrow
     z <- sample(1:K, n,replace=T)
-    z_P<- vec2mat_0_P(clust_lab = z,P = P)
+    z_P<- vec2mat_0_P(clust_lab = z,K=K)
     P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
     
     #Here we compute a KxK matrix cotaining the average number of comparisons between pairs of blocks
@@ -262,6 +261,6 @@ for(k in 7){
                        recovery_capability = recovery_capability,
                        seed=seed)
     
-    saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_level_recovery",recovery_capability,".RDS"))
+    saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_level_recovery",recovery_capability,"seed",seed,".RDS"))
   }
 }

@@ -135,7 +135,7 @@ for(diag0.5 in c(T,F)){
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                          'recovery_level',
-                         recovery_capability,'.rds')
+                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains, file = my_filename) 
     drive_put(media = my_filename, path = folder)
   }
@@ -174,11 +174,11 @@ for(diag0.5 in c(T,F)){
     names(chains_WST) = paste0('chain',unlist(K_est))
     chains_WST[['recovery_level']] = recovery_capability
     
-    my_filename = paste0(saving_directory,
+    my_filename = paste0(saving_directory,'Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                          'recovery_level',
-                         recovery_capability,'.rds')
+                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains_WST, file = my_filename) 
     
     drive_put(media = my_filename, path = folder)
@@ -218,10 +218,11 @@ for(diag0.5 in c(T,F)){
                                                             diag0.5 = F)
     names(chains_Simple) = paste0('chain',unlist(K_est))
     chains_Simple[['recovery_level']] = recovery_capability
-    my_filename = paste0(saving_directory,
+    my_filename = paste0(saving_directory,'Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
-                         'recovery_level',recovery_capability,'.rds')
+                         'recovery_level',
+                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains_Simple, file = my_filename) 
     
     drive_put(media = my_filename, path = folder)
