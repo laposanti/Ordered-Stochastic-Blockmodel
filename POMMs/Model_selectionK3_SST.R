@@ -61,7 +61,7 @@ for(dataset in 1:length(filenames)){
   # Decide for how many Ks we want to compute the marginal posterior
   ################################################################################
   
-  print(paste0("True data--->", filenames[data], "\n"))
+  print(paste0("True data--->", filenames[dataset], "\n"))
   
   is.simulation=T
   optimal_acceptance_rate_theta =.44
