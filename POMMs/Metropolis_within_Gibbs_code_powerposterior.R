@@ -414,7 +414,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              
                                                              
                                                              if(power_posterior_apprach==T){
-                                                               n_temperatures <- 50
+                                                               n_temperatures <- 30
                                                                i <- 0:n_temperatures
                                                                t_list <- (i / n_temperatures)^ 5
                                                                

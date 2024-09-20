@@ -1,3 +1,4 @@
+
 library(doFuture)
 library(progressr)
 library(beepr)
@@ -45,7 +46,7 @@ googledrive::drive_auth(email = subject)
 data_wd<- "./Data/Sim1_data/"
 data_description = 'SST3'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
-for(dataset in 1:length(filenames)){
+for(dataset in seq(1,25,5)){
   data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[dataset]))
   recovery_capability = data_to_be_estimated$recovery_capability
   N_ij <- data_to_be_estimated$N_ij
@@ -55,7 +56,7 @@ for(dataset in 1:length(filenames)){
   ground_truth <- data_to_be_estimated$ground_truth
   ground_truth$data_ref = paste0("#",data_description,"-",data_to_be_estimated$recovery_capability, "-",data_to_be_estimated$seed)
   
-
+  
   ################################################################################
   # Decide for how many Ks we want to compute the marginal posterior
   ################################################################################
@@ -63,21 +64,20 @@ for(dataset in 1:length(filenames)){
   print(paste0("True data--->", filenames[dataset], "\n"))
   
   is.simulation=T
-  power_posterior_apprach = F
-  custom_init <- NA
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
   seed = 23
   N_iter <- 70000 #number of iterations
   burnin <- 10000 #number of discarded iterations
   thin = 5
-  
+  power_posterior_apprach = T
+  custom_init <- NA
   
   K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
   
   
   #where to save the data
-  saving_directory = "./Results/MCMC_output/model_choice/WAIC_method/K3_true"
+  saving_directory = "./Results/MCMC_output/model_choice/powerposterior/"
   
   # Check if the directory exists
   if (!dir.exists(saving_directory)) {
@@ -94,9 +94,9 @@ for(dataset in 1:length(filenames)){
   for(diag0.5 in c(T,F)){
     if(diag0.5==T){
       #main diagonal fixed to 0.5
-      folder_url <- "https://drive.google.com/drive/u/1/folders/1sBqyRFO1xSP5wKzFWrIBBnJFRzcmtWYz"
+      folder_url <- "https://drive.google.com/drive/u/1/folders/1ElPFKtAgk79ITY2rsUz-c4MAmmXKaevO"
     }else{
-      folder_url <- "https://drive.google.com/drive/u/1/folders/1QLqA5DfE1LSfqq7GJqDy3u5O2K7vwc8N"
+      folder_url <- "https://drive.google.com/drive/u/1/folders/1RpuUQbmDG_K6mQ4ozvxd-21Q0UL-nbiq"
       
     }
     folder <- drive_get(as_id(folder_url))
@@ -127,7 +127,7 @@ for(dataset in 1:length(filenames)){
       
       chains[['recovery_level']] = recovery_capability
       
-      my_filename = paste0(saving_directory,'Data_from',
+      my_filename = paste0(saving_directory,'/Data_from',
                            data_description, "_est_model",
                            est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',
@@ -172,7 +172,7 @@ for(dataset in 1:length(filenames)){
       names(chains_WST) = paste0('chain',unlist(K_est))
       chains_WST[['recovery_level']] = recovery_capability
       
-      my_filename = paste0(saving_directory,'Data_from',
+      my_filename = paste0(saving_directory,'/Data_from',
                            data_description, "_est_model",
                            est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',
@@ -217,7 +217,7 @@ for(dataset in 1:length(filenames)){
                                                               diag0.5 = F)
       names(chains_Simple) = paste0('chain',unlist(K_est))
       chains_Simple[['recovery_level']] = recovery_capability
-      my_filename = paste0(saving_directory,'Data_from',
+      my_filename = paste0(saving_directory,'/Data_from',
                            data_description, "_est_model",
                            est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
                            'recovery_level',

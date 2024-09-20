@@ -17,7 +17,7 @@ googledrive::drive_auth_configure(path = "./client_secret_573831164304-jqqj3i5mh
 googledrive::drive_auth(email = subject)
 # 
 # filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
- 
+
 folder_url <- "https://drive.google.com/drive/u/1/folders/1sBqyRFO1xSP5wKzFWrIBBnJFRzcmtWYz"
 
 
@@ -83,7 +83,7 @@ for(file in c(1:length(matching_files$name))){
   
   for(chain in 1:(length(uploaded_results)-1)){
     print(paste0("Estimating now:", uploaded_results[[chain]]$control_containers$est_model, " K=",dim(uploaded_results[[chain]]$est_containers$theta)[1]))
-
+    
     Y_ij = uploaded_results[[chain]]$Y_ij
     N_ij = uploaded_results[[chain]]$N_ij
     n = nrow(N_ij)
@@ -93,7 +93,7 @@ for(file in c(1:length(matching_files$name))){
     z_chain = uploaded_results[[chain]]$est_containers$z
     theta_chain = uploaded_results[[chain]]$est_containers$theta
     
-
+    
     upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
     
     # Get the indices where the matrix elements are greater than zero
@@ -133,7 +133,6 @@ for(file in c(1:length(matching_files$name))){
       print(i)
       return(llik)
     }
-    
     
     LLik_sum <- lapply(LL_list,FUN = rowSums)
     
@@ -199,6 +198,10 @@ df_model_choice%>%
        caption = paste0("True data ~ ",df_model_choice$true_model[1], " model ,K = ",df_model_choice$K_true[1]))+
   theme_minimal()
 
+df_model_choice %>%
+  group_by(simulation) %>%
+  slice(which.min(looic))
+
 print(df_model_choice[which.min(df_model_choice$looic),])
 
 write.csv(df_model_choice, "./results/MCMC_output/model_choice/WAIC_method/diag_fixed//K3_true/model_choice1.csv")
@@ -207,4 +210,90 @@ write.csv(df_diagnostics, "./results/MCMC_output/model_choice/WAIC_method/diag_f
 
 
 
+marginal_lik_for_bridge = function(Y_ij, N_ij, K, theta, z){
+  N_iter =ncol(z)
+  n = nrow(Y_ij)
+  A=rep(1,K)
+  log_container = matrix(NA, N_iter, length(Y_ij[upper.tri(Y_ij)]))
+  for(t in 1:N_iter){
+    log_matrix = matrix(0, n,n)
+    for(i in 1:n){
+      for(j in 1:n){
+        if(N_ij[i,j] !=0){
+          theta_t = theta[,,t]
+          P_t = inverse_logit_f(theta_t)
+          dbin_i = 0
+          
+          for(jj in 1:K){
+            for(ii in 1:jj){
+              
+              vec_0 = rep(0,K)
+              vec_0[ii]=1
+              vec_1 = rep(0,K)
+              vec_1[jj]=1
+              dbin = dbinom(Y_ij[i,j],N_ij[i,j],P_t[ii,jj]) *ddirichlet_multinomial(1,K,vec_0,A)*ddirichlet_multinomial(1,K,vec_1,A)
+              dbin_i = dbin_i + (dbin)
+            }
+          }
+          
+          log_matrix[i,j] <- log(dbin_i)
+        }
+      }
+    }
+    log_container[t,] = (log_matrix)[upper.tri(log_matrix)]
+  }
+  return(log_container)
+}
+marginal_lik_for_bridge(Y_ij, N_ij, K = K,theta =theta_chain, z=z_chain)
+
+marginal_lik_for_bridge <- function(Y_ij, N_ij, K, theta, z) {
+  N_iter <- ncol(z)
+  n <- nrow(Y_ij)
+  A <- rep(1, K)
+  
+  # Precompute log container dimensions
+  upper_tri_indices <- upper.tri(Y_ij)
+  upper_tri_len <- sum(upper_tri_indices)
+  log_container <- matrix(NA, N_iter, upper_tri_len)
+  
+  for (t in 1:N_iter) {
+    theta_t <- theta[,,t]
+    P_t <- inverse_logit_f(theta_t)
+    
+    # Compute all binomials for this iteration
+    dbin_matrix <- matrix(0, n, n)
+    
+    non_zero_idx <- which(N_ij != 0, arr.ind = TRUE)
+    for (idx in seq_len(nrow(non_zero_idx))) {
+      i <- non_zero_idx[idx, 1]
+      j <- non_zero_idx[idx, 2]
+      
+      # Vectorized inner operations over K
+      ii_vals <- rep(1:K, times = K:1)
+      jj_vals <- unlist(lapply(1:K, function(j) rep(j, j)))
+      
+      # Create matrices for vec_0 and vec_1
+      vec_0 <- matrix(0, nrow = length(ii_vals), ncol = K)
+      vec_1 <- matrix(0, nrow = length(jj_vals), ncol = K)
+      vec_0[cbind(1:length(ii_vals), ii_vals)] <- 1
+      vec_1[cbind(1:length(jj_vals), jj_vals)] <- 1
+      
+      # Precompute Dirichlet values for all pairs
+      dirich_0 <- apply(vec_0, 1, function(v) ddirichlet_multinomial(1, K, v, A))
+      dirich_1 <- apply(vec_1, 1, function(v) ddirichlet_multinomial(1, K, v, A))
+      
+      # Compute binomial likelihoods
+      binom_vals <- dbinom(Y_ij[i, j], N_ij[i, j], P_t[ii_vals, jj_vals])
+      
+      # Combine them together
+      dbin_i <- sum(binom_vals * dirich_0 * dirich_1)
+      dbin_matrix[i, j] <- log(dbin_i)
+    }
+    
+    # Extract upper triangular part
+    log_container[t, ] <- dbin_matrix[upper_tri_indices]
+  }
+  
+  return(log_container)
+}
 
