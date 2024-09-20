@@ -24,7 +24,7 @@ generate_theta_from_theta_prior = function(K, model){
   
   print(paste0('You are simulating theta according to the ', model, ' model prior'))
   if(model == 'SST'){
-
+    
     mu_vec_01_sort = seq(from = 0.5,to = 0.9, length.out = K)
     mu_vec_sort = log(mu_vec_01_sort/(1-mu_vec_01_sort))
     
@@ -103,164 +103,167 @@ generate_theta_from_theta_prior = function(K, model){
 true_model = 'SST'
 saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data///"
 #from 1, 'very difficult' to 5, 'very easy'
-recovery_capability_levels = 3:5
+recovery_capability_levels = 3:7
 
 for(k in 3:7){
   
   for(recovery_capability in 1:length(recovery_capability_levels)){
-    
-    
-    n = 80
-    seed =2021+recovery_capability
-    set.seed(seed)
-    recovery_capability=5
-    if(true_model =='SST'){
-      prior_SST = generate_theta_from_theta_prior(K, 
-                                                  model = 'SST')
-      P <- prior_SST$P
-      mu_vec =  prior_SST$mu
+    for(seed_i in 1:5){
       
-      theta = log(P/(1-P))
-      
-    }else if(true_model == 'WST'){
-      
-      prior_WST = generate_theta_from_theta_prior(K, 
-                                                  model = 'WST')
-      P <- prior_WST$P
-      mu_vec =  prior_WST$mu
-      
-      theta = log(P/(1-P))
-      
-    }else if( true_model == 'Simple'){
-      
-      prior_Simple =  generate_theta_from_theta_prior(K,
-                                                      model = 'Simple')
-      P = prior_Simple$P
-      P[lower.tri(P)] = 1- t(P)[lower.tri(P)]
-      print(P)
-      theta = log(P/(1-P))
-      
-    }
-    
-    
-    print(P)
-    K = nrow
-    z <- sample(1:K, n,replace=T)
-    z_P<- vec2mat_0_P(clust_lab = z,K=K)
-    P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
-    
-    #Here we compute a KxK matrix cotaining the average number of comparisons between pairs of blocks
-    num_comparisons = recovery_capability:(recovery_capability+2)
-    N_blocks = matrix(sample(x = num_comparisons,
-                             size = K**2,
-                             replace = T), 
-                      nrow = K,ncol = K)
-    N_blocks = make_symmetric(N_blocks)
-    
-    N_ij = matrix(NA, n, n)
-    for(i in 1:n){
-      for(j in 1:n){
-        N_ij[i,j] = rpois(1,N_blocks[z[i], z[j]])
+      n = 80
+      K=k
+      seed =2021+seed_i
+      set.seed(seed)
+      recovery_capability=recovery_capability
+      if(true_model =='SST'){
+        prior_SST = generate_theta_from_theta_prior(K, 
+                                                    model = 'SST')
+        P <- prior_SST$P
+        mu_vec =  prior_SST$mu
+        
+        theta = log(P/(1-P))
+        
+      }else if(true_model == 'WST'){
+        
+        prior_WST = generate_theta_from_theta_prior(K, 
+                                                    model = 'WST')
+        P <- prior_WST$P
+        mu_vec =  prior_WST$mu
+        
+        theta = log(P/(1-P))
+        
+      }else if( true_model == 'Simple'){
+        
+        prior_Simple =  generate_theta_from_theta_prior(K,
+                                                        model = 'Simple')
+        P = prior_Simple$P
+        P[lower.tri(P)] = 1- t(P)[lower.tri(P)]
+        print(P)
+        theta = log(P/(1-P))
+        
       }
-    }
-    N_ij[lower.tri(N_ij)] = t(N_ij)[lower.tri(N_ij)]
-    diag(N_ij) = 0
-
-    #simulating Y_ij
-    
-    Y_ij <- matrix(0, n,n)
-    for(i in 1:n){
-      for(j in 1:n){
-        Y_ij[i,j]<-rbinom(1,N_ij[i,j], P_nbyn[i,j])
+      
+      
+      
+      K = nrow(P)
+      z <- sample(1:K, n,replace=T)
+      z_P<- vec2mat_0_P(clust_lab = z,K=K)
+      P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
+      
+      #Here we compute a KxK matrix cotaining the average number of comparisons between pairs of blocks
+      num_comparisons = recovery_capability:(recovery_capability+2)
+      N_blocks = matrix(sample(x = num_comparisons,
+                               size = K**2,
+                               replace = T), 
+                        nrow = K,ncol = K)
+      N_blocks = make_symmetric(N_blocks)
+      
+      N_ij = matrix(NA, n, n)
+      for(i in 1:n){
+        for(j in 1:n){
+          N_ij[i,j] = rpois(1,N_blocks[z[i], z[j]])
+        }
       }
+      N_ij[lower.tri(N_ij)] = t(N_ij)[lower.tri(N_ij)]
+      diag(N_ij) = 0
+      
+      #simulating Y_ij
+      
+      Y_ij <- matrix(0, n,n)
+      for(i in 1:n){
+        for(j in 1:n){
+          Y_ij[i,j]<-rbinom(1,N_ij[i,j], P_nbyn[i,j])
+        }
+      }
+      
+      Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
+      diag(Y_ij)<- 0
+      
+      
+      
+      
+      indices <- expand.grid(row = 1:n, col = 1:n)
+      
+      
+      z_df <- data.frame(items = 1:n, 
+                         z = z)
+      
+      
+      # Convert the matrix to a data frame
+      z_df_complete <- data.frame(
+        row = indices$row,
+        col = indices$col,
+        similarity_value = NA,
+        Y = NA
+      )
+      
+      for (i in seq_len(nrow(z_df_complete))) {
+        z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
+      }
+      for (i in seq_len(nrow(z_df_complete))) {
+        z_df_complete$N[i] <- N_ij[z_df_complete$col[i], z_df_complete$row[i]]
+      }
+      z_df_complete$y_prop = z_df_complete$Y/z_df_complete$N
+      
+      
+      plot_df = z_df_complete%>%
+        inner_join(z_df, by = c("row" = "items")) %>%
+        rename(row_z = z) %>%
+        inner_join(z_df, by = c("col" = "items")) %>%
+        rename(col_z = z) %>%
+        mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
+               col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
+      
+      
+      
+      adjacency_m <- ggplot(plot_df, aes(x = row, y = col)) +
+        geom_tile(aes(fill = y_prop), color = 'gray30') +
+        scale_fill_gradient(low = 'grey', high = 'red') +
+        geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
+        theme_minimal() +
+        theme(axis.text.x = element_blank(),
+              axis.text.y = element_blank(),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank(),
+              legend.position = "bottom", # Position legend below the graph
+              legend.direction = "horizontal", # Extend legend horizontally,
+              legend.key.width = unit(1.1, 'cm'),
+              
+        ) +
+        guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5)) # Center the title horizontally
+      
+      adjacency_m
+      
+      print(adjacency_m)
+      
+      
+      if(true_model == 'SST'){
+        ground_truth = list(z = z,
+                            mu_vec_star = mu_vec,
+                            K=K,theta=theta,
+                            model = true_model) 
+      }else if(true_model == 'WST'){
+        ground_truth = list(z = z,
+                            mu_vec_star = mu_vec,
+                            K=K,
+                            theta=theta,
+                            model = true_model) 
+      }else if(true_model == 'Simple'){
+        ground_truth = list(z = z,
+                            mu_vec_star = NA,
+                            K=K,
+                            theta=theta,
+                            model = true_model)
+      }
+      
+      
+      to_be_saved = list(Y_ij=Y_ij, N_ij =N_ij, ground_truth = ground_truth, 
+                         data_plot = adjacency_m, 
+                         recovery_capability = recovery_capability,
+                         seed=seed)
+      
+      saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_level_recovery",recovery_capability,"seed",seed,".RDS"))
     }
-    
-    Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
-    diag(Y_ij)<- 0
-    
-
-    
-    
-    indices <- expand.grid(row = 1:n, col = 1:n)
-    
-    
-    z_df <- data.frame(items = 1:n, 
-                       z = z)
-    
-    
-    # Convert the matrix to a data frame
-    z_df_complete <- data.frame(
-      row = indices$row,
-      col = indices$col,
-      similarity_value = NA,
-      Y = NA
-    )
-    
-    for (i in seq_len(nrow(z_df_complete))) {
-      z_df_complete$Y[i] <- Y_ij[z_df_complete$col[i], z_df_complete$row[i]]
-    }
-    for (i in seq_len(nrow(z_df_complete))) {
-      z_df_complete$N[i] <- N_ij[z_df_complete$col[i], z_df_complete$row[i]]
-    }
-    z_df_complete$y_prop = z_df_complete$Y/z_df_complete$N
-
-    
-    plot_df = z_df_complete%>%
-      inner_join(z_df, by = c("row" = "items")) %>%
-      rename(row_z = z) %>%
-      inner_join(z_df, by = c("col" = "items")) %>%
-      rename(col_z = z) %>%
-      mutate(row = factor(row, levels = unique(row[order(row_z, row)])),
-             col = factor(col, levels = unique(col[order(col_z, col, decreasing = TRUE)])))
-    
-    
-    
-    adjacency_m <- ggplot(plot_df, aes(x = row, y = col)) +
-      geom_tile(aes(fill = y_prop), color = 'gray30') +
-      scale_fill_gradient(low = 'grey', high = 'red') +
-      geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
-      theme_minimal() +
-      theme(axis.text.x = element_blank(),
-            axis.text.y = element_blank(),
-            axis.title.x = element_blank(),
-            axis.title.y = element_blank(),
-            legend.position = "bottom", # Position legend below the graph
-            legend.direction = "horizontal", # Extend legend horizontally,
-            legend.key.width = unit(1.1, 'cm'),
-            
-      ) +
-      guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5)) # Center the title horizontally
-    
-    adjacency_m
-    
-    print(adjacency_m)
-    
-    
-    if(true_model == 'SST'){
-      ground_truth = list(z = z,
-                          mu_vec_star = mu_vec,
-                          K=K,theta=theta,
-                          model = true_model) 
-    }else if(true_model == 'WST'){
-      ground_truth = list(z = z,
-                          mu_vec_star = mu_vec,
-                          K=K,
-                          theta=theta,
-                          model = true_model) 
-    }else if(true_model == 'Simple'){
-      ground_truth = list(z = z,
-                          mu_vec_star = NA,
-                          K=K,
-                          theta=theta,
-                          model = true_model)
-    }
-    
-    
-    to_be_saved = list(Y_ij=Y_ij, N_ij =N_ij, ground_truth = ground_truth, 
-                       data_plot = adjacency_m, 
-                       recovery_capability = recovery_capability,
-                       seed=seed)
-    
-    saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_level_recovery",recovery_capability,"seed",seed,".RDS"))
   }
+  
 }

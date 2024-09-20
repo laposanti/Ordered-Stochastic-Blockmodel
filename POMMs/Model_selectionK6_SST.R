@@ -56,6 +56,7 @@ for(dataset in 1:length(filenames)){
   Y_ij <- data_to_be_estimated$Y_ij
   K <- data_to_be_estimated$ground_truth$K
   ground_truth <- data_to_be_estimated$ground_truth
+  ground_truth$data_ref = paste0("#",data_description,"-",data_to_be_estimated$recovery_capability, "-",data_to_be_estimated$seed)
   
   
   
