@@ -45,7 +45,7 @@ googledrive::drive_auth(email = subject)
 #citation data::: set true_model =  "Citation_data"
 #tennis data::: tennis data = 'Tennis_data'
 
-for(data_description in c("Tennis_data","Citation_data")){
+for(data_description in c("Citation_data")){
   
   ###############################################################################
   # uploading data
@@ -71,8 +71,6 @@ for(data_description in c("Tennis_data","Citation_data")){
     
     
     
-    #where to uplY_ijoad the results
-    folder_url <- "https://drive.google.com/drive/u/1/folders/1gLXPTSBCpVOZXmg9J8JxouUDHIJC1eDf"
     
   }else if(data_description == 'Citation_data'){
     Y_ij <- read.csv("./Data/Citations_application/cross-citation-matrix.csv",header = T,row.names = 1)
@@ -83,7 +81,6 @@ for(data_description in c("Tennis_data","Citation_data")){
     N_ij = as.matrix(N_ij)
     
     
-    folder_url <- "https://drive.google.com/drive/u/1/folders/1T0mrKQgDnn2QyW-NpBp2o_apFuraC9Uy"
     
   }
   
@@ -92,7 +89,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   #chosing where to save the files depending on which model you are estimating
   
   
-  K_values <- list(3,4,5,6,7,8,9,10,11,12,13,14,15)  # Range of K values to explore
+  K_values <- list(3,4,5,6,7,8,9,10)  # Range of K values to explore
   
   print(paste0('Fitting now:' , data_description))
   
@@ -101,7 +98,7 @@ for(data_description in c("Tennis_data","Citation_data")){
   # read the files in the selected folder, estimate the SST, the WST and the Simple model
   #-----------------------------------------------------------------------------
   
-  for(seed in c(20,21,22,23,24)){
+  for(seed in c(20,21)){
     
     
     ##############################################################################
@@ -110,19 +107,38 @@ for(data_description in c("Tennis_data","Citation_data")){
     ground_truth = NA
     n = nrow(N_ij)
     diag0.5 = F
-    power_posterior_apprach=F
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed = seed
-    N_iter <- 220000 #number of itera0tions
-    burnin <- 10000 #number of discarded iterations
+    N_iter <- 50 #number of itera0tions
+    burnin <- 10 #number of discarded iterations
     thin = 5
-    power_posterior_apprach = F
+    power_posterior_apprach = T
+    if(power_posterior_apprach == F){
+      saving_directory = "./Results/MCMC_output/Fixed_K/Application/"
+      
+      if(data_description == 'Citation_data'){
+        folder_url <- "https://drive.google.com/drive/u/1/folders/1T0mrKQgDnn2QyW-NpBp2o_apFuraC9Uy"
+      }else if(data_description == 'Tennis_data'){
+        #where to uplY_ijoad the results
+        folder_url <- "https://drive.google.com/drive/u/1/folders/1gLXPTSBCpVOZXmg9J8JxouUDHIJC1eDf"
+        
+      }
+      
+    }else if(power_posterior_apprach == T){
+      saving_directory = "./Results/MCMC_output/model_choice/Powerposterior_method/"
+      if(data_description == 'Citation_data'){
+        folder_url <- "https://drive.google.com/drive/u/1/folders/17Zrem_-x4nD5GtLy_TmgpixVwODL57o1"
+      }else if(data_description == 'Tennis_data'){
+        #where to uplY_ijoad the results
+        folder_url <- "https://drive.google.com/drive/u/1/folders/1VUmSgHqfLsVB1fcmqBlKAiwQHuXgMPuL"
+      }
+      
+    }
     custom_init <- NA
     
     #number of clusters to fit
     #where to save the data
-    saving_directory = "./Results/MCMC_output/Fixed_K/Application"
     #-----------------------------------------------------------------------------
     # SST MODEL
     #-----------------------------------------------------------------------------

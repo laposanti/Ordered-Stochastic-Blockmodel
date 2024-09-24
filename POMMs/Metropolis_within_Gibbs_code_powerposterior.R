@@ -295,15 +295,23 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #the likelihood is computed just for the entries that
                                                              #1) are in the upper triangular adjacency matrix
                                                              #2) have N_ij > 0 
-                                                             
-                                                             ll_computation <- function(Y_ij, N_ij, P_nbyn, relevant_indices){
-                                                               log_likelihood = dbinom(x = Y_ij[relevant_indices], 
-                                                                                       size = N_ij[relevant_indices], 
-                                                                                       prob = P_nbyn[relevant_indices],
-                                                                                       log = T)
-                                                               return(sum(log_likelihood))
+                                                             directed=F
+                                                             if(directed == F){
+                                                               ll_computation <<- function(Y_ij, N_ij, P_nbyn, relevant_indices){
+                                                                 log_likelihood = dbinom(x = Y_ij[relevant_indices], 
+                                                                                         size = N_ij[relevant_indices], 
+                                                                                         prob = P_nbyn[relevant_indices],
+                                                                                         log = T)
+                                                                 return(sum(log_likelihood))
+                                                               }
+                                                             }else{
+                                                               
+                                                               ll_computation <<- function(Y_ij,N_ij, P_nbyn, relevant_indices){
+                                                                 log_likelihood = dpois(x = Y_ij[relevant_indices], 
+                                                                                        lambda = P_nbyn)
+                                                                 return(sum(log_likelihood))
+                                                               }
                                                              }
-                                                             
                                                              #---------------------------
                                                              # Preparatory Steps for the MCMC to run
                                                              #--------------------------------------------------------------

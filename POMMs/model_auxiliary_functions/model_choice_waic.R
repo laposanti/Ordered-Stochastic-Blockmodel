@@ -18,7 +18,7 @@ googledrive::drive_auth(email = subject)
 # 
 # filenames <- list.files(pattern = paste0('Data_from',true_model),path = data_wd)
 
-folder_url <- "https://drive.google.com/drive/u/1/folders/1sBqyRFO1xSP5wKzFWrIBBnJFRzcmtWYz"
+folder_url <- "https://drive.google.com/drive/u/1/folders/1T0mrKQgDnn2QyW-NpBp2o_apFuraC9Uy"
 
 
 
@@ -31,171 +31,189 @@ files_in_folder <- drive_ls(path = folder)
 
 
 
-# for(est_model in c('SST','WST', 'Simple')){
-# filenames <- list.files(pattern = paste0('True_Model',true_model,'Est_model_', est_model),path = data_wd)
-
-
-# est_model_files = grep(pattern = paste0('est_model',est_model), 
-#                        x = filenames,value = T,ignore.case = F)
-# 
-# print(est_model_files)
-# Define the expression or pattern to match file names
-
-# Example: "report" to match all files with "report" in the name
-
-# Filter files based on the pattern?
-
-
-pattern <- "SST" 
-matching_files <- files_in_folder[grep(pattern, files_in_folder$name), ]
-
-
-files_10 <- grep("Kest130", matching_files$name)
-
-total_files = 1:length(matching_files$name)
-file_to_analyse = setdiff(total_files,files_10)
-
-#uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
-
-data_wd = './results/MCMC_output/model_choice/WAIC_method/diag_fixed//K3_true//'
-
-df_model_choice = data.frame(K_true = numeric(),
-                             true_model = character(),
-                             est_model = character(),
-                             K_est = numeric(),
-                             looic = numeric(),
-                             num_iter = numeric())
-
-df_diagnostics = data.frame(K_true = numeric(),
-                            true_model = character(),
-                            est_model = character(),
-                            K_est = numeric(),
-                            NA_count = numeric(),
-                            Inf_count = numeric(),
-                            r_effs_less100 = numeric(),
-                            num_iter = numeric())
-
-for(file in c(1:length(matching_files$name))){
+for(est_model in c('SST','WST', 'Simple')){
+  true_model = 'Citation_data'
+  files_in_folder <- list.files(pattern = paste0(true_model),path = data_wd)
   
-  save_path = paste0(data_wd,matching_files$name[file])
-  drive_download(file = matching_files$id[file], path = save_path,overwrite = T)
-  uploaded_results = readRDS(save_path)
   
-  for(chain in 1:(length(uploaded_results)-1)){
-    print(paste0("Estimating now:", uploaded_results[[chain]]$control_containers$est_model, " K=",dim(uploaded_results[[chain]]$est_containers$theta)[1]))
+  # est_model_files = grep(pattern = paste0('est_model',est_model),
+  #                        x = filenames,value = T,ignore.case = F)
+  #
+  # print(est_model_files)
+  # Define the expression or pattern to match file names
+  
+  # Example: "report" to match all files with "report" in the name
+  
+  # Filter files based on the pattern?
+  
+  
+  # pattern <- est_model
+  # matching_files <- files_in_folder[grep(pattern, files_in_folder$name), ]
+  # 
+  
+  
+  pattern <- est_model
+  files_given_model = grep(pattern, files_in_folder)
+  
+  
+  #uploaded_results<- readRDS(paste0(data_wd,"/",est_model_files[file]))
+  
+  data_wd = './results/MCMC_output/model_choice/WAIC_method/diag_free/citations_true///'
+  
+  df_model_choice = data.frame(K_true = numeric(),
+                               true_model = character(),
+                               est_model = character(),
+                               K_est = numeric(),
+                               looic = numeric(),
+                               num_iter = numeric(),
+                               seed = numeric(),
+                               recovery_level = numeric())
+  
+  df_diagnostics = data.frame(K_true = numeric(),
+                              true_model = character(),
+                              est_model = character(),
+                              K_est = numeric(),
+                              NA_count = numeric(),
+                              Inf_count = numeric(),
+                              bad_values_count = numeric(),
+                              r_effs_less100 = numeric(),
+                              num_iter = numeric())
+  
+  for(file in files_given_model){
     
-    Y_ij = uploaded_results[[chain]]$Y_ij
-    N_ij = uploaded_results[[chain]]$N_ij
-    n = nrow(N_ij)
-    N_iter = uploaded_results[[chain]]$control_containers$N_iter
-    num_samples = uploaded_results[[chain]]$control_containers$N_iter_eff
+    # save_path = paste0(data_wd,matching_files$name[file])
+    # drive_download(file = matching_files$id[file], path = save_path,overwrite = T)
+    uploaded_results = readRDS(paste0(data_wd, files_in_folder[file]))
     
-    z_chain = uploaded_results[[chain]]$est_containers$z
-    theta_chain = uploaded_results[[chain]]$est_containers$theta
-    
-    
-    upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
-    
-    # Get the indices where the matrix elements are greater than zero
-    non_zero_indices <- matrix(N_ij > 0,n,n)
-    
-    # Find the common indices (both upper.tri and strictly positive)
-    common_indices <- upper_tri_indices*non_zero_indices
-    
-    # Convert back to a logical matrix
-    filtering_obs <- matrix(as.logical(common_indices), nrow = n,ncol = n)
-    
-    
-    upper.tri.Y_ij = Y_ij[filtering_obs]
-    upper.tri.N_ij = N_ij[filtering_obs]
-    
-    Y_pred = matrix(NA, nrow = num_samples,ncol = length(upper.tri.Y_ij))
-    
-    LL_list <- foreach(i=1, .packages='foreach')%do%{
+    for(chain in 1:(length(uploaded_results))){
+      print(paste0("Estimating now:", uploaded_results[[chain]]$control_containers$est_model, " K=",dim(uploaded_results[[chain]]$est_containers$theta)[1]))
       
-      K = nrow(theta_chain[,,1])
-      llik = matrix(NA,  nrow = num_samples, ncol = length(upper.tri.Y_ij))
+      Y_ij = uploaded_results[[chain]]$Y_ij
+      N_ij = uploaded_results[[chain]]$N_ij
+      n = nrow(N_ij)
+      N_iter = uploaded_results[[chain]]$control_containers$N_iter
+      num_samples = uploaded_results[[chain]]$control_containers$N_iter_eff
       
-      for(t in 1:num_samples){
+      z_chain = uploaded_results[[chain]]$est_containers$z
+      theta_chain = uploaded_results[[chain]]$est_containers$theta
+      
+      
+      upper_tri_indices <- matrix(upper.tri(N_ij),n,n,byrow = F)
+      
+      # Get the indices where the matrix elements are greater than zero
+      non_zero_indices <- matrix(N_ij > 0,n,n)
+      
+      # Find the common indices (both upper.tri and strictly positive)
+      common_indices <- upper_tri_indices*non_zero_indices
+      
+      # Convert back to a logical matrix
+      filtering_obs <- matrix(as.logical(common_indices), nrow = n,ncol = n)
+      
+      
+      upper.tri.Y_ij = Y_ij[filtering_obs]
+      upper.tri.N_ij = N_ij[filtering_obs]
+      
+      Y_pred = matrix(NA, nrow = num_samples,ncol = length(upper.tri.Y_ij))
+      
+      LL_list <- foreach(i=1, .packages='foreach')%do%{
         
-        z_chain_mat = vec2mat_0_P(z_chain[,t], K)
+        K = nrow(theta_chain[,,1])
+        llik = matrix(NA,  nrow = num_samples, ncol = length(upper.tri.Y_ij))
         
-        P_entry = inverse_logit_f(theta_chain[,,t])
-        
-        P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
-        
-        llik[t,] =  dbinom(x = upper.tri.Y_ij, 
-                           size = upper.tri.N_ij,
-                           prob =  P_ij[filtering_obs],log = T) 
-        
-        Y_pred[t+(i-1)*num_samples,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij, P_ij[filtering_obs])
+        for(t in 1:num_samples){
+          
+          z_chain_mat = vec2mat_0_P(z_chain[,t], K)
+          
+          P_entry = inverse_logit_f(theta_chain[,,t])
+          
+          P_ij = calculate_victory_probabilities(z_mat =z_chain_mat, P = P_entry)
+          
+          llik[t,] =  dbinom(x = upper.tri.Y_ij, 
+                             size = upper.tri.N_ij,
+                             prob =  P_ij[filtering_obs],log = T) 
+          
+          Y_pred[t+(i-1)*num_samples,] <- rbinom(length(upper.tri.Y_ij), upper.tri.N_ij, P_ij[filtering_obs])
+        }
+        print(i)
+        return(llik)
       }
-      print(i)
-      return(llik)
+      
+      LLik_sum <- lapply(LL_list,FUN = rowSums)
+      
+      c_log_lik = rbind(LL_list[[1]])
+      
+      r_effs = loo::relative_eff(c_log_lik,c(rep(1,num_samples)))
+      
+      
+      loo_model_fit = loo::loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
+      
+      # saveRDS(loo_model_fit,file = paste0(data_wd,'loo_fit',
+      #                                     uploaded_results[[i]]$control_containers$est_model,
+      #                                     nrow(uploaded_results[[i]]$est_containers$theta[,,1]),
+      #                                     ".rds"))
+      # # 
+      influence_values = loo::pareto_k_influence_values(loo_model_fit)
+      NA_count = sum(is.na(influence_values))
+      NA_position = which(is.na(influence_values))
+      INF_count = sum(influence_values==Inf,na.rm = T)
+      INF_position = which(influence_values==Inf)
+      # 
+      r_eff_count = sum(loo_model_fit$diagnostics$n_eff<100)
+      bad_values_count = sum(influence_values>0.7)
+      
+      
+      
+      if(is.na(uploaded_results[[chain]]$ground_truth[1]) == T){
+        recovery_level = NA
+        K_true = NA
+        true_model = pattern
+      }else{
+        recovery_level = uploaded_results$recovery_level
+        K_true = uploaded_results[[i]]$ground_truth$K
+        true_model = uploaded_results[[i]]$ground_truth$model
+      }
+      
+      df_model_choice = rbind(df_model_choice, data.frame(K_tru = K_true,
+                                                          true_model = true_model,
+                                                          est_model = uploaded_results[[chain]]$control_containers$est_model,
+                                                          K_est = K,
+                                                          looic =loo_model_fit$looic,
+                                                          num_iter = num_samples,
+                                                          recovery_capability = recovery_level,
+                                                          seed = uploaded_results[[chain]]$seed,
+                                                          simulation = file))
+      
+      df_diagnostics= rbind(df_diagnostics, data.frame(K_tru = K_true,
+                                                       true_model = true_model,
+                                                       est_model = uploaded_results[[chain]]$control_containers$est_model,
+                                                       K_est = K,
+                                                       bad_values_count = bad_values_count,
+                                                       NA_count = NA_count,
+                                                       Inf_count = INF_count,
+                                                       r_effs_less100 = r_eff_count,
+                                                       num_iter = num_samples,
+                                                       recovery_capability= recovery_level,
+                                                       seed  = uploaded_results[[chain]]$seed,
+                                                       simulation = file))
     }
-    
-    LLik_sum <- lapply(LL_list,FUN = rowSums)
-    
-    c_log_lik = rbind(LL_list[[1]])
-    
-    r_effs = loo::relative_eff(c_log_lik,c(rep(1,num_samples)))
-    
-    
-    loo_model_fit = loo::loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
-    plot(loo_model_fit)
-    # saveRDS(loo_model_fit,file = paste0(data_wd,'loo_fit',
-    #                                     uploaded_results[[i]]$control_containers$est_model,
-    #                                     nrow(uploaded_results[[i]]$est_containers$theta[,,1]),
-    #                                     ".rds"))
-    # # 
-    influence_values = loo::pareto_k_influence_values(loo_model_fit)
-    NA_count = sum(is.na(influence_values))
-    NA_position = which(is.na(influence_values))
-    INF_count = sum(influence_values==Inf,na.rm = T)
-    INF_position = which(influence_values==Inf)
-    # 
-    r_eff_count = sum(loo_model_fit$diagnostics$n_eff<100)
-    
-    
-    
-    
-    if(is.na(uploaded_results[[chain]]$ground_truth[1]) == T){
-      K_true = NA
-      true_model = pattern
-    }else{
-      K_true = uploaded_results[[i]]$ground_truth$K
-      true_model = uploaded_results[[i]]$ground_truth$model
-    }
-    
-    df_model_choice = rbind(df_model_choice, data.frame(K_tru = K_true,
-                                                        true_model = true_model,
-                                                        est_model = uploaded_results[[chain]]$control_containers$est_model,
-                                                        K_est = K,
-                                                        looic =loo_model_fit$looic,
-                                                        num_iter = num_samples,
-                                                        recovery_capability = uploaded_results$recovery_level,
-                                                        simulation = file))
-    
-    df_diagnostics= rbind(df_diagnostics, data.frame(K_tru = K_true,
-                                                     true_model = true_model,
-                                                     est_model = uploaded_results[[chain]]$control_containers$est_model,
-                                                     K_est = K,
-                                                     NA_count = NA_count,
-                                                     Inf_count = INF_count,
-                                                     r_effs_less100 = r_eff_count,
-                                                     num_iter = num_samples,
-                                                     recovery_capability= uploaded_results$recovery_level,
-                                                     simulation = file))
   }
 }
 
+# Get the seed for each model when K = 3
+df_model_choice <- read.csv("./results/MCMC_output/model_choice/WAIC_method/diag_free/citations_true//model_choice1.csv")
+df_model_choice = df_model_choice %>%
+  filter(num_iter == 42000)%>%
+  mutate(seedK3 = rep(df_model_choice$seed[seq(1,130,13)],13))
 
 df_model_choice%>%
-  ggplot(aes(K_est,looic,color = est_model,shape = factor(recovery_capability)))+
+  ggplot(aes(K_est,looic,color = est_model,shape = factor(seedK3)))+
   geom_point(alpha=0.5)+
   labs(title = "Looic for different models",
        subtitle = 'Lower values are better',
-       caption = paste0("True data ~ ",df_model_choice$true_model[1], " model ,K = ",df_model_choice$K_true[1]))+
+       shape = 'Seed',
+       x = 'K',
+       color = 'Fitted Model',
+       caption = paste0("True data ~ ",df_model_choice$true_model[1]))+
   theme_minimal()
 
 df_model_choice %>%
@@ -204,8 +222,8 @@ df_model_choice %>%
 
 print(df_model_choice[which.min(df_model_choice$looic),])
 
-write.csv(df_model_choice, "./results/MCMC_output/model_choice/WAIC_method/diag_fixed//K3_true/model_choice1.csv")
-write.csv(df_diagnostics, "./results/MCMC_output/model_choice/WAIC_method/diag_fixed/K3_true//model_diagnostics1.csv")
+write.csv(df_model_choice, "./results/MCMC_output/model_choice/WAIC_method/diag_free/citations_true//model_choice1.csv")
+write.csv(df_diagnostics, "./results/MCMC_output/model_choice/WAIC_method/diag_free/citations_true//model_diagnostics1.csv")
 
 
 
@@ -244,9 +262,8 @@ marginal_lik_for_bridge = function(Y_ij, N_ij, K, theta, z){
   }
   return(log_container)
 }
-marginal_lik_for_bridge(Y_ij, N_ij, K = K,theta =theta_chain, z=z_chain)
 
-marginal_lik_for_bridge <- function(Y_ij, N_ij, K, theta, z) {
+marginal_lik_for_bridge1 <- function(Y_ij, N_ij, K, theta, z) {
   N_iter <- ncol(z)
   n <- nrow(Y_ij)
   A <- rep(1, K)
