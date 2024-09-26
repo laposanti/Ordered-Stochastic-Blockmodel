@@ -773,29 +773,29 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    P_nbyn_current = P_nbyn_prime
                                                                  }
                                                                  
-                                                                 if(estimation_control$omega == 1){
-                                                                   
-                                                                   
-                                                                   omega_prime = rnorm(n, omega_current,sd = tau_omega)
-                                                                   
-                                                                   
-                                                                   ll_prime = ll_computation(Y_ij = Y_ij, 
-                                                                                             N_ij = N_ij, 
-                                                                                             P_nbyn = P_nbyn_scanning, 
-                                                                                             relevant_indices = filtering_matrix,
-                                                                                             z = z_current,
-                                                                                             omega = omega_prime)
-                                                                   
-                                                                   l_ratio = ll_prime*t - ll_current*t
-                                                                   
-                                                                   Omega_MH = min(log_r,0)>=log(runif(1))
-                                                                   
-                                                                   if(Omega_MH){
-                                                                     ll_current = ll_prime
-                                                                     omega_current <- omega_prime
-                                                                     acc.count_omega <- acc.count_omega+1
-                                                                   }
-                                                                 }
+                                                                 # if(estimation_control$omega == 1){
+                                                                 #   
+                                                                 #   
+                                                                 #   omega_prime = rnorm(n, omega_current,sd = tau_omega)
+                                                                 #   
+                                                                 #   
+                                                                 #   ll_prime = ll_computation(Y_ij = Y_ij, 
+                                                                 #                             N_ij = N_ij, 
+                                                                 #                             P_nbyn = P_nbyn_scanning, 
+                                                                 #                             relevant_indices = filtering_matrix,
+                                                                 #                             z = z_current,
+                                                                 #                             omega = omega_prime)
+                                                                 #   
+                                                                 #   l_ratio = ll_prime*t - ll_current*t
+                                                                 #   
+                                                                 #   Omega_MH = min(log_r,0)>=log(runif(1))
+                                                                 #   
+                                                                 #   if(Omega_MH){
+                                                                 #     ll_current = ll_prime
+                                                                 #     omega_current <- omega_prime
+                                                                 #     acc.count_omega <- acc.count_omega+1
+                                                                 #   }
+                                                                 # }
                                                                  #---------------------------
                                                                  #storing results
                                                                  #---------------------------
