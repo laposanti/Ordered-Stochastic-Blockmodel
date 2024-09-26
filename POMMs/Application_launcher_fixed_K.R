@@ -112,8 +112,8 @@ for(data_description in c("Citation_data")){
     optimal_acceptance_rate_theta =.44
     optimal_acceptance_rate_mu = .234
     seed = seed
-    N_iter <- 50 #number of itera0tions
-    burnin <- 10 #number of discarded iterations
+    N_iter <- 100000 #number of itera0tions
+    burnin <- 10000 #number of discarded iterations
     thin = 5
     power_posterior_apprach = T
     if(power_posterior_apprach == F){
