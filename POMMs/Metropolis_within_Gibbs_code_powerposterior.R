@@ -23,7 +23,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                     ground_truth=NA,n, N_iter, burnin, data_description,
                                                     K_est, seed, model, saving_directory, 
                                                     custom_init=NA,power_posterior_apprach = T, thin=1,
-                                                    diag0.5){
+                                                    diag0.5,N_ij_modeling=F){
   #setting for each chain a different seed
   #if the given seed is 20, the chains' seeds will be 21 for chain 1, 22 for chain 2 and so on...
   
@@ -59,7 +59,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
   variables_to_add = c('Y_ij', 'N_ij' , 'estimation_control', 
                        'ground_truth','n', 'N_iter','n_chains', 
                        'optimal_acceptance_rate_theta', 'optimal_acceptance_rate_mu', 'K_est','thin', 'burnin', 'seed','model','data_description',
-                       'power_posterior_apprach' ,'true_model', 'custom_init','p','n_temperatures','where_to_save','diag0.5')
+                       'power_posterior_apprach' ,'true_model', 'custom_init','p','n_temperatures','where_to_save','diag0.5', "N_ij_modeling")
   
   registerDoFuture()
   reprex <- local({
@@ -295,9 +295,10 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                              #the likelihood is computed just for the entries that
                                                              #1) are in the upper triangular adjacency matrix
                                                              #2) have N_ij > 0 
-                                                             directed=F
-                                                             if(directed == F){
-                                                               ll_computation <<- function(Y_ij, N_ij, P_nbyn, relevant_indices){
+                                                             
+                                                             if(N_ij_modeling == F){
+                                                               omega_current = NA
+                                                               ll_computation <<- function(Y_ij, N_ij, P_nbyn, relevant_indices, omega,z){
                                                                  log_likelihood = dbinom(x = Y_ij[relevant_indices], 
                                                                                          size = N_ij[relevant_indices], 
                                                                                          prob = P_nbyn[relevant_indices],
@@ -305,11 +306,15 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                  return(sum(log_likelihood))
                                                                }
                                                              }else{
-                                                               
-                                                               ll_computation <<- function(Y_ij,N_ij, P_nbyn, relevant_indices){
-                                                                 log_likelihood = dpois(x = Y_ij[relevant_indices], 
-                                                                                        lambda = P_nbyn)
-                                                                 return(sum(log_likelihood))
+                                                               ll_computation <<- function(Y_ij,N_ij,P_nbyn, relevant_indices, omega,z){
+                                                                 
+                                                                 log_likelihood1 = dpois(x = N_ij[upper.tri(N_ij)], 
+                                                                                         lambda = omega%*%t(omega),log = T)
+                                                                 log_likelihood = dbinom(x = Y_ij[relevant_indices], 
+                                                                                         size = N_ij[relevant_indices], 
+                                                                                         prob = P_nbyn[relevant_indices],
+                                                                                         log = T)
+                                                                 return(sum(log_likelihood1)+sum(log_likelihood))
                                                                }
                                                              }
                                                              #---------------------------
@@ -413,9 +418,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                theta_current = custom_init$theta
                                                              }
                                                              
+                                                             if(N_ij_modeling==T){
+                                                               if(estimation_control$omega==1){
+                                                                 omega_current = rnorm(100, mean = 1/z_current, sd=10)
+                                                               }else{
+                                                                 omega_current = ground_truth$omega 
+                                                               }
+                                                             }
                                                              # e_0 <- length(theta_current[upper.tri(theta_current,diag = T)])
                                                              # if(model != 'Simple'){
-                                                             #   e_0 = e_0 + length(mu_vec_current)
+                                                             #   e_0 = e_0 + length(mu_vec_current)rw
                                                              # }
                                                              # e_0 = e_0/2+1
                                                              # e_0 = 1
@@ -462,7 +474,8 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                P_nbyn_current = calculate_victory_probabilities(z_mat_current, P_current)
                                                                ll_current =  ll_computation(Y_ij = Y_ij, N_ij= N_ij, 
                                                                                             P_nbyn = P_nbyn_current,
-                                                                                            relevant_indices = relevant_indices)*t
+                                                                                            relevant_indices = relevant_indices,
+                                                                                            omega=omega_current,z=z_current)*t
                                                                
                                                                #log prior on P
                                                                prior_theta<- theta_prior_probability(theta = theta_current, K = K)
@@ -488,16 +501,16 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                z_container <- matrix(0, nrow = n, ncol = N_iter_eff)
                                                                mu_vec_container <- matrix(0, nrow = K, ncol = N_iter_eff)
                                                                theta_container <- array(0, dim = c(K,K,N_iter_eff))
-                                                               
+                                                               omega_container<- matrix(0, nrow = n, ncol = N_iter_eff)
                                                                #defining the containers to store acceptance counts
                                                                acc.count_z <- rep(1,n)
                                                                acc.count_mu_vec <- rep(1, K)
                                                                acc.count_theta<- matrix(1,K,K)
-                                                               
+                                                               acc.count_omega <- 1
                                                                #defining the proposals' variances
                                                                tau_mu_vec= rep(0.3,K)
                                                                tau_theta = matrix(0.25,K,K)
-                                                               
+                                                               tau_omega= 0.25
                                                                #-----------------------------------------
                                                                # dataframe of the theta entries that needs to be updated
                                                                #-----------------------------------------
@@ -577,7 +590,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      ll_minus = ll_computation(Y_ij = Y_ij,
                                                                                                N_ij = N_ij,
                                                                                                P_nbyn = P_nbyn_prime,
-                                                                                               relevant_indices = filtering_matrix)
+                                                                                               relevant_indices = filtering_matrix,
+                                                                                               omega = omega_current,
+                                                                                               z = z_current)
                                                                      
                                                                      #update P_nbyn with the new partition
                                                                      P_nbyn_scanning = P_nbyn_prime
@@ -590,7 +605,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      ll_plus = ll_computation(Y_ij = Y_ij,
                                                                                               N_ij = N_ij,
                                                                                               P_nbyn = P_nbyn_scanning,
-                                                                                              relevant_indices = filtering_matrix)
+                                                                                              relevant_indices = filtering_matrix,
+                                                                                              omega = omega_current,
+                                                                                              z = z_current)
                                                                      
                                                                      #Updating the likelihood
                                                                      ll_scanning = (ll_prime - ll_minus + ll_plus)
@@ -700,7 +717,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      ll_minus = ll_computation(Y_ij = Y_ij, 
                                                                                                N_ij = N_ij, 
                                                                                                P_nbyn = P_nbyn_prime,
-                                                                                               relevant_indices = filtering_matrix)
+                                                                                               relevant_indices = filtering_matrix,
+                                                                                               omega = omega_current,
+                                                                                               z = z_current)
                                                                      
                                                                      #Second, subtract also the contribution of the theta[i_star,j_star] entry to the prior
                                                                      theta_prior_prime = theta_prior_probability(theta_prime, K = K)
@@ -715,7 +734,9 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                      ll_plus = ll_computation(Y_ij = Y_ij, 
                                                                                               N_ij = N_ij, 
                                                                                               P_nbyn = P_nbyn_scanning, 
-                                                                                              relevant_indices = filtering_matrix)
+                                                                                              relevant_indices = filtering_matrix,
+                                                                                              omega = omega_current,
+                                                                                              z = z_current)
                                                                      
                                                                      #Fourth,add the contribution to the prior
                                                                      theta_prior_scanning = theta_prior_probability(theta_scanning, K = K)
@@ -752,6 +773,29 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    P_nbyn_current = P_nbyn_prime
                                                                  }
                                                                  
+                                                                 if(estimation_control$omega == 1){
+                                                                   
+                                                                   
+                                                                   omega_prime = rnorm(n, omega_current,sd = tau_omega)
+                                                                   
+                                                                   
+                                                                   ll_prime = ll_computation(Y_ij = Y_ij, 
+                                                                                             N_ij = N_ij, 
+                                                                                             P_nbyn = P_nbyn_scanning, 
+                                                                                             relevant_indices = filtering_matrix,
+                                                                                             z = z_current,
+                                                                                             omega = omega_prime)
+                                                                   
+                                                                   l_ratio = ll_prime*t - ll_current*t
+                                                                   
+                                                                   Omega_MH = min(log_r,0)>=log(runif(1))
+                                                                   
+                                                                   if(Omega_MH){
+                                                                     ll_current = ll_prime
+                                                                     omega_current <- omega_prime
+                                                                     acc.count_omega <- acc.count_omega+1
+                                                                   }
+                                                                 }
                                                                  #---------------------------
                                                                  #storing results
                                                                  #---------------------------
@@ -763,7 +807,7 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    if(model=='SST'){
                                                                      mu_vec_container[,save_count] <- theta_current[1,]
                                                                    }
-                                                                   
+                                                                   omega_container <- omega_current
                                                                    ll_container[save_count,] = ll_current
                                                                    
                                                                  }
@@ -787,11 +831,11 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                    
                                                                    p(sprintf("Chain %d: mean acc.rate z %.3f%%,
                     mean acc.rate theta %.3f%%,
-                    mean acc.rate mu_vec %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
+                    mean acc.rate omega %.3f%% single_iter_time '%*.3f' seconds, will_finish_at '%s'",
                     chain,
                     100 * mean(acc.count_z/j),
                     100 * mean(acc.count_theta/j),
-                    100 * mean(acc.count_mu_vec/j),
+                    100 * acc.count_omega/j,
                     4, avg_iteration, formatted_expected_finishing_time), class = "sticky")
                                                                    
                                                                    
@@ -837,12 +881,12 @@ adaptive_MCMC_orderstats_powerposterior <- function(Y_ij, N_ij , estimation_cont
                                                                evidence_df = evidence_df %>% arrange(t)
                                                                
                                                                for(row_i in 1:(nrow(evidence_df)-1)){
-                                                                 ith_sum = (evidence_df$t[row_i+1] - evidence_df$t[row_i])*(evidence_df$evidence[row_i]+complete_df$evidence[row_i+1])/2
+                                                                 ith_sum = (evidence_df$t[row_i+1] - evidence_df$t[row_i])*(evidence_df$evidence[row_i]+evidence_df$evidence[row_i+1])/2
                                                                  evidence_df$riemann[row_i] = ith_sum
                                                                }
                                                                
                                                                
-                                                               marginal_likelihood = sum(complete_df$riemann)
+                                                               marginal_likelihood = sum(evidence_df$riemann)
                                                                
                                                                return(list(Y_ij= Y_ij, N_ij = N_ij, 
                                                                            ground_truth=ground_truth,
