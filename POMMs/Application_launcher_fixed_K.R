@@ -60,6 +60,8 @@ for(data_description in c("Citation_data")){
     
     
     
+    
+    
     pl_df = data.frame(x = rownames(N_ij), y = rowSums(N_ij))
     pl_df%>%
       ggplot(aes(x = x, y=y))+
@@ -84,7 +86,7 @@ for(data_description in c("Citation_data")){
     
   }
   
-  folder <- drive_get(as_id(folder_url))
+
   diag0.5=T
   #chosing where to save the files depending on which model you are estimating
   
@@ -135,6 +137,7 @@ for(data_description in c("Citation_data")){
       }
       
     }
+    folder <- drive_get(as_id(folder_url))
     custom_init <- NA
     
     #number of clusters to fit
