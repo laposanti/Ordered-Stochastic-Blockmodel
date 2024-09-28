@@ -1,5 +1,5 @@
 #! /bin/bash -l
-#SBATCH --job-name= "Model Selection Reader"
+#SBATCH --job-name="Model Selection Reader"
 # speficity number of nodes 
 #SBATCH -N 1
 
