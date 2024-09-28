@@ -53,7 +53,7 @@ for(df_row in 1:nrow(folder_df)){
   
   #uploaded_results<- readRDS(paste0(da ta_wd,"/",est_model_files[file]))
   
-  data_wd = paste0('./results/MCMC_output/model_choice/WAIC_method/diag_free/',folder_df$Ks[df_row])
+  data_wd = paste0('./Results/MCMC_output/model_choice/WAIC_method/diag_free/',folder_df$Ks[df_row])
   
   df_model_choice = data.frame(K_true = numeric(),
                                true_model = character(),
