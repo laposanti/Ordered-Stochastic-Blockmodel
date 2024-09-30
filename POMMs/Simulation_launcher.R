@@ -56,7 +56,7 @@ is.simulation=T
 
 #data.directory
 
-data_directory = "./Data/Sim1_data/"
+data_directory = "./Data/Sim_2_data//"
 
 for(true_model in  c('SST','Simple')){
   true_model = 'SST'
@@ -74,14 +74,14 @@ for(true_model in  c('SST','Simple')){
     file=1
     data_to_be_estimated = readRDS(paste0(data_directory,filenames[file]))
     data_to_be_estimated$data_plot
-    data_to_be_estimated$recovery_capability
+    data_to_be_estimated$sparsity
     stopifnot(data_to_be_estimated$model == true_model)
     recovery_capability = data_to_be_estimated$recovery_capability
     N_ij = data_to_be_estimated$N_ij
     n = nrow(N_ij)
     Y_ij = data_to_be_estimated$Y_ij
     ground_truth =data_to_be_estimated$ground_truth
-    
+
     
     K= nrow(data_to_be_estimated$ground_truth$theta)
     data_description = paste0(true_model,K)
@@ -121,7 +121,7 @@ for(true_model in  c('SST','Simple')){
       #setting up the chain hyperparameter
       
       #where to save the data
-      saving_directory = paste0("./Results/MCMC_output/Fixed_K/Simulation/True_Model",true_model,"/")
+      saving_directory = paste0("./Results/MCMC_output/Fixed_K/Simulation_Nials'data//True_Model",true_model,"/")
       
       
       #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
@@ -133,7 +133,7 @@ for(true_model in  c('SST','Simple')){
       source("./model_auxiliary_functions/Functions_priorSST.R")
       source("./Metropolis_within_Gibbs_code_powerposterior.R")
       
-      estimation_control <- list(z = 1,  theta = 0)
+      estimation_control <- list(z = 1,  theta = 1)
       
       chains_SST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij, 
                                                             saving_directory = saving_directory,
@@ -188,7 +188,7 @@ for(true_model in  c('SST','Simple')){
       custom_init <- NA
       print(paste0("Estimation of the WST model, K=", K_est))
       print(paste0("Begin cycle at:", date(), "\n"))
-      estimation_control <- list(z = 1, sigma_squared = 0, mu_vec = 0 ,K = 0, theta = 1)
+      estimation_control <- list(z = 1, theta = 1)
       
       chains_WST <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                             saving_directory = saving_directory,
@@ -241,7 +241,7 @@ for(true_model in  c('SST','Simple')){
       #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
       power_posterior_apprach = F
       custom_init <- NA
-      estimation_control = list(z = 1,sigma_squared=0, mu_vec=0,K=0,theta=1)
+      estimation_control = list(z = 1,theta=1)
 
       chains_Simple = adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                               saving_directory = saving_directory,

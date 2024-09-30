@@ -16,7 +16,7 @@ library(LaplacesDemon)
 library(cowplot)
 library(tidyr)
 library(googledrive)
-source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/SaraWade.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/gitignore/oldmaterial/project/simplified model/SaraWade.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Functions_priorSST.R")
 
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/Inference_orderstats.R")
@@ -209,7 +209,7 @@ if(is.simulation==F){
       z_df_complete$degree_pl_row[i] <- sum(Y_ij[z_df_complete$col[i],])/sum(Y_ij[,z_df_complete$col[i]])
     }
     
-
+    
     
     
     
@@ -311,7 +311,7 @@ for(file in file_to_analyse){
   drive_download(file = matching_files $id[file], path = save_path,overwrite = T)
   uploaded_results = readRDS(save_path)
   uploaded_results = chains_SST
-  chains_SST$recovery_level
+  chains_SST$chain1$ground_truth$identification
   burnin=0
   print(paste0('Now estimating ', matching_files$name[file]))
   # The file name
@@ -343,13 +343,13 @@ for(file in file_to_analyse){
   if(est_model != 'Simple'){
     m_vec_burned = uploaded_results$chain1$est_containers$mu_vec[,1:N_iter]
   }
-
+  
   
   theta = apply(theta_burned, c(1,2), mean)
   P_est = inverse_logit_f(theta)
   
   
-
+  
   
   z_burned_1 = uploaded_results$chain1$est_containers$z[,1:N_iter]
   z_burned_2 = uploaded_results$chain2$est_containers$z[,1:N_iter]
@@ -361,7 +361,8 @@ for(file in file_to_analyse){
   theta_burned_3 = uploaded_results$chain3$est_containers$theta[,,1:N_iter]
   theta_burned_4 = uploaded_results$chain4$est_containers$theta[,,1:N_iter]
   
-
+  z_burned_list = list(z_burned_1,z_burned_2,z_burned_3,z_burned_4)
+  theta_burned_list = list(theta_burned_1,theta_burned_2,theta_burned_3,theta_burned_4)
   # chain_relabeled2 <- relabel_chain(2, permutations_z =  permutations_z, z_chain = z_burned_2, 
   #                                   ncol_iter = N_iter - burnin,n=n)
   # chain_relabeled3 <- relabel_chain(3,  permutations_z = permutations_z, z_chain = z_burned_3, 
@@ -375,7 +376,8 @@ for(file in file_to_analyse){
   # theta_permuted3 <- permute_P(chain_index = 3, permutations_z = permutations_z, P_chain = theta_burned_3,K=K)
   # theta_permuted4 <- permute_P(4, permutations_z = permutations_z, P_chain = theta_burned_4,K=K)
   # 
-  uploaded_results$chain1$est_containers$theta
+  
+  
   #-------------------------------------------------------------------------------
   # computing the estimated loglikelihood for each chain
   #-------------------------------------------------------------------------------
@@ -392,8 +394,8 @@ for(file in file_to_analyse){
   
   # Convert back to a logical matrix
   filtering_obs <- matrix(as.logical(common_indices), nrow = n,ncol = n)
-
-
+  
+  
   upper.tri.Y_ij = Y_ij[filtering_obs]
   upper.tri.N_ij = N_ij[filtering_obs]
   
@@ -404,10 +406,10 @@ for(file in file_to_analyse){
     theta_chain <- theta_burned_list[[i]]
     
     llik = matrix(NA,  nrow = num_samples, ncol = length(upper.tri.Y_ij))
-
+    
     for(t in 1:num_samples){
       
-      z_chain_mat = vec2mat_0_P(z_chain[,t], theta_burned[,,t])
+      z_chain_mat = vec2mat_0_P(z_chain[,t], K = K)
       
       P_entry = inverse_logit_f(theta_chain[,,t])
       
@@ -496,7 +498,7 @@ for(file in file_to_analyse){
                                          rep(3,num_samples),
                                          rep(4,num_samples)))
   
-  loo_model_fit = loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
+  loo_model_fit = loo::loo(c_log_lik,cores = 3,save_psis = T,r_eff = r_effs,is_method = 'psis')
   saveRDS(loo_model_fit, paste0(processed_wd,"/modelcheck",est_model,K,".RDS"))
   
   plot(loo_model_fit)
@@ -507,7 +509,7 @@ for(file in file_to_analyse){
   loo::pareto_k_values(loo_model_fit)
   pareto_k_table(loo_model_fit)
   
-
+  
   upper_tri_indices <- upper.tri(N_ij)
   
   # Get the indices where the matrix elements are greater than 0
@@ -521,19 +523,19 @@ for(file in file_to_analyse){
   
   
   prob_values_position = which(filtering_obs==T,arr.ind = T)[problematic_values,] 
-
+  
   
   
   count_true_better_than_est = vector()
   count_true_equal_to_est = vector()
   
   data.frame_sum_general = data.frame(mean_true_like = numeric(),
-                              mean_est_like = numeric(),
-                              z_mode1 = numeric(),
-                              z_mode2 = numeric())
+                                      mean_est_like = numeric(),
+                                      z_mode1 = numeric(),
+                                      z_mode2 = numeric())
   
   for(prob_value in 1:nrow(prob_values_position)){
-
+    
     problematic_position_1 = prob_values_position[prob_value,1]
     problematic_position_2 = prob_values_position[prob_value,2]
     
@@ -571,7 +573,7 @@ for(file in file_to_analyse){
                 Y_hat_0.05 = quantile(Y_hat, 0.05),
                 Y_hat_mean = mean(Y_hat),
                 Y_hat_0.95 = quantile(Y_hat, 0.95)
-                )
+      )
     
     data.frame_sum_general= rbind(data.frame_sum_general, data.frame_sum)
     
@@ -593,28 +595,28 @@ for(file in file_to_analyse){
   summary(colMeans(abs(mean_error)))
   
   
-mean(var(LL_list[[1]][,problematic_values[1]]))
-
-
-var(LL_list[[1]][,1])
-
-
-problematic = as.vector(LL_list[[1]][1:4000,problematic_values])
-non_problematic = as.vector(LL_list[[1]][1:4000,-problematic_values])
-df_plot = data.frame(value= c(problematic,non_problematic), 
-                     ok_not_ok = c(rep('problematic', length(problematic)),
-                                   rep('non_problematic', length(non_problematic))))
-
-df_plot%>%
-  ggplot(aes(x = value, fill=ok_not_ok))+
-  geom_density(alpha=0.5)
-
-is.NA.Y_pred = which(is.na(Y_pred),arr.ind = T)
-bayesplot::ppc_bars(
-  y = upper.tri.Y_ij[-problematic_values],
-  yrep = Y_pred[,-problematic_values],
-  lw = weights(loo_model_fit$psis_object)[,-problematic_values]
-)
+  mean(var(LL_list[[1]][,problematic_values[1]]))
+  
+  
+  var(LL_list[[1]][,1])
+  
+  
+  problematic = as.vector(LL_list[[1]][1:4000,problematic_values])
+  non_problematic = as.vector(LL_list[[1]][1:4000,-problematic_values])
+  df_plot = data.frame(value= c(problematic,non_problematic), 
+                       ok_not_ok = c(rep('problematic', length(problematic)),
+                                     rep('non_problematic', length(non_problematic))))
+  
+  df_plot%>%
+    ggplot(aes(x = value, fill=ok_not_ok))+
+    geom_density(alpha=0.5)
+  
+  is.NA.Y_pred = which(is.na(Y_pred),arr.ind = T)
+  bayesplot::ppc_bars(
+    y = upper.tri.Y_ij[-problematic_values],
+    yrep = Y_pred[,-problematic_values],
+    lw = weights(loo_model_fit$psis_object)[,-problematic_values]
+  )
   
   
   
@@ -633,7 +635,8 @@ bayesplot::ppc_bars(
   pareto_k_values(loo_model_fit)
   
   
-  
+  processed_wd = "./Results/MCMC_output/Fixed_K/Simulation_Nials'data/"
+  is.simulation=T
   my_z_est<- z_plot(z_burned = z_burned_1,  A = LLik_sum[[1]],
                     Y_ij = Y_ij, N_ij = N_ij, true_model= true_model,P_est = P_est,
                     est_model = est_model, true_value =is.simulation, 
@@ -643,7 +646,8 @@ bayesplot::ppc_bars(
   
   
   point_est_z<- as.vector(my_z_est$point_est)
-  vi.dist(point_est_z,uploaded_results$chain1$ground_truth$z)
+  
+  vi.dist(point_est_z, uploaded_results$chain1$ground_truth$z)
   
   if(est_model == 'SST'&K==6){
     write.csv(point_est_z,paste0(processed_wd,"z_est_K_6modelSST.csv"))
@@ -732,6 +736,8 @@ bayesplot::ppc_bars(
   # }
   # 
   # 
+  
+  is.simulation=T
   if(max(z_burned)==K){
     
     
@@ -757,7 +763,7 @@ bayesplot::ppc_bars(
       theta_trace_df_post_switch <- do.call(rbind, lapply(1:(N_iter-burnin), function(j) {
         data.frame(iteration = j,
                    theta = upper.tri.extractor(theta_chain_permuted[,,j]), 
-                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$P), 
+                   theta_true = upper.tri.extractor(uploaded_results$chain1$ground_truth$theta), 
                    entry = paste0(upper_tri_indices[,1], upper_tri_indices[,2]))
       }))
       theta_trace_df_post_switch= theta_trace_df_post_switch%>% 
@@ -805,7 +811,7 @@ bayesplot::ppc_bars(
     # 
     # }
     
-
+    
     
     
     
@@ -998,6 +1004,7 @@ bayesplot::ppc_bars(
   #     sigma_squared_container =  rbind(sigma_squared_container,sigma_squared_s_table)
   #   }
   # }
+  
   if(est_model == 'SST'){
     #-------------------------------------------------------------------------------
     # mu parameter estimate
@@ -1310,10 +1317,10 @@ bayesplot::ppc_bars(
     est_df<- data.frame(Id = rownames(Y_ij), 
                         marginal_victories = rowSums(Y_ij),
                         marginal_losses = colSums(Y_ij))
-                        # est_cl = point_est_z, 
-      #                   unique_identifier = runif(N, -0.001,0.001))%>%
-      # mutate(unique_identifier = unique_identifier+est_cl)%>%
-      mutate(relative_victories = marginal_victories/(marginal_losses+marginal_victories))
+    # est_cl = point_est_z, 
+    #                   unique_identifier = runif(N, -0.001,0.001))%>%
+    # mutate(unique_identifier = unique_identifier+est_cl)%>%
+    mutate(relative_victories = marginal_victories/(marginal_losses+marginal_victories))
     
     
     if(est_model =='Simple'){
@@ -1408,7 +1415,7 @@ bayesplot::ppc_bars(
     colnames(Y_ij) <- rownames(Y_ij)
     
     
-
+    
     
     
     
@@ -1429,10 +1436,10 @@ bayesplot::ppc_bars(
     
     
     z_df_complete%>%
-    ggplot(aes(x = row, y=col, fill= factor(N)))+
+      ggplot(aes(x = row, y=col, fill= factor(N)))+
       geom_tile()+
       theme(axis.text.x = element_text(angle=90))
-
+    
     
     
     v_lines_list = list()

@@ -13,7 +13,7 @@ library(RColorBrewer)
 library(ggside)
 library(truncnorm)
 library(doRNG)
-source("/Users/lapo_santi/Desktop/Nial/oldmaterial/project/simplified model/Functions_priorSST.R")
+source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/gitignore/oldmaterial/project/simplified model/Functions_priorSST.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Metropolis_within_Gibbs_code.R")
 source("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/model_auxiliary_functions/MCMC_functions.R")
 
@@ -101,22 +101,20 @@ generate_theta_from_theta_prior = function(K, model){
 ###############################################################################
 
 true_model = 'SST'
-saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim1_data///"
+saving_directory="/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/Data/Sim_2_data////"
 #from 1, 'very difficult' to 5, 'very easy'
-recovery_capability_levels = 3:7
+sparsity_level = c(0.3,0.5,0.7)
 
-for(k in 3:7){
-  
-  for(recovery_capability in 1:length(recovery_capability_levels)){
-    for(seed_i in 1:5){
+for(sparsity_i in sparsity_level){
+  for(k in 4:7){
+    for(seed_i in 1:3){
       
-      n = 80
+      n = 100
       K=k
       seed =2021+seed_i
       set.seed(seed)
-      recovery_capability=recovery_capability
       if(true_model =='SST'){
-        prior_SST = generate_theta_from_theta_prior(K, 
+        prior_SST = generate_theta_from_theta_prior(K=k, 
                                                     model = 'SST')
         P <- prior_SST$P
         mu_vec =  prior_SST$mu
@@ -151,33 +149,51 @@ for(k in 3:7){
       P_nbyn<- calculate_victory_probabilities(z_mat = z_P,P = P)
       
       #Here we compute a KxK matrix cotaining the average number of comparisons between pairs of blocks
-      num_comparisons = recovery_capability:(recovery_capability+2)
-      N_blocks = matrix(sample(x = num_comparisons,
-                               size = K**2,
-                               replace = T), 
-                        nrow = K,ncol = K)
-      N_blocks = make_symmetric(N_blocks)
-      
-      N_ij = matrix(NA, n, n)
-      for(i in 1:n){
-        for(j in 1:n){
-          N_ij[i,j] = rpois(1,N_blocks[z[i], z[j]])
-        }
-      }
-      N_ij[lower.tri(N_ij)] = t(N_ij)[lower.tri(N_ij)]
-      diag(N_ij) = 0
+      # num_comparisons = recovery_capability:(recovery_capability+2)
+      # N_blocks = matrix(sample(x = num_comparisons,
+      #                          size = K**2,
+      #                          replace = T), 
+      #                   nrow = K,ncol = K)
+      # N_blocks = make_symmetric(N_blocks)
+      # 
+      # N_ij = matrix(NA, n, n)
+      # for(i in 1:n){
+      #   for(j in 1:n){
+      #     N_ij[i,j] = rpois(1,N_blocks[z[i], z[j]])
+      #   }
+      # }
+      # N_ij[lower.tri(N_ij)] = t(N_ij)[lower.tri(N_ij)]
+      # diag(N_ij) = 0
       
       #simulating Y_ij
       
+      
+      P_interact_i = rnorm(n,1/z,sd = 0.2)
+      P_interact_n_by_n = P_interact_i%*%t(P_interact_i)
+      inverse_logit_f(P_interact_n_by_n)
+      
+      n_trials = 3
       Y_ij <- matrix(0, n,n)
-      for(i in 1:n){
-        for(j in 1:n){
-          Y_ij[i,j]<-rbinom(1,N_ij[i,j], P_nbyn[i,j])
+      N_ij = matrix(0, n,n)
+      for(j in 1:n){
+        for(i in 1:j){
+          interact_not_interact = rbinom(1,1, 1-sparsity_i) #here you control the sparsity
+          if(interact_not_interact==1){
+            N_ij[i,j] <- n_trials
+            N_ij[j,i] <- n_trials
+            for(trial in 1:n_trials){
+              win_loose <-rbinom(1,1, P_nbyn[i,j])
+              if(win_loose ==1){
+                Y_ij[i,j]<- Y_ij[i,j]+ 1
+                
+              }else{
+                Y_ij[j,i]<- Y_ij[j,i]+ 1
+              }
+            }
+          }
         }
       }
       
-      Y_ij[lower.tri(Y_ij)] = N_ij[lower.tri(N_ij)] - t(Y_ij)[lower.tri(Y_ij)]
-      diag(Y_ij)<- 0
       
       
       
@@ -218,7 +234,7 @@ for(k in 3:7){
       
       adjacency_m <- ggplot(plot_df, aes(x = row, y = col)) +
         geom_tile(aes(fill = y_prop), color = 'gray30') +
-        scale_fill_gradient(low = 'grey', high = 'red') +
+        scale_fill_gradient(low = 'white', high = 'red') +
         geom_ysidetile(aes(color = factor(col_z)), show.legend = FALSE, width = 0.5) +
         theme_minimal() +
         theme(axis.text.x = element_blank(),
@@ -230,40 +246,29 @@ for(k in 3:7){
               legend.key.width = unit(1.1, 'cm'),
               
         ) +
-        guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5)) # Center the title horizontally
+        guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5))+
+        labs(fill = 'Success %',
+             caption = paste0("Data ~ ",true_model," SBM, K= ",k,", seed=",seed, ', ',sparsity_i*100, "% zeros"))# Center the title horizontally
       
-      adjacency_m
       
       print(adjacency_m)
       
       
-      if(true_model == 'SST'){
-        ground_truth = list(z = z,
-                            mu_vec_star = mu_vec,
-                            K=K,theta=theta,
-                            model = true_model) 
-      }else if(true_model == 'WST'){
-        ground_truth = list(z = z,
-                            mu_vec_star = mu_vec,
-                            K=K,
-                            theta=theta,
-                            model = true_model) 
-      }else if(true_model == 'Simple'){
-        ground_truth = list(z = z,
-                            mu_vec_star = NA,
-                            K=K,
-                            theta=theta,
-                            model = true_model)
-      }
+      ground_truth = list(z = z,
+                          mu_vec_star = mu_vec,
+                          K=K,
+                          theta=theta,
+                          model = true_model,
+                          identification = paste0(true_model,"K",k, "-",seed,"-",sparsity_i))
+      
       
       
       to_be_saved = list(Y_ij=Y_ij, N_ij =N_ij, ground_truth = ground_truth, 
                          data_plot = adjacency_m, 
-                         recovery_capability = recovery_capability,
+                         sparsity = sparsity_i,
                          seed=seed)
       
-      saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_level_recovery",recovery_capability,"seed",seed,".RDS"))
+      saveRDS(to_be_saved, paste0(saving_directory, true_model, K,"_sparsity",sparsity_i,"seed",seed,".RDS"))
     }
   }
-  
 }

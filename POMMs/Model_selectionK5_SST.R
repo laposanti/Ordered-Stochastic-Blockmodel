@@ -42,7 +42,7 @@ googledrive::drive_auth(email = subject)
 
 
 #where the data are stored
-data_wd<- "./Data/Sim1_data/"
+data_wd<- "./Data/Sim_2_data/"
 data_description = 'SST5'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 for(dataset in 1:length(filenames)){
@@ -54,8 +54,7 @@ for(dataset in 1:length(filenames)){
   Y_ij <- data_to_be_estimated$Y_ij
   K <- data_to_be_estimated$ground_truth$K
   ground_truth <- data_to_be_estimated$ground_truth
-  ground_truth$data_ref = paste0("#",data_description,"-",data_to_be_estimated$recovery_capability, "-",data_to_be_estimated$seed)
-  
+
   choose_model_to_estimate = c('SST', 'WST','Simple')
   
   ################################################################################
@@ -70,8 +69,8 @@ for(dataset in 1:length(filenames)){
   
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
-  N_iter <- 90000 #number of iterations
-  burnin <- 20000 #number of discarded iterations
+  N_iter <- 80000 #number of iterations
+  burnin <- 10000 #number of discarded iterations
   thin = 5
   
   
@@ -82,7 +81,7 @@ for(dataset in 1:length(filenames)){
   custom_init <- NA
   
   #where to save the data
-  saving_directory = './Results/MCMC_output/model_choice/WAIC_method/K5_true/'
+  saving_directory = './Results/MCMC_output/model_choice/WAIC_method/diag_free/K5_true/'
   
   # Check if the directory exists
   if (!dir.exists(saving_directory)) {
@@ -95,11 +94,9 @@ for(dataset in 1:length(filenames)){
   
   power_posterior_apprach = F
   custom_init = NA
-  diag0.5=T
-  
+  diag0.5=F
   #main diagonal fixed to 0.5
-  folder_url <- "https://drive.google.com/drive/u/1/folders/1cneKgDKZ8ZdxNZ4_9-QACyoYDgl9c_9K"
-  
+  folder_url <- "https://drive.google.com/drive/u/1/folders/1WMb0GZuW1Je4crjh3Fv5TtjwhQF-k24G"
   folder <- drive_get(as_id(folder_url))
   if('SST' %in% choose_model_to_estimate){
     
@@ -127,14 +124,13 @@ for(dataset in 1:length(filenames)){
                                                       power_posterior_apprach = power_posterior_apprach,
                                                       thin =thin,
                                                       diag0.5 = diag0.5)
-    names(chains) = paste0('chain',unlist(K_est))
-    chains[['recovery_level']] = recovery_capability
     
+    names(chains) = paste0('chain',unlist(K_est))
     my_filename = paste0(saving_directory,'Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
-                         'recovery_level',
-                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
+                         'sparsity',data_to_be_estimated$sparsity,
+                         ,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains, file = my_filename) 
     drive_put(media = my_filename, path = folder)
     
@@ -172,13 +168,11 @@ for(dataset in 1:length(filenames)){
     
     
     names(chains_WST) = paste0('chain',unlist(K_est))
-    chains_WST[['recovery_level']] = recovery_capability
-    
     my_filename = paste0(saving_directory,'Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
-                         'recovery_level',
-                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
+                         'sparsity',
+                         data_to_be_estimated$sparsity,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains_WST, file = my_filename) 
     
     drive_put(media = my_filename, path = folder)
@@ -216,12 +210,11 @@ for(dataset in 1:length(filenames)){
                                                             power_posterior_apprach = power_posterior_apprach,
                                                             thin=thin,diag0.5 = F)
     names(chains_Simple) = paste0('chain',unlist(K_est))
-    chains_Simple[['recovery_level']] = recovery_capability
     my_filename = paste0(saving_directory,'Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
-                         'recovery_level',
-                         recovery_capability,"seed",  data_to_be_estimated$seed, '.rds')
+                         'sparsity',
+                         data_to_be_estimated$sparsity,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains_Simple, file = my_filename) 
     
     drive_put(media = my_filename, path = folder)
