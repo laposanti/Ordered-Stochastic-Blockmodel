@@ -16,14 +16,9 @@ library(parallel)
 library(truncnorm)
 library(doRNG)
 library(googledrive)
-
 #setwd("/Users/lapo_santi/Desktop/Nial/POMM_pairwise/POMMs/")
-
-
 source("./model_auxiliary_functions/Functions_priorSST.R")
 source("./Metropolis_within_Gibbs_code_powerposterior.R")
-
-
 
 
 subject = "lapo.santi@ucdconnect.ie"
@@ -39,6 +34,8 @@ googledrive::drive_auth(email = subject)
 
 
 
+
+
 ################################################################################
 #                        step 1: upload the data
 ################################################################################
@@ -46,7 +43,7 @@ googledrive::drive_auth(email = subject)
 
 #where the data are stored
 data_wd<- "./Data/Sim_2_data//"
-data_description = 'SST6'
+data_description = 'SST7'
 filenames <- list.files(pattern = paste0(data_description),path = data_wd)
 for(dataset in 1:length(filenames)){
   data_to_be_estimated <- readRDS(paste0(data_wd, "/", filenames[dataset]))
@@ -57,20 +54,22 @@ for(dataset in 1:length(filenames)){
   K <- data_to_be_estimated$ground_truth$K
   ground_truth <- data_to_be_estimated$ground_truth
   
-  
+  choose_model_to_estimate = c('SST', 'WST','Simple')
   
   ################################################################################
   # Decide for how many Ks we want to compute the marginal posterior
   ################################################################################
   
   print(paste0("True data--->", filenames[dataset], "\n"))
-  #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
-  power_posterior_apprach = T
-  custom_init <- NA
   is.simulation=T
+  
+  
+  
+  
+  power_posterior_apprach = T
+  custom_init = NA
   optimal_acceptance_rate_theta =.44
   optimal_acceptance_rate_mu = .234
-  seed = 23
   N_iter <- 80000 #number of iterations
   burnin <- 10000 #number of discarded iterations
   thin = 5
@@ -78,9 +77,12 @@ for(dataset in 1:length(filenames)){
   
   K_est = list(2,3,4,5,6,7,8,9,10) #number of clusters to fit
   
+  #Boolean: power_posterior_approach = T estimates the marginal likelihood via power posteriors
+  power_posterior_apprach = F
+  custom_init <- NA
   
   #where to save the data
-  saving_directory = "./Results/MCMC_output/model_choice/powerposterior/"
+  saving_directory = './Results/MCMC_output/model_choice/powerposterior/'
   
   # Check if the directory exists
   if (!dir.exists(saving_directory)) {
@@ -90,24 +92,24 @@ for(dataset in 1:length(filenames)){
   } else {
     message("Directory already exists.")
   }
-  choose_model_to_estimate = c('SST',"WST","Simple")
   
   
-  
-  diag0.5= F
-  folder_url <- "https://drive.google.com/drive/u/1/folders/1519Z5c_oBujyI_wf8v6rqI8FZT2puXq9"
-  
-  
+  diag0.5<-F
+  folder_url <- "https://drive.google.com/drive/u/1/folders/1YCgOM7YeeDk1cdfOemmZlKAWAA93FRDE"
   folder <- drive_get(as_id(folder_url))
+  
   if('SST' %in% choose_model_to_estimate){
+    
+    
+    
+    
     print(paste0("Estimation of the SST model, K=", K_est))
     print(paste0("Begin cycle at:", date(), "\n"))
-    
     est_model = 'SST'
+    
     seed=23
     
-    estimation_control <- list(z = 1,theta = 1)
-    
+    estimation_control <- list(z = 1, theta = 1)
     
     chains <- adaptive_MCMC_orderstats_powerposterior(Y_ij = Y_ij, N_ij = N_ij,
                                                       saving_directory = saving_directory,
@@ -120,11 +122,8 @@ for(dataset in 1:length(filenames)){
                                                       model = est_model, 
                                                       custom_init = custom_init,
                                                       power_posterior_apprach = power_posterior_apprach,
-                                                      thin = thin,
+                                                      thin =thin,
                                                       diag0.5 = diag0.5)
-    names(chains) = paste0('chain',unlist(K_est))
-    
-    
     names(chains) = paste0('chain',unlist(K_est))
     
     
@@ -135,6 +134,7 @@ for(dataset in 1:length(filenames)){
                          data_to_be_estimated$sparsity,"seed",  data_to_be_estimated$seed, '.rds')
     saveRDS(object = chains, file = my_filename) 
     drive_put(media = my_filename, path = folder)
+    
   }
   
   if('WST' %in% choose_model_to_estimate){
@@ -169,6 +169,7 @@ for(dataset in 1:length(filenames)){
     
     
     names(chains_WST) = paste0('chain',unlist(K_est))
+    
     
     my_filename = paste0(saving_directory,'/Data_from',
                          data_description, "_est_model",
@@ -210,9 +211,9 @@ for(dataset in 1:length(filenames)){
                                                             model = est_model, 
                                                             custom_init = custom_init,
                                                             power_posterior_apprach = power_posterior_apprach,
-                                                            thin=thin,
-                                                            diag0.5 = F)
+                                                            thin=thin,diag0.5 = F)
     names(chains_Simple) = paste0('chain',unlist(K_est))
+    
     my_filename = paste0(saving_directory,'/Data_from',
                          data_description, "_est_model",
                          est_model,"_Kest",paste(unlist(K_est),collapse = "_"),
@@ -222,5 +223,5 @@ for(dataset in 1:length(filenames)){
     
     drive_put(media = my_filename, path = folder)
   }
-  
+}
 }
